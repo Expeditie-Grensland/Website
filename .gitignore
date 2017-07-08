@@ -1,8 +1,5 @@
-
 node_modules/
 
-.vscode/launch.json
-.vscode/settings.json
 server/config.*
 
 server/*.js
