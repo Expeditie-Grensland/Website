@@ -1,0 +1,27 @@
+{
+  "name": "basic-node-setup",
+  "version": "0.0.1",
+  "description": "basic node setup for visual studio code",
+  "main": "server/server.js",
+  "author": {
+    "name": "Rik",
+    "email": "rikmuld@gmail.com"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.1",
+    "mongodb": "^2.2.10",
+    "mongoose": "^4.6.3",
+    "pug": "^2.0.0-rc.1",
+    "redis": "^2.6.2",
+    "socket.io": "^1.5.0",
+    "stylus": "^0.54.5",
+    "typescript": "^2.3.4",
+    "connect-redis": "^3.1.0",
+    "passport": "^0.3.2",
+    "passport-google-oauth2": "^0.1.6",
+    "passport.socketio": "^3.7.0"
+  }
+}
