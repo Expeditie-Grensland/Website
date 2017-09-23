@@ -1,9 +1,0 @@
-{
-    "files.exclude": {
-        "LICENSE": true,
-        "server/*.js": true,
-        "public/scripts/*.js": true,
-        "public/styles/*.css": true,
-        "node_modules": true
-    }
-}
