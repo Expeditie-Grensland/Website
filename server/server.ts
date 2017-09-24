@@ -7,7 +7,7 @@ import * as bodyParser from 'body-parser'
 import * as passport from 'passport'
 
 import { Setup } from "./setup"
-import { Config } from "./config"
+//import { Config } from "./config"
 import { SocketHandler } from "./sockets/socketHandler"
 import { Routes } from "./routes/routes"
 
@@ -18,7 +18,7 @@ const io = socket(server)
 const root = __dirname
 const viewsDir = path.join(root, 'views')
 const publicDir = path.join(root, 'public')
- 
+
 //const db = Setup.setupDatabase(Config.db.address, Config.db.port, Config.db.db, Config.db.user.name, Config.db.user.password)
 
 Setup.setupExpress(app, __dirname + "/../")
