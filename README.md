@@ -1,6 +1,6 @@
 # Basic-Node-Setup
 
-Basic Node setup for visual studio code
+Basic Node setup
 
 Config File:
 ```typescript
