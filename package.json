@@ -26,7 +26,7 @@
     "redis": "^2.6.2",
     "@types/redis": "^2.6.0",
     "socket.io": "^1.5.0",
-    "@types/socket.io": "1.5.0",
+    "@types/socket.io": "^1.4.30",
     "stylus": "^0.54.5",
     "@types/stylus": "^0.48.28",
     "typescript": "^2.3.4",
