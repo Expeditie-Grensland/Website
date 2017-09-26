@@ -11,3 +11,5 @@ public/scripts/*.js
 public/scripts/database/*.js
 public/scripts/sockets/*.js
 public/styles/*.css
+
+.idea/
