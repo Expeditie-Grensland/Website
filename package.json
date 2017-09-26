@@ -1,11 +1,11 @@
 {
-  "name": "basic-node-setup",
+  "name": "Expeditie Website",
   "version": "0.0.1",
-  "description": "basic node setup for visual studio code",
+  "description": "basic node setup the expeditie website",
   "main": "server/server.js",
   "author": {
-    "name": "Rik",
-    "email": "rikmuld@gmail.com"
+    "name": "Maurice",
+    "email": "mauricemeedendorp@gmail.com"
   },
   "dependencies": {
     "body-parser": "^1.15.2",

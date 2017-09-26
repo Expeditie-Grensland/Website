@@ -1,5 +1,4 @@
 import { Tuple } from "./tuple"
-import { IOMap } from "./iomap"
 
 export abstract class List<A> {
     protected h: A
@@ -104,10 +103,6 @@ export abstract class List<A> {
         array.sort(ordering)
         return List.apply(array)
     }
-
-    toIOMap<Out, Res>(): IOMap<A, Out, List<Res>> {
-        return IOMap.traverse(this)
-    }
 }
 
 export class Empty extends List<any> { }
@@ -154,9 +149,5 @@ export namespace List {
 
     export function forall<A>(la: List<A>, f: (a: A) => void): void {
         la.foldLeft(null, (none, a) => f(a))
-    }
-
-    export function toIOMap<In, Out, A>(lin: In[]): IOMap<In, Out, List<A>> {
-        return apply(lin).toIOMap()
     }
 }
