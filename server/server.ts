@@ -7,7 +7,7 @@ import * as bodyParser from 'body-parser'
 import * as passport from 'passport'
 
 import { Setup } from "./setup"
-//import { Config } from "./config"
+import { Config } from "./config"
 import { SocketHandler } from "./sockets/socketHandler"
 import { Routes } from "./routes/routes"
 
