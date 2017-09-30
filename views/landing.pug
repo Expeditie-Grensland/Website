@@ -1,8 +1,11 @@
 ﻿extend structure/simple.pug
 
+block scripts
+    include includes/scripts.pug
+    script(src="scripts/map/mapHome.js")
+
 block title
-    title Expeditie -- Home
+    title Expeditie - Home
 
 block body
-    h1 Expeditie
     div(id="mapid")
