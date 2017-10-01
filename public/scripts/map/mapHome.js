@@ -4,11 +4,23 @@ var MapHome;
         const svgmap = $('#svgmap');
         const expedities = MapHome.getExpeditieCountries();
         let countries = [];
+        let amountOfOverlaps = 0;
         for (let expeditie of expedities.expedities) {
             const name = expeditie.name;
             for (let country of expeditie.countries) {
                 if (countries.some(x => x == country)) {
-                    svgmap.find('#' + country).css({ fill: 'url(#diagonalHatch)' });
+                    const id = "diagonalHatch" + amountOfOverlaps.toString();
+                    const url = "url(#" + id + ")";
+                    console.log(url);
+                    const svgCountry = svgmap.find('#' + country);
+                    const otherColor = svgCountry.css("fill");
+                    svgmap.find('#defs4').append(getOverlapPattern(id, expeditie.color));
+                    svgCountry.css({ fill: url });
+                    const svgCountryCopy = svgCountry.clone();
+                    svgCountryCopy.attr('id', svgCountry.attr('id') + 'copy');
+                    svgCountryCopy.css({ fill: otherColor });
+                    svgmap.prepend(svgCountryCopy);
+                    amountOfOverlaps++;
                 }
                 else {
                     svgmap.find('#' + country).css({ fill: expeditie.color });
@@ -17,6 +29,11 @@ var MapHome;
             }
         }
         svgmap.find('#' + expedities.homeCountry).css({ fill: '#000FFF' });
+        //'Refreshing the map because it doesn't accept new patterns when added with jquery. Look into addElementNS TODO
+        const map = $('#map');
+        const svgHTML = map.html();
+        map.html('');
+        map.html(svgHTML);
     }
     MapHome.init = init;
     function getExpeditieCountries() {
@@ -44,5 +61,11 @@ var MapHome;
         };
     }
     MapHome.getExpeditieCountries = getExpeditieCountries;
+    function getOverlapPattern(id, color) {
+        return "<pattern id=\"" + id + "\" patternUnits=\"userSpaceOnUse\" width=\"10\" height=\"10\">\n" +
+            "      <path d=\"M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2\" style=\"stroke:" + color + "; stroke-width:4\" />\n" +
+            "    </pattern>";
+    }
+    MapHome.getOverlapPattern = getOverlapPattern;
 })(MapHome || (MapHome = {}));
 MapHome.init();
