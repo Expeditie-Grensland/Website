@@ -1,4 +1,4 @@
-body
+body, #map
   height: 100vh
   width: 100vw
   margin: 0
@@ -9,3 +9,11 @@ body
   margin: 0 auto
   max-height: 100%
   max-width: 100%
+  stroke-width: .3px
+  fill: #f2f2f2
+  fill-rule: evenodd
+  stroke: #000;
+  stroke-linejoin: round;
+
+#layer_1
+  shape-rendering: crispEdges //This solves a weird bug where only layer 0 is affected by the stroke-width attribute by forcing the browser to render edges as thin as possible

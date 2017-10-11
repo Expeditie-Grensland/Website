@@ -1,39 +1,52 @@
 var MapHome;
 (function (MapHome) {
     function init() {
-        const svgmap = $('#svgmap');
-        const expedities = MapHome.getExpeditieCountries();
-        let countries = [];
-        let amountOfOverlaps = 0;
-        for (let expeditie of expedities.expedities) {
+        /**
+        const svgmap = $('#svgmap')
+         data-adm0-a3data-adm0-a3data-adm0-a3data-adm0-a3data-adm0-a3data-adm0-a3
+        const expedities  = MapHome.getExpeditieCountries();
+
+        let countries: string[] = []
+        let amountOfOverlaps: number = 0;
+
+        for(let expeditie of expedities.expedities) {
             const name = expeditie.name;
-            for (let country of expeditie.countries) {
-                if (countries.some(x => x == country)) {
-                    const id = "diagonalHatch" + amountOfOverlaps.toString();
-                    const url = "url(#" + id + ")";
-                    console.log(url);
-                    const svgCountry = svgmap.find('#' + country);
-                    const otherColor = svgCountry.css("fill");
-                    svgmap.find('#defs4').append(getOverlapPattern(id, expeditie.color));
-                    svgCountry.css({ fill: url });
-                    const svgCountryCopy = svgCountry.clone();
-                    svgCountryCopy.attr('id', svgCountry.attr('id') + 'copy');
-                    svgCountryCopy.css({ fill: otherColor });
-                    svgmap.prepend(svgCountryCopy);
-                    amountOfOverlaps++;
-                }
-                else {
-                    svgmap.find('#' + country).css({ fill: expeditie.color });
-                    countries.push(country);
+
+            for(let country of expeditie.countries) {
+                if(countries.some(x => x == country)) {
+                    const id = "diagonalHatch" + amountOfOverlaps.toString()
+                    const url = "url(#" + id + ")"
+
+                    console.log(url)
+
+                    const svgCountry = svgmap.find('#' + country)
+                    const otherColor = svgCountry.css("fill")
+
+                    svgmap.find('#defs4').append(getOverlapPattern(id,  expeditie.color))
+                    svgCountry.css({fill: url})
+
+                    const svgCountryCopy = svgCountry.clone()
+                    svgCountryCopy.attr('id', svgCountry.attr('id') + 'copy')
+                    svgCountryCopy.css({fill: otherColor})
+                    svgmap.prepend(svgCountryCopy)
+
+                    amountOfOverlaps++
+                } else {
+                    svgmap.find('#' + country).css({fill: expeditie.color})
+                    countries.push(country)
                 }
             }
         }
-        svgmap.find('#' + expedities.homeCountry).css({ fill: '#000FFF' });
-        //'Refreshing the map because it doesn't accept new patterns when added with jquery. Look into addElementNS TODO
-        const map = $('#map');
+
+        svgmap.find('#'+ expedities.homeCountry).css({fill: '#000FFF'})
+        //'Refreshing' the map because it doesn't accept new patterns when added with jquery. Look into addElementNS TODO
+        // Preprocess this on server?
+        const map = $('#map')
+
         const svgHTML = map.html();
         map.html('');
         map.html(svgHTML);
+        */
     }
     MapHome.init = init;
     function getExpeditieCountries() {

@@ -1,8 +1,8 @@
 namespace MapHome {
     export function init() {
-
+        /**
         const svgmap = $('#svgmap')
-
+         data-adm0-a3data-adm0-a3data-adm0-a3data-adm0-a3data-adm0-a3data-adm0-a3
         const expedities  = MapHome.getExpeditieCountries();
 
         let countries: string[] = []
@@ -31,20 +31,21 @@ namespace MapHome {
 
                     amountOfOverlaps++
                 } else {
-                        svgmap.find('#' + country).css({fill: expeditie.color})
-                        countries.push(country)
+                    svgmap.find('#' + country).css({fill: expeditie.color})
+                    countries.push(country)
                 }
             }
         }
 
         svgmap.find('#'+ expedities.homeCountry).css({fill: '#000FFF'})
-
-        //'Refreshing the map because it doesn't accept new patterns when added with jquery. Look into addElementNS TODO
+        //'Refreshing' the map because it doesn't accept new patterns when added with jquery. Look into addElementNS TODO
+        // Preprocess this on server?
         const map = $('#map')
 
         const svgHTML = map.html();
         map.html('');
         map.html(svgHTML);
+        */
 
     }
 

@@ -31,6 +31,7 @@
     "@types/socket.io": "^1.4.30",
     "stylus": "^0.54.5",
     "@types/stylus": "^0.48.28",
+    "tsoption": "^0.3",
     "typescript": "^2.3.4",
     "passport": "^0.3.2",
     "@types/passport": "^0.3.2",
