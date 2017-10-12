@@ -1,11 +1,10 @@
 import * as express from 'express'
-import * as passport from 'passport'
 
 export namespace Main {
     export function init(app: express.Express) {
         const patterns = '<pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="10" height="10"> <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" style="stroke:black; stroke-width:4" /> </pattern>'
 
-        app.get("/", (req, res) => res.render("landing", {
+        app.get("/", (req, res) => res.render("home", {
             filename: "homepage.cache",
             cache: true,
             patterns: patterns
