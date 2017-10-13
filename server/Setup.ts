@@ -9,9 +9,9 @@ import * as passport from 'passport'
 import * as redis from "redis"
 import * as redisConnect from "connect-redis"
 
-import { Config } from './config'
-import { Routes } from './routes/routes'
-import { Tables, TableData } from './database/tables'
+import {Config} from './Config'
+import {Routes} from './routes/Routes'
+import {Tables} from './database/Tables'
 
 const authGoogle = require('passport-google-oauth2')
 

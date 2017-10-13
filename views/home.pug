@@ -1,12 +1,15 @@
 ﻿extend structure/simple.pug
 
 block scripts
-    include includes/scripts.pug
-    script(src="scripts/map/mapHome.js")
+    //include includes/scripts.pug
+
+block styles
+    include includes/styles.pug
+    style(type="text/css") !{svgCSS}
 
 block title
     title Expeditie - Home
 
 block body
     div(id="map")
-        include includes/world
+         include includes/world

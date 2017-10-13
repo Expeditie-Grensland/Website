@@ -1,7 +1,5 @@
 import * as express from "express"
 
-import { Sockets } from "./sockets"
-
 export namespace SocketIDs {
 
 }

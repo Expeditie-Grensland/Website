@@ -2,14 +2,10 @@
 import * as http from 'http'
 import * as socket from 'socket.io'
 import * as path from 'path'
-import * as stylus from 'stylus'
-import * as bodyParser from 'body-parser'
-import * as passport from 'passport'
 
-import { Setup } from "./setup"
-import { Config } from "./config"
-import { SocketHandler } from "./sockets/socketHandler"
-import { Routes } from "./routes/routes"
+import {Setup} from "./Setup"
+import {SocketHandler} from "./sockets/SocketHandler"
+import {Routes} from "./routes/Routes"
 
 const app = express()
 const server = http.createServer(app)

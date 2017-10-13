@@ -1,5 +1,3 @@
-import * as mongoose from 'mongoose'
-
 export namespace Tables {
     export function initTables() {
        
