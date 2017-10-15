@@ -1,7 +1,8 @@
 ﻿extend structure/simple.pug
 
 block scripts
-    //include includes/scripts.pug
+    include includes/scripts.pug
+    script(src="scripts/map/MapHome.js")
 
 block styles
     include includes/styles.pug
@@ -12,4 +13,6 @@ block title
 
 block body
     div(id="map")
-         include includes/world
+        include includes/world.pug
+    div(id="legend")
+

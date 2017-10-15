@@ -1,0 +1,52 @@
+html
+  box-sizing: border-box;
+
+*, *:before, *:after
+  box-sizing: inherit;
+
+body
+  margin:0
+  padding:0
+  height: 100vh
+  width: 100%
+
+#map
+  height: 100%
+  width: auto
+
+#svgmap
+  display:block
+  height: 100%
+  width: auto
+  margin: auto
+  stroke-width: .3px
+  fill: #f2f2f2
+  fill-rule: evenodd
+  stroke: #000
+  stroke-linejoin: round
+
+path {
+  -webkit-transition: all .2s ease-in-out
+  -moz-transition: all .2s ease-in-out
+  -ms-transition: all .2s ease-in-out
+  -o-transition: all .2s ease-in-out
+  transition: all .2s ease-in-out
+}
+
+path.animate {
+  stroke-width: 1.6px
+}
+
+#layer_1
+  shape-rendering: crispEdges //This solves a weird bug where only layer 0 is affected by the stroke-width attribute by forcing the browser to render edges as thin as possible
+
+#legend
+  //border: 1px
+  //background-color: whitesmoke
+  //width: 300px
+  //height: 300px
+  //-webkit-transform: translate(50px, -400px)
+  //-moz-transform: translate(50px, -400px)
+  //-ms-transform: translate(50px, -400px)
+  //-o-transform: translate(50px, -400px)
+  //transform: translate(50px, -400px)

@@ -2,58 +2,69 @@ import * as express from 'express'
 import {DiagonalHatch} from "./DiagonalHatch";
 import {List} from "../../structures/List";
 import {None, Some} from "tsoption";
+import * as d3 from "d3"
+import * as fs from "fs"
+import * as topojson from "topojson"
 
 export namespace RouteHome {
     export function init(app: express.Express) {
         //TODO: make this update if a new expeditie is added.
-
         const expeditieCountries = getExpeditieCountries()
 
         const coloredCountries: Map<string, List<string>> = new Map() //Map<country, List<color>>
 
-        let homeCountry = expeditieCountries.homeCountry
+        const homeCountryID = countryNameToCSSID(expeditieCountries.homeCountry)
 
-        homeCountry = homeCountry.replace(/ /gi, "_") //Spaces are not allowed in ids
-        homeCountry = homeCountry.replace(/\./gi, "\\.") //Escape . characters in css selector
-
-        coloredCountries.set(homeCountry, List.mk('#782100'))
+        coloredCountries.set(homeCountryID, List.mk('#782100'))
 
         for (let expeditie of expeditieCountries.expedities) {
             for (let country of expeditie.countries) {
-                country = country.replace(/ /gi, "_") //Spaces are not allowed in ids
-                country = country.replace(/\./gi, "\\.") //Escape . characters in css selector
+                const countryID = countryNameToCSSID(country)
 
                 let colorList = List.mk(expeditie.color)
 
-                if (coloredCountries.has(country)) {
-                    colorList = coloredCountries.get(country).add(expeditie.color)
+                if (coloredCountries.has(countryID)) {
+                    colorList = coloredCountries.get(countryID).add(expeditie.color)
                 }
 
-                coloredCountries.set(country, colorList)
+                coloredCountries.set(countryID, colorList)
             }
         }
 
         let cssString: string = ""
         let patterns: List<DiagonalHatch> = List.mk()
+        let clipPaths: List<string> = List.mk()
 
         coloredCountries.forEach((colorList, country) => {
-            if (colorList.length() == 1) cssString += `#${country} {fill: ${colorList.get(0)}}\n`
-            else if (colorList.length() == 2) {
-                const hatch = new DiagonalHatch(colorList.get(0), colorList.get(1), None())
+            let fillValue = colorList.get(0)
+
+            if(colorList.length() > 1) {
+                const hatch = new DiagonalHatch(colorList.get(0), colorList.get(1), colorList.get(2) == null ? None() : Some(colorList.get(2)))
                 patterns = patterns.add(hatch)
-                cssString += `#${country} {fill: url(#${hatch.getID()})}\n`
-            } else if (colorList.length() == 3) {
-                const hatch = new DiagonalHatch(colorList.get(0), colorList.get(1), Some(colorList.get(2)))
-                patterns = patterns.add(hatch)
-                cssString += `#${country} {fill: url(#${hatch.getID()})}\n`
+                fillValue = `url(#${hatch.getID()})`
             }
+
+            cssString += `#${country} {fill: ${fillValue}; clip-path: url(#${country}_clipPath)}\n`
+            clipPaths = clipPaths.add(getClipPathForPath(`${country}_clipPath`, country))
         })
 
         app.get("/", (req, res) => res.render("home", {
             cache: true,
             patterns: patterns.foldLeft("", (str, pattern) => str + pattern.toSVG()),
+            clipPaths: clipPaths.foldLeft("", (str, clipPath) => str + clipPath + '\n'),
             svgCSS: cssString
         }))
+    }
+
+    export function getClipPathForPath(clipPathId: string, pathId: string): string {
+        return `
+            <clipPath id="${clipPathId}">
+                <use xlink:href="#${pathId}"/>
+            </clipPath>`
+    }
+
+    export function countryNameToCSSID(name: string): string {
+        return name.replace(/ /gi, "_").replace(/\./gi, "\\.") //Spaces are not allowed in ids and escape . characters in css selector
     }
 
     export function getExpeditieCountries() {
@@ -63,9 +74,9 @@ export namespace RouteHome {
             homeCountry: 'Netherlands',
             expedities: [
                 {
-                    name: 'Noordkaap',
+                    name:      'Noordkaap',
                     countries: ['Germany', 'Poland', 'Lithuania', 'Latvia', 'Estonia', 'Finland', 'Sweden', 'Norway', 'Denmark'],
-                    color: '#002ea2' //Suomi blue
+                    color:     '#3482ff'
                 },
                 {
                     name: 'Balkan',
