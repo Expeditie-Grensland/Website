@@ -8,6 +8,9 @@ import * as session from 'express-session'
 import * as passport from 'passport'
 import * as redis from "redis"
 import * as redisConnect from "connect-redis"
+import * as i18next from "i18next"
+import * as i18nextMiddleware from "i18next-express-middleware"
+import * as FileSystemBackend from "i18next-node-fs-backend"
 
 import {Config} from './Config'
 import {Routes} from './routes/Routes'
@@ -28,12 +31,27 @@ export namespace Setup {
         const viewsDir = path.join(root, 'views')
         const publicDir = path.join(root, 'public')
 
+        i18next
+            .use(FileSystemBackend)
+            .use(i18nextMiddleware.LanguageDetector)
+            .init({
+                preload: ['en', 'nl'],
+                lowerCaseLng: true,
+                fallbackLng: 'en',
+                backend: {
+                    loadPath: path.join(root, 'locales/{{lng}}.json'),
+                    jsonIndent: 2
+                }
+            });
+
+
         app.set('view engine', 'pug')
         app.set('views', viewsDir)
         app.use(bodyParser.urlencoded({ extended: true }))
         app.use(bodyParser.json())
         app.use(stylus.middleware(publicDir))
         app.use(express.static(publicDir))
+        app.use(i18nextMiddleware.handle(i18next))
     }
 
     export function setupSession(app: express.Express, io: SocketIO.Server) {

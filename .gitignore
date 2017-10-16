@@ -2,9 +2,7 @@ node_modules/
 
 server/Config.ts
 
-server/routes/home/*.js
-server/**/*.js
-public/**/*.js
-public/**/*.css
+*.js
+*.css
 
 .idea/

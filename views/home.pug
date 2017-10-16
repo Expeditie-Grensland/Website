@@ -1,18 +1,23 @@
-﻿extend structure/simple.pug
-
-block scripts
-    include includes/scripts.pug
-    script(src="scripts/map/MapHome.js")
-
-block styles
-    include includes/styles.pug
-    style(type="text/css")
-        | !{svgCSS}
+extend structure/simple.pug
 
 block title
     title Expeditie - Home
 
-block content
-    div(id="map")
-        include includes/world.pug
-
+block body
+    -
+        var expedities = [
+        {
+            "name": "Noordkaap",
+            "color": "#377eb8"
+        },
+        {
+            "name": "Balkan",
+            "color": "#e41a1c"
+        },
+        {
+            "name": "Kaukasus",
+            "color": "#ff7f00"
+        }
+        ]
+    each expeditie in expedities
+        div(id= "column" + expeditie.name class="column" style="background-color: " + expeditie.color)

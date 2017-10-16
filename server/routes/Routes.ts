@@ -1,13 +1,16 @@
 import * as express from 'express'
 
 import {User} from "./User"
-import {RouteHome} from "./home/RouteHome"
+import {RouteMap} from "./map/RouteMap"
+import {RouteHome} from "./home/RouteHome";
 
 export namespace Routes {
     export const user = User
-    export const main = RouteHome
+    export const map = RouteMap
+    export const home = RouteHome
 
     export function init(app: express.Express) {
-        main.init(app)
+        home.init(app)
+        map.init(app)
     }
 }

@@ -1,0 +1,19 @@
+﻿extend structure/simple.pug
+
+block scripts
+    include includes/scripts.pug
+    script(src="scripts/map/MapHome.js")
+
+block styles
+    include includes/styles.pug
+    link(rel='stylesheet' href='styles/mapHome.css' type='text/css')
+    style(type="text/css")
+        | !{svgCSS}
+
+block title
+    title Expeditie - Home
+
+block content
+    #map
+        include includes/world.pug
+
