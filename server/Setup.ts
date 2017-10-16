@@ -38,8 +38,10 @@ export namespace Setup {
                 preload: ['en', 'nl'],
                 lowerCaseLng: true,
                 fallbackLng: 'en',
+                saveMissing: true,
                 backend: {
-                    loadPath: path.join(root, 'locales/{{lng}}.json'),
+                    loadPath: path.join(root, 'server/locales/{{lng}}/{{ns}}.json'),
+                    addPath: path.join(root, 'server/locales/{{lng}}/{{ns}}.missing.json'),
                     jsonIndent: 2
                 }
             });
@@ -47,11 +49,11 @@ export namespace Setup {
 
         app.set('view engine', 'pug')
         app.set('views', viewsDir)
+        app.use(i18nextMiddleware.handle(i18next))
         app.use(bodyParser.urlencoded({ extended: true }))
         app.use(bodyParser.json())
         app.use(stylus.middleware(publicDir))
         app.use(express.static(publicDir))
-        app.use(i18nextMiddleware.handle(i18next))
     }
 
     export function setupSession(app: express.Express, io: SocketIO.Server) {
