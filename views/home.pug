@@ -6,13 +6,13 @@ block scripts
 
 block styles
     include includes/styles.pug
-    style(type="text/css") !{svgCSS}
+    style(type="text/css")
+        | !{svgCSS}
 
 block title
     title Expeditie - Home
 
-block body
+block content
     div(id="map")
         include includes/world.pug
-    div(id="legend")
 

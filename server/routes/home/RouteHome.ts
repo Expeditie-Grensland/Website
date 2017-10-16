@@ -2,9 +2,6 @@ import * as express from 'express'
 import {DiagonalHatch} from "./DiagonalHatch";
 import {List} from "../../structures/List";
 import {None, Some} from "tsoption";
-import * as d3 from "d3"
-import * as fs from "fs"
-import * as topojson from "topojson"
 
 export namespace RouteHome {
     export function init(app: express.Express) {
@@ -33,7 +30,6 @@ export namespace RouteHome {
 
         let cssString: string = ""
         let patterns: List<DiagonalHatch> = List.mk()
-        let clipPaths: List<string> = List.mk()
 
         coloredCountries.forEach((colorList, country) => {
             let fillValue = colorList.get(0)
@@ -44,23 +40,14 @@ export namespace RouteHome {
                 fillValue = `url(#${hatch.getID()})`
             }
 
-            cssString += `#${country} {fill: ${fillValue}; clip-path: url(#${country}_clipPath)}\n`
-            clipPaths = clipPaths.add(getClipPathForPath(`${country}_clipPath`, country))
+            cssString += `#${country} {fill: ${fillValue}; stroke: #fff}\n`
         })
 
         app.get("/", (req, res) => res.render("home", {
             cache: true,
             patterns: patterns.foldLeft("", (str, pattern) => str + pattern.toSVG()),
-            clipPaths: clipPaths.foldLeft("", (str, clipPath) => str + clipPath + '\n'),
             svgCSS: cssString
         }))
-    }
-
-    export function getClipPathForPath(clipPathId: string, pathId: string): string {
-        return `
-            <clipPath id="${clipPathId}">
-                <use xlink:href="#${pathId}"/>
-            </clipPath>`
     }
 
     export function countryNameToCSSID(name: string): string {
@@ -76,17 +63,17 @@ export namespace RouteHome {
                 {
                     name:      'Noordkaap',
                     countries: ['Germany', 'Poland', 'Lithuania', 'Latvia', 'Estonia', 'Finland', 'Sweden', 'Norway', 'Denmark'],
-                    color:     '#3482ff'
+                    color:     '#377eb8' //Suomi blue
                 },
                 {
                     name: 'Balkan',
                     countries: ['Germany', 'Austria', 'Slovenia', 'Croatia', 'Bosnia and Herz.', 'Montenegro', 'Albania', 'Kosovo', 'Macedonia', 'Greece', 'Bulgaria', 'Romania', 'Moldova', 'Hungary', 'Slovakia', 'Czech Rep.'],
-                    color: '#e41e20'
+                    color: '#e41a1c'
                 },
                 {
                     name: 'Kaukasus',
                     countries: ['Iran', 'Azerbaijan', 'Georgia', 'Armenia', 'Russia', 'Abkhazia', 'Belarus', 'Lithuania', 'Belgium'],
-                    color: '#FF7F00'
+                    color: '#ff7f00'
                 }
             ]
         }

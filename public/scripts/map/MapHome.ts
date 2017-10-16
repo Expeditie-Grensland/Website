@@ -48,7 +48,7 @@ namespace MapHome {
                 {
                     name: 'Noordkaap',
                     countries: ['Germany', 'Poland', 'Lithuania', 'Latvia', 'Estonia', 'Finland', 'Sweden', 'Norway', 'Denmark'],
-                    color: '#3482ff'
+                    color: '#002ea2' //Suomi blue
                 },
                 {
                     name: 'Balkan',
