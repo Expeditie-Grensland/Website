@@ -9,24 +9,39 @@ block body
             {
                 "name": "Noordkaap", //TODO: localized name
                 "link": "/noordkaap",
+                "background_image": "https://mmeedendorp.stackstorage.com/public-share/jCrikHWCbQL1atS/preview?path=/&mode=thumbnail&size=large",
+                "background_position": {
+                    "x": 75,
+                    "y": 50
+                },
                 "year": "2015",
                 "color": "#377eb8"
             },
             {
                 "name": "Balkan",
                 "link": "/balkan",
+                "background_image": "https://mmeedendorp.stackstorage.com/public-share/CFcAcj6D8cBDpXy/preview?path=/&mode=thumbnail&size=large",
+                "background_position": {
+                    "x": 75,
+                    "y": 50
+                },
                 "year": "2016",
                 "color": "#e41a1c"
             },
             {
                 "name": "Kaukasus",
                 "link": "/kaukasus",
+                "background_image": "",
+                "background_position": {
+                    "x": 75,
+                    "y": 50
+                },
                 "year": "2017",
                 "color": "#ff7f00"
             }
         ]
     each expeditie in expedities
-        div(id= "column" + expeditie.name class="column" style="background-color: " + expeditie.color)
+        div(id= "column" + expeditie.name class="column" style=`background-color: ${expeditie.color} ; background-image: url(${expeditie.background_image}) ; background-position: ${expeditie.background_position.x}% ${expeditie.background_position.y}%`)
             .expeditie
                 h1= expeditie.year
                 h2= t_ucf("expeditie") + " " + expeditie.name
