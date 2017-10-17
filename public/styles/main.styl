@@ -1,4 +1,18 @@
+column-width=480
 
+transition_all()
+  -webkit-transition all 2s
+  -moz-transition all 2s
+  -ms-transition all 2s
+  -o-transition all 2s
+  transition all 2s
+
+transitions()
+  -webkit-transition all 2s, arguments
+  -moz-transition all 2s, arguments
+  -ms-transition all 2s, arguments
+  -o-transition all 2s, arguments
+  transition all 2s, arguments
 
 body
   margin 0
@@ -10,31 +24,41 @@ body
   white-space nowrap
   text-align center
 
+#columns
+  transition_all()
+
 .column
   display inline-block
   position relative
-  width 480px
-  overflow auto
+  width column-width px
+  overflow hidden
   white-space normal
   background-size auto 100%
   background-repeat no-repeat
 
-  -webkit-transition: filter 2s opacity 1s
-  -moz-transition: filter 2s opacity 1s
-  -ms-transition: filter 2s opacity 1s
-  -o-transition: filter 2s opacity 1s
-  transition: filter 2s opacity 1s
+  transitions opacity 1s
 
 .expeditie
+  display block
   position absolute
+  height auto
   bottom 10%
   width inherit
   background-color: rgba(66, 66, 66, 0.5)
 
-  h1, h2
+  min-height 0
+
+  transitions bottom 1s, min-height .6s, background-color 1s
+
+  .expeditie-text
     color: white
 
-.column:not(.slick-current)
+.slick-current .expeditie:hover
+  min-height: 90%
+  bottom: 0
+  background-color: rgba(66, 66, 66, 0.8)
+
+.slick-slide:not(.slick-current)
   opacity: .6
   -webkit-filter: blur(1px);
   -moz-filter: blur(1px);
@@ -50,18 +74,11 @@ body
   -ms-filter: blur(0px)
   filter: blur(0px)
 
-//.slick-current:hover .expeditie
+.slick-current .expeditie
+  cursor pointer
 
-
-.slick-slide
+.column, .slick-slide
   height: 100vh
-
-.slick-prev
-  left: 30px
-  z-index: 10
-
-.slick-next
-  right: 30px
 
 .slick-dots
   bottom: 10px

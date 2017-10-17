@@ -28,7 +28,7 @@ block body
                 "background_image": "https://mmeedendorp.stackstorage.com/public-share/CFcAcj6D8cBDpXy/preview?path=/&mode=thumbnail&size=large",
                 //"background_image": "",
                 "background_position": {
-                    "x": 75,
+                    "x": 66,
                     "y": 50
                 },
                 "year": "2016",
@@ -37,10 +37,11 @@ block body
             {
                 "name": "Kaukasus",
                 "link": "/kaukasus",
+                //"background_image": "https://mmeedendorp.stackstorage.com/public-share/xwg0iHwfu7tRaJA/preview?path=/&mode=thumbnail&size=medium",
                 "background_image": "",
                 "background_position": {
-                    "x": 75,
-                    "y": 50
+                    "x": 25,
+                    "y": 10
                 },
                 "year": "2017",
                 "color": "#ff7f00"
@@ -48,8 +49,9 @@ block body
         ]
     div(id='columns')
         each expeditie in expedities
-            div(id=expeditie.name class="column" style=`background-color: ${expeditie.color} ; background-image: url(${expeditie.background_image}) ; background-position: ${expeditie.background_position.x}% ${expeditie.background_position.y}%`)
-                .expeditie
-                    h1= expeditie.year
-                    //h2= t_ucf("expeditie") + " " + expeditie.name
-                    h2= expeditie.name
+            div(class="column" style=`background-color: ${expeditie.color} ; background-image: url(${expeditie.background_image}) ; background-position: ${expeditie.background_position.x}% ${expeditie.background_position.y}%`)
+                div(id=expeditie.name class="expeditie")
+                    .expeditie-text
+                        h1= expeditie.year
+                        //h2= t_ucf("expeditie") + " " + expeditie.name
+                        h2= expeditie.name
