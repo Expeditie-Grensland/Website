@@ -60,19 +60,18 @@ body
 
 .slick-slide:not(.slick-current)
   opacity: .6
-  -webkit-filter: blur(1px);
-  -moz-filter: blur(1px);
-  -o-filter: blur(1px);
-  -ms-filter: blur(1px);
-  filter: blur(1px);
+  -webkit-filter contrast(1.25) brightness(0.4) saturate(1.25)
+  -moz-filter contrast(1.25) brightness(0.4) saturate(1.25)
+  -o-filter contrast(1.25) brightness(0.4) saturate(1.25)
+  -ms-filter contrast(1.25) brightness(0.4) saturate(1.25)
 
 .slick-current
   opacity: 1
-  -webkit-filter: blur(0px)
-  -moz-filter: blur(0px)
-  -o-filter: blur(0px)
-  -ms-filter: blur(0px)
-  filter: blur(0px)
+  -webkit-filter none
+  -moz-filter none
+  -o-filter none
+  -ms-filter none
+  filter none
 
 .slick-current .expeditie
   cursor pointer
