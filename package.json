@@ -24,6 +24,7 @@
     "@types/passport": "^0.3.2",
     "@types/pug": "^2.0.0-rc.1",
     "@types/redis": "^2.6.1",
+    "@types/slick-carousel": "^1.6.32",
     "@types/socket.io": "^1.4.30",
     "@types/stylus": "^0.48.28",
     "@types/topojson": "^3.0.2",

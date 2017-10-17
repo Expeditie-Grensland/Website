@@ -3,13 +3,18 @@ extend structure/simple.pug
 block title
     title Expeditie - Home
 
+block scripts
+    include includes/scripts.pug
+    script(src="scripts/home.js")
+
 block body
     -
         var expedities = [
             {
                 "name": "Noordkaap", //TODO: localized name
                 "link": "/noordkaap",
-                "background_image": "https://mmeedendorp.stackstorage.com/public-share/jCrikHWCbQL1atS/preview?path=/&mode=thumbnail&size=large",
+                //"background_image": "https://mmeedendorp.stackstorage.com/public-share/jCrikHWCbQL1atS/preview?path=/&mode=thumbnail&size=large",
+                "background_image": "",
                 "background_position": {
                     "x": 75,
                     "y": 50
@@ -20,7 +25,8 @@ block body
             {
                 "name": "Balkan",
                 "link": "/balkan",
-                "background_image": "https://mmeedendorp.stackstorage.com/public-share/CFcAcj6D8cBDpXy/preview?path=/&mode=thumbnail&size=large",
+                //"background_image": "https://mmeedendorp.stackstorage.com/public-share/CFcAcj6D8cBDpXy/preview?path=/&mode=thumbnail&size=large",
+                "background_image": "",
                 "background_position": {
                     "x": 75,
                     "y": 50
@@ -40,9 +46,9 @@ block body
                 "color": "#ff7f00"
             }
         ]
-    #columns
+    div(id='columns')
         each expeditie in expedities
-            div(id= expeditie.name class="column" style=`background-color: ${expeditie.color} ; background-image: url(${expeditie.background_image}) ; background-position: ${expeditie.background_position.x}% ${expeditie.background_position.y}%`)
+            div(id=expeditie.name class="column" style=`background-color: ${expeditie.color} ; background-image: url(${expeditie.background_image}) ; background-position: ${expeditie.background_position.x}% ${expeditie.background_position.y}%`)
                 .expeditie
                     h1= expeditie.year
                     h2= t_ucf("expeditie") + " " + expeditie.name
