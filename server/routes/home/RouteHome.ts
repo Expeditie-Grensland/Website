@@ -3,6 +3,7 @@ import * as express from 'express'
 export namespace RouteHome {
     export function init(app: express.Express) {
         app.get("/", (req, res) => {
+            console.log((<any>req).languages)
             res.render("home", {
                 t: (<any>req).t,
                 t_ucf: ucFirstWrapper((<any>req).t),

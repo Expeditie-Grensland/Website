@@ -40,8 +40,9 @@ block body
                 "color": "#ff7f00"
             }
         ]
-    each expeditie in expedities
-        div(id= "column" + expeditie.name class="column" style=`background-color: ${expeditie.color} ; background-image: url(${expeditie.background_image}) ; background-position: ${expeditie.background_position.x}% ${expeditie.background_position.y}%`)
-            .expeditie
-                h1= expeditie.year
-                h2= t_ucf("expeditie") + " " + expeditie.name
+    #columns
+        each expeditie in expedities
+            div(id= expeditie.name class="column" style=`background-color: ${expeditie.color} ; background-image: url(${expeditie.background_image}) ; background-position: ${expeditie.background_position.x}% ${expeditie.background_position.y}%`)
+                .expeditie
+                    h1= expeditie.year
+                    h2= t_ucf("expeditie") + " " + expeditie.name

@@ -1,12 +1,19 @@
 body
-  overflow-x: scroll
+  overflow-x scroll
+
+#columns
+  overflow-x auto
+  width: 100vw
+  height: 100vh
+
 
 .column
   width: 100%
 
-#column1
-  left: 100%
-#column2
-  left: 200%
-#column3
-  left: 300%
+#columns:hover .column
+  opacity: 1
+  -webkit-filter: blur(0px)
+  -moz-filter: blur(0px)
+  -o-filter: blur(0px)
+  -ms-filter: blur(0px)
+  filter: blur(0px)

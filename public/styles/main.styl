@@ -4,7 +4,7 @@ body
   margin 0
   padding 0
   height 100%
-  max-height 100%
+  max-height 100vh
   overflow hidden
   overflow-x auto
   font-family 'Roboto', sans-serif
@@ -23,18 +23,26 @@ body
   white-space normal
   background-size auto 100%
   background-repeat no-repeat
+  transition: filter 2s, opacity 1s
 
 .expeditie
   position absolute
   bottom 10%
   width inherit
-  -webkit-transition bottom 1s
-  -moz-transition bottom 1s
-  -ms-transition bottom 1s
-  -o-transition bottom 1s
-  transition bottom 1s
 
-.column:hover
+#columns:hover .column
+  opacity: .6
+  -webkit-filter: blur(1px);
+  -moz-filter: blur(1px);
+  -o-filter: blur(1px);
+  -ms-filter: blur(1px);
+  filter: blur(1px);
+
+#columns:hover > .column:hover
   //-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
-  .expeditie
-    bottom 60%
+  opacity: 1
+  -webkit-filter: blur(0px)
+  -moz-filter: blur(0px)
+  -o-filter: blur(0px)
+  -ms-filter: blur(0px)
+  filter: blur(0px)
