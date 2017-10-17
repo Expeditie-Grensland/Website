@@ -28,3 +28,5 @@ SocketHandler.bindHandlers(app, io)
 Routes.init(app)
 
 Setup.startServer(server)
+
+console.log("Server started on port: " + process.env.PORT)

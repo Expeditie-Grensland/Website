@@ -13,20 +13,27 @@ body
 .column
   display inline-block
   position relative
-  //left 0
   width 480px
   overflow auto
   white-space normal
   background-size auto 100%
   background-repeat no-repeat
-  transition: filter 2s, opacity 1s
+
+  -webkit-transition: filter 2s opacity 1s
+  -moz-transition: filter 2s opacity 1s
+  -ms-transition: filter 2s opacity 1s
+  -o-transition: filter 2s opacity 1s
+  transition: filter 2s opacity 1s
 
 .expeditie
   position absolute
   bottom 10%
   width inherit
+  background-color: rgba(66, 66, 66, 0.5)
 
-//#columns:hover .column
+  h1, h2
+    color: white
+
 .column:not(.slick-current)
   opacity: .6
   -webkit-filter: blur(1px);
@@ -35,9 +42,7 @@ body
   -ms-filter: blur(1px);
   filter: blur(1px);
 
-//#columns:hover .column:hover
 .slick-current
-  //-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
   opacity: 1
   -webkit-filter: blur(0px)
   -moz-filter: blur(0px)
@@ -50,12 +55,14 @@ body
 
 .slick-prev
   left: 30px
-  top: 50%
   z-index: 10
 
 .slick-next
   right: 30px
-  top: 50%
 
 .slick-dots
   bottom: 10px
+
+.slick-dots li button:before
+  color white
+  opacity 1
