@@ -6,23 +6,16 @@ body
   height 100%
   max-height 100vh
   overflow hidden
-  overflow-x auto
   font-family 'Roboto', sans-serif
   white-space nowrap
   text-align center
 
-#columns
-  width: 100vw
-
 .column
   display inline-block
   position relative
-  left 0
-  top 0
-  bottom 0
+  //left 0
   width 480px
   overflow auto
-  height 100vh
   white-space normal
   background-size auto 100%
   background-repeat no-repeat
@@ -33,7 +26,8 @@ body
   bottom 10%
   width inherit
 
-#columns:hover .column
+//#columns:hover .column
+.column:not(.slick-current)
   opacity: .6
   -webkit-filter: blur(1px);
   -moz-filter: blur(1px);
@@ -41,7 +35,8 @@ body
   -ms-filter: blur(1px);
   filter: blur(1px);
 
-#columns:hover > .column:hover
+//#columns:hover .column:hover
+.slick-current
   //-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
   opacity: 1
   -webkit-filter: blur(0px)
@@ -49,3 +44,15 @@ body
   -o-filter: blur(0px)
   -ms-filter: blur(0px)
   filter: blur(0px)
+
+.slick-slide
+  height: 100vh
+
+.slick-prev
+  left: 30px
+  top: 50%
+  z-index: 10
+
+.slick-next
+  right: 30px
+  top: 50%
