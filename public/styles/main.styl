@@ -1,18 +1,18 @@
 column-width=480
 
-transition_all()
-  -webkit-transition all 2s
-  -moz-transition all 2s
-  -ms-transition all 2s
-  -o-transition all 2s
-  transition all 2s
-
-transitions()
-  -webkit-transition all 2s, arguments
-  -moz-transition all 2s, arguments
-  -ms-transition all 2s, arguments
-  -o-transition all 2s, arguments
-  transition all 2s, arguments
+transition()
+  -webkit-transition arguments
+  -moz-transition arguments
+  -ms-transition arguments
+  -o-transition arguments
+  transition arguments
+  
+filter()
+  -webkit-filter arguments
+  -moz-filter arguments
+  -o-filter arguments
+  -ms-filter arguments
+  filter arguments
 
 body
   margin 0
@@ -24,19 +24,17 @@ body
   white-space nowrap
   text-align center
 
-#columns
-  transition_all()
-
 .column
   display inline-block
   position relative
-  width column-width px
+  width 33.33333vw
+  min-width column-width px
   overflow hidden
   white-space normal
   background-size auto 100%
   background-repeat no-repeat
 
-  transitions opacity 1s
+  transition filter 1s
 
 .expeditie
   display block
@@ -44,11 +42,12 @@ body
   height auto
   bottom 10%
   width inherit
+  min-width inherit
   background-color: rgba(66, 66, 66, 0.5)
 
   min-height 0
 
-  transitions bottom 1s, min-height .6s, background-color 1s
+  transition bottom 1s ease .1s, min-height .8s, background-color 1s
 
   .expeditie-text
     color: white
@@ -59,18 +58,9 @@ body
   background-color: rgba(66, 66, 66, 0.8)
 
 .slick-slide:not(.slick-current)
-  opacity: .6
-  -webkit-filter contrast(1.25) brightness(0.4) saturate(1.25)
-  -moz-filter contrast(1.25) brightness(0.4) saturate(1.25)
-  -o-filter contrast(1.25) brightness(0.4) saturate(1.25)
-  -ms-filter contrast(1.25) brightness(0.4) saturate(1.25)
+  filter contrast(1.25) brightness(0.4) saturate(1.25)
 
 .slick-current
-  opacity: 1
-  -webkit-filter none
-  -moz-filter none
-  -o-filter none
-  -ms-filter none
   filter none
 
 .slick-current .expeditie
@@ -85,3 +75,9 @@ body
 .slick-dots li button:before
   color white
   opacity 1
+  font-size 8px
+
+.slick-dots li
+  color dimgrey !important
+  width 20px !important
+  height 20px !important
