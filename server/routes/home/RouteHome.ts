@@ -4,7 +4,7 @@ export namespace RouteHome {
     export function init(app: express.Express) {
         var expedities = [
             {
-                name: "Noordkaap", //TODO: localized name
+                name: "Noordkaap",
                 map_url: "/noordkaap",
                 movie_url: "/noordkaap/movie",
                 map_thumbnail: "/noordkaap/thumbnail/map",

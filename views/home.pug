@@ -18,6 +18,8 @@ block body
                         h2= expeditie.name
                         .expeditie-links
                             .expeditie-map
-                                img(src=expeditie.map_thumbnail alt="Expeditie map thumbnail")
+                                a(href=expeditie.map_url)
+                                    img(src=expeditie.map_thumbnail alt="Expeditie map thumbnail")
                             .expeditie-movie
-                                img(src=expeditie.movie_thumbnail alt="Expeditie movie thumbnail")
+                                a(href=expeditie.movie_url)
+                                    img(src=expeditie.movie_thumbnail alt="Expeditie movie thumbnail")
