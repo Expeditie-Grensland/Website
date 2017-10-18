@@ -8,50 +8,16 @@ block scripts
     script(src="scripts/home.js")
 
 block body
-    -
-        var expedities = [
-            {
-                "name": "Noordkaap", //TODO: localized name
-                "link": "/noordkaap",
-                "background_image": "https://mmeedendorp.stackstorage.com/public-share/jCrikHWCbQL1atS/preview?path=/&mode=thumbnail&size=large",
-                //"background_image": "",
-                "background_position": {
-                    "x": 75,
-                    "y": 50
-                },
-                "year": "2015",
-                "color": "#377eb8"
-            },
-            {
-                "name": "Balkan",
-                "link": "/balkan",
-                "background_image": "https://mmeedendorp.stackstorage.com/public-share/CFcAcj6D8cBDpXy/preview?path=/&mode=thumbnail&size=large",
-                //"background_image": "",
-                "background_position": {
-                    "x": 66,
-                    "y": 50
-                },
-                "year": "2016",
-                "color": "#e41a1c"
-            },
-            {
-                "name": "Kaukasus",
-                "link": "/kaukasus",
-                //"background_image": "https://mmeedendorp.stackstorage.com/public-share/xwg0iHwfu7tRaJA/preview?path=/&mode=thumbnail&size=medium",
-                "background_image": "",
-                "background_position": {
-                    "x": 25,
-                    "y": 10
-                },
-                "year": "2017",
-                "color": "#ff7f00"
-            }
-        ]
     div(id='columns')
         each expeditie in expedities
-            div(class="column" style=`background-color: ${expeditie.color} ; background-image: url(${expeditie.background_image}) ; background-position: ${expeditie.background_position.x}% ${expeditie.background_position.y}%`)
+            .column
+                div(class="background" style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background_image + "); background-position: " + expeditie.background_position.x + "% " + expeditie.background_position.y + "%")
                 div(id=expeditie.name class="expeditie")
                     .expeditie-text
                         h1= expeditie.year
-                        //h2= t_ucf("expeditie") + " " + expeditie.name
                         h2= expeditie.name
+                        .expeditie-links
+                            .expeditie-map
+                                img(src=expeditie.map_thumbnail alt="Expeditie map thumbnail")
+                            .expeditie-movie
+                                img(src=expeditie.movie_thumbnail alt="Expeditie movie thumbnail")

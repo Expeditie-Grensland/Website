@@ -15,12 +15,20 @@ $(document).ready(function(){
         initialSlide: 1
     })
 
-    //Bind button click for expeditie
-    $('.expeditie').click(function (event) {
+
+    $('.expeditie').click(function (event) {  //Bind button click for expeditie
         const column = $(event.target).parent()
 
         if(column.hasClass('slick-current')) {
 
         }
-    })
+    }).hover(function () {
+        $(this).addClass('hover');
+        $(this).parent().children('.background').addClass('hover');
+        console.log("hover")
+    }, function () {
+        $(this).removeClass('hover');
+        $(this).parent().children('.background').removeClass('hover');
+        console.log("unhover")
+    });
 })
