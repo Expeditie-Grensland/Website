@@ -39,7 +39,7 @@ export namespace TableData {
                 url: String,
                 thumbnail_url: String
             },
-            routeParts: [reference(RoutePart.ID)]
+            routeParts: [reference(TableData.RoutePart.ID)]
         })
 
         export interface Expeditie {
