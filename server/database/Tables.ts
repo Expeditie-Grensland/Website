@@ -17,8 +17,7 @@ export namespace TableData {
      * one column.
      */
     export namespace Expeditie {
-        import RoutePart = TableData.RoutePart;
-        ``
+        import RoutePart = TableData.RoutePart.RoutePart
         export const ID = "Expeditie"
 
         export const expeditieSchema = new Schema({
