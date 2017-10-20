@@ -1,5 +1,3 @@
-column-width=480
-
 transition()
   -webkit-transition arguments
   -moz-transition arguments
@@ -28,7 +26,7 @@ body
   display inline-block
   position relative
   width 33.33333vw
-  min-width column-width px
+  min-width 20vw
   overflow hidden
   white-space normal
 
@@ -53,65 +51,6 @@ body
   min-width inherit
   background-color: rgba(66, 66, 66, 0.5)
 
-  min-height 0
+  h1, h2
+    color: white
 
-  transition bottom .7s linear, min-height 1.1s ease-out .1s, background-color 1s ease .1s
-
-  z-index: 100
-  overflow hidden
-
-//Making the reverse animation look good
-.hover.expeditie
-  transition bottom .6s linear .1s, min-height .8s ease-out, background-color 1s ease .1s
-
-.expeditie-text
-  width inherit
-  min-width inherit
-  height auto
-
-  color: white
-
-.expeditie-links
-  position absolute
-
-  top 30vh
-
-  width inherit
-  min-width inherit
-
-.expeditie-map, .expeditie-movie
-  width: 50%
-  height: 10vh
-  margin: auto
-
-.slick-current .expeditie:hover
-  min-height: 90%
-  bottom: 0
-  background-color: rgba(66, 66, 66, .5)
-
-.slick-slide:not(.slick-current)
-  filter brightness(0.7)
-
-  .background
-    filter contrast(1.25) brightness(0.4) saturate(1.25)
-
-.slick-current
-  filter none
-
-.column, .slick-slide
-  height: 100vh
-
-.slick-dots
-  bottom: 10px
-
-.slick-dots li button:before
-  color white
-  opacity .9
-  font-size 8px
-  width 20px
-  height 20px
-
-.slick-dots li.slick-active button:before
-  font-size 15px
-  color white
-  opacity 1

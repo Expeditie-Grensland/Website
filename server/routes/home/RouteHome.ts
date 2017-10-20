@@ -45,6 +45,66 @@ export namespace RouteHome {
                 },
                 year: "2017",
                 color: "#ff7f00"
+            },
+            {
+                name: "Grensland",
+                map_url: "/grensland",
+                movie_url:           "/grensland/movie",
+                map_thumbnail:       "/grensland/thumbnail/map",
+                movie_thumbnail:     "/grensland/thumbnail/movie",
+                //background_image: "https://mmeedendorp.stackstorage.com/public-share/xwg0iHwfu7tRaJA/preview?path=/&mode=thumbnail&size=medium",
+                background_image:    "",
+                background_position: {
+                    x: 25,
+                    y: 10
+                },
+                year:                "2018",
+                color:               "#ffd900"
+            },
+            {
+                name: "Alaska",
+                map_url: "/alaska",
+                movie_url:           "/alaska/movie",
+                map_thumbnail:       "/alaska/thumbnail/map",
+                movie_thumbnail:     "/alaska/thumbnail/movie",
+                //background_image: "https://mmeedendorp.stackstorage.com/public-share/xwg0iHwfu7tRaJA/preview?path=/&mode=thumbnail&size=medium",
+                background_image:    "",
+                background_position: {
+                    x: 25,
+                    y: 10
+                },
+                year:                "2019",
+                color:               "#16ff00"
+            },
+            {
+                name: "Op zoek naar -stan",
+                map_url: "/stan",
+                movie_url:           "/stan/movie",
+                map_thumbnail:       "/stan/thumbnail/map",
+                movie_thumbnail:     "/stan/thumbnail/movie",
+                //background_image: "https://mmeedendorp.stackstorage.com/public-share/xwg0iHwfu7tRaJA/preview?path=/&mode=thumbnail&size=medium",
+                background_image:    "",
+                background_position: {
+                    x: 25,
+                    y: 10
+                },
+                year:                "2020",
+                color:               "#ff00e2"
+            },
+            {
+                name: "Op zoek naar Atema",
+                map_url: "/stan",
+                movie_url:           "/stan/movie",
+                map_thumbnail:       "/stan/thumbnail/map",
+                movie_thumbnail:     "/stan/thumbnail/movie",
+                //background_image: "https://mmeedendorp.stackstorage.com/public-share/xwg0iHwfu7tRaJA/preview?path=/&mode=thumbnail&size=medium",
+                background_image:    "",
+                background_position: {
+                    x: 25,
+                    y: 10
+                },
+                year:                "2021",
+                color:               "#ff00e2"
             }
         ]
 

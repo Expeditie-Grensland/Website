@@ -13,13 +13,5 @@ block body
             .column
                 div(class="background" style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background_image + "); background-position: " + expeditie.background_position.x + "% " + expeditie.background_position.y + "%")
                 div(id=expeditie.name class="expeditie")
-                    .expeditie-text
-                        h1= expeditie.year
-                        h2= expeditie.name
-                        .expeditie-links
-                            .expeditie-map
-                                a(href=expeditie.map_url)
-                                    img(src=expeditie.map_thumbnail alt="Expeditie map thumbnail")
-                            .expeditie-movie
-                                a(href=expeditie.movie_url)
-                                    img(src=expeditie.movie_thumbnail alt="Expeditie movie thumbnail")
+                    h1= expeditie.year
+                    h2= expeditie.name
