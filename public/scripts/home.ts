@@ -53,18 +53,7 @@ $(document).ready(function(){
                 }
             })
 
-            track.css('transform', 'translate3d(0px, 0px, 0px)')
-
-            new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutationRecord) {
-                    const target = $(mutationRecord.target)
-
-                    const translateX = Number(target.css('transform').split(',')[4])
-                    if (translateX > 0) {
-                        target.css('transform', 'translate3d(0, 0, 0)')
-                    }
-                })
-            }).observe(track[0], {attributes: true, attributeFilter: ['style']})
+            track.addClass('track-begin')
         }
     } else {
         $('.column').css({
