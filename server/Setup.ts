@@ -24,7 +24,7 @@ const redisClient = useRedis ? redis.createClient() : null
 
 export namespace Setup {
     export function startServer(server: http.Server) {
-        server.listen(process.env.PORT)
+        server.listen(Config.port)
     }
 
     export function setupExpress(app: express.Express, root: string) {

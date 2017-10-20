@@ -11,7 +11,7 @@ block body
     div(id='columns')
         each expeditie in expedities
             .column
-                div(class="background" style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background_image + "); background-position: " + expeditie.background_position.x + "% " + expeditie.background_position.y + "%")
-                div(id=expeditie.name class="expeditie")
-                    h1= expeditie.year
-                    h2= expeditie.name
+                .background(style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background_image + "); background-position: " + expeditie.background_position.x + "% " + expeditie.background_position.y + "%")
+                .expeditie(id=expeditie.name)
+                    h1= expeditie.name
+                    h2= expeditie.year

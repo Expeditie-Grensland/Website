@@ -22,7 +22,7 @@ $(document).ready(function(){
         slidesToScroll: 1,
         responsive: [
             {
-                breakpoint: 1600,
+                breakpoint: 1500,
                 settings: {
                     dots: expeditieCount > 4,
                     arrows: expeditieCount > 4,
@@ -30,7 +30,7 @@ $(document).ready(function(){
                 }
             },
             {
-                breakpoint: 1280,
+                breakpoint: 1200,
                 settings: {
                     dots: expeditieCount > 3,
                     arrows: expeditieCount > 3  ,
@@ -38,7 +38,7 @@ $(document).ready(function(){
                 }
             },
             {
-                breakpoint: 720,
+                breakpoint: 900,
                 settings: {
                     dots: expeditieCount > 2,
                     arrows: expeditieCount > 2,
@@ -46,7 +46,7 @@ $(document).ready(function(){
                 }
             },
             {
-                breakpoint: 480,
+                breakpoint: 600,
                 settings: {
                     dots: expeditieCount > 1,
                     arrows: expeditieCount > 1,
