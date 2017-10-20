@@ -12,6 +12,8 @@ export namespace Users {
 }
 
 export namespace Config {
+    export const port = 3000
+    
     export const session = {
         redis: false,
         secret: "session secret"

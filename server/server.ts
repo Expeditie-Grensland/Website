@@ -6,6 +6,7 @@ import * as path from 'path'
 import {Setup} from "./Setup"
 import {SocketHandler} from "./sockets/SocketHandler"
 import {Routes} from "./routes/Routes"
+import {Config} from "./Config"
 
 const app = express()
 const server = http.createServer(app)
@@ -29,4 +30,4 @@ Routes.init(app)
 
 Setup.startServer(server)
 
-console.log("Server started on port: " + process.env.PORT)
+console.log("Server started on port: " + Config.port)
