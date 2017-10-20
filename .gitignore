@@ -6,3 +6,4 @@ server/Config.ts
 *.css
 
 .idea/
+.vscode/

@@ -166,7 +166,7 @@ export namespace TableData {
             background?: {
                 image_url: Option<string>,
                 position: Option<{
-                    x: number,
+                    x: number
                     y: number
                 }>
             },
@@ -183,7 +183,7 @@ export namespace TableData {
 
         export interface ExpeditieDocument extends Expeditie, Document {}
 
-        export function expeditie(name: string, year: number, color: string, routeParts: RoutePart[]): Expeditie {
+        export function expeditie(name: string, year: number, color: string, routeParts: RoutePart[]):Expeditie {
             return {
                 name: name,
                 year: year,
