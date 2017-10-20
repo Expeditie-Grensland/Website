@@ -12,11 +12,17 @@ filter()
   -ms-filter arguments
   filter arguments
 
+transform()
+  -webkit-transform-origin: arguments
+  -moz-transform-origin: arguments
+  -ms-transform-origin: arguments
+  -o-transform-origin: arguments
+  transform-origin: arguments
+
 body
   margin 0
   padding 0
   height 100%
-  max-height 100vh
   overflow hidden
   font-family 'Roboto', sans-serif
   white-space nowrap
@@ -25,12 +31,11 @@ body
 .column
   display inline-block
   position relative
-  width 33.33333vw
-  min-width 20vw
   overflow hidden
   white-space normal
+  transform translate(0,0,0)
 
-  transition filter 1s
+  transition filter .5s, transform 1s
   outline none
 
 .background
@@ -40,7 +45,7 @@ body
   background-size auto 100%
   background-repeat no-repeat
 
-  filter none
+  transition inherit
 
 .expeditie
   display block
@@ -54,3 +59,21 @@ body
   h1, h2
     color: white
 
+#columns:hover .column:not(.clicked)
+  filter brightness(0.7)
+
+  .background
+    filter contrast(1.25) brightness(0.4) saturate(1.25)
+
+.column:hover
+  cursor pointer
+  filter none !important
+
+  .background
+    filter none !important
+
+.column.clicked
+  z-index: 100 !important
+
+.column.notclicked
+  filter brightness(0) !important

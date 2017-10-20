@@ -5,7 +5,6 @@ import {None, Some} from "tsoption";
 
 export namespace RouteMap {
     export function init(app: express.Express) {
-        //TODO: make this update if a new expeditie is added.
         const expeditieCountries = getExpeditieCountries()
 
         const coloredCountries: Map<string, List<string>> = new Map() //Map<country, List<color>>

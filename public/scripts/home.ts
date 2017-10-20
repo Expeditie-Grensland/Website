@@ -1,63 +1,92 @@
 $(document).ready(function(){
     console.log('Document ready')
 
-    const mobileLayout = window.matchMedia( "screen and (max-width: 720px)" ).matches
-    const expeditieCount = $('.column').length
+    const column = $('.column')
 
-    console.log(`Displaying ${expeditieCount} columns on ${mobileLayout ? "mobile" : "desktop"} layout`)
+    const screen = window.matchMedia( "screen" ).matches
+    const expeditieCount = column.length
 
-    const vw = window.outerWidth
-    const vh = window.outerHeight
+    console.log(`Displaying ${expeditieCount} columns on ${screen ? "touchscreen" : "non-touchscreen"} layout`)
 
-    if(mobileLayout || expeditieCount > 5) {
-        const columns = $('#columns')
+    const vw = window.innerWidth
+    const vh = window.innerHeight
 
-        if(!mobileLayout) {
-            $('.column').css({
-                width: vw / 20,
-            })
+    const columns = $('#columns')
+
+    columns.slick({
+        dots: expeditieCount > 5,
+        arrows: expeditieCount > 5,
+        speed: 400,
+        infinite: false,
+        slidesToShow: Math.min(5, expeditieCount),
+        slidesToScroll: 1,
+        responsive: [
+            {
+                breakpoint: 1600,
+                settings: {
+                    dots: expeditieCount > 4,
+                    arrows: expeditieCount > 4,
+                    slidesToShow: Math.min(4, expeditieCount)
+                }
+            },
+            {
+                breakpoint: 1280,
+                settings: {
+                    dots: expeditieCount > 3,
+                    arrows: expeditieCount > 3  ,
+                    slidesToShow: Math.min(3, expeditieCount)
+                }
+            },
+            {
+                breakpoint: 720,
+                settings: {
+                    dots: expeditieCount > 2,
+                    arrows: expeditieCount > 2,
+                    slidesToShow: Math.min(2, expeditieCount)
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    dots: expeditieCount > 1,
+                    arrows: expeditieCount > 1,
+                    slidesToShow: 1
+                }
+            }
+        ]
+    })
+
+    column.click(function (event) {
+        const column = $(event.target).parents('.column')
+
+        console.log(column)
+
+        columns.slick('slickGoTo', column.attr('data-slick-index'), false)
+
+        column.addClass('clicked')
+
+        const otherColumns = column.parent().children('.column:not(.clicked)')
+
+        for(let column of otherColumns) {
+            $(column).addClass('notclicked')
         }
 
-        //Start slick
-        columns.slick({
-            dots:           true,
-            draggable:      mobileLayout,
-            arrows:         mobileLayout,
-            infinite:       mobileLayout,
-            speed:          400,
-            slidesToShow:   1,
-            slidesToScroll: 1,
-            variableWidth:  true,
-            focusOnSelect:  true,
-            centerMode:     true,
-            initialSlide:   mobileLayout ? 0 : 2
-        });
+        columns.append("<div class='mapContainer'><iframe src='/map' id='map'></iframe></div>" )
 
-        if(!mobileLayout) {
-            const track = $('.slick-track')
+        const mapContainer = $('.mapContainer')
+        const map = $('#map')
 
-            columns.on('beforeChange', function(event, slick, currentSlide, nextSlide) {
-                if(nextSlide < 3) {
-                    console.log('stop')
-                    track.addClass('track-begin')
-                } else {
-                    track.removeClass('track-begin')
-                }
-                if(nextSlide > expeditieCount - 4) {
-                    console.log('stop end')
-                    track.addClass('track-end')
-                    track.css('left', -.2 * vw)
-                } else {
-                    track.removeClass('track-end')
-                    track.css('left','')
-                }
-            })
-
-            track.addClass('track-begin')
-        }
-    } else {
-        $('.column').css({
-            width: vw / expeditieCount,
+        mapContainer.css({
+            position: 'absolute',
+            left: column.outerWidth() + 'px',
+            right: '0px',
+            top: '0px',
+            bottom: '0px'
         })
-    }
+
+        map.css({
+            width: '100%',
+            height: '100%'
+        })
+    })
 })

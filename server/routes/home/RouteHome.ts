@@ -104,7 +104,7 @@ export namespace RouteHome {
                     y: 10
                 },
                 year:                "2021",
-                color:               "#ff00e2"
+                color:               "#fff9f2"
             }
         ]
 
