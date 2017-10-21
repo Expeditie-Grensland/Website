@@ -59,7 +59,8 @@ $(document).ready(function(){
     column.click(function (event) {
         const column = $(event.target).parents('.column')
 
-        console.log(column)
+        if(column.hasClass('clicked'))
+            return
 
         const columnNr = Number(column.attr('data-slick-index'))
 
@@ -84,45 +85,37 @@ $(document).ready(function(){
         $('.slick-arrow').addClass('hidden')
         $('#closeOverlay').removeClass('hidden')
 
-        columns.append("<div class='mapContainer'><iframe src='/map' id='map'></iframe></div>" )
-
-        const mapContainer = $('.mapContainer')
-        const map = $('#map')
-
-        mapContainer.css({
-            position: 'absolute',
-            left: column.outerWidth() + 'px',
-            right: '0px',
-            top: '0px',
-            bottom: '0px',
-            outline: 'none'
-        })
-
-        map.css({
-            width: '100%',
-            height: '100%',
-            borderWidth: '0'
-        })
+        $('#mapContainer').css({
+            left: column.outerWidth() + 'px'
+        }).removeClass('hidden')
     })
 
     $('#closeOverlay').click(function (event) {
         const clickedColumn = $('.clicked')
-        columns.slick('slickGoTo', $('.slick-slide').index(clickedColumn), false)
+        const slickSlide = $('.slick-slide')
+
+        columns.slick('slickGoTo', slickSlide.index(clickedColumn), false)
 
         $('.slick-dots').removeClass('hidden')
         $('.slick-arrow').removeClass('hidden')
         $('#closeOverlay').addClass('hidden')
+        $('#mapContainer').addClass('hidden')
 
         $('.notclicked').removeClass('notclicked')
         clickedColumn.removeClass('clicked')
 
         const empties = $('.empty')
 
-        for(let i = 0; i < empties.length; i++) {
-            columns.slick('slickRemove', $('.slick-slide').index(empties[i]), false)
-            console.log("removing column")
-        }
+        console.log(empties.length + ' empties.')
 
-        $('.mapContainer').remove()
+        for(let i = empties.length; i > 0; i--) {
+            console.log("removing column")
+            console.log(empties[i-1])
+            columns.slick('slickRemove', slickSlide.index(empties[i-1]), false)
+        }
     })
+})
+
+$(window).on( "load", function() {
+    $('#map').attr('src', '/svgmap')
 })

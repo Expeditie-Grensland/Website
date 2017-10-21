@@ -15,4 +15,6 @@ block body
                 .expeditie(id=expeditie.name)
                     h1= expeditie.name
                     h2= expeditie.year
-    #closeOverlay.hidden &times;
+    #mapContainer.hidden
+        iframe#map
+        #closeOverlay.hidden &times;

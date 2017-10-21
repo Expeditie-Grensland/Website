@@ -42,7 +42,7 @@ export namespace RouteMap {
             cssString += `#${country} {fill: ${fillValue}; stroke: #fff}\n`
         })
 
-        app.get("/map", (req, res) => res.render("map", {
+        app.get("/svgmap", (req, res) => res.render("map", {
             cache: true,
             patterns: patterns.foldLeft("", (str, pattern) => str + pattern.toSVG()),
             svgCSS: cssString
