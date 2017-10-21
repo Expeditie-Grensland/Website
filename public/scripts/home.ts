@@ -61,7 +61,16 @@ $(document).ready(function(){
 
         console.log(column)
 
-        columns.slick('slickGoTo', column.attr('data-slick-index'), false)
+        const columnNr = Number(column.attr('data-slick-index'))
+
+        if(columnNr > expeditieCount - 5) {
+            for(let i = 0; i < columnNr - (expeditieCount -5); i++) {
+                console.log("adding column..")
+                columns.slick('slickAdd', '<div class="empty column"></div>')
+            }
+        }
+
+        columns.slick('slickGoTo', columnNr, false)
 
         column.addClass('clicked')
 
@@ -70,6 +79,10 @@ $(document).ready(function(){
         for(let column of otherColumns) {
             $(column).addClass('notclicked')
         }
+
+        $('.slick-dots').addClass('hidden')
+        $('.slick-arrow').addClass('hidden')
+        $('#closeOverlay').removeClass('hidden')
 
         columns.append("<div class='mapContainer'><iframe src='/map' id='map'></iframe></div>" )
 
@@ -81,12 +94,38 @@ $(document).ready(function(){
             left: column.outerWidth() + 'px',
             right: '0px',
             top: '0px',
-            bottom: '0px'
+            bottom: '0px',
+            outline: 'none'
         })
 
         map.css({
             width: '100%',
-            height: '100%'
+            height: '100%',
+            borderWidth: '0'
         })
+    })
+
+    $('#closeOverlay').click(function (event) {
+        const clickedColumn = $('.clicked')
+
+        $('.slick-dots').removeClass('hidden')
+        $('.slick-arrow').removeClass('hidden')
+        $('#closeOverlay').addClass('hidden')
+
+        $('.notclicked').removeClass('notclicked')
+        clickedColumn.removeClass('clicked')
+
+        const empties = $('.empty')
+
+        for(let i = 0; i < empties.length; i++) {
+            columns.slick('slickRemove', $('.slick-slide').index(empties[i]), false)
+            console.log("removing column")
+        }
+
+        $('.mapContainer').remove()
+
+
+        columns.slick('slickGoTo', $('.slick-slide').index(clickedColumn), false)
+
     })
 })

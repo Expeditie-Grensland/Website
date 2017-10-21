@@ -9,7 +9,7 @@ export namespace RouteHome {
                 movie_url: "/noordkaap/movie",
                 map_thumbnail: "/noordkaap/thumbnail/map",
                 movie_thumbnail: "/noordkaap/thumbnail/movie",
-                background_image: "/img/noordkaap_vaag10.jpg",
+                background_image: "/img/noordkaap.jpg",
                 background_position: {
                     x: 75,
                     y: 50
@@ -23,7 +23,7 @@ export namespace RouteHome {
                 movie_url: "/balkan/movie",
                 map_thumbnail: "/noordkaap/thumbnail/map",
                 movie_thumbnail: "/noordkaap/thumbnail/movie",
-                background_image: "/img/balkan_vaag10.jpg",
+                background_image: "/img/balkan.jpg",
                 background_position: {
                     x: 66,
                     y: 50

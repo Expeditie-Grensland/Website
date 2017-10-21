@@ -8,10 +8,11 @@ block scripts
     script(src="scripts/home.js")
 
 block body
-    div(id='columns')
+    #columns
         each expeditie in expedities
             .column
                 .background(style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background_image + "); background-position: " + expeditie.background_position.x + "% " + expeditie.background_position.y + "%")
                 .expeditie(id=expeditie.name)
                     h1= expeditie.name
                     h2= expeditie.year
+    #closeOverlay.hidden &times;
