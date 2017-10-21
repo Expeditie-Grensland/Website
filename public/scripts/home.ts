@@ -107,6 +107,7 @@ $(document).ready(function(){
 
     $('#closeOverlay').click(function (event) {
         const clickedColumn = $('.clicked')
+        columns.slick('slickGoTo', $('.slick-slide').index(clickedColumn), false)
 
         $('.slick-dots').removeClass('hidden')
         $('.slick-arrow').removeClass('hidden')
@@ -123,9 +124,5 @@ $(document).ready(function(){
         }
 
         $('.mapContainer').remove()
-
-
-        columns.slick('slickGoTo', $('.slick-slide').index(clickedColumn), false)
-
     })
 })
