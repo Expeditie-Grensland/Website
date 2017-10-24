@@ -19,6 +19,18 @@ transform()
   -o-transform-origin: arguments
   transform-origin: arguments
 
+select()
+  -webkit-user-select arguments
+  -moz-user-select arguments
+  -ms-user-select arguments
+  user-select arguments
+
+html
+  select none
+
+p, a, h1, h2, h3, h4, h5, h6, div, br, li, td, article
+  select text
+
 body
   margin 0
   padding 0
@@ -37,6 +49,10 @@ body
 
   transition filter .5s, transform 1s
   outline none
+
+.column:hover
+  .links
+    max-height: 100%
 
 .background
   width: inherit
@@ -58,24 +74,24 @@ body
   h1, h2
     color: white
 
-#columns:hover .column:not(.clicked)
-  filter brightness(0.7)
+.links
+  display block
+  position absolute
+  bottom 20%
+  max-height 0
+  height auto
+  width inherit
+  max-width inherit
 
-  .background
-    filter contrast(1.25) brightness(0.4) saturate(1.25)
+  overflow hidden
 
-.column:hover
-  cursor pointer
-  filter none !important
+  transition max-height 1s
 
-  .background
-    filter brightness(0.8)!important
-
-.column.clicked
-  z-index: 100 !important
-
-.column.notclicked
-  filter brightness(0) !important
+.thumb
+  margin auto
+  height: auto
+  width: 60%
+  max:width inherit
 
 #closeOverlay
   position absolute

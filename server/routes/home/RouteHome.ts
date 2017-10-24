@@ -6,10 +6,10 @@ export namespace RouteHome {
             {
                 name: "Noordkaap",
                 map_url: "/noordkaap",
-                movie_url: "/noordkaap/movie",
+                movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/Nordkapp+The+Movie+720p+(Web-Optimized).mp4",
                 map_thumbnail: "/noordkaap/thumbnail/map",
-                movie_thumbnail: "/noordkaap/thumbnail/movie",
-                background_image: "/img/noordkaap.jpg",
+                movie_thumbnail: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/thumbnail_movie.jpg",
+                background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 75,
                     y: 50
@@ -20,10 +20,10 @@ export namespace RouteHome {
             {
                 name: "Balkan",
                 map_url: "/balkan",
-                movie_url: "/balkan/movie",
+                movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
                 map_thumbnail: "/noordkaap/thumbnail/map",
-                movie_thumbnail: "/noordkaap/thumbnail/movie",
-                background_image: "/img/balkan.jpg",
+                movie_thumbnail: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/thumbnail_movie.jpg",
+                background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/background.jpg",
                 background_position: {
                     x: 66,
                     y: 50
@@ -37,11 +37,10 @@ export namespace RouteHome {
                 movie_url: "/kaukasus/movie",
                 map_thumbnail: "/noordkaap/thumbnail/map",
                 movie_thumbnail: "/noordkaap/thumbnail/movie",
-                //background_image: "https://mmeedendorp.stackstorage.com/public-share/xwg0iHwfu7tRaJA/preview?path=/&mode=thumbnail&size=medium",
-                background_image: "",
+                background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/kaukasus/background.jpg",
                 background_position: {
-                    x: 25,
-                    y: 10
+                    x: 40,
+                    y: 70
                 },
                 year: "2017",
                 color: "#ff7f00"

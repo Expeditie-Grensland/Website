@@ -15,6 +15,11 @@ block body
                 .expeditie(id=expeditie.name)
                     h1= expeditie.name
                     h2= expeditie.year
+                .links
+                    img.overviewThumb.thumb(src = expeditie.map_thumbnail alt='Overview Thumbnail')
+                    a(href= expeditie.movie_url)
+                        img.movieThumb.thumb(src = expeditie.movie_thumbnail alt='Movie Thumbnail')
+                    img.mapThumb.thumb(src = expeditie.map_thumbnail alt='Map Thumbnail')
     #mapContainer.hidden
         iframe#map
         #closeOverlay.hidden &times;

@@ -56,63 +56,9 @@ $(document).ready(function(){
         ]
     })
 
-    column.click(function (event) {
-        const column = $(event.target).parents('.column')
-
-        if(column.hasClass('clicked'))
-            return
-
-        const columnNr = Number(column.attr('data-slick-index'))
-
-        if(columnNr > expeditieCount - 5) {
-            for(let i = 0; i < columnNr - (expeditieCount -5); i++) {
-                console.log("adding column..")
-                columns.slick('slickAdd', '<div class="empty column"></div>')
-            }
-        }
-
-        columns.slick('slickGoTo', columnNr, false)
-
-        column.addClass('clicked')
-
-        const otherColumns = column.parent().children('.column:not(.clicked)')
-
-        for(let column of otherColumns) {
-            $(column).addClass('notclicked')
-        }
-
-        $('.slick-dots').addClass('hidden')
-        $('.slick-arrow').addClass('hidden')
-        $('#closeOverlay').removeClass('hidden')
-
-        $('#mapContainer').css({
-            left: column.outerWidth() + 'px'
-        }).removeClass('hidden')
-    })
 
     $('#closeOverlay').click(function (event) {
-        const clickedColumn = $('.clicked')
-        const slickSlide = $('.slick-slide')
 
-        columns.slick('slickGoTo', slickSlide.index(clickedColumn), false)
-
-        $('.slick-dots').removeClass('hidden')
-        $('.slick-arrow').removeClass('hidden')
-        $('#closeOverlay').addClass('hidden')
-        $('#mapContainer').addClass('hidden')
-
-        $('.notclicked').removeClass('notclicked')
-        clickedColumn.removeClass('clicked')
-
-        const empties = $('.empty')
-
-        console.log(empties.length + ' empties.')
-
-        for(let i = empties.length; i > 0; i--) {
-            console.log("removing column")
-            console.log(empties[i-1])
-            columns.slick('slickRemove', slickSlide.index(empties[i-1]), false)
-        }
     })
 })
 
