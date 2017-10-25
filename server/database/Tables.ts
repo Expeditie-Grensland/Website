@@ -112,18 +112,19 @@ export namespace TableData {
         export const ID = "Person"
 
         export const personSchema = new Schema({
+            name: String,
 
         })
 
         export interface Person {
-
+            name: string
         }
 
         export interface PersonDocument extends Person, Document {}
 
-        export function person(): Person {
+        export function person(name): Person {
             return {
-
+                name: name
             }
         }
     }

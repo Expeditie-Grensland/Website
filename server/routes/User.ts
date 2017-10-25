@@ -8,8 +8,7 @@ export namespace User {
     export function init(app: express.Express) {
         app.get(AUTH, passport.authenticate('google', {
             scope: [
-                'https://www.googleapis.com/auth/userinfo.profile', 
-                'https://www.googleapis.com/auth/plus.profile.emails.read'
+                'https://www.googleapis.com/auth/userinfo.email'
             ]
         }))
 
