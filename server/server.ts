@@ -19,9 +19,9 @@ const publicDir = path.join(root, 'public')
 //const db = Setup.setupDatabase(Config.db.address, Config.db.port, Config.db.db, Config.db.user.name, Config.db.user.password)
 
 Setup.setupExpress(app, __dirname + "/../")
-//Setup.setupAuthGoogle(Config.auth.id, Config.auth.secret)
+Setup.setupAuthGoogle(Config.auth.id, Config.auth.secret)
 //Setup.setupSession(app, io)
-//Setup.addAuthMiddleware(app)
+Setup.addAuthMiddleware(app)
 //Setup.addAsMiddleware(app, "db", db)
 
 SocketHandler.bindHandlers(app, io)

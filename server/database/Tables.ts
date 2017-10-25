@@ -1,5 +1,4 @@
 import {Schema} from 'mongoose'
-import {None, Option} from "tsoption";
 
 export namespace Tables {
     export function initTables() {
@@ -134,7 +133,7 @@ export namespace TableData {
      * one column.
      */
     export namespace Expeditie {
-        import RoutePart = TableData.RoutePart.RoutePart
+        import RoutePart = TableData.RoutePart.RoutePart;
         export const ID = "Expeditie"
 
         export const expeditieSchema = new Schema({
@@ -163,20 +162,20 @@ export namespace TableData {
             name: string,
             year: number,
             color: string,
-            background?: {
-                image_url: Option<string>,
-                position: Option<{
+            background: {
+                image_url: string,
+                position: {
                     x: number
                     y: number
-                }>
+                }
             },
             map: {
-                url: Option<string>,
-                thumbnail_url: Option<string>
+                url: string,
+                thumbnail_url: string
             },
-            movie: {
-                url: Option<string>,
-                thumbnail_url: Option<string>
+            movie?: {
+                url: string,
+                thumbnail_url: string
             },
             routeParts: string[] | RoutePart[]
         }
@@ -189,16 +188,15 @@ export namespace TableData {
                 year: year,
                 color: color,
                 background: {
-                    image_url: None(),
-                    position: None()
+                    image_url: "",  //TODO default background image
+                    position: {
+                        x: 50,
+                        y: 50
+                    }
                 },
                 map: {
-                    url: None(),
-                    thumbnail_url: None()
-                },
-                movie: {
-                    url: None(),
-                    thumbnail_url: None()
+                    url: "",
+                    thumbnail_url: ""   //TODO map thumbnail?
                 },
                 routeParts: routeParts
             }

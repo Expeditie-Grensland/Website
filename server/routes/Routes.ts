@@ -12,5 +12,6 @@ export namespace Routes {
     export function init(app: express.Express) {
         home.init(app)
         map.init(app)
+        user.init(app)
     }
 }
