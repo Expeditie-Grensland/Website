@@ -10,8 +10,8 @@ export namespace Routes {
     export const home = RouteHome
 
     export function init(app: express.Express) {
+        user.init(app)
         home.init(app)
         map.init(app)
-        user.init(app)
     }
 }

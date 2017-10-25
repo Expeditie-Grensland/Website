@@ -39,18 +39,24 @@ export namespace TableData {
         export const ID = "Place"
 
         export const placeSchema = new Schema({
-
+            zoomLevel: Number,
+            latlon: reference(Location.ID),
+            radius: Number
         })
 
         export interface Place {
-
+            zoomLevel: number,
+            latlon: string | Location.Location, //Because location is not allowed for some reason
+            radius: number
         }
 
         export interface PlaceDocument extends Place, Document {}
 
-        export function place(): Place {
+        export function place(zoomLevel, location, radius): Place {
             return {
-
+                zoomLevel: zoomLevel,
+                latlon: location,
+                radius: radius
             }
         }
     }
@@ -109,22 +115,30 @@ export namespace TableData {
 
 
     export namespace Person {
+        import Expeditie = TableData.Expeditie.Expeditie;
         export const ID = "Person"
 
         export const personSchema = new Schema({
+            email: String,
             name: String,
-
+            expedities: [reference(Expeditie.ID)],
+            language: String
         })
 
         export interface Person {
+            email: string
             name: string
+            expedities?: string[] | Expeditie[]
+            language: string
         }
 
         export interface PersonDocument extends Person, Document {}
 
-        export function person(name): Person {
+        export function person(email, name, language): Person {
             return {
-                name: name
+                email: email,
+                name: name,
+                language: language
             }
         }
     }
@@ -135,6 +149,7 @@ export namespace TableData {
      */
     export namespace Expeditie {
         import RoutePart = TableData.RoutePart.RoutePart;
+        import Person = TableData.Person.Person;
         export const ID = "Expeditie"
 
         export const expeditieSchema = new Schema({
@@ -156,6 +171,7 @@ export namespace TableData {
                 url: String,
                 thumbnail_url: String
             },
+            participants: [reference(TableData.Person.ID)],
             routeParts: [reference(TableData.RoutePart.ID)]
         })
 
@@ -178,12 +194,13 @@ export namespace TableData {
                 url: string,
                 thumbnail_url: string
             },
+            participants: string[] | Person[],
             routeParts: string[] | RoutePart[]
         }
 
         export interface ExpeditieDocument extends Expeditie, Document {}
 
-        export function expeditie(name: string, year: number, color: string, routeParts: RoutePart[]):Expeditie {
+        export function expeditie(name, year, color, participants, routeParts):Expeditie {
             return {
                 name: name,
                 year: year,
@@ -199,6 +216,7 @@ export namespace TableData {
                     url: "",
                     thumbnail_url: ""   //TODO map thumbnail?
                 },
+                participants: participants,
                 routeParts: routeParts
             }
         }
