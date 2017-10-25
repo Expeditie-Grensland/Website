@@ -8,12 +8,20 @@ export namespace Tables {
     export let Person: mongoose.Model<TableData.Person.PersonDocument>
 
     export function initTables() {
-        Expeditie = mongoose.model(TableData.Expeditie.ID, TableData.Expeditie.expeditieSchema)
-        Place = mongoose.model(TableData.Place.ID, TableData.Place.placeSchema)
-        Location = mongoose.model(TableData.Location.ID, TableData.Location.locationSchema)
-        RoutePart = mongoose.model(TableData.RoutePart.ID, TableData.RoutePart.routePartSchema)
-        Person = mongoose.model(TableData.Person.ID, TableData.Person.personSchema)
+        Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema)
+        Place = mongoose.model(TableIDs.Place, TableData.Place.placeSchema)
+        Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema)
+        RoutePart = mongoose.model(TableIDs.RoutePart, TableData.RoutePart.routePartSchema)
+        Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
     }
+}
+
+export namespace TableIDs {
+    export const Expeditie = "Expeditie"
+    export const Place = "Place"
+    export const Location = "Location"
+    export const RoutePart = "RoutePart"
+    export const Person = "Person"
 }
 
 export namespace TableData {
@@ -26,8 +34,6 @@ export namespace TableData {
      * one column.
      */
     export namespace Expeditie {
-        export const ID = "Expeditie"
-
         export const expeditieSchema = new mongoose.Schema({
             name: String,
             year: Number,
@@ -47,8 +53,8 @@ export namespace TableData {
                 url: String,
                 thumbnail_url: String
             },
-            participants: [reference(Person.ID)],
-            routeParts: [reference(RoutePart.ID)]
+            participants: [reference(TableIDs.Person)],
+            routeParts: [reference(TableIDs.RoutePart)]
         })
 
         export interface Expeditie {
@@ -103,11 +109,9 @@ export namespace TableData {
      * has a radius and a location and is displayed on the map as a circle.
      */
     export namespace Place {
-        export const ID = "Place"
-
         export const placeSchema = new mongoose.Schema({
             zoomLevel: Number,
-            latlon: reference(Location.ID),
+            latlon: reference(TableIDs.Location),
             radius: Number
         })
 
@@ -133,8 +137,6 @@ export namespace TableData {
      * altitude, and speed and bearing of travel. For each variable, an accuracy is provided.
      */
     export namespace Location {
-        export const ID = "Location"
-
         export const locationSchema = new mongoose.Schema({
             time: Date,
             timezone: String,
@@ -189,8 +191,6 @@ export namespace TableData {
      * single set of people, so as soon as routes merge or people change
      */
     export namespace RoutePart {
-        export const ID = "RoutePart"
-
         export const routePartSchema = new mongoose.Schema({
 
         })
@@ -217,12 +217,10 @@ export namespace TableData {
      * Users can also specify their preferred language.
      */
     export namespace Person {
-        export const ID = "Person"
-
         export const personSchema = new mongoose.Schema({
             email:      String,
             name:       String,
-            expedities: [reference(Expeditie.ID)],
+            expedities: [reference(TableIDs.Expeditie)],
             language:   String
         })
 
