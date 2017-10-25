@@ -49,6 +49,6 @@
     "stylus": "^0.54.5",
     "topojson": "^3.0.2",
     "tsoption": "^0.3",
-    "typescript": "^2.3.4"
+    "typescript": "^2.5.3"
   }
 }

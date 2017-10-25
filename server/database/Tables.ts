@@ -2,7 +2,7 @@ import {Schema} from 'mongoose'
 
 export namespace Tables {
     export function initTables() {
-       
+
     }
 }
 
@@ -12,29 +12,88 @@ export namespace TableData {
     }
 
     /**
-     * A RoutePart is a line describing a set of people's locations. A RoutePart is can only describe the route of a
-     * single set of people, so as soon as routes merge or people change
+     * The expeditie is the wrapping object for all data related to one trip. This is represented on the home page by
+     * one column.
      */
-    export namespace RoutePart {
-        export const ID = "RoutePart"
+    export namespace Expeditie {
+        import Person = TableData.Person.Person
+        import RoutePart = TableData.RoutePart.RoutePart
+        export const ID = "Expeditie"
 
-        export const routePartSchema = new Schema({
-
+        export const expeditieSchema = new Schema({
+            name: String,
+            year: Number,
+            color: String,
+            background: {
+                image_url: String,
+                position: {
+                    x: Number,
+                    y: Number
+                }
+            },
+            map: {
+                url: String,
+                thumbnail_url: String
+            },
+            movie: {
+                url: String,
+                thumbnail_url: String
+            },
+            participants: [reference(Person.ID)],
+            routeParts: [reference(RoutePart.ID)]
         })
 
-        export interface RoutePart {
-
+        export interface Expeditie {
+            name: string,
+            year: number,
+            color: string,
+            background: {
+                image_url: string,
+                position: {
+                    x: number
+                    y: number
+                }
+            },
+            map: {
+                url: string,
+                thumbnail_url: string
+            },
+            movie?: {
+                url: string,
+                thumbnail_url: string
+            },
+            participants: string[] | Person[],
+            routeParts: string[] | RoutePart[]
         }
 
-        export interface RoutePartDocument extends RoutePart, Document {}
+        export interface ExpeditieDocument extends Expeditie, Document {}
 
-        export function routePart(): RoutePart {
+        export function expeditie(name, year, color, participants, routeParts):Expeditie {
             return {
-
+                name: name,
+                year: year,
+                color: color,
+                background: {
+                    image_url: "",  //TODO default background image
+                    position: {
+                        x: 50,
+                        y: 50
+                    }
+                },
+                map: {
+                    url: "",
+                    thumbnail_url: ""   //TODO map thumbnail?
+                },
+                participants: participants,
+                routeParts: routeParts
             }
         }
     }
 
+    /**
+     * A Place is a spot where there are too many points to clearly display on the map, depending on zoomlevel. It
+     * has a radius and a location and is displayed on the map as a circle.
+     */
     export namespace Place {
         export const ID = "Place"
 
@@ -61,6 +120,10 @@ export namespace TableData {
         }
     }
 
+    /**
+     * A Location describes the output of a GPS receiver, using latitude, longitude
+     * altitude, and speed and bearing of travel. For each variable, an accuracy is provided.
+     */
     export namespace Location {
         export const ID = "Location"
 
@@ -113,20 +176,51 @@ export namespace TableData {
         }
     }
 
+    /**
+     * A RoutePart is a line describing a set of people's locations. A RoutePart is can only describe the route of a
+     * single set of people, so as soon as routes merge or people change
+     */
+    export namespace RoutePart {
+        export const ID = "RoutePart"
 
+        export const routePartSchema = new Schema({
+
+        })
+
+        export interface RoutePart {
+
+        }
+
+        export interface RoutePartDocument extends RoutePart, Document {}
+
+        export function routePart(): RoutePart {
+            return {
+
+            }
+        }
+    }
+
+
+    /**
+     * A Person describes a person who participates in an expeditie. They are guaranteed to have a name
+     * and a list of expedities in which they participate (can be empty). Users can be invited by entering an email
+     * address. This will send them an email with login instructions and a link to the app.
+     * Users can log in using Google's OAuth v2 on the website and the app.
+     * Users can also specify their preferred language.
+     */
     export namespace Person {
         import Expeditie = TableData.Expeditie.Expeditie;
         export const ID = "Person"
 
         export const personSchema = new Schema({
-            email: String,
-            name: String,
+            email:      String,
+            name:       String,
             expedities: [reference(Expeditie.ID)],
-            language: String
+            language:   String
         })
 
         export interface Person {
-            email: string
+            email?: string
             name: string
             expedities?: string[] | Expeditie[]
             language: string
@@ -134,91 +228,13 @@ export namespace TableData {
 
         export interface PersonDocument extends Person, Document {}
 
-        export function person(email, name, language): Person {
+        export function person(name, language): Person {
             return {
-                email: email,
                 name: name,
                 language: language
             }
         }
     }
 
-    /**
-     * The expeditie is the wrapping object for all data related to one trip. This is represented on the home page by
-     * one column.
-     */
-    export namespace Expeditie {
-        import RoutePart = TableData.RoutePart.RoutePart;
-        import Person = TableData.Person.Person;
-        export const ID = "Expeditie"
 
-        export const expeditieSchema = new Schema({
-            name: String,
-            year: Number,
-            color: String,
-            background: {
-                image_url: String,
-                position: {
-                    x: Number,
-                    y: Number
-                }
-            },
-            map: {
-                url: String,
-                thumbnail_url: String
-            },
-            movie: {
-                url: String,
-                thumbnail_url: String
-            },
-            participants: [reference(TableData.Person.ID)],
-            routeParts: [reference(TableData.RoutePart.ID)]
-        })
-
-        export interface Expeditie {
-            name: string,
-            year: number,
-            color: string,
-            background: {
-                image_url: string,
-                position: {
-                    x: number
-                    y: number
-                }
-            },
-            map: {
-                url: string,
-                thumbnail_url: string
-            },
-            movie?: {
-                url: string,
-                thumbnail_url: string
-            },
-            participants: string[] | Person[],
-            routeParts: string[] | RoutePart[]
-        }
-
-        export interface ExpeditieDocument extends Expeditie, Document {}
-
-        export function expeditie(name, year, color, participants, routeParts):Expeditie {
-            return {
-                name: name,
-                year: year,
-                color: color,
-                background: {
-                    image_url: "",  //TODO default background image
-                    position: {
-                        x: 50,
-                        y: 50
-                    }
-                },
-                map: {
-                    url: "",
-                    thumbnail_url: ""   //TODO map thumbnail?
-                },
-                participants: participants,
-                routeParts: routeParts
-            }
-        }
-    }
 }
