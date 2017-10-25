@@ -1,4 +1,5 @@
 extend structure/simple.pug
+include includes/modalHelper.pug
 
 block title
     title Expeditie - Home
@@ -12,14 +13,19 @@ block body
         each expeditie in expedities
             .column
                 .background(style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background_image + "); background-position: " + expeditie.background_position.x + "% " + expeditie.background_position.y + "%")
-                .expeditie(id=expeditie.name)
+                .expeditie(id=expeditie.name_short)
                     h1= expeditie.name
                     h2= expeditie.year
                 .links
                     img.overviewThumb.thumb(src = expeditie.map_thumbnail alt='Overview Thumbnail')
-                    a(href= expeditie.movie_url)
-                        img.movieThumb.thumb(src = expeditie.movie_thumbnail alt='Movie Thumbnail')
+                    img.movieThumb.thumb(src = expeditie.movie_thumbnail alt='Movie Thumbnail')
                     img.mapThumb.thumb(src = expeditie.map_thumbnail alt='Map Thumbnail')
-    #mapContainer.hidden
-        iframe#map
-        #closeOverlay.hidden &times;
+    #modals
+        each expeditie in expedities
+            +modal('overviewMapModal' + expeditie.name_short, expeditie.name + " " + t('overview'))
+                iframe.overviewMap
+            +modal('movieModal' + expeditie.name_short, expeditie.name + " " + t('movie_additive'))
+                video.video-js(controls preload='auto' poster=expeditie.movie_thumbnail data-setup='{}' width="450%" height='auto')
+                    source(src=expeditie.movie_url type='video/mp4')
+                    p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
+                        a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video

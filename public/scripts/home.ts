@@ -57,11 +57,19 @@ $(document).ready(function(){
     })
 
 
-    $('#closeOverlay').click(function (event) {
+    $('.overviewThumb').click(function (event) {
+        const expeditie = $(event.target).parent().parent().find('.expeditie').attr('id')
 
+        $(".overviewMapModal" + expeditie).modal("toggle")
+    })
+
+    $('.movieThumb').click(function (event) {
+        const expeditie = $(event.target).parent().parent().find('.expeditie').attr('id')
+
+        $(".movieModal" + expeditie).modal("toggle")
     })
 })
 
-$(window).on( "load", function() {
-    $('#map').attr('src', '/svgmap')
+$(window).on("load", function() {
+    $('.overviewMap').attr('src', '/svgmap')
 })

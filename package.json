@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@types/body-parser": "^1.15.2",
+    "@types/bootstrap": "^3.3.36",
     "@types/connect-redis": "^0.0.6",
     "@types/d3": "^4.11.0",
     "@types/d3-geo": "^1.9.1",

@@ -1,0 +1,45 @@
+mixin modal(cls, title, runButton, runName, morphTitle)
+    .modal.fade(class=cls tabindex="-1" role="dialog" aria-labelledby=id + "label")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    if morphTitle
+                        h4.modal-title(id=id + "label")
+                            | #{title}
+                            span(id=id + "_title")
+                    else
+                        h4.modal-title(id=id + "label")= title
+                    if runButton && runName
+                        button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                            span(aria-hidden="true") &times;
+                .modal-body
+                    .errorContainer.hidden
+                        .alert.alert-danger
+                            b Please review the following errors:
+                            ul.errors
+                        hr
+                    block
+                .modal-footer
+                    button.cpointer(type="button" class="btn btn-default" data-dismiss="modal") Close
+                    if runButton && runName
+                        button.cpointer.modal-run(type="button" class="btn btn-" + runButton)= runName
+
+mixin date(name, id)
+    +inputGroup(name, id)(class="date" data-provide="datepicker")
+        .input-group-addon
+            span.oi.oi-calendar
+
+mixin text(name, id)
+    +inputGroup(name, id)
+
+mixin inputGroup(name, id)
+    div(class="input-group")&attributes(attributes)
+        span.input-group-addon(id="addon_" + id)= name
+        input.form-control(id=id type="text" aria-describedby="addon_" + id)
+        block
+
+mixin select(name, id)
+    div(class="input-group")
+        span.input-group-addon(id="addon_" + id)= name
+        select.form-control(name=id id=id aria-describedby="addon_" + id)&attributes(attributes)
+            block

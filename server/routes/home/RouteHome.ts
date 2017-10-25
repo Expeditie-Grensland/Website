@@ -5,6 +5,7 @@ export namespace RouteHome {
         var expedities = [
             {
                 name: "Noordkaap",
+                name_short: "noordkaap",
                 map_url: "/noordkaap",
                 movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/Nordkapp+The+Movie+720p+(Web-Optimized).mp4",
                 map_thumbnail: "/noordkaap/thumbnail/map",
@@ -19,6 +20,7 @@ export namespace RouteHome {
             },
             {
                 name: "Balkan",
+                name_short: "balkan",
                 map_url: "/balkan",
                 movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
                 map_thumbnail: "/noordkaap/thumbnail/map",
@@ -33,6 +35,7 @@ export namespace RouteHome {
             },
             {
                 name: "Kaukasus",
+                name_short: "kaukasus",
                 map_url: "/kaukasus",
                 movie_url: "/kaukasus/movie",
                 map_thumbnail: "/noordkaap/thumbnail/map",
@@ -47,6 +50,7 @@ export namespace RouteHome {
             },
             {
                 name: "Grensland",
+                name_short: "grensland",
                 map_url: "/grensland",
                 movie_url: "/grensland/movie",
                 map_thumbnail: "/grensland/thumbnail/map",
@@ -61,6 +65,7 @@ export namespace RouteHome {
             },
             {
                 name: "Alaska",
+                name_short: "alaska",
                 map_url: "/alaska",
                 movie_url: "/alaska/movie",
                 map_thumbnail: "/alaska/thumbnail/map",
@@ -75,6 +80,7 @@ export namespace RouteHome {
             },
             {
                 name: "Op zoek naar -stan",
+                name_short: "op_zoek_naar__stan",
                 map_url: "/stan",
                 movie_url: "/stan/movie",
                 map_thumbnail: "/stan/thumbnail/map",
@@ -89,6 +95,7 @@ export namespace RouteHome {
             },
             {
                 name: "Op zoek naar Atema",
+                name_short: "op_zoek_naar_atema",
                 map_url: "/stan",
                 movie_url: "/stan/movie",
                 map_thumbnail: "/stan/thumbnail/map",
