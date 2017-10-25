@@ -1,8 +1,18 @@
-import {Schema} from 'mongoose'
+import * as mongoose from 'mongoose'
 
 export namespace Tables {
-    export function initTables() {
+    export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>
+    export let Place: mongoose.Model<TableData.Place.PlaceDocument>
+    export let Location: mongoose.Model<TableData.Location.LocationDocument>
+    export let RoutePart: mongoose.Model<TableData.RoutePart.RoutePartDocument>
+    export let Person: mongoose.Model<TableData.Person.PersonDocument>
 
+    export function initTables() {
+        Expeditie = mongoose.model(TableData.Expeditie.ID, TableData.Expeditie.expeditieSchema)
+        Place = mongoose.model(TableData.Place.ID, TableData.Place.placeSchema)
+        Location = mongoose.model(TableData.Location.ID, TableData.Location.locationSchema)
+        RoutePart = mongoose.model(TableData.RoutePart.ID, TableData.RoutePart.routePartSchema)
+        Person = mongoose.model(TableData.Person.ID, TableData.Person.personSchema)
     }
 }
 
@@ -16,11 +26,9 @@ export namespace TableData {
      * one column.
      */
     export namespace Expeditie {
-        import Person = TableData.Person.Person
-        import RoutePart = TableData.RoutePart.RoutePart
         export const ID = "Expeditie"
 
-        export const expeditieSchema = new Schema({
+        export const expeditieSchema = new mongoose.Schema({
             name: String,
             year: Number,
             color: String,
@@ -62,11 +70,11 @@ export namespace TableData {
                 url: string,
                 thumbnail_url: string
             },
-            participants: string[] | Person[],
-            routeParts: string[] | RoutePart[]
+            participants: string[] | Person.Person[],
+            routeParts: string[] | RoutePart.RoutePart[]
         }
 
-        export interface ExpeditieDocument extends Expeditie, Document {}
+        export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
 
         export function expeditie(name, year, color, participants, routeParts):Expeditie {
             return {
@@ -97,7 +105,7 @@ export namespace TableData {
     export namespace Place {
         export const ID = "Place"
 
-        export const placeSchema = new Schema({
+        export const placeSchema = new mongoose.Schema({
             zoomLevel: Number,
             latlon: reference(Location.ID),
             radius: Number
@@ -109,7 +117,7 @@ export namespace TableData {
             radius: number
         }
 
-        export interface PlaceDocument extends Place, Document {}
+        export interface PlaceDocument extends Place, mongoose.Document {}
 
         export function place(zoomLevel, location, radius): Place {
             return {
@@ -127,7 +135,7 @@ export namespace TableData {
     export namespace Location {
         export const ID = "Location"
 
-        export const locationSchema = new Schema({
+        export const locationSchema = new mongoose.Schema({
             time: Date,
             timezone: String,
             lat: Number,
@@ -155,7 +163,7 @@ export namespace TableData {
             speedAccuracy?: number
         }
 
-        export interface LocationDocument extends Location, Document {}
+        export interface LocationDocument extends Location, mongoose.Document {}
 
         export function location(time,
                                  timezone,
@@ -183,7 +191,7 @@ export namespace TableData {
     export namespace RoutePart {
         export const ID = "RoutePart"
 
-        export const routePartSchema = new Schema({
+        export const routePartSchema = new mongoose.Schema({
 
         })
 
@@ -191,7 +199,7 @@ export namespace TableData {
 
         }
 
-        export interface RoutePartDocument extends RoutePart, Document {}
+        export interface RoutePartDocument extends RoutePart, mongoose.Document {}
 
         export function routePart(): RoutePart {
             return {
@@ -209,10 +217,9 @@ export namespace TableData {
      * Users can also specify their preferred language.
      */
     export namespace Person {
-        import Expeditie = TableData.Expeditie.Expeditie;
         export const ID = "Person"
 
-        export const personSchema = new Schema({
+        export const personSchema = new mongoose.Schema({
             email:      String,
             name:       String,
             expedities: [reference(Expeditie.ID)],
@@ -222,11 +229,11 @@ export namespace TableData {
         export interface Person {
             email?: string
             name: string
-            expedities?: string[] | Expeditie[]
+            expedities?: string[] | Expeditie.Expeditie[]
             language: string
         }
 
-        export interface PersonDocument extends Person, Document {}
+        export interface PersonDocument extends Person, mongoose.Document {}
 
         export function person(name, language): Person {
             return {
