@@ -8,10 +8,11 @@ $(document).ready(function(){
 
     console.log(`Displaying ${expeditieCount} columns on ${screen ? "touchscreen" : "non-touchscreen"} layout`)
 
-    const vw = window.innerWidth
-    const vh = window.innerHeight
-
     const columns = $('#columns')
+
+    function getColumnOnScreenCount() {
+        return $('.slick-active').length
+    }
 
     columns.slick({
         dots: expeditieCount > 5,
@@ -54,6 +55,24 @@ $(document).ready(function(){
                 }
             }
         ]
+    })
+
+    column.hover(function(){
+        const hover = $(this)
+        $(".column").each(function(){
+            const column = $(this)
+            const origWidth = window.innerWidth/getColumnOnScreenCount()
+            const larger = origWidth * 1.20
+            const smaller = (window.innerWidth - larger)/(getColumnOnScreenCount() - 1)
+            column.stop(true)
+            column.animate({'width': ((column.is(hover))?larger:smaller) + "px"}, 300, 'easeOutCirc')
+        })
+    }, function(){
+        $(".column").each(function(){
+            const column = $(this)
+            column.stop(true)
+            column.animate({'width': window.innerWidth/getColumnOnScreenCount() + "px"}, 300, 'easeOutCirc')
+        })
     })
 
 
