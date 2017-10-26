@@ -29,6 +29,7 @@
     "@types/socket.io": "^1.4.30",
     "@types/stylus": "^0.48.28",
     "@types/topojson": "^3.0.2",
+    "@types/video.js": "^6.2.0",
     "body-parser": "^1.15.2",
     "connect-redis": "^3.1.0",
     "cookie-parser": "^1.4.3",

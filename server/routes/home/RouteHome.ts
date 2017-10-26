@@ -16,7 +16,10 @@ export namespace RouteHome {
                     y: 50
                 },
                 year: "2015",
-                color: "#377eb8"
+                color: "#377eb8",
+                countries: [
+                    'Germany', 'Poland', 'Lithuania', 'Latvia', 'Estonia', 'Finland', 'Sweden', 'Norway', 'Denmark'
+                ]
             },
             {
                 name: "Balkan",
@@ -31,85 +34,98 @@ export namespace RouteHome {
                     y: 50
                 },
                 year: "2016",
-                color: "#e41a1c"
+                color: "#e41a1c",
+                countries: [
+                    'Germany', 'Austria', 'Slovenia', 'Croatia', 'Bosnia and Herz.', 'Montenegro', 'Albania', 'Kosovo', 'Macedonia', 'Greece', 'Bulgaria', 'Romania', 'Moldova', 'Hungary', 'Slovakia', 'Czech Rep.'
+                ]
             },
             {
                 name: "Kaukasus",
                 name_short: "kaukasus",
                 map_url: "/kaukasus",
-                movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
+                movie_url: null,
                 map_thumbnail: "/noordkaap/thumbnail/map",
-                movie_thumbnail: "/noordkaap/thumbnail/movie",
+                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/kaukasus/background.jpg",
                 background_position: {
                     x: 40,
                     y: 70
                 },
                 year: "2017",
-                color: "#ff7f00"
+                color: "#ff7f00",
+                countries: [
+                    'Iran', 'Azerbaijan', 'Georgia', 'Armenia', 'Russia', 'Abkhazia', 'Belarus', 'Lithuania', 'Belgium'
+                ]
             },
             {
                 name: "Grensland",
                 name_short: "grensland",
                 map_url: "/grensland",
-                movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
+                movie_url: null,
                 map_thumbnail: "/grensland/thumbnail/map",
-                movie_thumbnail: "/grensland/thumbnail/movie",
+                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 25,
                     y: 10
                 },
                 year: "2018",
-                color: "#ffd900"
+                color: "#ffd900",
+                countries: []
             },
             {
                 name: "Alaska",
                 name_short: "alaska",
                 map_url: "/alaska",
-                movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
+                movie_url: null,
                 map_thumbnail: "/alaska/thumbnail/map",
-                movie_thumbnail: "/alaska/thumbnail/movie",
+                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 25,
                     y: 10
                 },
                 year: "2019",
-                color: "#16ff00"
+                color: "#16ff00",
+                countries: []
             },
             {
                 name: "Op zoek naar -stan",
                 name_short: "op_zoek_naar__stan",
                 map_url: "/stan",
-                movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
+                movie_url: null,
                 map_thumbnail: "/stan/thumbnail/map",
-                movie_thumbnail: "/stan/thumbnail/movie",
+                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 25,
                     y: 10
                 },
                 year: "2020",
-                color: "#ff00e2"
+                color: "#ff00e2",
+                countries: []
             },
             {
                 name: "Op zoek naar Atema",
                 name_short: "op_zoek_naar_atema",
                 map_url: "/stan",
-                movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
+                movie_url: null,
                 map_thumbnail: "/stan/thumbnail/map",
-                movie_thumbnail: "/stan/thumbnail/movie",
+                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 25,
                     y: 10
                 },
                 year: "2021",
-                color: "#fff9f2"
+                color: "#fff9f2",
+                countries: []
             }
         ]
 
+        for(let expeditie of expedities) {
+            expeditie.countries.push('Netherlands')
+        }
 
         app.get("/", (req, res) => {
             console.log((<any>req).languages)
@@ -119,6 +135,10 @@ export namespace RouteHome {
                 t_ucf: ucFirstWrapper((<any>req).t),
                 ucf: ucFirst
             })
+        })
+
+        app.get('/overviewMap', (req, res) => {
+            res.render("world")
         })
     }
 

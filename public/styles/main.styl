@@ -107,7 +107,28 @@ body
 .hidden
   display none
 
-.overviewMap
-  border 0
-  width 100%
+.video-js
+  min-width 100%
+  min-height 100%
+  width: 100%
+  height: 50vh
+
+#overviewMap
   height 100%
+  width auto
+  margin auto
+
+#svgmap
+  display:block
+  height: 100%
+  width: auto
+  max-width: 100%
+  margin: auto
+  stroke-width: .3px
+  fill: #f2f2f2
+  fill-rule: evenodd
+  stroke: #000
+  stroke-linejoin: round
+
+#layer_1
+  shape-rendering: crispEdges //This solves a weird bug where only layer 0 is affected by the stroke-width attribute by forcing the browser to render edges as thin as possible

@@ -17,15 +17,18 @@ block body
                     h1= expeditie.name
                     h2= expeditie.year
                 .links
-                    img.overviewThumb.thumb(src = expeditie.map_thumbnail alt='Overview Thumbnail')
-                    img.movieThumb.thumb(src = expeditie.movie_thumbnail alt='Movie Thumbnail')
+                    img.overviewThumb.thumb(src = expeditie.map_thumbnail alt='Overview Thumbnail' data-toggle='modal' href='.overviewMapModal' data-modal-title=t_ucf('overview') + ' ' + expeditie.name data-expeditie-color=expeditie.color data-countries=expeditie.countries.join('\\'))
+                    if expeditie.movie_thumbnail !== null
+                        img.movieThumb.thumb(src = expeditie.movie_thumbnail alt='Movie Thumbnail' data-toggle='modal' href='.movieModal' + expeditie.name_short)
                     img.mapThumb.thumb(src = expeditie.map_thumbnail alt='Map Thumbnail')
     #modals
         each expeditie in expedities
-            +modal('overviewMapModal' + expeditie.name_short, expeditie.name + " " + t('overview'))
-                iframe.overviewMap
-            +modal('movieModal' + expeditie.name_short, expeditie.name + " " + t('movie_additive'))
-                video.video-js(controls preload='auto' poster=expeditie.movie_thumbnail data-setup='{}' width="450%" height='auto')
-                    source(src=expeditie.movie_url type='video/mp4')
-                    p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
-                        a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video
+            if expeditie.movie_thumbnail !== null
+                +modal('videoModal movieModal' + expeditie.name_short, expeditie.name + " " + t('movie_additive'))(class="modal-lg")
+                    video.video-js(controls preload='auto' poster=expeditie.movie_thumbnail data-setup='{}')
+                        source(src=expeditie.movie_url type='video/mp4')
+                        p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
+                            a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video
+        +modal('overviewMapModal', t_ucf('overview'), large=true)(class="modal-lg")
+            div#overviewMap
+                include includes/svgLoader

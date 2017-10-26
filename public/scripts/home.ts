@@ -1,14 +1,13 @@
 $(document).ready(function(){
     console.log('Document ready')
 
+    const columns = $('#columns')
     const column = $('.column')
 
     const screen = window.matchMedia( "screen" ).matches
     const expeditieCount = column.length
 
     console.log(`Displaying ${expeditieCount} columns on ${screen ? "touchscreen" : "non-touchscreen"} layout`)
-
-    const columns = $('#columns')
 
     columns.slick({
         dots: expeditieCount > 5,
@@ -55,7 +54,7 @@ $(document).ready(function(){
 
     column.hover(function(){
         const hover = $(this)
-        const count = $('.slick-active').length -1
+        const count = $('div.slick-active').length
 
         if(count > 1) {
             $(".column.slick-active").each(function () {
@@ -68,7 +67,7 @@ $(document).ready(function(){
             })
         }
     }, function(){
-        const count = $('.slick-active').length -1
+        const count = $('div.slick-active').length
 
         if(count > 1) {
             $(".column.slick-active").each(function () {
@@ -79,20 +78,65 @@ $(document).ready(function(){
         }
     })
 
-
-    $('.overviewThumb').click(function (event) {
-        const expeditie = $(event.target).parent().parent().find('.expeditie').attr('id')
-
-        $(".overviewMapModal" + expeditie).modal("toggle")
+    $('.videoModal').on('hide.bs.modal', function() {
+        videojs($(this).find('.video-js')[0]).pause()
     })
 
-    $('.movieThumb').click(function (event) {
-        const expeditie = $(event.target).parent().parent().find('.expeditie').attr('id')
+    $('.overviewMapModal').on('show.bs.modal', function(event) {
+        const modal = $(this)
+        const button = $(event.relatedTarget)
+        const color = button.data('expeditie-color')
+        const modalTitle = button.data('modal-title')
+        const countries = button.data('countries').split('\\')
 
-        $(".movieModal" + expeditie).modal("toggle")
+        const title = modal.find('.modal-title')
+        title.html(modalTitle)
+
+        const svgmap = modal.find('#svgmap')
+        const modalBody = modal.find('.modal-body')
+
+        if (svgmap.length == 0) {
+            console.log(modalBody.find('.loadingSpinner'))
+            modalBody.find('.loadingSpinner').on('mapLoaded', function () {
+                colorCountries(modal, color, countries)
+            })
+        } else {
+            colorCountries(modal, color, countries)
+        }
     })
+
+    function colorCountries(modal, color, countries) {
+        //Reset colors
+        for(let path of modal.find('#svgmap').children()) {
+            $(path).removeAttr('style')
+        }
+
+        for(let country of countries) {
+            //Spaces are not allowed in ids and escape . characters in css selector
+            const countrySelector = '#' + country.replace(/ /gi, "_").replace(/\./gi, "\\.")
+
+            modal.find(countrySelector).css({
+                fill: color,
+                stroke: '#fff'
+            })
+        }
+    }
 })
 
 $(window).on("load", function() {
-    $('.overviewMap').attr('src', '/svgmap')
+    $.get( 'overviewMap', function (data) {
+        const mapContainer = $('#overviewMap')
+        const loadingSpinner = mapContainer.find('.loadingSpinner')
+
+        loadingSpinner.hide()
+
+        //Add map
+        mapContainer.append(data)
+
+        loadingSpinner.trigger('mapLoaded')
+        //Hide spinner
+        loadingSpinner.remove()
+    }).fail(function () {
+        alert('Something went wrong when loading the overview map!')
+    })
 })

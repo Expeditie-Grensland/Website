@@ -1,14 +1,14 @@
 mixin modal(cls, title, runButton, runName, morphTitle)
     .modal.fade(class=cls tabindex="-1" role="dialog" aria-labelledby=id + "label")
-        .modal-dialog(role="document")
+        .modal-dialog(role="document")&attributes(attributes)
             .modal-content
                 .modal-header
                     if morphTitle
-                        h4.modal-title(id=id + "label")
+                        h4.modal-title(id=cls + "label")
                             | #{title}
                             span(id=id + "_title")
                     else
-                        h4.modal-title(id=id + "label")= title
+                        h4.modal-title(id=cls + "label")= title
                     if runButton && runName
                         button(type="button" class="close" data-dismiss="modal" aria-label="Close")
                             span(aria-hidden="true") &times;
