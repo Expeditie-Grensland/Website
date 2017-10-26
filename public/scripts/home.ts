@@ -58,7 +58,7 @@ $(document).ready(function(){
         const count = $('.slick-active').length -1
 
         if(count > 1) {
-            $(".column").each(function () {
+            $(".column.slick-active").each(function () {
                 const column = $(this)
                 const origWidth = window.innerWidth / count
                 const larger = origWidth * 1.20
@@ -71,7 +71,7 @@ $(document).ready(function(){
         const count = $('.slick-active').length -1
 
         if(count > 1) {
-            $(".column").each(function () {
+            $(".column.slick-active").each(function () {
                 const column = $(this)
                 column.stop(true)
                 column.animate({'width': window.innerWidth / count + "px"}, 300, 'easeOutCirc')
