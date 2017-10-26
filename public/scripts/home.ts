@@ -10,10 +10,6 @@ $(document).ready(function(){
 
     const columns = $('#columns')
 
-    function getColumnOnScreenCount() {
-        return $('.slick-active').length
-    }
-
     columns.slick({
         dots: expeditieCount > 5,
         arrows: expeditieCount > 5,
@@ -59,20 +55,28 @@ $(document).ready(function(){
 
     column.hover(function(){
         const hover = $(this)
-        $(".column").each(function(){
-            const column = $(this)
-            const origWidth = window.innerWidth/getColumnOnScreenCount()
-            const larger = origWidth * 1.20
-            const smaller = (window.innerWidth - larger)/(getColumnOnScreenCount() - 1)
-            column.stop(true)
-            column.animate({'width': ((column.is(hover))?larger:smaller) + "px"}, 300, 'easeOutCirc')
-        })
+        const count = $('.slick-active').length -1
+
+        if(count > 1) {
+            $(".column").each(function () {
+                const column = $(this)
+                const origWidth = window.innerWidth / count
+                const larger = origWidth * 1.20
+                const smaller = (window.innerWidth - larger) / (count - 1)
+                column.stop(true)
+                column.animate({'width': ((column.is(hover)) ? larger : smaller) + "px"}, 300, 'easeOutCirc')
+            })
+        }
     }, function(){
-        $(".column").each(function(){
-            const column = $(this)
-            column.stop(true)
-            column.animate({'width': window.innerWidth/getColumnOnScreenCount() + "px"}, 300, 'easeOutCirc')
-        })
+        const count = $('.slick-active').length -1
+
+        if(count > 1) {
+            $(".column").each(function () {
+                const column = $(this)
+                column.stop(true)
+                column.animate({'width': window.innerWidth / count + "px"}, 300, 'easeOutCirc')
+            })
+        }
     })
 
 
