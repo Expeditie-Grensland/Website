@@ -29,7 +29,7 @@ block body
         each expeditie in expedities
             if expeditie.movie_url !== null
                 +modal('videoModal movieModal' + expeditie.name_short, expeditie.name + " " + t('movie_additive'))(class="modal-lg")
-                    video.video-js.vjs-default-skin.vjs-16-9(controls preload='auto' poster=expeditie.movie_thumbnail data-setup='{}')
+                    video.video-js.vjs-default-skin.vjs-16-9(controls preload='auto' data-setup='{}')
                         source(src=expeditie.movie_url type='video/mp4')
                         p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
                             a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video

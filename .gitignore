@@ -5,5 +5,8 @@ server/Config.ts
 *.js
 *.css
 
+!**/3rdparty/*.js
+!**/3rdparty/*.css
+
 .idea/
 .vscode/
