@@ -17,15 +17,19 @@ block body
                     h1= expeditie.name
                     h2= expeditie.year
                 .links
-                    img.overviewThumb.thumb(src = expeditie.map_thumbnail alt='Overview Thumbnail' data-toggle='modal' href='.overviewMapModal' data-modal-title=t_ucf('overview') + ' ' + expeditie.name data-expeditie-color=expeditie.color data-countries=expeditie.countries.join('\\'))
-                    if expeditie.movie_thumbnail !== null
-                        img.movieThumb.thumb(src = expeditie.movie_thumbnail alt='Movie Thumbnail' data-toggle='modal' href='.movieModal' + expeditie.name_short)
-                    img.mapThumb.thumb(src = expeditie.map_thumbnail alt='Map Thumbnail')
+                    if expeditie.movie_url !== null
+                        button.link.btn.btn-default.btn-secondary(src = expeditie.movie_thumbnail data-toggle='modal' href='.movieModal' + expeditie.name_short)
+                            | #{t_ucf('movie')}
+                    button.link.btn.btn-secondary(role="button" data-toggle='modal' href='.overviewMapModal' data-modal-title=t_ucf('overview') + ' ' + expeditie.name data-expeditie-color=expeditie.color data-countries=expeditie.countries.join('\\'))
+                        | #{t_ucf('overview')}
+                    if expeditie.show_map
+                        a.link.btn.btn-default.btn-primary(href= expeditie.map_url role="button")
+                            | #{t_ucf('map')}
     #modals
         each expeditie in expedities
-            if expeditie.movie_thumbnail !== null
+            if expeditie.movie_url !== null
                 +modal('videoModal movieModal' + expeditie.name_short, expeditie.name + " " + t('movie_additive'))(class="modal-lg")
-                    video.video-js(controls preload='auto' poster=expeditie.movie_thumbnail data-setup='{}')
+                    video.video-js.vjs-default-skin.vjs-16-9(controls preload='auto' poster=expeditie.movie_thumbnail data-setup='{}')
                         source(src=expeditie.movie_url type='video/mp4')
                         p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
                             a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video

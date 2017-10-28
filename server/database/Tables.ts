@@ -36,6 +36,7 @@ export namespace TableData {
     export namespace Expeditie {
         export const expeditieSchema = new mongoose.Schema({
             name: String,
+            name_short: String,
             year: Number,
             color: String,
             background: {
@@ -45,20 +46,16 @@ export namespace TableData {
                     y: Number
                 }
             },
-            map: {
-                url: String,
-                thumbnail_url: String
-            },
-            movie: {
-                url: String,
-                thumbnail_url: String
-            },
+            show_map: Boolean,
+            map_url: String,
+            movie_url: String,
             participants: [reference(TableIDs.Person)],
             routeParts: [reference(TableIDs.RoutePart)]
         })
 
         export interface Expeditie {
             name: string,
+            name_short: string,
             year: number,
             color: string,
             background: {
@@ -68,23 +65,19 @@ export namespace TableData {
                     y: number
                 }
             },
-            map: {
-                url: string,
-                thumbnail_url: string
-            },
-            movie?: {
-                url: string,
-                thumbnail_url: string
-            },
+            show_map: Boolean,
+            map_url: String,
+            movie_url?: String,
             participants: string[] | Person.Person[],
             routeParts: string[] | RoutePart.RoutePart[]
         }
 
         export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
 
-        export function expeditie(name, year, color, participants, routeParts):Expeditie {
+        export function expeditie(name, name_short, year, color, participants, routeParts):Expeditie {
             return {
                 name: name,
+                name_short: name_short,
                 year: year,
                 color: color,
                 background: {
@@ -94,10 +87,8 @@ export namespace TableData {
                         y: 50
                     }
                 },
-                map: {
-                    url: "",
-                    thumbnail_url: ""   //TODO map thumbnail?
-                },
+                show_map: false,
+                map_url: name_short,
                 participants: participants,
                 routeParts: routeParts
             }

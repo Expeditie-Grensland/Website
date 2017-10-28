@@ -13,11 +13,11 @@ filter()
   filter arguments
 
 transform()
-  -webkit-transform-origin: arguments
-  -moz-transform-origin: arguments
-  -ms-transform-origin: arguments
-  -o-transform-origin: arguments
-  transform-origin: arguments
+  -webkit-transform arguments
+  -moz-transform arguments
+  -ms-transform arguments
+  -o-transform arguments
+  transform arguments
 
 select()
   -webkit-user-select arguments
@@ -50,10 +50,6 @@ body
   transition filter .5s, transform 1s
   outline none
 
-.column:hover
-  .links
-    max-height: 100%
-
 .background
   width: inherit
   height: inherit
@@ -78,30 +74,23 @@ body
   display block
   position absolute
   bottom 20%
-  max-height 0
-  height auto
+  height 0
   width inherit
   max-width inherit
 
   overflow hidden
 
-  transition max-height 1s
-
-.thumb
+.link
   margin auto
   height: auto
-  width: 60%
+  width: 51%
   max:width inherit
   cursor: pointer
+  margin-bottom 5px
+
 
 .hidden
   display none
-
-.video-js
-  min-width 100%
-  min-height 100%
-  width: 100%
-  height: 50vh
 
 #overviewMap
   height 100%

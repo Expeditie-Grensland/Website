@@ -6,10 +6,9 @@ export namespace RouteHome {
             {
                 name: "Noordkaap",
                 name_short: "noordkaap",
+                show_map: true,
                 map_url: "/noordkaap",
                 movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/Nordkapp+The+Movie+720p+(Web-Optimized).mp4",
-                map_thumbnail: "/noordkaap/thumbnail/map",
-                movie_thumbnail: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/thumbnail_movie.jpg",
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 75,
@@ -24,10 +23,9 @@ export namespace RouteHome {
             {
                 name: "Balkan",
                 name_short: "balkan",
+                show_map: true,
                 map_url: "/balkan",
                 movie_url: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
-                map_thumbnail: "/noordkaap/thumbnail/map",
-                movie_thumbnail: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/thumbnail_movie.jpg",
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/background.jpg",
                 background_position: {
                     x: 66,
@@ -42,10 +40,9 @@ export namespace RouteHome {
             {
                 name: "Kaukasus",
                 name_short: "kaukasus",
+                show_map: true,
                 map_url: "/kaukasus",
                 movie_url: null,
-                map_thumbnail: "/noordkaap/thumbnail/map",
-                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/kaukasus/background.jpg",
                 background_position: {
                     x: 40,
@@ -60,10 +57,9 @@ export namespace RouteHome {
             {
                 name: "Grensland",
                 name_short: "grensland",
+                show_map: false,
                 map_url: "/grensland",
                 movie_url: null,
-                map_thumbnail: "/grensland/thumbnail/map",
-                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 25,
@@ -76,10 +72,9 @@ export namespace RouteHome {
             {
                 name: "Alaska",
                 name_short: "alaska",
+                show_map: false,
                 map_url: "/alaska",
                 movie_url: null,
-                map_thumbnail: "/alaska/thumbnail/map",
-                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 25,
@@ -92,10 +87,9 @@ export namespace RouteHome {
             {
                 name: "Op zoek naar -stan",
                 name_short: "op_zoek_naar__stan",
+                show_map: false,
                 map_url: "/stan",
                 movie_url: null,
-                map_thumbnail: "/stan/thumbnail/map",
-                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 25,
@@ -108,10 +102,9 @@ export namespace RouteHome {
             {
                 name: "Op zoek naar Atema",
                 name_short: "op_zoek_naar_atema",
+                show_map: false,
                 map_url: "/stan",
                 movie_url: null,
-                map_thumbnail: "/stan/thumbnail/map",
-                movie_thumbnail: null,
                 background_image: "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 25,

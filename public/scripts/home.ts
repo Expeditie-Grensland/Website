@@ -56,6 +56,10 @@ $(document).ready(function(){
         const hover = $(this)
         const count = $('div.slick-active').length
 
+        const links = hover.find('.links')
+        links.stop(true)
+        links.animate({'height': links[0].scrollHeight + 'px'}, 300, 'easeOutCirc')
+
         if(count > 1) {
             $(".column.slick-active").each(function () {
                 const column = $(this)
@@ -67,7 +71,12 @@ $(document).ready(function(){
             })
         }
     }, function(){
+        const hover = $(this)
         const count = $('div.slick-active').length
+
+        const links = hover.find('.links')
+        links.stop(true)
+        links.animate({'height': '0px'}, 400, 'easeOutCirc')
 
         if(count > 1) {
             $(".column.slick-active").each(function () {
