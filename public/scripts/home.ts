@@ -4,10 +4,7 @@ $(document).ready(function () {
     const columns = $('#columns')
     const column = $('.column')
 
-    const screen = window.matchMedia("screen").matches
     const expeditieCount = column.length
-
-    console.log(`Displaying ${expeditieCount} columns on ${screen ? "touchscreen" : "non-touchscreen"} layout`)
 
     columns.slick({
         dots:           expeditieCount > 5,

@@ -9,6 +9,7 @@ export namespace Home {
                 show_map:            true,
                 map_url:             "/noordkaap",
                 movie_url:           "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/Nordkapp+The+Movie+720p+(Web-Optimized).mp4",
+                cover_url:           "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/cover.jpg",
                 background_image:    "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 75,
@@ -26,6 +27,7 @@ export namespace Home {
                 show_map:            true,
                 map_url:             "/balkan",
                 movie_url:           "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
+                cover_url:           "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/cover.jpg",
                 background_image:    "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/background.jpg",
                 background_position: {
                     x: 66,
