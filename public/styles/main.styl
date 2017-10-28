@@ -4,7 +4,7 @@ transition()
   -ms-transition arguments
   -o-transition arguments
   transition arguments
-  
+
 filter()
   -webkit-filter arguments
   -moz-filter arguments
@@ -45,15 +45,15 @@ body
   position relative
   overflow hidden
   white-space normal
-  transform translate(0,0,0)
+  transform translate(0, 0, 0)
 
   transition filter .5s, transform 1s
   outline none
 
 .background
-  width: inherit
-  height: inherit
-  min-width: inherit
+  width inherit
+  height inherit
+  min-width inherit
   background-size auto 100%
   background-repeat no-repeat
   filter brightness(0.8)
@@ -68,7 +68,7 @@ body
   min-width inherit
 
   h1, h2
-    color: white
+    color white
 
 .links
   display block
@@ -82,32 +82,28 @@ body
 
 .link
   margin auto
-  height: auto
-  width: 51%
-  max:width inherit
-  cursor: pointer
+  height auto
+  width 51%
+  max width inherit
+  cursor pointer
   margin-bottom 5px
-
 
 .hidden
   display none
 
-#overviewMap
+#svgmap
+  display block
   height 100%
   width auto
+  max-width 100%
   margin auto
-
-#svgmap
-  display:block
-  height: 100%
-  width: auto
-  max-width: 100%
-  margin: auto
-  stroke-width: .3px
-  fill: #f2f2f2
-  fill-rule: evenodd
-  stroke: #000
-  stroke-linejoin: round
+  stroke-width .3px
+  fill #f2f2f2
+  fill-rule evenodd
+  stroke #000
+  stroke-linejoin round
 
 #layer_1
-  shape-rendering: crispEdges //This solves a weird bug where only layer 0 is affected by the stroke-width attribute by forcing the browser to render edges as thin as possible
+  shape-rendering crispEdges
+
+//This solves a weird bug where only layer 0 is affected by the stroke-width attribute by forcing the browser to render edges as thin as possible

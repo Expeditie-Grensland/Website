@@ -35,13 +35,13 @@ export namespace Setup {
             .use(FileSystemBackend)
             .use(i18nextMiddleware.LanguageDetector)
             .init({
-                preload: ['en', 'nl'],
+                preload:      ['en', 'nl'],
                 lowerCaseLng: true,
-                fallbackLng: 'en',
-                saveMissing: true,
-                backend: {
-                    loadPath: path.join(root, 'server/locales/{{lng}}/{{ns}}.json'),
-                    addPath: path.join(root, 'server/locales/{{lng}}/{{ns}}.missing.json'),
+                fallbackLng:  'en',
+                saveMissing:  true,
+                backend:      {
+                    loadPath:   path.join(root, 'server/locales/{{lng}}/{{ns}}.json'),
+                    addPath:    path.join(root, 'server/locales/{{lng}}/{{ns}}.missing.json'),
                     jsonIndent: 2
                 }
             });
@@ -50,7 +50,7 @@ export namespace Setup {
         app.set('view engine', 'pug')
         app.set('views', viewsDir)
         app.use(i18nextMiddleware.handle(i18next))
-        app.use(bodyParser.urlencoded({ extended: true }))
+        app.use(bodyParser.urlencoded({extended: true}))
         app.use(bodyParser.json())
         app.use(stylus.middleware(publicDir))
         app.use(express.static(publicDir))
@@ -58,17 +58,17 @@ export namespace Setup {
 
     export function setupSession(app: express.Express, io: SocketIO.Server) {
         const sessionData = {
-            resave: false,
+            resave:            false,
             saveUninitialized: false,
-            secret: Config.session.secret
+            secret:            Config.session.secret
         }
 
         if (useRedis) {
             sessionData['store'] = new redisStore({
-                host: 'localhost',
-                port: Config.redis.port,
+                host:   'localhost',
+                port:   Config.redis.port,
                 client: redisClient,
-                ttl: Config.redis.ttl
+                ttl:    Config.redis.ttl
             })
         }
 
@@ -78,7 +78,7 @@ export namespace Setup {
     }
 
     export function setupDatabase(address: string, port: number, database: string, user: string, password: string): mongoose.Connection {
-        mongoose.connect("mongodb://" + address + ":" + port + "/" + database, { user: user, pass: password })
+        mongoose.connect("mongodb://" + address + ":" + port + "/" + database, {user: user, pass: password})
         var db = mongoose.connection
 
         db.on('error', console.error.bind(console, 'connection error:'))
@@ -93,9 +93,9 @@ export namespace Setup {
 
     export function setupAuthGoogle(googleID: string, googleSecret: string) {
         const googleLogin = {
-            clientID: googleID,
-            clientSecret: googleSecret,
-            callbackURL: Config.auth.callback + Routes.user.AUTH_CALLBACK,
+            clientID:          googleID,
+            clientSecret:      googleSecret,
+            callbackURL:       Config.auth.callback + Routes.user.AUTH_CALLBACK,
             passReqToCallback: true
         }
 

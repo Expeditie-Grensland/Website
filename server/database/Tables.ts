@@ -26,7 +26,7 @@ export namespace TableIDs {
 
 export namespace TableData {
     function reference(to: string): {} {
-        return { type: String, ref: to }
+        return {type: String, ref: to}
     }
 
     /**
@@ -35,22 +35,22 @@ export namespace TableData {
      */
     export namespace Expeditie {
         export const expeditieSchema = new mongoose.Schema({
-            name: String,
-            name_short: String,
-            year: Number,
-            color: String,
-            background: {
+            name:         String,
+            name_short:   String,
+            year:         Number,
+            color:        String,
+            background:   {
                 image_url: String,
-                position: {
+                position:  {
                     x: Number,
                     y: Number
                 }
             },
-            show_map: Boolean,
-            map_url: String,
-            movie_url: String,
+            show_map:     Boolean,
+            map_url:      String,
+            movie_url:    String,
             participants: [reference(TableIDs.Person)],
-            routeParts: [reference(TableIDs.RoutePart)]
+            routeParts:   [reference(TableIDs.RoutePart)]
         })
 
         export interface Expeditie {
@@ -72,25 +72,26 @@ export namespace TableData {
             routeParts: string[] | RoutePart.RoutePart[]
         }
 
-        export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
+        export interface ExpeditieDocument extends Expeditie, mongoose.Document {
+        }
 
-        export function expeditie(name, name_short, year, color, participants, routeParts):Expeditie {
+        export function expeditie(name, name_short, year, color, participants, routeParts): Expeditie {
             return {
-                name: name,
-                name_short: name_short,
-                year: year,
-                color: color,
-                background: {
+                name:         name,
+                name_short:   name_short,
+                year:         year,
+                color:        color,
+                background:   {
                     image_url: "",  //TODO default background image
-                    position: {
+                    position:  {
                         x: 50,
                         y: 50
                     }
                 },
-                show_map: false,
-                map_url: name_short,
+                show_map:     false,
+                map_url:      name_short,
                 participants: participants,
-                routeParts: routeParts
+                routeParts:   routeParts
             }
         }
     }
@@ -102,8 +103,8 @@ export namespace TableData {
     export namespace Place {
         export const placeSchema = new mongoose.Schema({
             zoomLevel: Number,
-            latlon: reference(TableIDs.Location),
-            radius: Number
+            latlon:    reference(TableIDs.Location),
+            radius:    Number
         })
 
         export interface Place {
@@ -112,13 +113,14 @@ export namespace TableData {
             radius: number
         }
 
-        export interface PlaceDocument extends Place, mongoose.Document {}
+        export interface PlaceDocument extends Place, mongoose.Document {
+        }
 
         export function place(zoomLevel, location, radius): Place {
             return {
                 zoomLevel: zoomLevel,
-                latlon: location,
-                radius: radius
+                latlon:    location,
+                radius:    radius
             }
         }
     }
@@ -129,17 +131,17 @@ export namespace TableData {
      */
     export namespace Location {
         export const locationSchema = new mongoose.Schema({
-            time: Date,
-            timezone: String,
-            lat: Number,
-            lon: Number,
-            altitude: Number,
+            time:               Date,
+            timezone:           String,
+            lat:                Number,
+            lon:                Number,
+            altitude:           Number,
             horizontalAccuracy: Number,
-            verticalAccuracy: Number,
-            bearing: Number,
-            bearingAccuracy: Number,
-            speed: Number,
-            speedAccuracy: Number
+            verticalAccuracy:   Number,
+            bearing:            Number,
+            bearingAccuracy:    Number,
+            speed:              Number,
+            speedAccuracy:      Number
         })
 
         export interface Location {
@@ -156,7 +158,8 @@ export namespace TableData {
             speedAccuracy?: number
         }
 
-        export interface LocationDocument extends Location, mongoose.Document {}
+        export interface LocationDocument extends Location, mongoose.Document {
+        }
 
         export function location(time,
                                  timezone,
@@ -166,13 +169,13 @@ export namespace TableData {
                                  horizontalAccuracy,
                                  verticalAccuracy): Location {
             return {
-                time: time,
-                timezone: timezone,
-                lat: lat,
-                lon: lon,
-                altitude: altitude,
+                time:               time,
+                timezone:           timezone,
+                lat:                lat,
+                lon:                lon,
+                altitude:           altitude,
                 horizontalAccuracy: horizontalAccuracy,
-                verticalAccuracy: verticalAccuracy,
+                verticalAccuracy:   verticalAccuracy,
             }
         }
     }
@@ -182,20 +185,17 @@ export namespace TableData {
      * single set of people, so as soon as routes merge or people change
      */
     export namespace RoutePart {
-        export const routePartSchema = new mongoose.Schema({
-
-        })
+        export const routePartSchema = new mongoose.Schema({})
 
         export interface RoutePart {
 
         }
 
-        export interface RoutePartDocument extends RoutePart, mongoose.Document {}
+        export interface RoutePartDocument extends RoutePart, mongoose.Document {
+        }
 
         export function routePart(): RoutePart {
-            return {
-
-            }
+            return {}
         }
     }
 
@@ -222,11 +222,12 @@ export namespace TableData {
             language: string
         }
 
-        export interface PersonDocument extends Person, mongoose.Document {}
+        export interface PersonDocument extends Person, mongoose.Document {
+        }
 
         export function person(name, language): Person {
             return {
-                name: name,
+                name:     name,
                 language: language
             }
         }

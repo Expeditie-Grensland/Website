@@ -1,58 +1,58 @@
-$(document).ready(function(){
+$(document).ready(function () {
     console.log('Document ready')
 
     const columns = $('#columns')
     const column = $('.column')
 
-    const screen = window.matchMedia( "screen" ).matches
+    const screen = window.matchMedia("screen").matches
     const expeditieCount = column.length
 
     console.log(`Displaying ${expeditieCount} columns on ${screen ? "touchscreen" : "non-touchscreen"} layout`)
 
     columns.slick({
-        dots: expeditieCount > 5,
-        arrows: expeditieCount > 5,
-        speed: 400,
-        infinite: false,
-        slidesToShow: Math.min(5, expeditieCount),
+        dots:           expeditieCount > 5,
+        arrows:         expeditieCount > 5,
+        speed:          400,
+        infinite:       false,
+        slidesToShow:   Math.min(5, expeditieCount),
         slidesToScroll: 1,
-        responsive: [
+        responsive:     [
             {
                 breakpoint: 1500,
-                settings: {
-                    dots: expeditieCount > 4,
-                    arrows: expeditieCount > 4,
+                settings:   {
+                    dots:         expeditieCount > 4,
+                    arrows:       expeditieCount > 4,
                     slidesToShow: Math.min(4, expeditieCount)
                 }
             },
             {
                 breakpoint: 1200,
-                settings: {
-                    dots: expeditieCount > 3,
-                    arrows: expeditieCount > 3  ,
+                settings:   {
+                    dots:         expeditieCount > 3,
+                    arrows:       expeditieCount > 3,
                     slidesToShow: Math.min(3, expeditieCount)
                 }
             },
             {
                 breakpoint: 900,
-                settings: {
-                    dots: expeditieCount > 2,
-                    arrows: expeditieCount > 2,
+                settings:   {
+                    dots:         expeditieCount > 2,
+                    arrows:       expeditieCount > 2,
                     slidesToShow: Math.min(2, expeditieCount)
                 }
             },
             {
                 breakpoint: 600,
-                settings: {
-                    dots: expeditieCount > 1,
-                    arrows: expeditieCount > 1,
+                settings:   {
+                    dots:         expeditieCount > 1,
+                    arrows:       expeditieCount > 1,
                     slidesToShow: 1
                 }
             }
         ]
     })
 
-    column.hover(function(){
+    column.hover(function () {
         const hover = $(this)
         const count = $('div.slick-active').length
 
@@ -60,7 +60,7 @@ $(document).ready(function(){
         links.stop(true)
         links.animate({'height': links[0].scrollHeight + 'px'}, 300, 'easeOutCirc')
 
-        if(count > 1) {
+        if (count > 1) {
             $(".column.slick-active").each(function () {
                 const column = $(this)
                 const origWidth = window.innerWidth / count
@@ -70,7 +70,7 @@ $(document).ready(function(){
                 column.animate({'width': ((column.is(hover)) ? larger : smaller) + "px"}, 300, 'easeOutCirc')
             })
         }
-    }, function(){
+    }, function () {
         const hover = $(this)
         const count = $('div.slick-active').length
 
@@ -78,7 +78,7 @@ $(document).ready(function(){
         links.stop(true)
         links.animate({'height': '0px'}, 400, 'easeOutCirc')
 
-        if(count > 1) {
+        if (count > 1) {
             $(".column.slick-active").each(function () {
                 const column = $(this)
                 column.stop(true)
@@ -87,11 +87,11 @@ $(document).ready(function(){
         }
     })
 
-    $('.videoModal').on('hide.bs.modal', function() {
+    $('.videoModal').on('hide.bs.modal', function () {
         videojs($(this).find('.video-js')[0]).pause()
     })
 
-    $('.overviewMapModal').on('show.bs.modal', function(event) {
+    $('.overviewMapModal').on('show.bs.modal', function (event) {
         const modal = $(this)
         const button = $(event.relatedTarget)
         const color = button.data('expeditie-color')
@@ -116,24 +116,24 @@ $(document).ready(function(){
 
     function colorCountries(modal, color, countries) {
         //Reset colors
-        for(let path of modal.find('#svgmap').children()) {
+        for (let path of modal.find('#svgmap').children()) {
             $(path).removeAttr('style')
         }
 
-        for(let country of countries) {
+        for (let country of countries) {
             //Spaces are not allowed in ids and escape . characters in css selector
             const countrySelector = '#' + country.replace(/ /gi, "_").replace(/\./gi, "\\.")
 
             modal.find(countrySelector).css({
-                fill: color,
+                fill:   color,
                 stroke: '#fff'
             })
         }
     }
 })
 
-$(window).on("load", function() {
-    $.get( 'overviewMap', function (data) {
+$(window).on("load", function () {
+    $.get('overviewMap', function (data) {
         const mapContainer = $('#overviewMap')
         const loadingSpinner = mapContainer.find('.loadingSpinner')
 
