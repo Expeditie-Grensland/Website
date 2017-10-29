@@ -2,6 +2,7 @@ import * as express from 'express'
 
 export namespace Home {
     export function init(app: express.Express) {
+        //Sorted by order of date
         let expedities = [
             {
                 name:                "Noordkaap",
@@ -9,13 +10,13 @@ export namespace Home {
                 show_map:            true,
                 map_url:             "/noordkaap",
                 movie_url:           "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/Nordkapp+The+Movie+720p+(Web-Optimized).mp4",
-                cover_url:           "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/cover.jpg",
+                movie_cover_url:           "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/cover.jpg",
                 background_image:    "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
                 background_position: {
                     x: 75,
                     y: 50
                 },
-                year:                "2015",
+                subtitle:                "2015",
                 color:               "#377eb8",
                 countries:           [
                     'Germany', 'Poland', 'Lithuania', 'Latvia', 'Estonia', 'Finland', 'Sweden', 'Norway', 'Denmark'
@@ -33,7 +34,7 @@ export namespace Home {
                     x: 66,
                     y: 50
                 },
-                year:                "2016",
+                subtitle:                "2016",
                 color:               "#e41a1c",
                 countries:           [
                     'Germany', 'Austria', 'Slovenia', 'Croatia', 'Bosnia and Herz.', 'Montenegro', 'Albania', 'Kosovo', 'Macedonia', 'Greece', 'Bulgaria', 'Romania', 'Moldova', 'Hungary', 'Slovakia', 'Czech Rep.'
@@ -50,71 +51,11 @@ export namespace Home {
                     x: 40,
                     y: 70
                 },
-                year:                "2017",
+                subtitle:                "2017",
                 color:               "#ff7f00",
                 countries:           [
                     'Iran', 'Azerbaijan', 'Georgia', 'Armenia', 'Russia', 'Abkhazia', 'Belarus', 'Lithuania', 'Belgium'
                 ]
-            },
-            {
-                name:                "Grensland",
-                name_short:          "grensland",
-                show_map:            false,
-                map_url:             "/grensland",
-                movie_url:           null,
-                background_image:    "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
-                background_position: {
-                    x: 25,
-                    y: 10
-                },
-                year:                "2018",
-                color:               "#ffd900",
-                countries:           []
-            },
-            {
-                name:                "Alaska",
-                name_short:          "alaska",
-                show_map:            false,
-                map_url:             "/alaska",
-                movie_url:           null,
-                background_image:    "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
-                background_position: {
-                    x: 25,
-                    y: 10
-                },
-                year:                "2019",
-                color:               "#16ff00",
-                countries:           []
-            },
-            {
-                name:                "Op zoek naar -stan",
-                name_short:          "op_zoek_naar__stan",
-                show_map:            false,
-                map_url:             "/stan",
-                movie_url:           null,
-                background_image:    "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
-                background_position: {
-                    x: 25,
-                    y: 10
-                },
-                year:                "2020",
-                color:               "#ff00e2",
-                countries:           []
-            },
-            {
-                name:                "Op zoek naar Atema",
-                name_short:          "op_zoek_naar_atema",
-                show_map:            false,
-                map_url:             "/stan",
-                movie_url:           null,
-                background_image:    "https://s3-eu-west-1.amazonaws.com/expeditie/noordkaap/background.jpg",
-                background_position: {
-                    x: 25,
-                    y: 10
-                },
-                year:                "2021",
-                color:               "#fff9f2",
-                countries:           []
             }
         ]
 

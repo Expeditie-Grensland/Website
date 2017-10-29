@@ -35,6 +35,7 @@ export namespace TableData {
      */
     export namespace Expeditie {
         export const expeditieSchema = new mongoose.Schema({
+            sequence_number: Number,
             name:         String,
             name_short:   String,
             year:         Number,
@@ -49,6 +50,7 @@ export namespace TableData {
             show_map:     Boolean,
             map_url:      String,
             movie_url:    String,
+            movie_cover_url: String,
             participants: [reference(TableIDs.Person)],
             routeParts:   [reference(TableIDs.RoutePart)]
         })
@@ -72,8 +74,7 @@ export namespace TableData {
             routeParts: string[] | RoutePart.RoutePart[]
         }
 
-        export interface ExpeditieDocument extends Expeditie, mongoose.Document {
-        }
+        export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
 
         export function expeditie(name, name_short, year, color, participants, routeParts): Expeditie {
             return {

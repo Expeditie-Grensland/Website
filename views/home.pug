@@ -30,7 +30,7 @@ block body
                 .background(style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background_image + "); background-position: " + expeditie.background_position.x + "% " + expeditie.background_position.y + "%")
                 .expeditie(id=expeditie.name_short)
                     h1= expeditie.name
-                    h2= expeditie.year
+                    h2= expeditie.subtitle
                 .links
                     if expeditie.movie_url !== null
                         button.link.btn.btn-default.btn-secondary(src = expeditie.movie_thumbnail data-toggle='modal' href='.movieModal' + expeditie.name_short)
@@ -44,7 +44,7 @@ block body
         each expeditie in expedities
             if expeditie.movie_url !== null
                 +modal('videoModal movieModal' + expeditie.name_short, expeditie.name + " " + t('movie_additive'))(class="modal-lg")
-                    video.video-js.vjs-default-skin.vjs-16-9(controls poster=expeditie.cover_url preload='auto' data-setup='{}')
+                    video.video-js.vjs-default-skin.vjs-16-9(controls poster=expeditie.movie_cover_url preload='auto' data-setup='{}')
                         source(src=expeditie.movie_url type='video/mp4')
                         p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
                             a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video
