@@ -6,7 +6,7 @@ export namespace Debug {
     import PersonDocument = TableData.Person.PersonDocument
 
     export function init(app: express.Express) {
-        let maurice = TableData.Person.person("Maurice")
+        /*let maurice = TableData.Person.person("Maurice")
         let diederik = TableData.Person.person("Diederik")
         let matthijs = TableData.Person.person("Matthijs")
         let ronald = TableData.Person.person("Ronald")
@@ -17,7 +17,7 @@ export namespace Debug {
 
         peoplePromise.then((result: PersonDocument) => {
             console.log(result)
-        })
+        })*/
 
 /**
         let expedities: TableData.Expeditie.Expeditie[] = [
