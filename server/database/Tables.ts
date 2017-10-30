@@ -1,27 +1,35 @@
-import * as mongoose from 'mongoose'
+import * as mongoose from "mongoose"
 
 export namespace Tables {
     export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>
-    export let Place: mongoose.Model<TableData.Place.PlaceDocument>
     export let Location: mongoose.Model<TableData.Location.LocationDocument>
-    export let RoutePart: mongoose.Model<TableData.RoutePart.RoutePartDocument>
     export let Person: mongoose.Model<TableData.Person.PersonDocument>
+//    export let Place: mongoose.Model<TableData.Place.PlaceDocument>
+    export let Route: mongoose.Model<TableData.Route.RouteDocument>
+    export let RouteEdge: mongoose.Model<TableData.RouteEdge.RouteEdgeDocument>
+    export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>
 
     export function initTables() {
         Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema)
-        Place = mongoose.model(TableIDs.Place, TableData.Place.placeSchema)
         Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema)
-        RoutePart = mongoose.model(TableIDs.RoutePart, TableData.RoutePart.routePartSchema)
         Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
+//        Place = mongoose.model(TableIDs.Place, TableData.Place.placeSchema)
+        Route = mongoose.model(TableIDs.Route, TableData.Route.routeSchema)
+        RouteEdge = mongoose.model(TableIDs.RouteEdge, TableData.RouteEdge.routeEdgeSchema)
+        RouteNode = mongoose.model(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema)
     }
 }
 
 export namespace TableIDs {
+//TODO Image, LogEntry, Place
+
     export const Expeditie = "Expeditie"
-    export const Place = "Place"
     export const Location = "Location"
-    export const RoutePart = "RoutePart"
     export const Person = "Person"
+//    export const Place = "Place"
+    export const Route = "Route"
+    export const RouteEdge = "RouteEdge"
+    export const RouteNode = "RouteNode"
 }
 
 export namespace TableData {
@@ -36,92 +44,66 @@ export namespace TableData {
     export namespace Expeditie {
         export const expeditieSchema = new mongoose.Schema({
             sequence_number: Number,
-            name:         String,
-            name_short:   String,
-            year:         Number,
-            color:        String,
-            background:   {
+            name: String,
+            name_short: String,
+            subtitle: String,
+            color: String,
+            background: {
                 image_url: String,
-                position:  {
+                position: {
                     x: Number,
                     y: Number
                 }
             },
-            show_map:     Boolean,
-            map_url:      String,
-            movie_url:    String,
+            show_map: Boolean,
+            map_url: String,
+            movie_url: String,
             movie_cover_url: String,
             participants: [reference(TableIDs.Person)],
-            routeParts:   [reference(TableIDs.RoutePart)]
+            route: reference(TableIDs.Route)
         })
 
         export interface Expeditie {
+            sequence_number: number,
             name: string,
             name_short: string,
-            year: number,
+            subtitle: number,
             color: string,
             background: {
                 image_url: string,
                 position: {
-                    x: number
+                    x: number,
                     y: number
                 }
             },
-            show_map: Boolean,
-            map_url: String,
-            movie_url?: String,
+            show_map: boolean,
+            map_url: string,
+            movie_url?: string,
+            movie_cover_url?: string,
             participants: string[] | Person.Person[],
-            routeParts: string[] | RoutePart.RoutePart[]
+            route: string | Route.Route
         }
 
         export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
 
-        export function expeditie(name, name_short, year, color, participants, routeParts): Expeditie {
+        export function expeditie(sequence_number, name, name_short, subtitle, color, participants, route): Expeditie {
             return {
-                name:         name,
-                name_short:   name_short,
-                year:         year,
-                color:        color,
-                background:   {
+                sequence_number: sequence_number,
+                name: name,
+                name_short: name_short,
+                subtitle: subtitle,
+                color: color,
+                background: {
                     image_url: "",  //TODO default background image
-                    position:  {
+                    position: {
                         x: 50,
                         y: 50
                     }
                 },
-                show_map:     false,
-                map_url:      name_short,
+                show_map: false,
+                map_url: name_short,
                 participants: participants,
-                routeParts:   routeParts
-            }
-        }
-    }
-
-    /**
-     * A Place is a spot where there are too many points to clearly display on the map, depending on zoomlevel. It
-     * has a radius and a location and is displayed on the map as a circle.
-     */
-    export namespace Place {
-        export const placeSchema = new mongoose.Schema({
-            zoomLevel: Number,
-            latlon:    reference(TableIDs.Location),
-            radius:    Number
-        })
-
-        export interface Place {
-            zoomLevel: number,
-            latlon: string | Location.Location, //Because location is not allowed for some reason
-            radius: number
-        }
-
-        export interface PlaceDocument extends Place, mongoose.Document {
-        }
-
-        export function place(zoomLevel, location, radius): Place {
-            return {
-                zoomLevel: zoomLevel,
-                latlon:    location,
-                radius:    radius
+                route: route
             }
         }
     }
@@ -132,17 +114,17 @@ export namespace TableData {
      */
     export namespace Location {
         export const locationSchema = new mongoose.Schema({
-            time:               Date,
-            timezone:           String,
-            lat:                Number,
-            lon:                Number,
-            altitude:           Number,
+            time: Date,
+            timezone: String,
+            lat: Number,
+            lon: Number,
+            altitude: Number,
             horizontalAccuracy: Number,
-            verticalAccuracy:   Number,
-            bearing:            Number,
-            bearingAccuracy:    Number,
-            speed:              Number,
-            speedAccuracy:      Number
+            verticalAccuracy: Number,
+            bearing: Number,
+            bearingAccuracy: Number,
+            speed: Number,
+            speedAccuracy: Number
         })
 
         export interface Location {
@@ -170,36 +152,16 @@ export namespace TableData {
                                  horizontalAccuracy,
                                  verticalAccuracy): Location {
             return {
-                time:               time,
-                timezone:           timezone,
-                lat:                lat,
-                lon:                lon,
-                altitude:           altitude,
+                time: time,
+                timezone: timezone,
+                lat: lat,
+                lon: lon,
+                altitude: altitude,
                 horizontalAccuracy: horizontalAccuracy,
-                verticalAccuracy:   verticalAccuracy,
+                verticalAccuracy: verticalAccuracy,
             }
         }
     }
-
-    /**
-     * A RoutePart is a line describing a set of people's locations. A RoutePart is can only describe the route of a
-     * single set of people, so as soon as routes merge or people change
-     */
-    export namespace RoutePart {
-        export const routePartSchema = new mongoose.Schema({})
-
-        export interface RoutePart {
-
-        }
-
-        export interface RoutePartDocument extends RoutePart, mongoose.Document {
-        }
-
-        export function routePart(): RoutePart {
-            return {}
-        }
-    }
-
 
     /**
      * A Person describes a person who participates in an expeditie. They are guaranteed to have a name
@@ -210,10 +172,10 @@ export namespace TableData {
      */
     export namespace Person {
         export const personSchema = new mongoose.Schema({
-            email:      String,
-            name:       String,
+            email: String,
+            name: String,
             expedities: [reference(TableIDs.Expeditie)],
-            language:   String
+            language: String
         })
 
         export interface Person {
@@ -228,11 +190,120 @@ export namespace TableData {
 
         export function person(name, language): Person {
             return {
-                name:     name,
+                name: name,
                 language: language
             }
         }
     }
 
+    /**
+     * A Place is a spot where there are too many points to clearly display on the map, depending on zoomlevel. It
+     * has a radius and a location and is displayed on the map as a circle.
+     *//*
+    export namespace Place {
+        export const placeSchema = new mongoose.Schema({
+            zoomLevel: Number,
+            latlon: reference(TableIDs.Location),
+            radius: Number
+        })
 
+        export interface Place {
+            zoomLevel: number,
+            latlon: string | Location.Location, //Because location is not allowed for some reason
+            radius: number
+        }
+
+        export interface PlaceDocument extends Place, mongoose.Document {
+        }
+
+        export function place(zoomLevel, location, radius): Place {
+            return {
+                zoomLevel: zoomLevel,
+                latlon: location,
+                radius: radius
+            }
+        }
+    }*/
+
+    /**
+     * A Route is a directed acyclic graph representing the movement of people between different groups.
+     * The startingNodes array contains all nodes which do not have any ancestors (there are no edges pointing to them)
+     * The currentNodes array contains all nodes that do not have any children.
+     */
+    export namespace Route {
+        export const routeSchema = new mongoose.Schema({
+            startingNodes: [reference(TableIDs.RouteNode)],
+            currentNodes: [reference(TableIDs.RouteNode)]
+        })
+
+        export interface Route {
+            startingNodes: RouteNode.RouteNode[] | string[],
+            currentNodes: RouteNode.RouteNode[] | string[],
+        }
+
+        export interface RouteDocument extends Route, mongoose.Document {}
+
+        export function route(startingNodes, currentNodes): Route {
+            return {
+                startingNodes: startingNodes,
+                currentNodes: currentNodes
+            }
+        }
+    }
+
+    /**
+     * A RouteEdge represent a moving of people between different RouteNodes.
+     */
+    export namespace RouteEdge {
+        export const routeEdgeSchema = new mongoose.Schema({
+            to: reference(TableIDs.RouteNode),
+            people: [reference(TableIDs.Person)]
+        })
+
+        export interface RouteEdge {
+            to: RouteNode.RouteNode | string,
+            people: Person.Person[] | string[]
+        }
+
+        export interface RouteEdgeDocument extends RouteEdge, mongoose.Document {}
+
+        export function routeEdge(from, to, people): RouteEdge {
+            return {
+                to: to,
+                people: people
+            }
+        }
+    }
+
+    /**
+     * A RouteNode is a representation of the locations of one set of people over a continuous timespan. This means that
+     * as soon as a Person moves from one node to another, one or more RouteEdge is added to the edges array and
+     * this node is deactivated.
+     */
+    export namespace RouteNode {
+        export const routeNodeSchema = new mongoose.Schema({
+            color: String,
+            persons: [reference(TableIDs.Person)],
+            locations: [reference(TableIDs.Location)],
+            edges: [reference(TableIDs.RouteEdge)]
+        })
+
+        export interface RouteNode {
+            color: string,
+            persons: Person.Person[] | string[],
+            locations: Location.Location[] | string[],
+            edges: RouteEdge.RouteEdge[] | string[],
+        }
+
+        export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
+
+        export function routeNode(color, persons, locations, edges): RouteNode {
+            return {
+                color: color,
+                persons: persons,
+                locations: locations,
+                edges: edges
+            }
+        }
+    }
 }
