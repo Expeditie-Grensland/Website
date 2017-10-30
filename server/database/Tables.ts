@@ -1,6 +1,7 @@
 import * as mongoose from "mongoose"
 
 export namespace Tables {
+    export let Country: mongoose.Model<TableData.Country.CountryDocument>
     export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>
     export let Location: mongoose.Model<TableData.Location.LocationDocument>
     export let Person: mongoose.Model<TableData.Person.PersonDocument>
@@ -10,6 +11,7 @@ export namespace Tables {
     export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>
 
     export function initTables() {
+        Country = mongoose.model(TableIDs.Country, TableData.Country.countrySchema)
         Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema)
         Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema)
         Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
@@ -21,8 +23,9 @@ export namespace Tables {
 }
 
 export namespace TableIDs {
-//TODO Image, LogEntry, Place
+    //TODO Image, LogEntry, Place
 
+    export const Country = "Country"
     export const Expeditie = "Expeditie"
     export const Location = "Location"
     export const Person = "Person"
@@ -35,6 +38,24 @@ export namespace TableIDs {
 export namespace TableData {
     function reference(to: string): {} {
         return {type: String, ref: to}
+    }
+
+    export namespace Country {
+        export const countrySchema = new mongoose.Schema({
+            name: String
+        })
+
+        export interface Country {
+            name: string
+        }
+
+        export interface CountryDocument extends Country, mongoose.Document {}
+
+        export function country(name): Country {
+            return {
+                name: name
+            }
+        }
     }
 
     /**
@@ -60,14 +81,15 @@ export namespace TableData {
             movie_url: String,
             movie_cover_url: String,
             participants: [reference(TableIDs.Person)],
-            route: reference(TableIDs.Route)
+            route: reference(TableIDs.Route),
+            countries: [Country.countrySchema],
         })
 
         export interface Expeditie {
             sequence_number: number,
             name: string,
             name_short: string,
-            subtitle: number,
+            subtitle: string,
             color: string,
             background: {
                 image_url: string,
@@ -82,11 +104,12 @@ export namespace TableData {
             movie_cover_url?: string,
             participants: string[] | Person.Person[],
             route: string | Route.Route
+            countries: Country.Country[]
         }
 
         export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
 
-        export function expeditie(sequence_number, name, name_short, subtitle, color, participants, route): Expeditie {
+        export function expeditie(sequence_number, name, name_short, subtitle, color, participants, route, countries): Expeditie {
             return {
                 sequence_number: sequence_number,
                 name: name,
@@ -103,7 +126,8 @@ export namespace TableData {
                 show_map: false,
                 map_url: name_short,
                 participants: participants,
-                route: route
+                route: route,
+                countries: countries
             }
         }
     }
@@ -182,16 +206,15 @@ export namespace TableData {
             email?: string
             name: string
             expedities?: string[] | Expeditie.Expeditie[]
-            language: string
+            language?: string
         }
 
         export interface PersonDocument extends Person, mongoose.Document {
         }
 
-        export function person(name, language): Person {
+        export function person(name): Person {
             return {
-                name: name,
-                language: language
+                name: name
             }
         }
     }

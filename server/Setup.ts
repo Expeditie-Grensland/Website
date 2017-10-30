@@ -1,20 +1,20 @@
 import * as http from "http"
 import * as express from "express"
-import * as path from 'path'
-import * as stylus from 'stylus'
-import * as mongoose from 'mongoose'
-import * as bodyParser from 'body-parser'
-import * as session from 'express-session'
-import * as passport from 'passport'
+import * as path from "path"
+import * as stylus from "stylus"
+import * as mongoose from "mongoose"
+import * as bodyParser from "body-parser"
+import * as session from "express-session"
+import * as passport from "passport"
 import * as redis from "redis"
 import * as redisConnect from "connect-redis"
 import * as i18next from "i18next"
 import * as i18nextMiddleware from "i18next-express-middleware"
 import * as FileSystemBackend from "i18next-node-fs-backend"
 
-import {Config} from './Config'
-import {Routes} from './routes/Routes'
-import {Tables} from './database/Tables'
+import {Config} from "./Config"
+import {Routes} from "./routes/Routes"
+import {Tables} from "./database/Tables"
 
 const authGoogle = require('passport-google-oauth2')
 
@@ -78,8 +78,9 @@ export namespace Setup {
     }
 
     export function setupDatabase(address: string, port: number, database: string, user: string, password: string): mongoose.Connection {
-        mongoose.connect("mongodb://" + address + ":" + port + "/" + database, {user: user, pass: password})
-        var db = mongoose.connection
+        //mongoose.Promise = Promise
+        mongoose.connect("mongodb://" + address + ":" + port + "/" + database, {user: user, pass: password, useMongoClient: true})
+        const db = mongoose.connection
 
         db.on('error', console.error.bind(console, 'connection error:'))
         db.once('open', function (callback) {
