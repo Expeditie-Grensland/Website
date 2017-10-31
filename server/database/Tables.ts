@@ -1,7 +1,6 @@
 import * as mongoose from "mongoose"
 
 export namespace Tables {
-    export let Country: mongoose.Model<TableData.Country.CountryDocument>
     export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>
     export let Location: mongoose.Model<TableData.Location.LocationDocument>
     export let Person: mongoose.Model<TableData.Person.PersonDocument>
@@ -11,7 +10,6 @@ export namespace Tables {
     export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>
 
     export function initTables() {
-        Country = mongoose.model(TableIDs.Country, TableData.Country.countrySchema)
         Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema)
         Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema)
         Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
@@ -25,7 +23,6 @@ export namespace Tables {
 export namespace TableIDs {
     //TODO Image, LogEntry, Place
 
-    export const Country = "Country"
     export const Expeditie = "Expeditie"
     export const Location = "Location"
     export const Person = "Person"
@@ -40,91 +37,73 @@ export namespace TableData {
         return {type: String, ref: to}
     }
 
-    export namespace Country {
-        export const countrySchema = new mongoose.Schema({
-            name: String
-        })
-
-        export interface Country {
-            name: string
-        }
-
-        export interface CountryDocument extends Country, mongoose.Document {}
-
-        export function country(name): Country {
-            return {
-                name: name
-            }
-        }
-    }
-
     /**
      * The expeditie is the wrapping object for all data related to one trip. This is represented on the home page by
      * one column.
      */
     export namespace Expeditie {
         export const expeditieSchema = new mongoose.Schema({
-            sequence_number: Number,
+            sequenceNumber: Number,
             name: String,
-            name_short: String,
+            nameShort: String,
             subtitle: String,
             color: String,
             background: {
-                image_url: String,
+                imageUrl: String,
                 position: {
                     x: Number,
                     y: Number
                 }
             },
-            show_map: Boolean,
-            map_url: String,
-            movie_url: String,
-            movie_cover_url: String,
+            showMap: Boolean,
+            mapUrl: String,
+            movieUrl: String,
+            movieCoverUrl: String,
             participants: [reference(TableIDs.Person)],
             route: reference(TableIDs.Route),
-            countries: [Country.countrySchema],
+            countries: [String],
         })
 
         export interface Expeditie {
-            sequence_number: number,
+            sequenceNumber: number,
             name: string,
-            name_short: string,
+            nameShort: string,
             subtitle: string,
             color: string,
             background: {
-                image_url: string,
+                imageUrl: string,
                 position: {
                     x: number,
                     y: number
                 }
             },
-            show_map: boolean,
-            map_url: string,
-            movie_url?: string,
-            movie_cover_url?: string,
+            showMap: boolean,
+            mapUrl: string,
+            movieUrl?: string,
+            movieCoverUrl?: string,
             participants: string[] | Person.Person[],
             route: string | Route.Route
-            countries: Country.Country[]
+            countries: string[]
         }
 
         export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
 
-        export function expeditie(sequence_number, name, name_short, subtitle, color, participants, route, countries): Expeditie {
+        export function expeditie(sequenceNumber, name, nameShort, subtitle, color, participants, route, countries): Expeditie {
             return {
-                sequence_number: sequence_number,
+                sequenceNumber: sequenceNumber,
                 name: name,
-                name_short: name_short,
+                nameShort: nameShort,
                 subtitle: subtitle,
                 color: color,
                 background: {
-                    image_url: "",  //TODO default background image
+                    imageUrl: "",  //TODO default background image
                     position: {
                         x: 50,
                         y: 50
                     }
                 },
-                show_map: false,
-                map_url: name_short,
+                showMap: false,
+                mapUrl: nameShort,
                 participants: participants,
                 route: route,
                 countries: countries
@@ -157,8 +136,8 @@ export namespace TableData {
             lat: number,
             lon: number,
             altitude: number,
-            horizontalAccuracy: number,
-            verticalAccuracy: number,
+            horizontalAccuracy?: number,
+            verticalAccuracy?: number,
             bearing?: number,
             bearingAccuracy?: number,
             speed?: number,
