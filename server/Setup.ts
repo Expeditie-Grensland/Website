@@ -78,7 +78,9 @@ export namespace Setup {
     }
 
     export function setupDatabase(address: string, port: number, database: string, user: string, password: string): mongoose.Connection {
-        //mongoose.Promise = Promise
+        mongoose.set('debug', Config.debug);
+
+        (<any>mongoose).Promise = Promise
         mongoose.connect("mongodb://" + address + ":" + port + "/" + database, {user: user, pass: password, useMongoClient: true})
         const db = mongoose.connection
 
