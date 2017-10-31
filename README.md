@@ -6,14 +6,15 @@ Config File:
 ```typescript
 export namespace Users {
     export const User = {
-        name: "user",
+        name: "username",
         password: "pass"
     }
 }
 
 export namespace Config {
+    export const debug = true
     export const port = 3000
-    
+
     export const session = {
         redis: false,
         secret: "session secret"
@@ -32,10 +33,10 @@ export namespace Config {
     }
 
     export const db = {
-        address: "localhost:3000",
+        address: "localhost",
         db: "db",
         user: Users.User,
-        port: 27017
+        port: 23410
     }
 }
 ```
