@@ -43,6 +43,7 @@ export namespace TableData {
      */
     export namespace Expeditie {
         export const expeditieSchema = new mongoose.Schema({
+            deleted: Boolean,
             sequenceNumber: Number,
             name: String,
             nameShort: String,
@@ -65,6 +66,7 @@ export namespace TableData {
         })
 
         export interface Expeditie {
+            deleted: boolean,
             sequenceNumber: number,
             name: string,
             nameShort: string,
@@ -87,28 +89,6 @@ export namespace TableData {
         }
 
         export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
-
-        export function expeditie(sequenceNumber, name, nameShort, subtitle, color, participants, route, countries): Expeditie {
-            return {
-                sequenceNumber: sequenceNumber,
-                name: name,
-                nameShort: nameShort,
-                subtitle: subtitle,
-                color: color,
-                background: {
-                    imageUrl: "",  //TODO default background image
-                    position: {
-                        x: 50,
-                        y: 50
-                    }
-                },
-                showMap: false,
-                mapUrl: nameShort,
-                participants: participants,
-                route: route,
-                countries: countries
-            }
-        }
     }
 
     /**
@@ -146,24 +126,6 @@ export namespace TableData {
 
         export interface LocationDocument extends Location, mongoose.Document {
         }
-
-        export function location(time,
-                                 timezone,
-                                 lat,
-                                 lon,
-                                 altitude,
-                                 horizontalAccuracy,
-                                 verticalAccuracy): Location {
-            return {
-                time: time,
-                timezone: timezone,
-                lat: lat,
-                lon: lon,
-                altitude: altitude,
-                horizontalAccuracy: horizontalAccuracy,
-                verticalAccuracy: verticalAccuracy,
-            }
-        }
     }
 
     /**
@@ -188,14 +150,7 @@ export namespace TableData {
             language?: string
         }
 
-        export interface PersonDocument extends Person, mongoose.Document {
-        }
-
-        export function person(name): Person {
-            return {
-                name: name
-            }
-        }
+        export interface PersonDocument extends Person, mongoose.Document {}
     }
 
     /**
@@ -217,14 +172,6 @@ export namespace TableData {
 
         export interface PlaceDocument extends Place, mongoose.Document {
         }
-
-        export function place(zoomLevel, location, radius): Place {
-            return {
-                zoomLevel: zoomLevel,
-                latlon: location,
-                radius: radius
-            }
-        }
     }*/
 
     /**
@@ -244,13 +191,6 @@ export namespace TableData {
         }
 
         export interface RouteDocument extends Route, mongoose.Document {}
-
-        export function route(startingNodes, currentNodes): Route {
-            return {
-                startingNodes: startingNodes,
-                currentNodes: currentNodes
-            }
-        }
     }
 
     /**
@@ -268,13 +208,6 @@ export namespace TableData {
         }
 
         export interface RouteEdgeDocument extends RouteEdge, mongoose.Document {}
-
-        export function routeEdge(from, to, people): RouteEdge {
-            return {
-                to: to,
-                people: people
-            }
-        }
     }
 
     /**
@@ -298,14 +231,5 @@ export namespace TableData {
         }
 
         export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
-
-        export function routeNode(color, persons, locations, edges): RouteNode {
-            return {
-                color: color,
-                persons: persons,
-                locations: locations,
-                edges: edges
-            }
-        }
     }
 }

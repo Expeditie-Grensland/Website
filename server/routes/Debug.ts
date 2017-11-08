@@ -33,19 +33,19 @@ export namespace Debug {
 
             let noordkaapPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, martijnB, robertSan])
             let balkanPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, robertSan, matthijs, robertSl])
-
+            /**
             noordkaapPersonPromise.then((res) => {
-                Expeditie.createExpeditie('Noordkaap', 'noordkaap', 0, '2015', '#377eb8', res, [
+                Expeditie.createExpeditie('Noordkaap', 'noordkaap', '2015', '#377eb8', res, [
                     'Germany', 'Poland', 'Lithuania', 'Latvia', 'Estonia', 'Finland', 'Sweden', 'Norway', 'Denmark'
                 ])
             })
 
             balkanPersonPromise.then((res) => {
-                Expeditie.createExpeditie('Balkan', 'balkan', 1, '2016', '#e41a1c', res, [
+                Expeditie.createExpeditie('Balkan', 'balkan', '2016', '#e41a1c', res, [
                     'Germany', 'Austria', 'Slovenia', 'Croatia', 'Bosnia and Herz.', 'Montenegro', 'Albania', 'Kosovo', 'Macedonia', 'Greece', 'Bulgaria', 'Romania', 'Moldova', 'Hungary', 'Slovakia', 'Czech Rep.'
                 ])
             })
-
+            **/
 
             res.send('Hello there!')
         })
