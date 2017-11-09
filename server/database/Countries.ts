@@ -26,7 +26,7 @@ export namespace Countries {
         "Togo", "Thailand", "Tajikistan", "Turkmenistan", "Timor-Leste", "Trinidad_and_Tobago", "Tunisia", "Turkey",
         "Taiwan", "Tanzania", "Uganda", "Ukraine", "Uruguay", "United_States", "Uzbekistan", "Venezuela", "Vietnam",
         "Vanuatu", "Yemen", "South_Africa", "Zambia", "Zimbabwe", "Ilemi_Triangle", "South_Ossetia", "Nagorno-Karabakh",
-        "Aksai_Chin", "Kashmir", "Kashmir", "Kashmir", "Turkish_Republic_of_Northern_Cyprus", "Abkhazia", "Somaliland",
-        "Western_Sahara", "Kashmir", "Kashmir", "Abyei",
+        "Aksai_Chin", "Turkish_Republic_of_Northern_Cyprus", "Abkhazia", "Somaliland",
+        "Western_Sahara", "Kashmir", "Abyei",
     ].map((countryID) => <Country>{id: countryID})
 }
