@@ -1,8 +1,12 @@
 extend structure/simple.pug
 
 block title
-    title Expeditie -
+    title Expeditie - #{expeditie.name}
 
 block scripts
     include includes/scripts.pug
     script(src="scripts/expeditie.js")
+
+block body
+    h1= expeditie.name
+    h2= expeditie.subtitle
