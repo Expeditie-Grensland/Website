@@ -27,25 +27,25 @@ block body
     #columns
         each expeditie in expedities
             .column
-                .background(style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background_image + "); background-position: " + expeditie.background_position.x + "% " + expeditie.background_position.y + "%")
-                .expeditie(id=expeditie.name_short)
+                .background(style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background.imageUrl + "); background-position: " + expeditie.background.position.x + "% " + expeditie.background.position.y + "%")
+                .expeditie(id=expeditie.nameShort)
                     h1= expeditie.name
                     h2= expeditie.subtitle
                 .links
-                    if expeditie.movie_url !== null
-                        button.link.btn.btn-default.btn-secondary(src = expeditie.movie_thumbnail data-toggle='modal' href='.movieModal' + expeditie.name_short)
+                    if expeditie.movieUrl !== null
+                        button.link.btn.btn-default.btn-secondary(data-toggle='modal' href='.movieModal' + expeditie.nameShort)
                             | #{t_ucf('movie')}
                     button.link.btn.btn-secondary(role="button" data-toggle='modal' href='.overviewMapModal' data-modal-title=t_ucf('overview') + ' ' + expeditie.name data-expeditie-color=expeditie.color data-countries=expeditie.countries.join('\\'))
                         | #{t_ucf('overview')}
-                    if expeditie.show_map
-                        a.link.btn.btn-default.btn-primary(href= expeditie.map_url role="button")
+                    if expeditie.showMap
+                        a.link.btn.btn-default.btn-primary(href= expeditie.mapUrl role="button")
                             | #{t_ucf('map')}
     #modals
         each expeditie in expedities
-            if expeditie.movie_url !== null
-                +modal('videoModal movieModal' + expeditie.name_short, expeditie.name + " " + t('movie_additive'))(class="modal-lg")
-                    video.video-js.vjs-default-skin.vjs-16-9(controls poster=expeditie.movie_cover_url preload='auto' data-setup='{}')
-                        source(src=expeditie.movie_url type='video/mp4')
+            if expeditie.movieUrl !== null
+                +modal('videoModal movieModal' + expeditie.nameShort, expeditie.name + " " + t('movie_additive'))(class="modal-lg")
+                    video.video-js.vjs-default-skin.vjs-16-9(controls poster=expeditie.movieCoverUrl preload='auto' data-setup='{}')
+                        source(src=expeditie.movieUrl type='video/mp4')
                         p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
                             a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video
         +modal('overviewMapModal', t_ucf('overview'), large=true)(class="modal-lg")
