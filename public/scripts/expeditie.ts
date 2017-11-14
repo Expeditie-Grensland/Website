@@ -4,11 +4,14 @@ $(document).ready(() => {
     const map = new mapboxgl.Map({
         container: 'map',
         //style: 'https://github.com/openmaptiles/klokantech-terrain-gl-style/raw/master/style.json',
-        style: 'https://openmaptiles.github.io/klokantech-terrain-gl-style/style-cdn.json',
+        //style: 'https://openmaptiles.github.io/klokantech-terrain-gl-style/style-cdn.json',
+        style: '/mapStyle.json',
         center: [5.843570, 52.268337],
         zoom: 6,
     });
     mapboxgl.setRTLTextPlugin('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.1.0/mapbox-gl-rtl-text.js', () => {});
+
+    map.addControl(new mapboxgl.NavigationControl());
 
     map.on('style.load', () => {
         console.log("Map style loaded!")
