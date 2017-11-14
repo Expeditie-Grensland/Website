@@ -13,7 +13,7 @@ export namespace Expeditie {
     const expeditiesError = Promise.reject("The expedities variable has not been initialized! Are you accessing it directly?")
     let expedities: Promise<ExpeditieDocument[]> = expeditiesError
 
-    export function getExpedities(): Promise<ExpeditieDocument[]> {
+    export function getExpeditiesCached(): Promise<ExpeditieDocument[]> {
         return expedities.catch(() => {
             expedities = Tables.Expeditie.find({},
                 'sequenceNumber name nameShort subtitle color background showMap mapUrl movieUrl movieCoverUrl countries'
@@ -29,6 +29,10 @@ export namespace Expeditie {
         console.log("Invalidating Expeditie cache.")
 
         return Promise.resolve(arg)
+    }
+
+    export function getExpedities(): Promise<ExpeditieDocument[]> {
+        return Tables.Expeditie.find({}).sort({sequenceNumber: 1}).exec()
     }
 
     export function getExpeditieById(_id: string | ObjectID): Promise<ExpeditieDocument> {

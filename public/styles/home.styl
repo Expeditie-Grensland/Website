@@ -1,0 +1,76 @@
+@import "main"
+
+body
+  margin 0
+  padding 0
+  height 100%
+  overflow hidden
+  white-space nowrap
+  text-align center
+
+.column
+  display inline-block
+  position relative
+  overflow hidden
+  white-space normal
+  transform translate(0, 0, 0)
+
+  transition filter .5s, transform 1s
+  outline none
+
+.background
+  width inherit
+  height inherit
+  min-width inherit
+  background-size auto 100%
+  background-repeat no-repeat
+  filter brightness(0.8)
+  transition inherit
+
+.expeditie
+  display block
+  position absolute
+  height auto
+  top 14%
+  width inherit
+  min-width inherit
+
+  h1, h2
+    color white
+
+.links
+  display block
+  position absolute
+  bottom 20%
+  height 0
+  width inherit
+  max-width inherit
+
+  overflow hidden
+
+.link
+  margin auto
+  height auto
+  width 51%
+  max width inherit
+  cursor pointer
+  margin-bottom 5px
+
+.hidden
+  display none
+
+#svgmap
+  display block
+  height 100%
+  width auto
+  max-width 100%
+  margin auto
+  stroke-width .3px
+  fill #f2f2f2
+  fill-rule evenodd
+  stroke #000
+  stroke-linejoin round
+
+//This solves a weird bug where only layer 0 is affected by the stroke-width attribute by forcing the browser to render edges as thin as possible
+#layer_1
+  shape-rendering crispEdges

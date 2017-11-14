@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(() => {
     console.log('Document ready')
 
     const columns = $('#columns')

@@ -4,7 +4,7 @@ import {Expeditie} from "../database/Expeditie"
 export namespace Home {
     export function init(app: express.Express) {
         app.get("/", (req, res) => {
-            Expeditie.getExpedities().then((expedities) => {
+            Expeditie.getExpeditiesCached().then((expedities) => {
                 console.log((<any>req).languages)
                 res.render("home", {
                     expedities: expedities,
@@ -21,10 +21,7 @@ export namespace Home {
     }
 
     export function ucFirstWrapper(f: (s: string) => string): (s: string) => string {
-        return (str: string) => {
-            const translated = f(str)
-            return translated.charAt(0).toUpperCase() + translated.slice(1)
-        }
+        return (str: string) => ucFirst(f(str))
     }
 
     export function ucFirst(s: string): string {

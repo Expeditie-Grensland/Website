@@ -3,10 +3,20 @@ extend structure/simple.pug
 block title
     title Expeditie - #{expeditie.name}
 
+block styles
+    include includes/styles.pug
+    link(rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css")
+
+    link(rel="stylesheet" href="styles/expeditie.css")
+
+    meta(name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no')
+
 block scripts
     include includes/scripts.pug
+    script(src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js")
+    script(src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v0.9.2/mapbox-gl-language.js')
+
     script(src="scripts/expeditie.js")
 
 block body
-    h1= expeditie.name
-    h2= expeditie.subtitle
+    #map

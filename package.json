@@ -1,12 +1,17 @@
 {
   "name": "Expeditie-Website",
   "version": "0.0.1",
-  "description": "basic node setup the expeditie website",
+  "description": "Basic node setup the expeditie website",
   "main": "server/server.js",
   "author": {
     "name": "Maurice",
     "email": "mauricemeedendorp@gmail.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seremis/expeditie-website.git"
+  },
+  "license": "GPL-3.0",
   "dependencies": {
     "@types/body-parser": "^1.16.7",
     "@types/bootstrap": "^3.3.36",
@@ -16,7 +21,7 @@
     "@types/i18next": "^8.4.2",
     "@types/i18next-express-middleware": "0.0.32",
     "@types/jquery": "^3.2.16",
-    "@types/leaflet": "^1.2.1",
+    "@types/mapbox-gl": "^0.40.1",
     "@types/mongodb": "^2.2.15",
     "@types/mongoose": "^4.7.24",
     "@types/node": "^8.0.47",

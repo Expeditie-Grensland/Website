@@ -4,8 +4,8 @@ import {Expeditie} from "../database/Expeditie"
 export namespace ExpeditieRoute {
 
     export function init(app: express.Express) {
-        Expeditie.getExpedities().then((expedities) => {
-            for (let expeditie of expedities) {
+        Expeditie.getExpeditiesCached().then((expeditiesCached) => {
+            for (let expeditie of expeditiesCached) {
                 if(expeditie.showMap) {
                     console.log("Registering " + expeditie.mapUrl + " as expeditie page.")
 
