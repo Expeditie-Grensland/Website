@@ -9,7 +9,7 @@ export namespace ExpeditieRoute {
                 if(expeditie.showMap) {
                     console.log("Registering " + expeditie.mapUrl + " as expeditie page.")
 
-                    app.get(expeditie.mapUrl, (req, res) => {
+                    app.get(expeditie.mapUrl + '/?', (req, res) => {
                         res.render("expeditie", {
                             expeditie: expeditie
                         })
