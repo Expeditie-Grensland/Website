@@ -4,9 +4,6 @@ $(document).ready(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw'
     const map = new mapboxgl.Map({
         container: 'map',
-        //style: 'https://github.com/openmaptiles/klokantech-terrain-gl-style/raw/master/style.json',
-        //style: 'https://openmaptiles.github.io/klokantech-terrain-gl-style/style-cdn.json',
-        //style: '/mapStyle.json',
         style: 'mapbox://styles/mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj',
         center: [5.843570, 52.268337],
         zoom: 6,
@@ -18,10 +15,16 @@ $(document).ready(() => {
     map.on('style.load', () => {
         console.log("Map style loaded!")
 
-        map.setLayoutProperty('country_label-en', 'text-field', '{name:ar}');
-        map.setLayoutProperty('poi_label-en', 'text-field', '{name:ar}');
-        map.setLayoutProperty('road_major_label-en', 'text-field', '{name:ar}');
-        map.setLayoutProperty('place_label_other-en', 'text-field', '{name:ar}');
-        map.setLayoutProperty('place_label_city-en', 'text-field', '{name:ar}');
+        const mapLanguage = new MapboxLanguage();
+        const browserLanguage = (navigator.languages ? navigator.languages[0] : navigator.language).split('-')[0]
+
+        //There's a bug in MapboxLanguage that chrashes if the browser language is a non-supported language.
+        if(!mapLanguage.supportedLanguages.includes(browserLanguage)) {
+            mapLanguage._defaultLanguage = "en"
+
+            console.log("Browser language not supported by mapbox. Switching to English.")
+        }
+
+        map.addControl(mapLanguage);
     })
 })
