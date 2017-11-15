@@ -7,7 +7,7 @@ $(document).ready(() => {
         //style: 'https://github.com/openmaptiles/klokantech-terrain-gl-style/raw/master/style.json',
         //style: 'https://openmaptiles.github.io/klokantech-terrain-gl-style/style-cdn.json',
         //style: '/mapStyle.json',
-        style: 'mapbox://styles/mapbox/outdoors-v9',
+        style: 'mapbox://styles/mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj',
         center: [5.843570, 52.268337],
         zoom: 6,
     });
