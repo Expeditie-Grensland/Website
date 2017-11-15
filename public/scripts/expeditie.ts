@@ -1,11 +1,13 @@
 declare var MapboxLanguage:any
 
 $(document).ready(() => {
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw'
     const map = new mapboxgl.Map({
         container: 'map',
         //style: 'https://github.com/openmaptiles/klokantech-terrain-gl-style/raw/master/style.json',
         //style: 'https://openmaptiles.github.io/klokantech-terrain-gl-style/style-cdn.json',
-        style: '/mapStyle.json',
+        //style: '/mapStyle.json',
+        style: 'mapbox://styles/mapbox/outdoors-v9',
         center: [5.843570, 52.268337],
         zoom: 6,
     });
