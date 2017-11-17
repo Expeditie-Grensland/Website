@@ -2,6 +2,7 @@ import {TableData, Tables} from "./Tables"
 import {ObjectID} from "bson"
 import {Countries} from "./Countries"
 import {Person} from "./Person"
+import {Route} from "./Route"
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
 import PersonDocument = TableData.Person.PersonDocument
 import Country = Countries.Country
@@ -40,13 +41,26 @@ export namespace Expeditie {
     }
 
     export function createExpeditie(expeditie: Expeditie): Promise<ExpeditieDocument> {
-        if(expeditie.mapUrl == undefined) {
-            expeditie.mapUrl = '/' + expeditie.nameShort
-        }
+        return Promise.resolve().then(() => {
+            if(expeditie.mapUrl == undefined) {
+                expeditie.mapUrl = '/' + expeditie.nameShort
+            }
 
-        //TODO assign route variable.
+            if(expeditie.route == undefined) {
+                return Route.createRoute({}).then((route) => {
+                    expeditie.route = route
 
-        return Tables.Expeditie.create(expeditie).then((expeditie) => {
+                    return expeditie
+                }).catch((err) => {
+                    console.log("Creating route failed! " + err)
+                    return expeditie
+                })
+            }
+
+            return expeditie
+        }).then((expeditie) => {
+            return Tables.Expeditie.create(expeditie)
+        }).then((expeditie) => {
             for(let personId of getPersonId(expeditie.participants)) {
                 Person.addExpeditieById(expeditie)(personId)
             }

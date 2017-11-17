@@ -27,4 +27,10 @@ $(document).ready(() => {
 
         map.addControl(mapLanguage);
     })
+
+    map.on('ready', () => {
+        console.log("Map ready!")
+
+        SocketHandler.init()
+    })
 })

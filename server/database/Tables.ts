@@ -184,8 +184,8 @@ export namespace TableData {
         })
 
         export interface Route {
-            startingNodes: RouteNode.RouteNodeDocument[] | string[],
-            currentNodes: RouteNode.RouteNodeDocument[] | string[],
+            startingNodes?: RouteNode.RouteNodeDocument[] | string[],
+            currentNodes?: RouteNode.RouteNodeDocument[] | string[],
         }
 
         export interface RouteDocument extends Route, mongoose.Document {}
@@ -222,7 +222,7 @@ export namespace TableData {
         })
 
         export interface RouteNode {
-            color: string,
+            color?: string,
             persons: Person.PersonDocument[] | string[],
             locations: Location.LocationDocument[] | string[],
             edges: RouteEdge.RouteEdgeDocument[] | string[],
