@@ -7,9 +7,15 @@ import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
 import PersonDocument = TableData.Person.PersonDocument
 import Country = Countries.Country
 import Expeditie = TableData.Expeditie.Expeditie
+import {Util} from "./Util"
 
 
 export namespace Expeditie {
+
+    import PersonOrID = Person.PersonOrID
+    import RouteOrID = Route.RouteOrID
+    import RouteDocument = TableData.Route.RouteDocument
+    export type ExpeditieOrID = Util.DocumentOrID<ExpeditieDocument>
 
     const expeditiesError = Promise.reject("The expedities variable has not been initialized! Are you accessing it directly?")
     let expedities: Promise<ExpeditieDocument[]> = expeditiesError
@@ -61,11 +67,15 @@ export namespace Expeditie {
         }).then((expeditie) => {
             return Tables.Expeditie.create(expeditie)
         }).then((expeditie) => {
-            for(let personId of getPersonId(expeditie.participants)) {
-                Person.addExpeditieById(expeditie)(personId)
+            let promises: Promise<PersonDocument>[]
+
+            for(let personId of Util.getDocumentIds(expeditie.participants)) {
+                promises.push(Person.addExpeditie(expeditie)(personId))
             }
 
-            return expeditie
+            return Promise.all(promises).then(() => {
+                return expeditie
+            })
         }).then(expeditiesChanged)
     }
 
@@ -75,34 +85,22 @@ export namespace Expeditie {
         })
     }
 
-    export function addParticipants(persons: PersonDocument[] | string[]): (expeditie: ExpeditieDocument) => Promise<ExpeditieDocument> {
+    export function addParticipants(persons: Person.PersonOrID[]): (expeditie: ExpeditieDocument) => Promise<ExpeditieDocument> {
         return (expeditie) => {
-            for(let personId of getPersonId(persons)) {
-                Person.addExpeditieById(expeditie)(personId)
+            for(let personId of Util.getDocumentIds(persons)) {
+                Person.addExpeditie(expeditie)(personId)
             }
-            return Tables.Expeditie.findByIdAndUpdate(expeditie._id, {$pushAll: {participants: getPersonId(persons)}}, {new: true}).exec().then(expeditiesChanged)
+            return Tables.Expeditie.findByIdAndUpdate(expeditie._id, {$pushAll: {participants: Util.getDocumentIds(persons)}}, {new: true}).exec()
         }
     }
 
-    export function removeParticipants(persons: PersonDocument[] | string[]): (expeditie: ExpeditieDocument) => Promise<ExpeditieDocument> {
+    export function removeParticipants(persons: Person.PersonOrID[]): (expeditie: ExpeditieDocument) => Promise<ExpeditieDocument> {
         return (expeditie) => {
-            for(let person of getPersonId(persons)) {
+            for(let person of Util.getDocumentIds(persons)) {
                 Tables.Person.findByIdAndUpdate(person, {$pull: {expedities: expeditie._id}}).exec()
             }
-            return Tables.Expeditie.findByIdAndUpdate(expeditie._id, {$pullAll: {participants: getPersonId(persons)}}, {new: true}).exec().then(expeditiesChanged)
+            return Tables.Expeditie.findByIdAndUpdate(expeditie._id, {$pullAll: {participants: Util.getDocumentIds(persons)}}, {new: true}).exec()
         }
-    }
-
-    function getPersonId(persons: PersonDocument[] | string[]): string[] {
-        if(persons.length == 0) {
-            return []
-        }
-
-        if(typeof(persons[0]) == "string") {
-            return <string[]>persons
-        }
-
-        return (<PersonDocument[]>persons).map((p) => p._id)
     }
 
     export function addCountries(...countries: Country[]): (expeditie: ExpeditieDocument) => Promise<ExpeditieDocument> {
@@ -111,5 +109,25 @@ export namespace Expeditie {
 
     export function removeCountries(...countries: Country[]): (expeditie: ExpeditieDocument) => Promise<ExpeditieDocument> {
         return (expeditie) => Tables.Expeditie.findByIdAndUpdate(expeditie._id, {$pullAll: {countries: countries.map(c => c.id)}}, {new: true}).exec().then(expeditiesChanged)
+    }
+
+    export function setRoute(route: RouteOrID): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+        return expeditie => Tables.Expeditie.findByIdAndUpdate(Util.getDocumentId(expeditie), {route: Util.getObjectID(route)}, {new: true}).exec()
+
+    }
+
+    export function setGroups(groups: PersonOrID[][]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+        return (expeditie: ExpeditieOrID) => {
+            const pExpeditie = Util.getDocument(expeditie, getExpeditieById)
+            const pRoute = pExpeditie.then((expeditie) => {
+                return Util.getDocument(expeditie.route, Route.getRouteById).catch(() => {
+                    return Route.createRoute({}).then(route => setRoute(route)(expeditie))
+                })
+            }).then(Route.setGroups(expeditie, groups))
+
+            return Promise.all([pExpeditie, pRoute]).then(([expeditie, route]) => {
+                return setRoute(route)(expeditie)
+            })
+        }
     }
 }

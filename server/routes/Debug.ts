@@ -32,7 +32,13 @@ export namespace Debug {
 
             let noordkaapPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, martijnB, robertSan])
             let balkanPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, robertSan, matthijs, robertSl])
-            let kaukasusPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, matthijs])
+            let kaukasusPersonPromise1 = Promise.all([maurice, ronald, martijnA])
+            let kaukasusPersonPromise2 = Promise.all([diederik, matthijs])
+
+            process.on('unhandledRejection', (reason, p) => {
+                console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+                // application specific logging, throwing an error, or other logic here
+            });
 
             const noordkaapPromise = noordkaapPersonPromise.then((persons) => {
                 console.log("Noordkaap people successfully retrieved!")
@@ -90,7 +96,8 @@ export namespace Debug {
                 return expeditie
             })
 
-            const kaukasusPromise = kaukasusPersonPromise.then((persons) => {
+            const kaukasusPromise = Promise.all([kaukasusPersonPromise1, kaukasusPersonPromise2]).then(([baku, teheran]) => {
+                console.log("Kaukasus people successfully retrieved!")
                 return Expeditie.createExpeditie({
                     sequenceNumber: 2,
                     name: "Kaukasus",
@@ -107,11 +114,11 @@ export namespace Debug {
                             y: 70,
                         },
                     },
-                    participants: persons.map((person) => person._id),
+                    participants: teheran.map((person) => person._id).concat(baku.map((p) => p._id)),
                     countries: [
                         "Netherlands", "Iran", "Azerbaijan", "Georgia", "Armenia", "Russia", "Abkhazia", "Belarus", "Lithuania", "Belgium",
                     ],
-                })
+                }).then(expeditie => Expeditie.setGroups([baku, teheran])(expeditie))
             })
 
             Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(() => {
