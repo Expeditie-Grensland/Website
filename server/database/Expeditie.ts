@@ -67,7 +67,7 @@ export namespace Expeditie {
         }).then((expeditie) => {
             return Tables.Expeditie.create(expeditie)
         }).then((expeditie) => {
-            let promises: Promise<PersonDocument>[]
+            let promises: Promise<PersonDocument>[] = []
 
             for(let personId of Util.getDocumentIds(expeditie.participants)) {
                 promises.push(Person.addExpeditie(expeditie)(personId))

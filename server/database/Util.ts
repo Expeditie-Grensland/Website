@@ -55,8 +55,8 @@ export namespace Util {
             return Promise.resolve([])
         }
 
-        let ids: string[]
-        let docs: T[]
+        let ids: string[] = []
+        let docs: T[] = []
 
         for(let document of documents) {
             if(isDocument(document)) {

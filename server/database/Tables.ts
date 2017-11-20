@@ -66,23 +66,23 @@ export namespace TableData {
         })
 
         export interface Expeditie {
-            sequenceNumber: number,
-            name: string,
-            nameShort: string,
-            subtitle: string,
-            color: string,
+            sequenceNumber: number
+            name: string
+            nameShort: string
+            subtitle: string
+            color: string
             background: {
-                imageUrl: string,
+                imageUrl: string
                 position: {
-                    x: number,
+                    x: number
                     y: number
                 }
             },
-            showMap: boolean,
-            mapUrl?: string,
-            movieUrl: string,
-            movieCoverUrl: string,
-            participants: string[] | Person.PersonDocument[] | ObjectID[],
+            showMap: boolean
+            mapUrl?: string
+            movieUrl: string
+            movieCoverUrl: string
+            participants: (string | Person.PersonDocument | ObjectID)[]
             route?: string | Route.RouteDocument | ObjectID
             countries: string[]
         }
@@ -145,7 +145,7 @@ export namespace TableData {
         export interface Person {
             email?: string
             name: string
-            expedities?: string[] | Expeditie.ExpeditieDocument[] | ObjectID[]
+            expedities?: (string | Expeditie.ExpeditieDocument | ObjectID)[]
             language?: string
         }
 
@@ -185,8 +185,8 @@ export namespace TableData {
         })
 
         export interface Route {
-            startingNodes?: RouteNode.RouteNodeDocument[] | string[] | ObjectID[],
-            currentNodes?: RouteNode.RouteNodeDocument[] | string[] | ObjectID[],
+            startingNodes?: (RouteNode.RouteNodeDocument | string | ObjectID)[]
+            currentNodes?: (RouteNode.RouteNodeDocument | string | ObjectID)[]
         }
 
         export interface RouteDocument extends Route, mongoose.Document {}
@@ -202,8 +202,8 @@ export namespace TableData {
         })
 
         export interface RouteEdge {
-            to: RouteNode.RouteNodeDocument | string | ObjectID,
-            people: Person.PersonDocument[] | string[] | ObjectID[]
+            to: RouteNode.RouteNodeDocument | string | ObjectID
+            people: (Person.PersonDocument | string | ObjectID)[]
         }
 
         export interface RouteEdgeDocument extends RouteEdge, mongoose.Document {}
@@ -223,10 +223,10 @@ export namespace TableData {
         })
 
         export interface RouteNode {
-            color?: string,
-            persons: Person.PersonDocument[] | string[] | ObjectID[],
-            locations: Location.LocationDocument[] | string[] | ObjectID[],
-            edges: RouteEdge.RouteEdgeDocument[] | string[] | ObjectID[],
+            color?: string
+            persons: (Person.PersonDocument | string | ObjectID)[]
+            locations: (Location.LocationDocument | string | ObjectID)[]
+            edges: (RouteEdge.RouteEdgeDocument | string | ObjectID)[]
         }
 
         export interface RouteNodeDocument extends RouteNode, mongoose.Document {}

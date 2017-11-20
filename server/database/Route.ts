@@ -11,12 +11,12 @@ export namespace Route {
     import Route = TableData.Route.Route
     import RouteDocument = TableData.Route.RouteDocument
     import RouteNode = TableData.RouteNode.RouteNode
-    import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
     import RouteEdge = TableData.RouteEdge.RouteEdge
     import RouteEdgeDocument = TableData.RouteEdge.RouteEdgeDocument
     import PersonDocument = TableData.Person.PersonDocument
     import PersonOrID = Person.PersonOrID
     import ExpeditieOrID = Expeditie.ExpeditieOrID
+    import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
 
     export type RouteOrID =  Util.DocumentOrID<RouteDocument>
     export type NodeOrID = Util.DocumentOrID<RouteNodeDocument>
@@ -62,15 +62,19 @@ export namespace Route {
         return Tables.RouteEdge.findById(_id).exec()
     }
 
+    function getRouteEdgesById(ids: string[]): Promise<RouteEdgeDocument[]> {
+        return Tables.RouteEdge.find({_id: {$in: ids}}).exec()
+    }
+
     function setNodeEdges(edges: EdgeOrID[]): (node: NodeOrID) => Promise<RouteNodeDocument> {
-        return node => Tables.RouteNode.findByIdAndUpdate(Util.getDocumentId(node), {$pushAll: {countries: Util.getObjectIDs(edges)}}, {new: true}).exec()
+        return node => Tables.RouteNode.findByIdAndUpdate(Util.getDocumentId(node), {$pushAll: {edges: Util.getObjectIDs(edges)}}, {new: true}).exec()
     }
 
     export function setGroups(expeditie: ExpeditieOrID, groups: PersonOrID[][]): (route: RouteOrID) => Promise<RouteDocument> {
         return (route: RouteOrID) => {
             return Util.getDocument(route, Route.getRouteById).then(resolveGroups(groups)).then((groups) => {
                 return new Promise<RouteDocument>((resolve, reject) => {
-                    const personIds: string[] = [].concat(groups.map((group) => Util.getDocumentIds(group)))
+                    const personIds: string[] = [].concat(...groups.map((group) => Util.getDocumentIds(group)))
 
                     if((new Set(personIds)).size !== personIds.length) {
                         reject("People can't exist in multiple groups at the same time!")
@@ -108,7 +112,7 @@ export namespace Route {
                             let newCurrentNodes: RouteNodeDocument[] = routeNodes
 
                             for(let currentNode of currentNodes) {
-                                let newEdges: RouteEdge[]
+                                let newEdges: RouteEdge[] = []
 
                                 for(let currentNodePersonId of Util.getDocumentIds(currentNode.persons)) {
                                     for(let newNode of routeNodes) {
@@ -123,7 +127,7 @@ export namespace Route {
                                             }
 
                                             if(edgeExists) {
-                                                Util.getDocumentIds(existingEdge.people).push(currentNodePersonId)
+                                                existingEdge.people.push(currentNodePersonId)
                                             } else {
                                                 newEdges.push({
                                                     people: [currentNodePersonId],
@@ -135,9 +139,13 @@ export namespace Route {
                                 }
 
                                 if(newEdges.length > 0) {
-                                    oldCurrentNodes.push(Promise.resolve(currentNode).then((node) => Promise.all(newEdges.map(edge => createRouteEdge(edge))).then((edges) => {
-                                        return setNodeEdges(edges)(node)
-                                    })))
+                                    oldCurrentNodes.push(
+                                        Promise.resolve(currentNode).then((node) => {
+                                            return Promise.all(newEdges.map(edge => createRouteEdge(edge))).then((edges) => {
+                                                return setNodeEdges(edges)(node)
+                                            })
+                                        })
+                                    )
                                 } else {
                                     newCurrentNodes.push(currentNode)
                                 }
@@ -183,6 +191,73 @@ export namespace Route {
                 }
 
                 return result
+            })
+        })
+    }
+
+    export function populateCompletely(route: RouteOrID): Promise<RouteDocument> {
+        return Util.getDocument(route, getRouteById).then((route) => {
+            function next(nextLayer: Promise<RouteNodeDocument[]>): Promise<RouteNodeDocument[]> {
+                return nextLayer.then((nodes) => {
+                    let pNodes: Promise<RouteNodeDocument>[] = []
+
+                    for(let node of nodes) {
+                        pNodes.push(populateNextLayer(node))
+
+                        // pNodes.push(Util.getDocuments(node.edges, getRouteEdgesById).then((edges) => {
+                        //     let pEdges: Promise<RouteEdgeDocument>[] = []
+                        //
+                        //     for(let edge of edges) {
+                        //         console.log(edges)
+                        //         pEdges.push(populateTo(edge))
+                        //     }
+                        //
+                        //     return Promise.all(pEdges).then((edges) => {
+                        //         node.edges = edges
+                        //         return node
+                        //     })
+                        // }))
+                    }
+
+                    return next(Promise.all(pNodes))
+                })
+            }
+
+            return next(Util.getDocuments(route.startingNodes, getRouteNodesById)).then((startingNodes) => {
+                route.startingNodes = startingNodes
+                return route
+            })
+        })
+    }
+
+    function populateNextLayer(node: NodeOrID): Promise<RouteNodeDocument> {
+        return Util.getDocument(node, getRouteNodeById).then((node) => {
+            let populate = node.populate('edges').execPopulate()
+
+            return populate.then((node) => {
+                let pEdges = []
+
+                for(let edge of (<RouteEdgeDocument[]>node.edges)) {
+                    pEdges.push(edge.populate('to').execPopulate())
+                }
+
+                return Promise.all(pEdges).then((edges) => {
+                    return node
+                })
+            })
+        })
+    }
+
+    function populateTo(edge: EdgeOrID): Promise<RouteEdgeDocument> {
+        console.log(edge)
+        return Util.getDocument(edge, getRouteEdgeById).then((edge) => {
+            console.log(edge)
+
+            let node = Util.getDocument(edge.to, getRouteNodeById)
+
+            return node.then((to) => {
+                edge.to = to
+                return edge
             })
         })
     }

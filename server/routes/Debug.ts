@@ -1,23 +1,34 @@
 import * as express from "express"
 import {Person} from "../database/Person"
 import {Expeditie} from "../database/Expeditie"
+import {Config} from "../Config"
+import {TableData, Tables} from "../database/Tables";
+import {Util} from "../database/Util"
+import {Route} from "../database/Route"
 
 export namespace Debug {
 
+    import PersonDocument = TableData.Person.PersonDocument
+
     export function init(app: express.Express) {
+
+        if(Config.debug) {
+            process.on('unhandledRejection', (reason, p) => {
+                console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+                // application specific logging, throwing an error, or other logic here
+            });
+        }
+
 
         app.get("/generate_people", (req, res) => {
             let users = ["Maurice Meedendorp", "Ronald Kremer", "Diederik Blaauw", "Matthijs Nuus", "Martijn Atema", "Martijn Bakker", "Robert Sandee", "Robert Slomp"]
+            let promises = []
 
-            users.forEach(name => {
-                const promise = Person.createPerson(name)
+            for(let name of users) {
+                promises.push(Person.createPerson(name))
+            }
 
-                promise.then(person => {
-                    console.log(person.name + " successfully created!")
-                })
-            })
-
-            res.send("Hello there!")
+            Promise.all(promises).then(() => res.send('People created'))
         })
 
         app.get("/generate_expedities", (req, res) => {
@@ -30,15 +41,11 @@ export namespace Debug {
             let robertSan = Person.getPerson("Robert Sandee")
             let robertSl = Person.getPerson("Robert Slomp")
 
+            let allPeoplePromise: Promise<PersonDocument[]> = Promise.all<PersonDocument>([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl])
             let noordkaapPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, martijnB, robertSan])
             let balkanPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, robertSan, matthijs, robertSl])
             let kaukasusPersonPromise1 = Promise.all([maurice, ronald, martijnA])
             let kaukasusPersonPromise2 = Promise.all([diederik, matthijs])
-
-            process.on('unhandledRejection', (reason, p) => {
-                console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-                // application specific logging, throwing an error, or other logic here
-            });
 
             const noordkaapPromise = noordkaapPersonPromise.then((persons) => {
                 console.log("Noordkaap people successfully retrieved!")
@@ -66,6 +73,10 @@ export namespace Debug {
             }).then((expeditie) => {
                 console.log("Noordkaap expeditie successfully created!")
                 return expeditie
+            }).then((expeditie) => {
+
+
+                return expeditie.populate('participants').execPopulate()
             })
 
             const balkanPromise = balkanPersonPromise.then((persons) => {
@@ -118,11 +129,51 @@ export namespace Debug {
                     countries: [
                         "Netherlands", "Iran", "Azerbaijan", "Georgia", "Armenia", "Russia", "Abkhazia", "Belarus", "Lithuania", "Belgium",
                     ],
-                }).then(expeditie => Expeditie.setGroups([baku, teheran])(expeditie))
+                })
+                    //.then(expeditie => Expeditie.setGroups([baku, teheran])(expeditie))
             })
 
-            Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(() => {
-                res.send("Expedities generated!")
+            Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(([nk, bk, kk]) => {
+                allPeoplePromise.then(([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl]) => {
+                    console.log("Setting Kaukasus groups..")
+
+                    let baku: Person.PersonOrID[] = [ronald, martijnA, maurice]
+                    let teheran = [matthijs, diederik]
+                    let moscow = [matthijs, diederik, martijnA, maurice]
+
+                    return Expeditie.setGroups([baku, teheran])(kk).then((kk) => {
+                        return Expeditie.setGroups([baku.concat(teheran)])(kk)
+                    }).then((kk) => {
+                        return Expeditie.setGroups([moscow])(kk)
+                    })
+                }).then(() => res.send("Expedities Generated"))
+            })
+        })
+
+        if(Config.debug) {
+            app.get('/reset_database', (req, res) => {
+                let promises = []
+
+                promises.push(Tables.Expeditie.remove({}))
+                promises.push(Tables.Person.remove({}))
+                promises.push(Tables.Route.remove({}))
+                promises.push(Tables.RouteEdge.remove({}))
+                promises.push(Tables.RouteNode.remove({}))
+                promises.push(Tables.Location.remove({}))
+
+                Promise.all(promises).then(() => res.send("Database cleared."))
+            })
+        }
+
+        app.get('/route_diagram', (req, res) => {
+            Tables.Expeditie.findOne({name: "Kaukasus"}).exec().then((expeditie) => {
+                Util.getDocument(expeditie.route, Route.getRouteById).then((route) => {
+                    Route.populateCompletely(route).then((route) => {
+                        res.render("routeDiagram", {
+                            route: route
+                        })
+                    })
+                })
             })
         })
     }

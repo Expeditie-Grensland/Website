@@ -1,25 +1,26 @@
 namespace Tables {
     export interface Expeditie {
-        sequenceNumber: number,
-        name: string,
-        nameShort: string,
-        subtitle: string,
-        color: string,
+        sequenceNumber: number
+        name: string
+        nameShort: string
+        subtitle: string
+        color: string
         background: {
-            imageUrl: string,
+            imageUrl: string
             position: {
-                x: number,
+                x: number
                 y: number
             }
         },
-        showMap: boolean,
-        mapUrl?: string,
-        movieUrl: string,
-        movieCoverUrl: string,
-        participants: string[] | Person[],
+        showMap: boolean
+        mapUrl?: string
+        movieUrl: string
+        movieCoverUrl: string
+        participants: (string | Person)[]
         route?: string | Route
         countries: string[]
     }
+
 
     export interface Location {
         time: Date,
@@ -38,24 +39,26 @@ namespace Tables {
     export interface Person {
         email?: string
         name: string
-        expedities?: string[] | Expeditie[]
+        expedities?: (string | Expeditie)[]
         language?: string
     }
 
     export interface Route {
-        startingNodes: RouteNode[] | string[],
-        currentNodes: RouteNode[] | string[],
+        startingNodes?: (RouteNode | string)[]
+        currentNodes?: (RouteNode | string)[]
     }
+
 
     export interface RouteEdge {
-        to: RouteNode | string,
-        people: Person[] | string[]
+        to: RouteNode | string
+        people: (Person | string)[]
     }
 
+
     export interface RouteNode {
-        color: string,
-        persons: Person[] | string[],
-        locations: Location[] | string[],
-        edges: RouteEdge[] | string[],
+        color?: string
+        persons: (Person | string)[]
+        locations: (Location | string)[]
+        edges: (RouteEdge | string)[]
     }
 }
