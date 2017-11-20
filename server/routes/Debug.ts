@@ -147,15 +147,16 @@ export namespace Debug {
                     }).then((kk) => {
                         console.log("Setting groups: [moscow]")
                         return Expeditie.setGroups([moscow])(kk)
-                    }).then((kk) => {
-                        console.log("Setting groups: [[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan]]")
-                        return Expeditie.setGroups([[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan]])(kk)
                     })
+                    //     .then((kk) => {
+                    //     console.log("Setting groups: [[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan]]")
+                    //     return Expeditie.setGroups([[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan]])(kk)
+                    // })
                 }).then(() => res.send("Expedities Generated"))
             })
         })
 
-        if(Config.debug) {
+        //if(Config.debug) {
             app.get('/reset_database', (req, res) => {
                 let promises = []
 
@@ -168,7 +169,7 @@ export namespace Debug {
 
                 Promise.all(promises).then(() => res.send("Database cleared."))
             })
-        }
+        //}
 
         app.get('/route_diagram', (req, res) => {
             Tables.Expeditie.findOne({name: "Kaukasus"}).exec().then((expeditie) => {
