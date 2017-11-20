@@ -15,6 +15,7 @@ export namespace Route {
     import PersonOrID = Person.PersonOrID
     import ExpeditieOrID = Expeditie.ExpeditieOrID
     import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
+    import getPersonsByIds = Person.getPersonsByIds
 
     export type RouteOrID =  Util.DocumentOrID<RouteDocument>
     export type NodeOrID = Util.DocumentOrID<RouteNodeDocument>
@@ -79,6 +80,8 @@ export namespace Route {
     export function setGroups(expeditie: ExpeditieOrID, groups: PersonOrID[][]): (route: RouteOrID) => Promise<RouteDocument> {
         return (route: RouteOrID) => {
             return Util.getDocument(route, Route.getRouteById).then(resolveGroups(groups)).then((groups) => {
+                console.log(groups)
+
                 return new Promise<RouteDocument>((resolve, reject) => {
                     const personIds: string[] = [].concat(...groups.map((group) => Util.getDocumentIds(group)))
 
@@ -90,6 +93,7 @@ export namespace Route {
                         const peopleNotInExpeditie = personIds.filter((p) => Util.getDocumentIds(expeditie.participants).indexOf(p) < 0)
 
                         if(peopleNotInExpeditie.length > 0) {
+                            console.log("adding as participants: " + peopleNotInExpeditie)
                             return Expeditie.addParticipants(peopleNotInExpeditie)(expeditie)
                         } else {
                             return expeditie
@@ -215,7 +219,7 @@ export namespace Route {
                         })).then(edges => {
                             node.edges = edges
                             return node
-                        })
+                        }).then(node => node.populate('persons').execPopulate())
                     })
                 })
             }

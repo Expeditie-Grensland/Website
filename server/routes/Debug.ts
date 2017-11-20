@@ -147,6 +147,9 @@ export namespace Debug {
                     }).then((kk) => {
                         console.log("Setting groups: [moscow]")
                         return Expeditie.setGroups([moscow])(kk)
+                    }).then((kk) => {
+                        console.log("Setting groups: [[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan]]")
+                        return Expeditie.setGroups([[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan]])(kk)
                     })
                 }).then(() => res.send("Expedities Generated"))
             })

@@ -1,5 +1,6 @@
 namespace Tables {
     export interface Expeditie {
+        _id: string
         sequenceNumber: number
         name: string
         nameShort: string
@@ -23,6 +24,7 @@ namespace Tables {
 
 
     export interface Location {
+        _id: string
         time: Date,
         timezone: string,
         lat: number,
@@ -37,6 +39,7 @@ namespace Tables {
     }
 
     export interface Person {
+        _id: string
         email?: string
         name: string
         expedities?: (string | Expeditie)[]
@@ -44,18 +47,21 @@ namespace Tables {
     }
 
     export interface Route {
+        _id: string
         startingNodes?: (RouteNode | string)[]
         currentNodes?: (RouteNode | string)[]
     }
 
 
     export interface RouteEdge {
+        _id: string
         to: RouteNode | string
         people: (Person | string)[]
     }
 
 
     export interface RouteNode {
+        _id: string
         color?: string
         persons: (Person | string)[]
         locations: (Location | string)[]

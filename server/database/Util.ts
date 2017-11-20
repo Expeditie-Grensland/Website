@@ -23,6 +23,9 @@ export namespace Util {
     }
 
     export function getDocument<T extends mongoose.Document>(document: DocumentOrID<T>, findByID: (id: string) => Promise<T>): Promise<T> {
+        if(isDocument(document))
+            return Promise.resolve(document)
+
         return findByID(getDocumentId(document))
     }
 
