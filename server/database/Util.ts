@@ -10,7 +10,7 @@ export namespace Util {
         } else if(isObjectID(document)) {
             return document.toHexString()
         }
-        return document._id
+        return getDocumentId(document._id)
     }
 
     export function getObjectID<T extends mongoose.Document>(document: DocumentOrID<T>): ObjectID {
@@ -19,17 +19,11 @@ export namespace Util {
         } else if(isObjectID(document)) {
             return document
         }
-        return document._id
+        return getObjectID(document._id)
     }
 
     export function getDocument<T extends mongoose.Document>(document: DocumentOrID<T>, findByID: (id: string) => Promise<T>): Promise<T> {
-        if(isDocument(document)) {
-            return Promise.resolve(document)
-        } else if(isObjectID(document)) {
-            return findByID(document.toHexString())
-        } else {
-            return findByID(document)
-        }
+        return findByID(getDocumentId(document))
     }
 
     export function getDocumentIds<T extends mongoose.Document>(documents: DocumentOrID<T>[]): string[] {
@@ -37,13 +31,7 @@ export namespace Util {
             return []
         }
 
-        return documents.map((doc) => {
-            if(isDocument(doc))
-                return doc._id
-            if(isObjectID(doc))
-                return doc.toHexString()
-            return doc
-        })
+        return documents.map((doc) => getDocumentId(doc))
     }
 
     export function getObjectIDs<T extends mongoose.Document>(documents: DocumentOrID<T>[]): ObjectID[] {

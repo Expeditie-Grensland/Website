@@ -2,7 +2,7 @@ import * as express from "express"
 import {Person} from "../database/Person"
 import {Expeditie} from "../database/Expeditie"
 import {Config} from "../Config"
-import {TableData, Tables} from "../database/Tables";
+import {TableData, Tables} from "../database/Tables"
 import {Util} from "../database/Util"
 import {Route} from "../database/Route"
 
@@ -130,7 +130,6 @@ export namespace Debug {
                         "Netherlands", "Iran", "Azerbaijan", "Georgia", "Armenia", "Russia", "Abkhazia", "Belarus", "Lithuania", "Belgium",
                     ],
                 })
-                    //.then(expeditie => Expeditie.setGroups([baku, teheran])(expeditie))
             })
 
             Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(([nk, bk, kk]) => {
@@ -141,9 +140,12 @@ export namespace Debug {
                     let teheran = [matthijs, diederik]
                     let moscow = [matthijs, diederik, martijnA, maurice]
 
+                    console.log("Setting groups: [baku, teheran]")
                     return Expeditie.setGroups([baku, teheran])(kk).then((kk) => {
+                        console.log("Setting groups: [baku ++ teheran]")
                         return Expeditie.setGroups([baku.concat(teheran)])(kk)
                     }).then((kk) => {
+                        console.log("Setting groups: [moscow]")
                         return Expeditie.setGroups([moscow])(kk)
                     })
                 }).then(() => res.send("Expedities Generated"))

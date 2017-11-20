@@ -3,11 +3,11 @@ import {ObjectID} from "bson"
 import {Countries} from "./Countries"
 import {Person} from "./Person"
 import {Route} from "./Route"
+import {Util} from "./Util"
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
 import PersonDocument = TableData.Person.PersonDocument
 import Country = Countries.Country
 import Expeditie = TableData.Expeditie.Expeditie
-import {Util} from "./Util"
 
 
 export namespace Expeditie {
@@ -113,16 +113,24 @@ export namespace Expeditie {
 
     export function setRoute(route: RouteOrID): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie => Tables.Expeditie.findByIdAndUpdate(Util.getDocumentId(expeditie), {route: Util.getObjectID(route)}, {new: true}).exec()
+    }
 
+    export function getRoute(expeditie: ExpeditieOrID): Promise<RouteDocument> {
+        return Util.getDocument(expeditie, getExpeditieById).then(expeditie =>  Util.getDocument(expeditie.route, Route.getRouteById))
     }
 
     export function setGroups(groups: PersonOrID[][]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return (expeditie: ExpeditieOrID) => {
             const pExpeditie = Util.getDocument(expeditie, getExpeditieById)
             const pRoute = pExpeditie.then((expeditie) => {
-                return Util.getDocument(expeditie.route, Route.getRouteById).catch(() => {
-                    return Route.createRoute({}).then(route => setRoute(route)(expeditie))
-                })
+                if(expeditie.route === undefined) {
+                    return Route.createRoute({}).then(route => {
+                        setRoute(route)(expeditie)
+                        return route
+                    })
+                }
+
+                return getRoute(expeditie)
             }).then(Route.setGroups(expeditie, groups))
 
             return Promise.all([pExpeditie, pRoute]).then(([expeditie, route]) => {
