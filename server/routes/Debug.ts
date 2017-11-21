@@ -163,7 +163,6 @@ export namespace Debug {
                 promises.push(Tables.Expeditie.remove({}))
                 promises.push(Tables.Person.remove({}))
                 promises.push(Tables.Route.remove({}))
-                promises.push(Tables.RouteEdge.remove({}))
                 promises.push(Tables.RouteNode.remove({}))
                 promises.push(Tables.Location.remove({}))
 

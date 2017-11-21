@@ -24,6 +24,7 @@ $(document).ready(() => {
         for(let edge of (<Tables.RouteEdge[]>node.edges)) {
             let modifiedEdge: any = edge
             modifiedEdge.from = node
+            modifiedEdge.force = .005
 
             let to = <Tables.RouteNode>edge.to
 
@@ -37,7 +38,49 @@ $(document).ready(() => {
         }
     }
 
+    let idx = 0
+
+    for(let startingNode of <Tables.RouteNode[]>routeData.startingNodes) {
+        edges.push(<any>{
+            _id: "0",
+            to: startingNode,
+            people: startingNode.persons,
+            from: {
+                x: 0,
+                y: idx * 20
+            },
+            force: .0001
+        })
+
+        idx++
+    }
+
     (<Tables.RouteNode[]>routeData.startingNodes).forEach(node => addNode(node))
+
+    idx = 0
+
+    for(let currentNodeId of <string[]>routeData.currentNodes) {
+        let currentNode = nodes.filter(node => node._id == currentNodeId)[0]
+
+        if(currentNode !== undefined) {
+            edges.push(<any>{
+                _id:    "0",
+                to:     {
+                    x: width,
+                    y: idx * 20
+                },
+                people: currentNode.persons,
+                from:   currentNode,
+                force: .0001
+            })
+
+            currentNode.edges.push(edges[edges.length - 1])
+            idx++
+        }
+    }
+
+    console.log(edges)
+    console.log(nodes)
 
     function getNodeLabel(index: number): (node: Tables.RouteNode) => string {
         return node => {
@@ -67,8 +110,6 @@ $(document).ready(() => {
         }
     }
 
-    console.log(nodes)
-
     const nodeElements = svg.append('g')
         .selectAll('circle')
         .data(nodes)
@@ -88,7 +129,10 @@ $(document).ready(() => {
 
     simulation.force('link', d3.forceLink()
         .id(link => (<Tables.RouteEdge>link)._id)
-        .strength(1))
+        .strength(link => {
+            console.log((<any>link).force)
+            return (<any>link).force
+        }))
 
     const arrowHead = svg.append('defs')
         .append('marker')
@@ -132,6 +176,8 @@ $(document).ready(() => {
     let nodeElementsAny: any = nodeElements
     nodeElementsAny.call(dragDrop)
 
+    //let force: any = simulation.links(edges)
+
 
     simulation.nodes(nodes).on('tick', () => {
         nodeElements
@@ -149,7 +195,4 @@ $(document).ready(() => {
             .attr('x2', edge => (<any>edge).to.x)
             .attr('y2', edge => (<any>edge).to.y)
     })
-
-    let force: any = simulation.force('link')
-    force.link(edges)
 })

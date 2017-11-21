@@ -7,7 +7,7 @@ export namespace Tables {
     export let Person: mongoose.Model<TableData.Person.PersonDocument>
 //    export let Place: mongoose.Model<TableData.Place.PlaceDocument>
     export let Route: mongoose.Model<TableData.Route.RouteDocument>
-    export let RouteEdge: mongoose.Model<TableData.RouteEdge.RouteEdgeDocument>
+    //export let RouteEdge: mongoose.Model<TableData.RouteEdge.RouteEdgeDocument>
     export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>
 
     export function initTables() {
@@ -16,7 +16,7 @@ export namespace Tables {
         Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
 //        Place = mongoose.model(TableIDs.Place, TableData.Place.placeSchema)
         Route = mongoose.model(TableIDs.Route, TableData.Route.routeSchema)
-        RouteEdge = mongoose.model(TableIDs.RouteEdge, TableData.RouteEdge.routeEdgeSchema)
+    //    RouteEdge = mongoose.model(TableIDs.RouteEdge, TableData.RouteEdge.routeEdgeSchema)
         RouteNode = mongoose.model(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema)
     }
 }
@@ -205,8 +205,6 @@ export namespace TableData {
             to: RouteNode.RouteNodeDocument | string | ObjectID
             people: (Person.PersonDocument | string | ObjectID)[]
         }
-
-        export interface RouteEdgeDocument extends RouteEdge, mongoose.Document {}
     }
 
     /**
@@ -219,14 +217,14 @@ export namespace TableData {
             color: String,
             persons: [reference(TableIDs.Person)],
             locations: [reference(TableIDs.Location)],
-            edges: [reference(TableIDs.RouteEdge)]
+            edges: [RouteEdge.routeEdgeSchema]
         })
 
         export interface RouteNode {
             color?: string
             persons: (Person.PersonDocument | string | ObjectID)[]
             locations: (Location.LocationDocument | string | ObjectID)[]
-            edges: (RouteEdge.RouteEdgeDocument | string | ObjectID)[]
+            edges: RouteEdge.RouteEdge[]
         }
 
         export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
