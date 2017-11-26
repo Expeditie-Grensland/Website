@@ -42,14 +42,14 @@ export namespace Debug {
             let robertSl = Person.getPerson("Robert Slomp")
 
             let allPeoplePromise: Promise<PersonDocument[]> = Promise.all<PersonDocument>([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl])
-            let noordkaapPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, martijnB, robertSan])
+            let noordkaapPersonPromise1 = Promise.all([maurice, ronald, diederik, martijnA, robertSan])
+            let noordkaapPersonPromise2 = martijnB
             let balkanPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, robertSan, matthijs, robertSl])
             let kaukasusPersonPromise1 = Promise.all([maurice, ronald, martijnA])
             let kaukasusPersonPromise2 = Promise.all([diederik, matthijs])
 
-            const noordkaapPromise = noordkaapPersonPromise.then((persons) => {
+            const noordkaapPromise = Promise.all([noordkaapPersonPromise1, noordkaapPersonPromise2]).then(([group, martijnB]) => {
                 console.log("Noordkaap people successfully retrieved!")
-                console.log(persons)
                 return Expeditie.createExpeditie({
                     sequenceNumber: 0,
                     name: "Noordkaap",
@@ -66,11 +66,11 @@ export namespace Debug {
                             y: 50,
                         },
                     },
-                    participants: Util.getObjectIDs(persons),
+                    participants: Util.getObjectIDs(group.concat(martijnB)),
                     countries: [
                         "Netherlands", "Germany", "Poland", "Lithuania", "Latvia", "Estonia", "Finland", "Sweden", "Norway", "Denmark",
                     ],
-                }).then(Expeditie.setGroups([persons]))
+                }).then(Expeditie.setGroups([group.concat(martijnB)])).then(Expeditie.setGroups([group, [martijnB]]))
             }).then((expeditie) => {
                 console.log("Noordkaap expeditie successfully created!")
                 return expeditie
@@ -78,7 +78,6 @@ export namespace Debug {
 
             const balkanPromise = balkanPersonPromise.then((persons) => {
                 console.log("Balkan people successfully retrieved!")
-                console.log(persons)
                 return Expeditie.createExpeditie({
                     sequenceNumber: 1,
                     name: "Balkan",
@@ -107,7 +106,6 @@ export namespace Debug {
 
             const kaukasusPromise = Promise.all([kaukasusPersonPromise1, kaukasusPersonPromise2]).then(([baku, teheran]) => {
                 console.log("Kaukasus people successfully retrieved!")
-                console.log(baku.concat(teheran))
                 return Expeditie.createExpeditie({
                     sequenceNumber: 2,
                     name: "Kaukasus",
