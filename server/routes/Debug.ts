@@ -70,7 +70,7 @@ export namespace Debug {
                     countries: [
                         "Netherlands", "Germany", "Poland", "Lithuania", "Latvia", "Estonia", "Finland", "Sweden", "Norway", "Denmark",
                     ],
-                })
+                }).then(Expeditie.setGroups([persons]))
             }).then((expeditie) => {
                 console.log("Noordkaap expeditie successfully created!")
                 return expeditie
@@ -99,7 +99,7 @@ export namespace Debug {
                     countries: [
                         "Netherlands", "Germany", "Austria", "Slovenia", "Croatia", "Bosnia and Herz.", "Montenegro", "Albania", "Kosovo", "Macedonia", "Greece", "Bulgaria", "Romania", "Moldova", "Hungary", "Slovakia", "Czech Rep.",
                     ],
-                })
+                }).then(Expeditie.setGroups([persons]))
             }).then((expeditie) => {
                 console.log("Balkan expeditie successfully created!")
                 return expeditie
@@ -147,14 +147,6 @@ export namespace Debug {
                         console.log("Setting groups: [moscow, [ronald]]")
                         return Expeditie.setGroups([moscow, [ronald]])(kk)
                     })
-                        .then((kk) => {
-                        console.log("Setting groups: [[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan], [ronald]]")
-                        return Expeditie.setGroups([[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan], [ronald]])(kk)
-                    })
-                        .then((kk) => {
-                            console.log("Setting groups: [[maurice, diederik, matthijs, martijnB, martijnA, robertSl, robertSan, ronald]]")
-                            return Expeditie.setGroups([[maurice, diederik, matthijs, martijnB, martijnA, robertSl, robertSan, ronald]])(kk)
-                        })
                 })
             }).then(() => res.send("Expedities Generated")).catch(err => Promise.reject("Something went wrong during the setting of the Kaukasus Expeditie groups: " + err))
         })
