@@ -1,6 +1,15 @@
 namespace Tables {
+
+    export type DocumentOrID<T> = T | string
+    export type ExpeditieOrID = DocumentOrID<Expeditie>
+    export type LocationOrID = DocumentOrID<Location>
+    export type PersonOrID = DocumentOrID<Person>
+    export type RouteOrID = DocumentOrID<Route>
+    export type RouteNodeOrID = DocumentOrID<RouteNode>
+
+
     export interface Expeditie {
-        _id: string
+        _id: string,
         sequenceNumber: number
         name: string
         nameShort: string
@@ -17,54 +26,56 @@ namespace Tables {
         mapUrl?: string
         movieUrl: string
         movieCoverUrl: string
-        participants: (string | Person)[]
-        route?: string | Route
+        participants: PersonOrID[]
+        route?: RouteOrID
         countries: string[]
     }
 
-
     export interface Location {
-        _id: string
-        time: Date,
-        timezone: string,
-        lat: number,
-        lon: number,
-        altitude: number,
-        horizontalAccuracy?: number,
-        verticalAccuracy?: number,
-        bearing?: number,
-        bearingAccuracy?: number,
-        speed?: number,
+        _id: string,
+        person: PersonOrID
+        node: RouteNodeOrID
+        time: Date
+        timezone: string
+        lat: number
+        lon: number
+        altitude: number
+        horizontalAccuracy?: number
+        verticalAccuracy?: number
+        bearing?: number
+        bearingAccuracy?: number
+        speed?: number
         speedAccuracy?: number
     }
 
+
     export interface Person {
-        _id: string
+        _id: string,
         email?: string
         name: string
-        expedities?: (string | Expeditie)[]
+        expedities?: ExpeditieOrID[]
         language?: string
     }
 
+
     export interface Route {
-        _id: string
-        startingNodes?: (RouteNode | string)[]
-        currentNodes?: (RouteNode | string)[]
+        _id: string,
+        startingNodes?: RouteNodeOrID[]
+        currentNodes?: RouteNodeOrID[]
     }
 
 
     export interface RouteEdge {
-        _id: string
-        to: RouteNode | string
-        people: (Person | string)[]
+        _id: string,
+        to: RouteNodeOrID
+        people: PersonOrID[]
     }
 
-
     export interface RouteNode {
-        _id: string
+        _id: string,
+        route: RouteOrID
         color?: string
-        persons: (Person | string)[]
-        locations: (Location | string)[]
-        edges: (RouteEdge | string)[]
+        persons: PersonOrID[]
+        edges: RouteEdge[]
     }
 }

@@ -25,10 +25,10 @@ export namespace Debug {
             let promises = []
 
             for(let name of users) {
-                promises.push(Person.createPerson(name))
+                promises.push(Person.createPerson({name: name}))
             }
 
-            Promise.all(promises).then(() => res.send('People created'))
+            Promise.all(promises).then(() => res.send('People created')).catch(err => res.send("Error Occurred: " + err))
         })
 
         app.get("/generate_expedities", (req, res) => {
@@ -49,6 +49,7 @@ export namespace Debug {
 
             const noordkaapPromise = noordkaapPersonPromise.then((persons) => {
                 console.log("Noordkaap people successfully retrieved!")
+                console.log(persons)
                 return Expeditie.createExpeditie({
                     sequenceNumber: 0,
                     name: "Noordkaap",
@@ -65,7 +66,7 @@ export namespace Debug {
                             y: 50,
                         },
                     },
-                    participants: persons.map((person) => person._id),
+                    participants: Util.getObjectIDs(persons),
                     countries: [
                         "Netherlands", "Germany", "Poland", "Lithuania", "Latvia", "Estonia", "Finland", "Sweden", "Norway", "Denmark",
                     ],
@@ -73,14 +74,11 @@ export namespace Debug {
             }).then((expeditie) => {
                 console.log("Noordkaap expeditie successfully created!")
                 return expeditie
-            }).then((expeditie) => {
-
-
-                return expeditie.populate('participants').execPopulate()
-            })
+            }).catch(err => Promise.reject("Something went wrong during the creation of the Noordkaap Expeditie: " + err))
 
             const balkanPromise = balkanPersonPromise.then((persons) => {
                 console.log("Balkan people successfully retrieved!")
+                console.log(persons)
                 return Expeditie.createExpeditie({
                     sequenceNumber: 1,
                     name: "Balkan",
@@ -97,7 +95,7 @@ export namespace Debug {
                             y: 50,
                         },
                     },
-                    participants: persons.map((person) => person._id),
+                    participants: Util.getObjectIDs(persons),
                     countries: [
                         "Netherlands", "Germany", "Austria", "Slovenia", "Croatia", "Bosnia and Herz.", "Montenegro", "Albania", "Kosovo", "Macedonia", "Greece", "Bulgaria", "Romania", "Moldova", "Hungary", "Slovakia", "Czech Rep.",
                     ],
@@ -105,10 +103,11 @@ export namespace Debug {
             }).then((expeditie) => {
                 console.log("Balkan expeditie successfully created!")
                 return expeditie
-            })
+            }).catch(err => Promise.reject("Something went wrong during the creation of the Balkan Expeditie: " + err))
 
             const kaukasusPromise = Promise.all([kaukasusPersonPromise1, kaukasusPersonPromise2]).then(([baku, teheran]) => {
                 console.log("Kaukasus people successfully retrieved!")
+                console.log(baku.concat(teheran))
                 return Expeditie.createExpeditie({
                     sequenceNumber: 2,
                     name: "Kaukasus",
@@ -125,18 +124,18 @@ export namespace Debug {
                             y: 70,
                         },
                     },
-                    participants: teheran.map((person) => person._id).concat(baku.map((p) => p._id)),
+                    participants: Util.getObjectIDs(teheran).concat(Util.getObjectIDs(baku)),
                     countries: [
                         "Netherlands", "Iran", "Azerbaijan", "Georgia", "Armenia", "Russia", "Abkhazia", "Belarus", "Lithuania", "Belgium",
                     ],
-                })
+                }).catch(err => Promise.reject("Something went wrong during the creation of the Kaukasus Expeditie: " + err))
             })
 
-            Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(([nk, bk, kk]) => {
-                allPeoplePromise.then(([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl]) => {
+            return Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(([nk, bk, kk]) => {
+                return allPeoplePromise.then(([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl]) => {
                     console.log("Setting Kaukasus groups..")
 
-                    let baku: Person.PersonOrID[] = [ronald, martijnA, maurice]
+                    let baku: TableData.PersonOrID[] = [ronald, martijnA, maurice]
                     let teheran = [matthijs, diederik]
                     let moscow = [matthijs, diederik, martijnA, maurice]
 
@@ -145,18 +144,22 @@ export namespace Debug {
                         console.log("Setting groups: [baku ++ teheran]")
                         return Expeditie.setGroups([baku.concat(teheran)])(kk)
                     }).then((kk) => {
-                        console.log("Setting groups: [moscow]")
-                        return Expeditie.setGroups([moscow])(kk)
+                        console.log("Setting groups: [moscow, [ronald]]")
+                        return Expeditie.setGroups([moscow, [ronald]])(kk)
                     })
                         .then((kk) => {
-                        console.log("Setting groups: [[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan]]")
-                        return Expeditie.setGroups([[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan]])(kk)
+                        console.log("Setting groups: [[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan], [ronald]]")
+                        return Expeditie.setGroups([[maurice, diederik], [matthijs, martijnB], [martijnA, robertSl], [robertSan], [ronald]])(kk)
                     })
-                }).then(() => res.send("Expedities Generated"))
-            })
+                        .then((kk) => {
+                            console.log("Setting groups: [[maurice, diederik, matthijs, martijnB, martijnA, robertSl, robertSan, ronald]]")
+                            return Expeditie.setGroups([[maurice, diederik, matthijs, martijnB, martijnA, robertSl, robertSan, ronald]])(kk)
+                        })
+                })
+            }).then(() => res.send("Expedities Generated")).catch(err => Promise.reject("Something went wrong during the setting of the Kaukasus Expeditie groups: " + err))
         })
 
-        if(Config.debug) {
+        //if(Config.debug) {
             app.get('/reset_database', (req, res) => {
                 let promises = []
 
@@ -166,20 +169,23 @@ export namespace Debug {
                 promises.push(Tables.RouteNode.remove({}))
                 promises.push(Tables.Location.remove({}))
 
-                Promise.all(promises).then(() => res.send("Database cleared."))
+                Promise.all(promises).then(() => res.send("Database cleared.")).catch(err => res.send("Error Occurred: " + err))
             })
-        }
+        //}
 
         app.get('/route_diagram', (req, res) => {
             Tables.Expeditie.findOne({name: "Kaukasus"}).exec().then((expeditie) => {
                 Util.getDocument(expeditie.route, Route.getRouteById).then((route) => {
-                    Route.populateCompletely(route).then((route) => {
-                        res.render("routeDiagram", {
-                            route: route
+                    Route.getRouteNodesForRoute(route).then((nodes) => {
+                        return Promise.all(nodes.map(node => Route.populateNodePersons(node))).then(nodes => {
+                            res.render("routeDiagram", {
+                                route: route,
+                                nodes: nodes
+                            })
                         })
                     })
                 })
-            })
+            }).catch(err => res.send("Error Occurred: " + err))
         })
     }
 }

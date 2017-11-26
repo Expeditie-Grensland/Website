@@ -14,6 +14,7 @@ block scripts
 
     script.
         var routeData = !{JSON.stringify(route).replace(/<\//g, '<\\/')}
+        var nodeData = !{JSON.stringify(nodes).replace(/<\//g, '<\\/')}
 
     script(src='/scripts/sockets/Sockets.js')
     script(src='/scripts/sockets/SocketHandler.js')

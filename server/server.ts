@@ -7,6 +7,8 @@ import {Setup} from "./Setup"
 import {Routes} from "./routes/Routes"
 import {Config} from "./Config"
 
+Error.stackTraceLimit = Infinity
+
 const app = express()
 const server = http.createServer(app)
 const io = socket(server)

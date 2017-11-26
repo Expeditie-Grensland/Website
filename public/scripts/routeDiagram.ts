@@ -1,4 +1,5 @@
 declare var routeData: Tables.Route
+declare var nodeData: Tables.RouteNode[]
 
 $(document).ready(() => {
     const svg = d3.select('svg'),
@@ -9,75 +10,76 @@ $(document).ready(() => {
         .force('charge', d3.forceManyBody().strength(-10))
         .force('center', d3.forceCenter(width / 2, height / 2))
 
-    console.log(routeData)
+    console.log(nodeData)
+
+    const map: Map<string, Tables.RouteNode> = new Map()
+
+    for(let node of nodeData) {
+        map.set(node._id, node)
+    }
 
     function getNodeColor(node: Tables.RouteNode) {
         return node.color
     }
 
-    let nodes: Tables.RouteNode[] = []
+    let nodes: Tables.RouteNode[] = nodeData
     let edges: Tables.RouteEdge[] = []
 
-    function addNode(node: Tables.RouteNode) {
-        nodes.push(node)
+    // let idx = 0
+    //
+    // for(let startingNode of <Tables.RouteNode[]>routeData.startingNodes) {
+    //     edges.push(<any>{
+    //         _id: "0",
+    //         to: startingNode,
+    //         people: startingNode.persons,
+    //         from: {
+    //             x: 0,
+    //             y: idx * 20
+    //         },
+    //         force: .0001
+    //     })
+    //
+    //     idx++
+    // }
 
+    for(let node of nodes) {
         for(let edge of (<Tables.RouteEdge[]>node.edges)) {
-            let modifiedEdge: any = edge
-            modifiedEdge.from = node
-            modifiedEdge.force = .005
+            if (edge.to !== undefined) {
+                let modifiedEdge: any = edge
+                modifiedEdge.from = node
+                modifiedEdge.force = .005
 
-            let to = <Tables.RouteNode>edge.to
+                let to = <string>edge.to
+                modifiedEdge.to = nodes.filter(node => node._id == to)[0]
 
-            if(!nodes.map(node => node._id).includes(to._id))
-                addNode(to)
-            else
-                modifiedEdge.to = nodes.filter(node => node._id == to._id)[0]
+                console.log("to: " + modifiedEdge.to)
 
-
-            edges.push(<Tables.RouteEdge>modifiedEdge)
+                edges.push(<Tables.RouteEdge>modifiedEdge)
+            }
         }
     }
 
-    let idx = 0
-
-    for(let startingNode of <Tables.RouteNode[]>routeData.startingNodes) {
-        edges.push(<any>{
-            _id: "0",
-            to: startingNode,
-            people: startingNode.persons,
-            from: {
-                x: 0,
-                y: idx * 20
-            },
-            force: .0001
-        })
-
-        idx++
-    }
-
-    (<Tables.RouteNode[]>routeData.startingNodes).forEach(node => addNode(node))
-
-    idx = 0
-
-    for(let currentNodeId of <string[]>routeData.currentNodes) {
-        let currentNode = nodes.filter(node => node._id == currentNodeId)[0]
-
-        if(currentNode !== undefined) {
-            edges.push(<any>{
-                _id:    "0",
-                to:     {
-                    x: width,
-                    y: idx * 20
-                },
-                people: currentNode.persons,
-                from:   currentNode,
-                force: .0001
-            })
-
-            currentNode.edges.push(edges[edges.length - 1])
-            idx++
-        }
-    }
+    // idx = 0
+    //
+    // for(let currentNodeId of <string[]>routeData.currentNodes) {
+    //     let currentNode = nodes.filter(node => node._id == currentNodeId)[0]
+    //
+    //     if(currentNode !== undefined) {
+    //         edges.push(<any>{
+    //             _id:    "0",
+    //             to:     {
+    //                 x: width,
+    //                 y: idx * 20
+    //             },
+    //             people: currentNode.persons,
+    //             from:   currentNode,
+    //             force: .0001
+    //         })
+    //
+    //         currentNode.edges.push(edges[edges.length - 1])
+    //         idx++
+    //     }
+    // }
 
     console.log(edges)
     console.log(nodes)

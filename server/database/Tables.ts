@@ -7,7 +7,6 @@ export namespace Tables {
     export let Person: mongoose.Model<TableData.Person.PersonDocument>
 //    export let Place: mongoose.Model<TableData.Place.PlaceDocument>
     export let Route: mongoose.Model<TableData.Route.RouteDocument>
-    //export let RouteEdge: mongoose.Model<TableData.RouteEdge.RouteEdgeDocument>
     export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>
 
     export function initTables() {
@@ -16,7 +15,6 @@ export namespace Tables {
         Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
 //        Place = mongoose.model(TableIDs.Place, TableData.Place.placeSchema)
         Route = mongoose.model(TableIDs.Route, TableData.Route.routeSchema)
-    //    RouteEdge = mongoose.model(TableIDs.RouteEdge, TableData.RouteEdge.routeEdgeSchema)
         RouteNode = mongoose.model(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema)
     }
 }
@@ -29,11 +27,18 @@ export namespace TableIDs {
     export const Person = "Person"
 //    export const Place = "Place"
     export const Route = "Route"
-    export const RouteEdge = "RouteEdge"
     export const RouteNode = "RouteNode"
 }
 
 export namespace TableData {
+
+    export type DocumentOrID<T extends mongoose.Document> = T | string
+    export type ExpeditieOrID = DocumentOrID<Expeditie.ExpeditieDocument>
+    export type LocationOrID = DocumentOrID<Location.LocationDocument>
+    export type PersonOrID = DocumentOrID<Person.PersonDocument>
+    export type RouteOrID = DocumentOrID<Route.RouteDocument>
+    export type RouteNodeOrID = DocumentOrID<RouteNode.RouteNodeDocument>
+
     function reference(to: string): {} {
         return {type: String, ref: to}
     }
@@ -82,8 +87,8 @@ export namespace TableData {
             mapUrl?: string
             movieUrl: string
             movieCoverUrl: string
-            participants: (string | Person.PersonDocument | ObjectID)[]
-            route?: string | Route.RouteDocument | ObjectID
+            participants: PersonOrID[]
+            route?: RouteOrID
             countries: string[]
         }
 
@@ -93,9 +98,12 @@ export namespace TableData {
     /**
      * A Location describes the output of a GPS receiver, using latitude, longitude
      * altitude, and speed and bearing of travel. For each variable, an accuracy is provided.
+     * A Location belongs to one, and only one, RouteNode.
      */
     export namespace Location {
         export const locationSchema = new mongoose.Schema({
+            person: reference(TableIDs.Person),
+            node: reference(TableIDs.RouteNode),
             time: Date,
             timezone: String,
             lat: Number,
@@ -110,21 +118,22 @@ export namespace TableData {
         })
 
         export interface Location {
-            time: Date,
-            timezone: string,
-            lat: number,
-            lon: number,
-            altitude: number,
-            horizontalAccuracy?: number,
-            verticalAccuracy?: number,
-            bearing?: number,
-            bearingAccuracy?: number,
-            speed?: number,
+            person: PersonOrID
+            node: RouteNodeOrID
+            time: Date
+            timezone: string
+            lat: number
+            lon: number
+            altitude: number
+            horizontalAccuracy?: number
+            verticalAccuracy?: number
+            bearing?: number
+            bearingAccuracy?: number
+            speed?: number
             speedAccuracy?: number
         }
 
-        export interface LocationDocument extends Location, mongoose.Document {
-        }
+        export interface LocationDocument extends Location, mongoose.Document {}
     }
 
     /**
@@ -145,7 +154,7 @@ export namespace TableData {
         export interface Person {
             email?: string
             name: string
-            expedities?: (string | Expeditie.ExpeditieDocument | ObjectID)[]
+            expedities?: ExpeditieOrID[]
             language?: string
         }
 
@@ -185,8 +194,8 @@ export namespace TableData {
         })
 
         export interface Route {
-            startingNodes?: (RouteNode.RouteNodeDocument | string | ObjectID)[]
-            currentNodes?: (RouteNode.RouteNodeDocument | string | ObjectID)[]
+            startingNodes?: RouteNodeOrID[]
+            currentNodes?: RouteNodeOrID[]
         }
 
         export interface RouteDocument extends Route, mongoose.Document {}
@@ -202,28 +211,28 @@ export namespace TableData {
         })
 
         export interface RouteEdge {
-            to: RouteNode.RouteNodeDocument | string | ObjectID
-            people: (Person.PersonDocument | string | ObjectID)[]
+            to: RouteNodeOrID
+            people: PersonOrID[]
         }
     }
 
     /**
-     * A RouteNode is a representation of the locations of one set of people over a continuous timespan. This means that
+     * A RouteNode is a representation of the locations of one group of people over a continuous time span. This means that
      * as soon as a Person moves from one node to another, one or more RouteEdge is added to the edges array and
      * this node is deactivated.
      */
     export namespace RouteNode {
         export const routeNodeSchema = new mongoose.Schema({
+            route: reference(TableIDs.Route),
             color: String,
             persons: [reference(TableIDs.Person)],
-            locations: [reference(TableIDs.Location)],
             edges: [RouteEdge.routeEdgeSchema]
         })
 
         export interface RouteNode {
+            route: RouteOrID
             color?: string
-            persons: (Person.PersonDocument | string | ObjectID)[]
-            locations: (Location.LocationDocument | string | ObjectID)[]
+            persons: PersonOrID[]
             edges: RouteEdge.RouteEdge[]
         }
 

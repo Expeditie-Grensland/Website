@@ -3,13 +3,16 @@ import {Expeditie} from "./Expeditie"
 import PersonDocument = TableData.Person.PersonDocument
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
 import {Util} from "./Util"
+import {ObjectID} from "bson"
 
 export namespace Person {
 
-    export type PersonOrID = Util.DocumentOrID<PersonDocument>
+    import Person = TableData.Person.Person
+    import ExpeditieOrID = TableData.ExpeditieOrID
+    import PersonOrID = TableData.PersonOrID
 
-    export function createPerson(name: string): Promise<PersonDocument> {
-        return Tables.Person.create(<TableData.Person.Person>{name: name})
+    export function createPerson(person: Person): Promise<PersonDocument> {
+        return Tables.Person.create(person)
     }
 
     export function getPerson(name: string): Promise<PersonDocument> {
@@ -24,7 +27,11 @@ export namespace Person {
         return Tables.Person.find({_id: {$in: ids}}).exec()
     }
 
-    export function addExpeditie(expeditie: ExpeditieDocument | string): (person: PersonOrID) => Promise<PersonDocument> {
-        return (person) => Tables.Person.findByIdAndUpdate(Util.getDocumentId(person), {$push: {expedities: Util.getDocumentId(expeditie)}}, {new: true}).exec()
+    export function addExpeditie(expeditie: ExpeditieOrID): (person: PersonOrID) => Promise<PersonDocument> {
+        return person => Tables.Person.findByIdAndUpdate(Util.getObjectID(person), {$push: {expedities: Util.getObjectID(expeditie)}}, {new: true}).exec()
+    }
+
+    export function removeExpeditie(expeditie: ExpeditieOrID): (person: PersonOrID) => Promise<PersonDocument> {
+        return person => Tables.Person.findByIdAndUpdate(Util.getObjectID(person), {$pull: {expedities: Util.getObjectID(expeditie)}}, {new: true}).exec()
     }
 }
