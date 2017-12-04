@@ -168,7 +168,7 @@ export namespace Debug {
                 Util.getDocument(expeditie.route, Route.getRouteById).then((route) => {
                     Route.getRouteNodesForRoute(route).then((nodes) => {
                         return Promise.all(nodes.map(node => Route.populateNodePersons(node))).then(nodes => {
-                            res.render("routeDiagram", {
+                            res.render("debug/routeDiagram", {
                                 route: route,
                                 nodes: nodes
                             })
@@ -176,6 +176,15 @@ export namespace Debug {
                     })
                 })
             }).catch(err => res.send("Error Occurred: " + err))
+        })
+
+        app.get('/import_kaukasus', (req, res) => {
+            res.render('debug/importKaukasus')
+        })
+
+        app.post('/import_kaukasus/data', (req, res) => {
+            res.send("File received " + req.body.json)
+            console.log(req)
         })
     }
 }

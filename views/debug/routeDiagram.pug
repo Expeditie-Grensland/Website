@@ -1,15 +1,15 @@
-extend structure/simple.pug
+extend ../structure/simple.pug
 
 block title
     title Expeditie - Route diagram
 
 block styles
-    include includes/styles.pug
+    include ../includes/styles
 
     meta(name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no')
 
 block scripts
-    include includes/scripts.pug
+    include ../includes/scripts
     script(src='https://d3js.org/d3.v4.min.js')
 
     script.
@@ -19,7 +19,7 @@ block scripts
     script(src='/scripts/sockets/Sockets.js')
     script(src='/scripts/sockets/SocketHandler.js')
     script(src='/scripts/database/Tables.js')
-    script(src="/scripts/routeDiagram.js")
+    script(src="/scripts/debug/routeDiagram.js")
 
 
 block body
