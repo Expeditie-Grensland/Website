@@ -34,7 +34,7 @@ namespace Tables {
     export interface Location {
         _id: string,
         person: PersonOrID
-        node: RouteNodeOrID
+        node?: RouteNodeOrID
         time: Date
         timezone: string
         lat: number

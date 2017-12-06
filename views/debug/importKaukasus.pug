@@ -11,9 +11,16 @@ block scripts
 
     script(src='/scripts/sockets/Sockets.js')
     script(src='/scripts/sockets/SocketHandler.js')
+    script(src='/scripts/database/LegacyTables.js')
     script(src='/scripts/database/Tables.js')
     script(src="/scripts/debug/importKaukasus.js")
 
 
 block body
-    input#data(type='file')
+    p Enter Died & Matt file here:
+    input#died(type='file')
+    p Enter Maurice file here:
+    input#maurice(type='file')
+    p Enter Boine file here:
+    input#ronald(type='file')
+    input#submit(type='submit' value='upload')

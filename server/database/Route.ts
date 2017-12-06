@@ -1,14 +1,14 @@
 import {TableData, Tables} from "./Tables"
 import {Util} from "./Util"
 import {Expeditie} from "./Expeditie"
-import {ObjectID} from "bson"
+import {Person} from "./Person"
+import {Location} from "./Location"
 import randomColor = require("randomcolor")
 
 import RouteDocument = TableData.Route.RouteDocument
 import RouteNode = TableData.RouteNode.RouteNode
 import RouteEdge = TableData.RouteEdge.RouteEdge
 import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
-import {Person} from "./Person"
 
 export namespace Route {
     import ExpeditieOrID = TableData.ExpeditieOrID
@@ -55,6 +55,14 @@ export namespace Route {
 
     export function getStartingNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
         return getRoute(route).then(route => getRouteNodes(route.startingNodes))
+    }
+
+    export function getCurrentNodeWithPerson(person: PersonOrID): (route: RouteOrID) => Promise<RouteNodeDocument> {
+        return route => Tables.RouteNode.findOne(
+            {
+                route: Util.getObjectID(route),
+                persons: Util.getObjectID(person)
+            }).exec()
     }
 
     function getRouteNodes(nodes: RouteNodeOrID[]): Promise<RouteNodeDocument[]> {

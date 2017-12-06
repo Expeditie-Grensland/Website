@@ -1,7 +1,7 @@
 import {TableData, Tables} from "./Tables"
-import {ObjectID} from "bson"
 import {Countries} from "./Countries"
 import {Person} from "./Person"
+import {Location} from "./Location"
 import {Route} from "./Route"
 import {Util} from "./Util"
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
@@ -26,6 +26,10 @@ export namespace Expeditie {
 
             return expedities
         })
+    }
+
+    export function getExpeditieByName(name: string): Promise<ExpeditieDocument> {
+        return Tables.Expeditie.findOne({name: name}).exec()
     }
 
     function expeditiesChanged<T>(arg: T): Promise<T> {
@@ -138,5 +142,17 @@ export namespace Expeditie {
                 return expeditie
             })
         }
+    }
+
+    export function addLocation(location: TableData.Location.Location): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+        return expeditie => getExpeditie(expeditie).then(expeditie => {
+            return Location.createLocation(location, expeditie.route).then(location => expeditie)
+        })
+    }
+
+    export function addLocations(locations: TableData.Location.Location[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+        return expeditie => getExpeditie(expeditie).then(expeditie => {
+            return Location.createLocations(locations, expeditie.route).then(location => expeditie)
+        })
     }
 }

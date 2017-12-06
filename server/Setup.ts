@@ -51,7 +51,7 @@ export namespace Setup {
         app.set('views', viewsDir)
         app.use(i18nextMiddleware.handle(i18next))
         app.use(bodyParser.urlencoded({extended: true}))
-        app.use(bodyParser.json())
+        app.use(bodyParser.json({limit: '80MB'})) //TODO change this to something more sensible after importing.
         app.use(stylus.middleware(publicDir))
         app.use(express.static(publicDir))
     }

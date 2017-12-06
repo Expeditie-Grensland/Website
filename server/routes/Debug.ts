@@ -1,14 +1,14 @@
 import * as express from "express"
 import {Person} from "../database/Person"
 import {Expeditie} from "../database/Expeditie"
+import {Location} from "../database/Location"
 import {Config} from "../Config"
-import {TableData, Tables} from "../database/Tables"
+import {LegacyTableData, TableData, Tables} from "../database/Tables"
 import {Util} from "../database/Util"
 import {Route} from "../database/Route"
+import PersonDocument = TableData.Person.PersonDocument
 
 export namespace Debug {
-
-    import PersonDocument = TableData.Person.PersonDocument
 
     export function init(app: express.Express) {
 
@@ -70,7 +70,7 @@ export namespace Debug {
                     countries: [
                         "Netherlands", "Germany", "Poland", "Lithuania", "Latvia", "Estonia", "Finland", "Sweden", "Norway", "Denmark",
                     ],
-                }).then(Expeditie.setGroups([group.concat(martijnB)])).then(Expeditie.setGroups([group, [martijnB]]))
+                })//.then(Expeditie.setGroups([group.concat(martijnB)])).then(Expeditie.setGroups([group, [martijnB]]))
             }).then((expeditie) => {
                 console.log("Noordkaap expeditie successfully created!")
                 return expeditie
@@ -98,7 +98,7 @@ export namespace Debug {
                     countries: [
                         "Netherlands", "Germany", "Austria", "Slovenia", "Croatia", "Bosnia and Herz.", "Montenegro", "Albania", "Kosovo", "Macedonia", "Greece", "Bulgaria", "Romania", "Moldova", "Hungary", "Slovakia", "Czech Rep.",
                     ],
-                }).then(Expeditie.setGroups([persons]))
+                })//.then(Expeditie.setGroups([persons]))
             }).then((expeditie) => {
                 console.log("Balkan expeditie successfully created!")
                 return expeditie
@@ -130,7 +130,7 @@ export namespace Debug {
             })
 
             return Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(([nk, bk, kk]) => {
-                return allPeoplePromise.then(([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl]) => {
+                /**return allPeoplePromise.then(([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl]) => {
                     console.log("Setting Kaukasus groups..")
 
                     let baku: TableData.PersonOrID[] = [ronald, martijnA, maurice]
@@ -145,7 +145,7 @@ export namespace Debug {
                         console.log("Setting groups: [moscow, [ronald]]")
                         return Expeditie.setGroups([moscow, [ronald]])(kk)
                     })
-                })
+                })*/
             }).then(() => res.send("Expedities Generated")).catch(err => Promise.reject("Something went wrong during the setting of the Kaukasus Expeditie groups: " + err))
         })
 
@@ -183,8 +183,49 @@ export namespace Debug {
         })
 
         app.post('/import_kaukasus/data', (req, res) => {
-            res.send("File received " + req.body.json)
-            console.log(req)
+            const maurice = Person.getPerson("Maurice Meedendorp")
+            const ronald = Person.getPerson("Ronald Kremer")
+            const diederik = Person.getPerson("Diederik Blaauw")
+            const matthijs = Person.getPerson("Matthijs Nuus")
+            const martijnA = Person.getPerson("Martijn Atema")
+            const kaukasus = Expeditie.getExpeditieByName("Kaukasus")
+
+            const data: LegacyTableData.Kaukasus.ExportJSON = req.body
+
+            Promise.all([matthijs, diederik, maurice, ronald, martijnA])
+                .then(([matthijs, diederik, maurice, ronald, martijnA]) => {
+                    const diederikData = Location.removePingData(data.diederik.route, diederik).sort((l1, l2) => l1.timestamp - l2.timestamp)
+                    const mauriceData = Location.removePingData(data.maurice.route, maurice).sort((l1, l2) => l1.timestamp - l2.timestamp)
+                    const ronaldData = Location.removePingData(data.ronald.route, ronald).sort((l1, l2) => l1.timestamp - l2.timestamp)
+
+                    const mauriceData1 = mauriceData.filter(location =>
+                            location.timestamp <= diederikData[diederikData.length-1].timestamp
+                        ) //Baku
+                    const mauriceData2 = mauriceData.filter(location =>
+                            location.timestamp > diederikData[diederikData.length-1].timestamp &&
+                            location.timestamp <= ronaldData[0].timestamp
+                        ) //Baku - Moscow
+                    const mauriceData3 = mauriceData.filter(location =>
+                            location.timestamp > ronaldData[0].timestamp
+                        ) //Moscow
+
+                    console.log("mauriceData lengths: " + mauriceData.length + " " + mauriceData1.length + " " + mauriceData2.length + " " + mauriceData3.length)
+
+                    kaukasus.catch(err => res.send("Kaukasus not found. Are expedities initialized? Error: " + err))
+
+                    return kaukasus
+                        .then(Expeditie.setGroups([[matthijs, diederik], [maurice, ronald, martijnA]]))
+                        .then(Expeditie.addLocations(diederikData))
+                        .then(Expeditie.addLocations(mauriceData1))
+                        .then(Expeditie.setGroups([[matthijs, diederik, maurice, ronald, martijnA]]))
+                        .then(Expeditie.addLocations(mauriceData2))
+                        .then(Expeditie.setGroups([[matthijs, diederik, maurice, martijnA], [ronald]]))
+                        .then(Expeditie.addLocations(ronaldData))
+                        .then(Expeditie.addLocations(mauriceData3))
+
+                        .then(() => res.send("File received")).then(() => console.log("Done"))
+                        .then(() => console.log("mauriceData lengths: " + mauriceData.length + " " + mauriceData1.length + " " + mauriceData2.length + " " + mauriceData3.length))
+                }).catch(err => res.send("Persons not found. Are people initialized? Error: " + err))
         })
     }
 }

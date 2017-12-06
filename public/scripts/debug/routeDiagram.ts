@@ -92,6 +92,8 @@ $(document).ready(() => {
                 names.push(person.name)
             }
 
+            names.push((<any>node).locationCount + " locations")
+
             return names[index]
         }
     }
@@ -105,7 +107,7 @@ $(document).ready(() => {
                 longestNameCount = node.persons.length
         }
 
-        for (let i = 0 ; i < longestNameCount; i++) {
+        for (let i = 0 ; i < longestNameCount + 1; i++) {
             element.append('tspan')
                 .attr('dy', "1.2em")
                 .text(getNodeLabel(i))

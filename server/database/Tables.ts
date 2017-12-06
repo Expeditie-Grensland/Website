@@ -1,5 +1,4 @@
 import * as mongoose from "mongoose"
-import {ObjectID} from "bson"
 
 export namespace Tables {
     export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>
@@ -104,7 +103,7 @@ export namespace TableData {
         export const locationSchema = new mongoose.Schema({
             person: reference(TableIDs.Person),
             node: reference(TableIDs.RouteNode),
-            time: Date,
+            timestamp: Number,
             timezone: String,
             lat: Number,
             lon: Number,
@@ -119,8 +118,8 @@ export namespace TableData {
 
         export interface Location {
             person: PersonOrID
-            node: RouteNodeOrID
-            time: Date
+            node?: RouteNodeOrID
+            timestamp: number
             timezone: string
             lat: number
             lon: number
@@ -237,5 +236,34 @@ export namespace TableData {
         }
 
         export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
+    }
+}
+
+export namespace LegacyTableData {
+
+    export namespace Kaukasus {
+        export interface ExportJSON {
+            diederik: PersonJSON,
+            maurice: PersonJSON,
+            ronald: PersonJSON
+        }
+
+        export interface PersonJSON {
+            personName: string
+            lastUpdateTime: number
+            lastUpdateTimezoneOffset: number
+            lastUpdateTimezoneName: string
+            route: LocationJSON[]
+        }
+
+        export interface LocationJSON {
+            lat: number
+            lon: number
+            alt: number
+            acc: number
+            person: string
+            stamp: number
+            timezone: string
+        }
     }
 }
