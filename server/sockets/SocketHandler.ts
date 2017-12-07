@@ -1,7 +1,10 @@
 import * as express from "express"
+import {Sockets} from "./Sockets";
 
 export namespace SocketIDs {
-
+    export const GET_ROUTE = "GetRoute"
+    export const GET_NODES = "GetNodes"
+    export const GET_LOCATIONS = "GetLocations"
 }
 
 export namespace SocketHandler {
@@ -11,9 +14,11 @@ export namespace SocketHandler {
         io.on("connection", connection(app))
     }
 
-    export function connection(app: express.Express): Handler {
+    function connection(app: express.Express): Handler {
         return socket => {
-            
+            socket.on(SocketIDs.GET_ROUTE, Sockets.getRoute(app, socket))
+            socket.on(SocketIDs.GET_NODES, Sockets.getNodes(app, socket))
+            socket.on(SocketIDs.GET_LOCATIONS, Sockets.getLocations(app, socket))
         }
     }
 }

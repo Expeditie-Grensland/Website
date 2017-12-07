@@ -2,6 +2,7 @@ import {LegacyTableData, TableData, Tables} from "./Tables"
 import {Util} from "./Util"
 import {Route} from "./Route"
 import LocationDocument = TableData.Location.LocationDocument
+import * as mongoose from "mongoose";
 
 export namespace Location {
 
@@ -48,7 +49,7 @@ export namespace Location {
 
             let currentNodeWithPerson: Map<string, Promise<RouteNodeDocument>> = new Map()
 
-            const currentNodeWithPersonCached = (person: PersonOrID) => {
+            function currentNodeWithPersonCached(person: PersonOrID): Promise<RouteNodeDocument> {
                 if(!currentNodeWithPerson.has(Util.getObjectID(person))) {
                     currentNodeWithPerson.set(Util.getObjectID(person), Route.getCurrentNodeWithPerson(person)(route))
                 }
@@ -78,6 +79,14 @@ export namespace Location {
 
     export function getLocationCountForRouteNode(node: RouteNodeOrID): Promise<number> {
         return Tables.Location.find({node: Util.getObjectID(node)}).count().exec()
+    }
+
+    export function getLocationsInRoute(route: RouteOrID): Promise<LocationDocument[]> {
+        return Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).exec())
+    }
+
+    export function getLocationsInRouteCursor(batchSize: number): (route: RouteOrID) => Promise<mongoose.QueryCursor<LocationDocument>> {
+        return route => Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).cursor({batchSize: batchSize}))
     }
 
     export function fromKaukasusLegacy(location: LegacyTableData.Kaukasus.LocationJSON, person: PersonOrID): TableData.Location.Location {

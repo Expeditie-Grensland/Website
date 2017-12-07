@@ -9,6 +9,8 @@ export namespace ExpeditieRoute {
                 if(expeditie.showMap) {
                     console.log("Registering " + expeditie.mapUrl + " as expeditie page.")
 
+                    //TODO this doesn't work when an expeditie is added while the server is running
+
                     app.get(expeditie.mapUrl + '/?', (req, res) => {
                         res.render("expeditie", {
                             expeditie: expeditie

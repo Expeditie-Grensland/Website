@@ -166,7 +166,7 @@ export namespace Debug {
         app.get('/route_diagram', (req, res) => {
             Tables.Expeditie.findOne({name: "Kaukasus"}).exec().then((expeditie) => {
                 Util.getDocument(expeditie.route, Route.getRouteById).then((route) => {
-                    Route.getRouteNodesForRoute(route).then((nodes) => {
+                    Route.getNodes(route).then((nodes) => {
                         return Promise.all(nodes.map(node => Route.populateNodePersons(node))).then(nodes => {
                             res.render("debug/routeDiagram", {
                                 route: route,

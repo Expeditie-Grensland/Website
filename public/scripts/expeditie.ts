@@ -1,4 +1,5 @@
-declare var MapboxLanguage:any
+declare var MapboxLanguage :any
+declare var expeditieNameShort :string
 
 $(document).ready(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw'
@@ -28,9 +29,17 @@ $(document).ready(() => {
         map.addControl(mapLanguage);
     })
 
-    map.on('ready', () => {
-        console.log("Map ready!")
+    map.on('load', () => {
+        console.log("Map load!")
 
-        SocketHandler.init()
+        map.addSource('route', { type: 'geojson', data: null });
+
+        MapHandler.init(map)
     })
+
+    map.on('error', (e) => {
+        console.error("Map error: " + e.error)
+    })
+
+    SocketHandler.init()
 })

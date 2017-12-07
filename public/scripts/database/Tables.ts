@@ -35,7 +35,7 @@ namespace Tables {
         _id: string,
         person: PersonOrID
         node?: RouteNodeOrID
-        time: Date
+        timestamp: number
         timezone: string
         lat: number
         lon: number

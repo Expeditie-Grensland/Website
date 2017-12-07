@@ -12,9 +12,11 @@ import RouteDocument = TableData.Route.RouteDocument
 import ExpeditieOrID = TableData.ExpeditieOrID
 import RouteOrID = TableData.RouteOrID
 import PersonOrID = TableData.PersonOrID
+import * as mongoose from "mongoose";
 
 
 export namespace Expeditie {
+    import LocationDocument = TableData.Location.LocationDocument;
     const expeditiesError = Promise.reject("The expedities variable has not been initialized! Are you accessing it directly?")
     let expedities: Promise<ExpeditieDocument[]> = expeditiesError
 
@@ -30,6 +32,10 @@ export namespace Expeditie {
 
     export function getExpeditieByName(name: string): Promise<ExpeditieDocument> {
         return Tables.Expeditie.findOne({name: name}).exec()
+    }
+
+    export function getExpeditieByNameShort(nameShort: string): Promise<ExpeditieDocument> {
+        return Tables.Expeditie.findOne({nameShort: nameShort}).exec()
     }
 
     function expeditiesChanged<T>(arg: T): Promise<T> {
@@ -152,7 +158,15 @@ export namespace Expeditie {
 
     export function addLocations(locations: TableData.Location.Location[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie => getExpeditie(expeditie).then(expeditie => {
-            return Location.createLocations(locations, expeditie.route).then(location => expeditie)
+            return Location.createLocations(locations, expeditie.route).then(() => expeditie)
         })
+    }
+
+    export function getLocations(expeditie: ExpeditieOrID): Promise<LocationDocument[]> {
+        return getRoute(expeditie).then(Location.getLocationsInRoute)
+    }
+
+    export function getLocationCursor(batchSize: number): (expeditie: ExpeditieOrID) => Promise<mongoose.QueryCursor<LocationDocument>> {
+        return expeditie => getRoute(expeditie).then(Location.getLocationsInRouteCursor(batchSize))
     }
 }

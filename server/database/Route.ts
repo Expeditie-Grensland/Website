@@ -29,7 +29,7 @@ export namespace Route {
         return Util.getDocument(route, getRouteById)
     }
 
-    export function getRouteNodesForRoute(route: RouteOrID): Promise<RouteNodeDocument[]> {
+    export function getNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
         return Tables.RouteNode.find({route: Util.getObjectID(route)}).exec().then(nodes => Promise.all(nodes.map(node => populateRouteNodeColor(node))))
     }
 
@@ -58,11 +58,12 @@ export namespace Route {
     }
 
     export function getCurrentNodeWithPerson(person: PersonOrID): (route: RouteOrID) => Promise<RouteNodeDocument> {
-        return route => Tables.RouteNode.findOne(
+        return route => getRoute(route).then(route => Tables.RouteNode.findOne(
             {
+                _id: { $in: Util.getObjectIDs(route.currentNodes) },
                 route: Util.getObjectID(route),
                 persons: Util.getObjectID(person)
-            }).exec()
+            }).exec())
     }
 
     function getRouteNodes(nodes: RouteNodeOrID[]): Promise<RouteNodeDocument[]> {
@@ -285,7 +286,7 @@ export namespace Route {
     export function populateRoute(route: RouteOrID): Promise<RouteDocument> {
         return Util.getDocument(route, getRouteById).then(route => {
 
-            return getRouteNodesForRoute(route).then(allNodes => {
+            return getNodes(route).then(allNodes => {
                     const map: Map<string, RouteNodeDocument> = new Map()
 
                     for(let node of allNodes) {
