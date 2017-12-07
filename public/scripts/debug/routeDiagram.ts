@@ -92,8 +92,6 @@ $(document).ready(() => {
                 names.push(person.name)
             }
 
-            names.push((<any>node).locationCount + " locations")
-
             return names[index]
         }
     }
