@@ -38,8 +38,8 @@ export namespace Sockets {
                 const locationsAtZoom = await Expeditie.getLocationsAtZoomLevel(zoomLevel)(expeditie)
 
                 console.log('sending zoomLevel: ' + zoomLevel + ' with: ' + locationsAtZoom.length + ' locations')
-
-                io.emit(SocketIDs.GET_LOCATIONS, name, locationsAtZoom)
+                if(locationsAtZoom.length > 0)
+                    io.emit(SocketIDs.GET_LOCATIONS, name, locationsAtZoom)
             }
             console.log('location sending done.')
         }

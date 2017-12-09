@@ -103,6 +103,8 @@ namespace MapHandler {
     }
 
     export function onMapStyleLoad() {
+        mapStyleLoaded = true
+
         updateMap(true)
     }
 
