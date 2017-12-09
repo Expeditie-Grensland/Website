@@ -1,5 +1,6 @@
 import * as express from "express"
 import {Expeditie} from "../database/Expeditie"
+import * as i18next from "i18next"
 
 export namespace Home {
     export function init(app: express.Express) {
@@ -8,8 +9,8 @@ export namespace Home {
                 console.log((<any>req).languages)
                 res.render("home", {
                     expedities: expedities,
-                    t:          (<any>req).t,
-                    t_ucf:      ucFirstWrapper((<any>req).t),
+                    t:          i18next.t,
+                    t_ucf:      ucFirstWrapper(i18next.t),
                     ucf:        ucFirst
                 })
             })

@@ -13,6 +13,7 @@
   },
   "license": "GPL-3.0",
   "dependencies": {
+    "@turf/turf": "^5.1.3",
     "@types/body-parser": "^1.16.8",
     "@types/bootstrap": "^3.3.36",
     "@types/connect-redis": "^0.0.6",
@@ -32,6 +33,7 @@
     "@types/redis": "^2.8.1",
     "@types/slick-carousel": "^1.6.32",
     "@types/socket.io": "^1.4.30",
+    "@types/sprintf-js": "^1.1.0",
     "@types/stylus": "^0.48.28",
     "@types/topojson": "^3.0.2",
     "@types/video.js": "^6.2.2",
@@ -52,6 +54,7 @@
     "randomcolor": "^0.5.3",
     "redis": "^2.6.2",
     "socket.io": "^1.5.0",
+    "sprintf-js": "^1.1.1",
     "stylus": "^0.54.5",
     "topojson": "^3.0.2",
     "typescript": "^2.6.1"

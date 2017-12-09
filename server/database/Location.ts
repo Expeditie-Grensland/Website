@@ -3,6 +3,7 @@ import {Util} from "./Util"
 import {Route} from "./Route"
 import LocationDocument = TableData.Location.LocationDocument
 import * as mongoose from "mongoose";
+import {LocationHelper} from "../helper/LocationHelper"
 
 export namespace Location {
 
@@ -12,6 +13,7 @@ export namespace Location {
     import PersonOrID = TableData.PersonOrID
     import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
     import RouteNodeOrID = TableData.RouteNodeOrID
+    import ZoomLevel = LocationHelper.ZoomLevel
 
     export function getLocationById(_id: string): Promise<LocationDocument> {
         return Tables.Location.findById(_id).exec()
@@ -38,10 +40,14 @@ export namespace Location {
                 })
             }
 
+            if(location.zoomLevel === undefined) {
+                location.zoomLevel = 0
+            }
+
             return location
         }).then(location => {
             return Tables.Location.create(location)
-        })
+        }).then(LocationHelper.calculateZoomLevel)
     }
 
     export function createLocations(locations: TableData.Location.Location[], route: RouteOrID): Promise<LocationDocument[]> {
@@ -57,6 +63,10 @@ export namespace Location {
             }
 
             return Promise.all(locations.map(location => {
+                if(location.zoomLevel === undefined) {
+                    location.zoomLevel = 0
+                }
+
                 if (location.node === undefined) {
                     return currentNodeWithPersonCached(location.person).then(routeNode => {
                         location.node = Util.getObjectID(routeNode)
@@ -68,25 +78,29 @@ export namespace Location {
             }))
         }).then(locations => {
             return Tables.Location.insertMany(locations)
-        })
+        }).then(LocationHelper.calculateZoomLevels)
     }
 
     export function removeLocation(location): Promise<void> {
         return getLocation(location).then(document => {
-            document.remove()
-        })
+            return document.remove()
+        }).then(() => null)
     }
 
-    export function getLocationCountForRouteNode(node: RouteNodeOrID): Promise<number> {
-        return Tables.Location.find({node: Util.getObjectID(node)}).count().exec()
+    export function setLocationZoomLevel(zoomLevel: number): (location: LocationOrID) => Promise<LocationDocument> {
+        return (location) => Tables.Location.findByIdAndUpdate(Util.getObjectID(location), {zoomLevel: zoomLevel}, {new: true}).exec()
     }
 
     export function getLocationsInRoute(route: RouteOrID): Promise<LocationDocument[]> {
         return Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).exec())
     }
 
-    export function getLocationsInRouteCursor(batchSize: number): (route: RouteOrID) => Promise<mongoose.QueryCursor<LocationDocument>> {
-        return route => Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).cursor({batchSize: batchSize}))
+    export function getLocationsInRouteAtZoomLevel(zoomLevel: ZoomLevel): (route: RouteOrID) => Promise<LocationDocument[]> {
+        return route => Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}, zoomLevel: zoomLevel}).exec())
+    }
+
+    export function getLocationsInNode(node: RouteNodeOrID): Promise<LocationDocument[]> {
+        return Tables.Location.find({node: Util.getObjectID(node)}).exec()
     }
 
     export function fromKaukasusLegacy(location: LegacyTableData.Kaukasus.LocationJSON, person: PersonOrID): TableData.Location.Location {

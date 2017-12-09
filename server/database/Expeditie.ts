@@ -13,10 +13,13 @@ import ExpeditieOrID = TableData.ExpeditieOrID
 import RouteOrID = TableData.RouteOrID
 import PersonOrID = TableData.PersonOrID
 import * as mongoose from "mongoose";
+import * as i18next from "i18next"
+import {LocationHelper} from "../helper/LocationHelper"
 
 
 export namespace Expeditie {
     import LocationDocument = TableData.Location.LocationDocument;
+    import ZoomLevel = LocationHelper.ZoomLevel
     const expeditiesError = Promise.reject("The expedities variable has not been initialized! Are you accessing it directly?")
     let expedities: Promise<ExpeditieDocument[]> = expeditiesError
 
@@ -76,6 +79,10 @@ export namespace Expeditie {
                 })
             }
 
+            if(expeditie.finished === undefined) {
+                expeditie.finished = false
+            }
+
             return expeditie
         }).then((expeditie) => {
             return Tables.Expeditie.create(expeditie)
@@ -92,6 +99,22 @@ export namespace Expeditie {
         }).then(expeditiesChanged)
     }
 
+    export function setFinished(finished: boolean): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+        return expeditie => getExpeditie(expeditie)
+            .then(expeditie => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {finished: finished}, {new: true}).exec())
+    }
+
+    export function checkFinished(actionVerb: string): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+        return expeditie => new Promise((resolve, reject) => {
+            return getExpeditie(expeditie).then(expeditie => {
+                if(expeditie.finished) {
+                    reject(i18next.t(sprintf("expeditie_finished_generic_error", actionVerb, expeditie.name)))
+                }
+                resolve(expeditie)
+            })
+        })
+    }
+
     export function removeExpeditie(expeditie: ExpeditieOrID): Promise<void> {
         return getExpeditie(expeditie)
             .then(expeditie => removeParticipants(expeditie.participants)(expeditie))
@@ -100,7 +123,8 @@ export namespace Expeditie {
     }
 
     export function addParticipants(participants: PersonOrID[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie => Promise.all(participants.map(Person.addExpeditie(expeditie)))
+        return expeditie => checkFinished("expeditie_action_add_participants")(expeditie)
+            .then(expeditie => Promise.all(participants.map(Person.addExpeditie(expeditie))))
             .then(() =>
                 Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {
                     $pushAll: {
@@ -110,12 +134,13 @@ export namespace Expeditie {
     }
 
     export function removeParticipants(participants: PersonOrID[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return (expeditie) => Promise.all(participants.map(Person.removeExpeditie(expeditie)))
+        return (expeditie) => checkFinished("expeditie_action_remove_participants")(expeditie)
+            .then(expeditie => Promise.all(participants.map(Person.removeExpeditie(expeditie))))
             .then(() => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {$pullAll: {participants: Util.getObjectIDs(participants)}}, {new: true}).exec())
     }
 
     export function addCountries(...countries: Country[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return (expeditie) => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {$pushAll: {countries: countries.map(c => c.id)}}, {new: true}).exec().then(expeditiesChanged)
+        return expeditie => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {$pushAll: {countries: countries.map(c => c.id)}}, {new: true}).exec().then(expeditiesChanged)
     }
 
     export function removeCountries(...countries: Country[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
@@ -123,7 +148,8 @@ export namespace Expeditie {
     }
 
     export function setRoute(route: RouteOrID): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {route: Util.getObjectID(route)}, {new: true}).exec()
+        return expeditie => checkFinished("expeditie_action_set_route")(expeditie)
+            .then(expeditie => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {route: Util.getObjectID(route)}, {new: true}).exec())
     }
 
     export function getRoute(expeditie: ExpeditieOrID): Promise<RouteDocument> {
@@ -131,7 +157,7 @@ export namespace Expeditie {
     }
 
     export function setGroups(groups: PersonOrID[][]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return (expeditie: ExpeditieOrID) => {
+        return (expeditie: ExpeditieOrID) => checkFinished("expeditie_action_set_groups")(expeditie).then((expeditie) => {
             const pExpeditie = Util.getDocument(expeditie, getExpeditieById)
             const pRoute = pExpeditie.then((expeditie) => {
                 if(expeditie.route === undefined) {
@@ -147,17 +173,17 @@ export namespace Expeditie {
             return Promise.all([pExpeditie, pRoute]).then(([expeditie, route]) => {
                 return expeditie
             })
-        }
+        })
     }
 
     export function addLocation(location: TableData.Location.Location): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie => getExpeditie(expeditie).then(expeditie => {
+        return expeditie => checkFinished("expeditie_action_add_location")(expeditie).then(expeditie => {
             return Location.createLocation(location, expeditie.route).then(location => expeditie)
         })
     }
 
     export function addLocations(locations: TableData.Location.Location[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie => getExpeditie(expeditie).then(expeditie => {
+        return expeditie => checkFinished("expeditie_action_add_locations")(expeditie).then(expeditie => {
             return Location.createLocations(locations, expeditie.route).then(() => expeditie)
         })
     }
@@ -166,7 +192,7 @@ export namespace Expeditie {
         return getRoute(expeditie).then(Location.getLocationsInRoute)
     }
 
-    export function getLocationCursor(batchSize: number): (expeditie: ExpeditieOrID) => Promise<mongoose.QueryCursor<LocationDocument>> {
-        return expeditie => getRoute(expeditie).then(Location.getLocationsInRouteCursor(batchSize))
+    export function getLocationsAtZoomLevel(zoomLevel: ZoomLevel): (expeditie: ExpeditieOrID) => Promise<LocationDocument[]> {
+        return expeditie => getRoute(expeditie).then(Location.getLocationsInRouteAtZoomLevel(zoomLevel))
     }
 }

@@ -4,6 +4,7 @@ import {Expeditie} from "../database/Expeditie";
 import {Route} from "../database/Route";
 import {TableData} from "../database/Tables";
 import * as mongoose from "mongoose";
+import {LocationHelper} from "../helper/LocationHelper"
 
 export namespace Sockets {
 
@@ -27,21 +28,35 @@ export namespace Sockets {
     export function getLocations(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
         const batchSize = 2000
 
-        return (name) =>
-            Expeditie.getExpeditieByNameShort(name)
-                .then(Expeditie.getLocationCursor(batchSize))
-                .then(batchCursor(batchSize))
-                .then(nextBatch => {
-                    nextBatch((batch: LocationDocument[]) => io.emit(SocketIDs.GET_LOCATIONS, name, batch))
-                })
+        return async (name) => {
+            const expeditie = await Expeditie.getExpeditieByNameShort(name)
+
+            for(let zoomLevel of LocationHelper.ZOOM_LEVEL_RANGE) {
+                if(!io.connected)
+                    break
+
+                const locationsAtZoom = await Expeditie.getLocationsAtZoomLevel(zoomLevel)(expeditie)
+
+                console.log('sending zoomLevel: ' + zoomLevel + ' with: ' + locationsAtZoom.length + ' locations')
+
+                io.emit(SocketIDs.GET_LOCATIONS, name, locationsAtZoom)
+            }
+            console.log('location sending done.')
+        }
     }
 
-    function batchCursor<T extends mongoose.Document>(batchSize: number): (query: mongoose.QueryCursor<T>) => ((callback: (batch: T[]) => void) => void) {
+    function batchCursor<T extends mongoose.Document>(io: SocketIO.Socket, batchSize: number): (query: mongoose.QueryCursor<T>) => ((callback: (batch: T[]) => void) => void) {
         return cursor => {
             return (callback) => {
                 let aggregate = []
 
                 cursor.eachAsync((document: T) => {
+                    if(!io.connected) {
+                        console.log("Stopping to send locations via socket because connection was closed.")
+                        cursor.close()
+                        return
+                    }
+
                     aggregate.push(document)
 
                     if(aggregate.length >= batchSize) {
@@ -50,8 +65,14 @@ export namespace Sockets {
                         console.log('batch')
                     }
                 }, {}, () => {
-                    callback(aggregate)
-                    console.log('done')
+                    if(io.connected) {
+                        callback(aggregate)
+                        console.log('done')
+                    }
+                }).catch(err => {
+                    if(io.connected) {
+                        console.error("Error occurred while retrieving locations from database: " + err)
+                    }
                 })
             }
         }

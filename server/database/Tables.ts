@@ -64,6 +64,7 @@ export namespace TableData {
             mapUrl: String,
             movieUrl: String,
             movieCoverUrl: String,
+            finished: Boolean,
             participants: [reference(TableIDs.Person)],
             route: reference(TableIDs.Route),
             countries: [String],
@@ -86,6 +87,7 @@ export namespace TableData {
             mapUrl?: string
             movieUrl: string
             movieCoverUrl: string
+            finished?: boolean
             participants: PersonOrID[]
             route?: RouteOrID
             countries: string[]
@@ -97,10 +99,13 @@ export namespace TableData {
     /**
      * A Location describes the output of a GPS receiver, using latitude, longitude
      * altitude, and speed and bearing of travel. For each variable, an accuracy is provided.
+     * A lower `zoomLevel` indicates a higher importance of this particular location to the shape
+     * of the route it is part of. Valid values [0, 19].
      * A Location belongs to one, and only one, RouteNode.
      */
     export namespace Location {
         export const locationSchema = new mongoose.Schema({
+            zoomLevel: Number,
             person: reference(TableIDs.Person),
             node: reference(TableIDs.RouteNode),
             timestamp: Number,
@@ -117,6 +122,7 @@ export namespace TableData {
         })
 
         export interface Location {
+            zoomLevel?: number
             person: PersonOrID
             node?: RouteNodeOrID
             timestamp: number

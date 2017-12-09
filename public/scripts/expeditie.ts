@@ -9,6 +9,7 @@ $(document).ready(() => {
         center: [5.843570, 52.268337],
         zoom: 6,
     });
+
     mapboxgl.setRTLTextPlugin('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.1.0/mapbox-gl-rtl-text.js', () => {});
 
     map.addControl(new mapboxgl.NavigationControl());
@@ -27,14 +28,12 @@ $(document).ready(() => {
         }
 
         map.addControl(mapLanguage);
+
+        map.addSource('route', { type: 'geojson', data: null });
     })
 
     map.on('load', () => {
         console.log("Map load!")
-
-        map.addSource('route', { type: 'geojson', data: null });
-
-        MapHandler.init(map)
     })
 
     map.on('error', (e) => {
@@ -42,4 +41,5 @@ $(document).ready(() => {
     })
 
     SocketHandler.init()
+    MapHandler.init(map)
 })

@@ -7,6 +7,7 @@ import {LegacyTableData, TableData, Tables} from "../database/Tables"
 import {Util} from "../database/Util"
 import {Route} from "../database/Route"
 import PersonDocument = TableData.Person.PersonDocument
+import * as i18next from "i18next"
 
 export namespace Debug {
 
@@ -102,7 +103,8 @@ export namespace Debug {
             }).then((expeditie) => {
                 console.log("Balkan expeditie successfully created!")
                 return expeditie
-            }).catch(err => Promise.reject("Something went wrong during the creation of the Balkan Expeditie: " + err))
+            }).then(Expeditie.setFinished(true))
+                .catch(err => Promise.reject("Something went wrong during the creation of the Balkan Expeditie: " + err))
 
             const kaukasusPromise = Promise.all([kaukasusPersonPromise1, kaukasusPersonPromise2]).then(([baku, teheran]) => {
                 console.log("Kaukasus people successfully retrieved!")
@@ -126,7 +128,8 @@ export namespace Debug {
                     countries: [
                         "Netherlands", "Iran", "Azerbaijan", "Georgia", "Armenia", "Russia", "Abkhazia", "Belarus", "Lithuania", "Belgium",
                     ],
-                }).catch(err => Promise.reject("Something went wrong during the creation of the Kaukasus Expeditie: " + err))
+                }).then(Expeditie.setFinished(true))
+                    .catch(err => Promise.reject("Something went wrong during the creation of the Kaukasus Expeditie: " + err))
             })
 
             return Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(([nk, bk, kk]) => {
@@ -146,7 +149,10 @@ export namespace Debug {
                         return Expeditie.setGroups([moscow, [ronald]])(kk)
                     })
                 })*/
-            }).then(() => res.send("Expedities Generated")).catch(err => Promise.reject("Something went wrong during the setting of the Kaukasus Expeditie groups: " + err))
+            }).then(() => res.send("Expedities Generated")).catch(err => {
+                res.send("Something went wrong during the setting of the Kaukasus Expeditie groups: " + err)
+                console.log(err)
+            })
         })
 
         //if(Config.debug) {
@@ -159,7 +165,10 @@ export namespace Debug {
                 promises.push(Tables.RouteNode.remove({}))
                 promises.push(Tables.Location.remove({}))
 
-                Promise.all(promises).then(() => res.send("Database cleared.")).catch(err => res.send("Error Occurred: " + err))
+                Promise.all(promises).then(() => res.send("Database cleared.")).catch(err => {
+                    res.send("Error Occurred: " + err)
+                    console.log(err)
+                })
             })
         //}
 
@@ -175,7 +184,10 @@ export namespace Debug {
                         })
                     })
                 })
-            }).catch(err => res.send("Error Occurred: " + err))
+            }).catch(err => {
+                res.send("Error Occurred: " + err)
+                console.log(err)
+            })
         })
 
         app.get('/import_kaukasus', (req, res) => {
@@ -211,9 +223,13 @@ export namespace Debug {
 
                     console.log("mauriceData lengths: " + mauriceData.length + " " + mauriceData1.length + " " + mauriceData2.length + " " + mauriceData3.length)
 
-                    kaukasus.catch(err => res.send("Kaukasus not found. Are expedities initialized? Error: " + err))
+                    kaukasus.catch(err => {
+                        res.send("Kaukasus not found. Are expedities initialized? Error: " + err)
+                        console.log(err)
+                    })
 
                     return kaukasus
+                        .then(Expeditie.setFinished(false))
                         .then(Expeditie.setGroups([[matthijs, diederik], [maurice, ronald, martijnA]]))
                         .then(Expeditie.addLocations(diederikData))
                         .then(Expeditie.addLocations(mauriceData1))
@@ -222,10 +238,18 @@ export namespace Debug {
                         .then(Expeditie.setGroups([[matthijs, diederik, maurice, martijnA], [ronald]]))
                         .then(Expeditie.addLocations(ronaldData))
                         .then(Expeditie.addLocations(mauriceData3))
+                        .then(Expeditie.setFinished(true))
 
                         .then(() => res.send("File received")).then(() => console.log("Done"))
                         .then(() => console.log("mauriceData lengths: " + mauriceData.length + " " + mauriceData1.length + " " + mauriceData2.length + " " + mauriceData3.length))
-                }).catch(err => res.send("Persons not found. Are people initialized? Error: " + err))
+                        .then(() => Tables.Location.aggregate({$group: {_id: { zoomLevel: "$zoomLevel" }, count: { $sum: 1 }}}).sort('_id.zoomLevel').exec())
+                        .then((data) => {
+                            console.log(data)
+                        })
+                }).catch(err => {
+                    res.send("Persons not found. Are people initialized? Error: " + err)
+                    console.log(err)
+                })
         })
     }
 }

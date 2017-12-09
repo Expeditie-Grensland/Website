@@ -3,5 +3,12 @@
   "overview": "overview",
   "map": "map",
   "movie": "movie",
-  "movie_additive": "the Movie"
+  "movie_additive": "the Movie",
+  "expeditie_finished_generic_error": "Cannot %s expeditie %s because it is marked as finished.",
+  "expeditie_action_add_participants": "add participants to",
+  "expeditie_action_remove_participants": "remove participants from",
+  "expeditie_action_set_route": "set route",
+  "expeditie_action_set_groups": "change groups",
+  "expeditie_action_add_location": "add location",
+  "expeditie_action_add_locations": "add locations"
 }

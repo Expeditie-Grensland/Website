@@ -85,15 +85,28 @@ export namespace Route {
             if (node.persons.length > 0) {
                 const peopleIds = Util.getObjectIDs(node.persons)
                 let seed = ""
+                const charactersPerID = 3
 
-                for (let id of peopleIds)
-                    seed += id.substr(id.length-4, 4)
+                for (let i = 1; i <= charactersPerID; i++)
+                    for (let id of peopleIds)
+                        seed += id.substr(id.length-i, 1)
 
-                return randomColor({seed: seed})
+                return randomSaturatedColor(seed)
             } else {
-                return randomColor()
+                return randomSaturatedColor()
             }
         })
+    }
+
+    function randomSaturatedColor(seed: string = undefined): string {
+        let colorHSL: number[];
+        if(seed === undefined) {
+            colorHSL = <number[]><any>randomColor({luminosity: "light", format: "hslArray"})
+        } else {
+            colorHSL = <number[]><any>randomColor({luminosity: "light", format: "hslArray", seed: seed})
+        }
+
+        return `hsl(${colorHSL[0]}, 100%, ${colorHSL[2]}%)`
     }
 
     function getRouteNodesById(ids: string[]): Promise<RouteNodeDocument[]> {

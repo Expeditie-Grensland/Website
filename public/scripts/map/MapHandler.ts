@@ -6,9 +6,12 @@ namespace MapHandler {
     const locationMap: Map<string, Tables.Location> = new Map()
     const locationNodeMap: Map<string, Tables.Location[]> = new Map() //Map RouteNode ids to location
 
+    let mapStyleLoaded = false
 
     export function init(mapboxMap: mapboxgl.Map) {
         map = mapboxMap
+
+        map.on('load', onMapStyleLoad)
 
         SocketHandler.requestRoute(expeditieNameShort)
     }
@@ -48,10 +51,11 @@ namespace MapHandler {
             locationNodeMap.set(<string>location.node, nodeLocations)
         }
 
-        updateMap()
+        if(mapStyleLoaded)
+            updateMap(false)
     }
 
-    export function updateMap() {
+    export function updateMap(updateViewport: boolean) {
         const locationsGeoJSON = locationsToGeoJSON();
         const coords = locationsGeoJSON.features.reduce((array, feature) => array.concat(feature.geometry.coordinates), []);
 
@@ -59,11 +63,13 @@ namespace MapHandler {
 
         (<mapboxgl.GeoJSONSource>map.getSource('route')).setData(locationsGeoJSON)
 
-        const bounds = coords.reduce((bounds, coords) => bounds.extend(coords), new mapboxgl.LngLatBounds(coords[0], coords[0]))
+        if(updateViewport) {
+            const bounds = coords.reduce((bounds, coords) => bounds.extend(coords), new mapboxgl.LngLatBounds(coords[0], coords[0]))
 
-        map.fitBounds(bounds, {
-            padding: 20
-        });
+            map.fitBounds(bounds, {
+                padding: 20
+            });
+        }
     }
 
     export function locationsToGeoJSON(): any {
@@ -94,6 +100,10 @@ namespace MapHandler {
             type: "FeatureCollection",
             features: features,
         }
+    }
+
+    export function onMapStyleLoad() {
+        updateMap(true)
     }
 
     export function getRoute() {

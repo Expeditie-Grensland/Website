@@ -3,5 +3,12 @@
   "overview": "overzicht",
   "map": "kaart",
   "movie": "film",
-  "movie_additive": "de Film"
+  "movie_additive": "de Film",
+  "expeditie_finished_generic_error": "Het is niet mogelijk om %s expeditie %s omdat deze gemarkeerd is als 'geëindigd'.",
+  "expeditie_action_add_participants": "deelnemers toe te voegen aan",
+  "expeditie_action_remove_participants": "deelnemers te verwijderen uit",
+  "expeditie_action_set_route": "de route te wijzigen van",
+  "expeditie_action_set_groups": "de groepen te veranderen van",
+  "expeditie_action_add_location": "een locatie toe te voegen aan",
+  "expeditie_action_add_locations": "locaties toe te voegen aan"
 }
