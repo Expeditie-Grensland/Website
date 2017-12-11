@@ -15,6 +15,8 @@ export namespace Routes {
         user.init(app)
         home.init(app)
         expeditie.init(app)
+
+        //if(Config.debug)
         debug.init(app)
     }
 }

@@ -2,7 +2,6 @@ import * as express from "express"
 import {Person} from "../database/Person"
 import {Expeditie} from "../database/Expeditie"
 import {Location} from "../database/Location"
-import {Config} from "../Config"
 import {LegacyTableData, TableData, Tables} from "../database/Tables"
 import {Util} from "../database/Util"
 import {Route} from "../database/Route"
@@ -13,13 +12,10 @@ export namespace Debug {
 
     export async function init(app: express.Express) {
 
-        if(Config.debug) {
-            process.on('unhandledRejection', (reason, p) => {
-                console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-                // application specific logging, throwing an error, or other logic here
-            });
-        }
-
+        process.on('unhandledRejection', (reason, p) => {
+            console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+            // application specific logging, throwing an error, or other logic here
+        });
 
         app.get("/generate_people", (req, res) => {
             let users = ["Maurice Meedendorp", "Ronald Kremer", "Diederik Blaauw", "Matthijs Nuus", "Martijn Atema", "Martijn Bakker", "Robert Sandee", "Robert Slomp"]
@@ -155,23 +151,21 @@ export namespace Debug {
             })
         })
 
-        //if(Config.debug) {
-            app.get('/reset_database', (req, res) => {
-                let promises = []
+        app.get('/reset_database', (req, res) => {
+            let promises = []
 
-                promises.push(Tables.Expeditie.remove({}))
-                promises.push(Tables.Person.remove({}))
-                promises.push(Tables.Route.remove({}))
-                promises.push(Tables.RouteNode.remove({}))
-                promises.push(Tables.Location.remove({}))
-                promises.push(ColorHelper.resetCache())
+            promises.push(Tables.Expeditie.remove({}))
+            promises.push(Tables.Person.remove({}))
+            promises.push(Tables.Route.remove({}))
+            promises.push(Tables.RouteNode.remove({}))
+            promises.push(Tables.Location.remove({}))
+            promises.push(ColorHelper.resetCache())
 
-                Promise.all(promises).then(() => res.send("Database cleared.")).catch(err => {
-                    res.send("Error Occurred: " + err)
-                    console.log(err)
-                })
+            Promise.all(promises).then(() => res.send("Database cleared.")).catch(err => {
+                res.send("Error Occurred: " + err)
+                console.log(err)
             })
-        //}
+        })
 
         app.get('/route_diagram', (req, res) => {
             Tables.Expeditie.findOne({name: "Kaukasus"}).exec().then((expeditie) => {
