@@ -22,6 +22,7 @@
     "@types/express-session": "^1.15.6",
     "@types/i18next": "^8.4.2",
     "@types/i18next-express-middleware": "0.0.32",
+    "@types/i18next-node-fs-backend": "0.0.29",
     "@types/jquery": "^3.2.16",
     "@types/mapbox-gl": "^0.40.1",
     "@types/mongodb": "^2.2.15",

@@ -9,8 +9,8 @@ export namespace Home {
                 console.log((<any>req).languages)
                 res.render("home", {
                     expedities: expedities,
-                    t:          i18next.t,
-                    t_ucf:      ucFirstWrapper(i18next.t),
+                    t:          (<any>req).t,
+                    t_ucf:      ucFirstWrapper((<any>req).t),
                     ucf:        ucFirst
                 })
             })
