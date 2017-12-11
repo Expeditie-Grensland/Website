@@ -1,6 +1,7 @@
 import {TableData} from "../database/Tables"
 import {Route} from "../database/Route"
 import {Util} from "../database/Util"
+import i18next = require("i18next")
 
 export namespace ColorHelper {
 
@@ -80,7 +81,7 @@ export namespace ColorHelper {
 
     function getColorByIndex(index: number): Color {
         if(index >= getAmountOfColors()) {
-            throw new RangeError(`The amount of colors (${getAmountOfColors()}) is too small for the current amount of nodes (${index+1})!`)
+            throw new RangeError(sprintf(i18next.t("colorhelper_error_not_enough_colors"), getAmountOfColors(), index+1))
         }
 
         return Color[Object.keys(Color)[index]]

@@ -10,5 +10,6 @@
   "expeditie_action_set_route": "de route te wijzigen van",
   "expeditie_action_set_groups": "de groepen te veranderen van",
   "expeditie_action_add_location": "een locatie toe te voegen aan",
-  "expeditie_action_add_locations": "locaties toe te voegen aan"
+  "expeditie_action_add_locations": "locaties toe te voegen aan",
+  "colorhelper_error_not_enough_colors": "Het aantal beschikbare kleuren (%d) is kleiner dan de huidige hoeveelheid groepen (%d)."
 }

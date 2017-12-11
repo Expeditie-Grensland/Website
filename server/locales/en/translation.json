@@ -10,5 +10,6 @@
   "expeditie_action_set_route": "set route",
   "expeditie_action_set_groups": "change groups",
   "expeditie_action_add_location": "add location",
-  "expeditie_action_add_locations": "add locations"
+  "expeditie_action_add_locations": "add locations",
+  "colorhelper_error_not_enough_colors": "The amount of available colors (%d) is too small for the current amount of groups (%d)"
 }

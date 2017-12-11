@@ -4,6 +4,8 @@ import {Person} from "./Person"
 import {Location} from "./Location"
 import {Route} from "./Route"
 import {Util} from "./Util"
+import * as i18next from "i18next"
+import {LocationHelper} from "../helper/LocationHelper"
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
 import PersonDocument = TableData.Person.PersonDocument
 import Country = Countries.Country
@@ -12,13 +14,10 @@ import RouteDocument = TableData.Route.RouteDocument
 import ExpeditieOrID = TableData.ExpeditieOrID
 import RouteOrID = TableData.RouteOrID
 import PersonOrID = TableData.PersonOrID
-import * as mongoose from "mongoose";
-import * as i18next from "i18next"
-import {LocationHelper} from "../helper/LocationHelper"
 
 
 export namespace Expeditie {
-    import LocationDocument = TableData.Location.LocationDocument;
+    import LocationDocument = TableData.Location.LocationDocument
     import ZoomLevel = LocationHelper.ZoomLevel
     const expeditiesError = Promise.reject("The expedities variable has not been initialized! Are you accessing it directly?")
     let expedities: Promise<ExpeditieDocument[]> = expeditiesError
@@ -108,7 +107,7 @@ export namespace Expeditie {
         return expeditie => new Promise((resolve, reject) => {
             return getExpeditie(expeditie).then(expeditie => {
                 if(expeditie.finished) {
-                    reject(i18next.t(sprintf("expeditie_finished_generic_error", actionVerb, expeditie.name)))
+                    reject(sprintf(i18next.t("expeditie_finished_generic_error"), actionVerb, expeditie.name))
                 }
                 resolve(expeditie)
             })
