@@ -7,6 +7,7 @@ namespace MapHandler {
     const locationNodeMap: Map<string, Tables.Location[]> = new Map() //Map RouteNode ids to location
 
     let mapStyleLoaded = false
+    let shouldUpdateViewport = false
 
     export function init(mapboxMap: mapboxgl.Map) {
         map = mapboxMap
@@ -57,23 +58,33 @@ namespace MapHandler {
 
     export function updateMap(updateViewport: boolean) {
         const locationsGeoJSON = locationsToGeoJSON();
-        const coords = locationsGeoJSON.features.reduce((array, feature) => array.concat(feature.geometry.coordinates), []);
-
-        console.log(locationsGeoJSON);
 
         (<mapboxgl.GeoJSONSource>map.getSource('route')).setData(locationsGeoJSON)
 
-        if(updateViewport) {
-            const bounds = coords.reduce((bounds, coords) => bounds.extend(coords), new mapboxgl.LngLatBounds(coords[0], coords[0]))
-
-            map.fitBounds(bounds, {
-                padding: 20
-            });
+        if(updateViewport || shouldUpdateViewport) {
+            if(locationMap.size <= 0) {
+                shouldUpdateViewport = true
+            } else {
+                setViewportToCoords(locationsGeoJSON)
+                shouldUpdateViewport = false
+            }
         }
     }
 
-    export function locationsToGeoJSON(): any {
-        const features = []
+    export function setViewportToCoords(geoJSONLocations) {
+        const bounds = new mapboxgl.LngLatBounds()
+
+        for(let location of locationMap.values()) {
+            bounds.extend(new mapboxgl.LngLat(location.lon, location.lat))
+        }
+
+        map.fitBounds(bounds, {
+            padding: 20
+        });
+    }
+
+    export function locationsToGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.LineString> {
+        const features: GeoJSON.Feature<GeoJSON.LineString>[] = []
 
         for(let node of nodeMap.values()) {
             const coords: mapboxgl.LngLat[] = []
