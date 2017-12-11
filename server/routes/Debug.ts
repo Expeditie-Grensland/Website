@@ -11,7 +11,7 @@ import PersonDocument = TableData.Person.PersonDocument
 
 export namespace Debug {
 
-    export function init(app: express.Express) {
+    export async function init(app: express.Express) {
 
         if(Config.debug) {
             process.on('unhandledRejection', (reason, p) => {
@@ -251,6 +251,13 @@ export namespace Debug {
                     res.send("Persons not found. Are people initialized? Error: " + err)
                     console.log(err)
                 })
+        })
+
+        app.get('/uptime', (req, res) => {
+            const date = new Date(Date.now() - process.uptime() * 1000)
+            const dateString = date.getFullYear() + '/' + date.getMonth() + '/' + date.getDay() + ' ' + date.getHours()
+            + ':' + date.getMinutes() + ':' + date.getSeconds()
+            res.send("The server has been running since: " + dateString)
         })
     }
 }
