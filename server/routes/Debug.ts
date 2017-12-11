@@ -6,8 +6,8 @@ import {Config} from "../Config"
 import {LegacyTableData, TableData, Tables} from "../database/Tables"
 import {Util} from "../database/Util"
 import {Route} from "../database/Route"
+import {ColorHelper} from "../helper/ColorHelper"
 import PersonDocument = TableData.Person.PersonDocument
-import * as i18next from "i18next"
 
 export namespace Debug {
 
@@ -164,6 +164,7 @@ export namespace Debug {
                 promises.push(Tables.Route.remove({}))
                 promises.push(Tables.RouteNode.remove({}))
                 promises.push(Tables.Location.remove({}))
+                promises.push(ColorHelper.resetCache())
 
                 Promise.all(promises).then(() => res.send("Database cleared.")).catch(err => {
                     res.send("Error Occurred: " + err)

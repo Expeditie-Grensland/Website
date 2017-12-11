@@ -2,9 +2,7 @@ import {TableData, Tables} from "./Tables"
 import {Util} from "./Util"
 import {Expeditie} from "./Expeditie"
 import {Person} from "./Person"
-import {Location} from "./Location"
-import randomColor = require("randomcolor")
-
+import {ColorHelper} from "../helper/ColorHelper"
 import RouteDocument = TableData.Route.RouteDocument
 import RouteNode = TableData.RouteNode.RouteNode
 import RouteEdge = TableData.RouteEdge.RouteEdge
@@ -29,11 +27,19 @@ export namespace Route {
         return Util.getDocument(route, getRouteById)
     }
 
+    export function getRoutes(): Promise<RouteDocument[]> {
+        return Tables.Route.find({}).exec()
+    }
+
     export function getNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
-        return Tables.RouteNode.find({route: Util.getObjectID(route)}).exec().then(nodes => Promise.all(nodes.map(node => populateRouteNodeColor(node))))
+        return Tables.RouteNode.find({route: Util.getObjectID(route)}).exec()
     }
 
     function createRouteNode(node: RouteNode): Promise<RouteNodeDocument> {
+        if(node.color === undefined) {
+            node.color = ColorHelper.generateColorForRouteNode(node)
+        }
+
         return Tables.RouteNode.create(node)
     }
 
@@ -71,47 +77,11 @@ export namespace Route {
     }
 
     function getRouteNodeById(_id: string): Promise<RouteNodeDocument> {
-        return Tables.RouteNode.findById(_id).exec().then(populateRouteNodeColor)
-    }
-
-    function populateRouteNodeColor(node: RouteNodeOrID): Promise<RouteNodeDocument> {
-        return Util.getDocument(node, getRouteNodeById).then(node => {
-            return getRouteNodeColor(node).then(color => node.color = color).then(() => node)
-        })
-    }
-
-    function getRouteNodeColor(node: RouteNodeOrID): Promise<string> {
-        return Util.getDocument(node, getRouteNodeById).then(node => {
-            if (node.persons.length > 0) {
-                const peopleIds = Util.getObjectIDs(node.persons)
-                let seed = ""
-                const charactersPerID = 3
-
-                for (let i = 1; i <= charactersPerID; i++)
-                    for (let id of peopleIds)
-                        seed += id.substr(id.length-i, 1)
-
-                return randomSaturatedColor(seed)
-            } else {
-                return randomSaturatedColor()
-            }
-        })
-    }
-
-    function randomSaturatedColor(seed: string = undefined): string {
-        let colorHSL: number[];
-        if(seed === undefined) {
-            colorHSL = <number[]><any>randomColor({luminosity: "light", format: "hslArray"})
-        } else {
-            colorHSL = <number[]><any>randomColor({luminosity: "light", format: "hslArray", seed: seed})
-        }
-
-        return `hsl(${colorHSL[0]}, 100%, ${colorHSL[2]}%)`
+        return Tables.RouteNode.findById(_id).exec()
     }
 
     function getRouteNodesById(ids: string[]): Promise<RouteNodeDocument[]> {
         return Tables.RouteNode.find({_id: {$in: ids}}).exec()
-            .then(nodes => Promise.all(nodes.map(node => populateRouteNodeColor(node))))
     }
 
     function setNodeEdges(edges: RouteEdge[]): (node: RouteNodeOrID) => Promise<RouteNodeDocument> {
@@ -201,7 +171,7 @@ export namespace Route {
             })
     }
 
-    function personArraysEqual(array1: PersonOrID[], array2: PersonOrID[]): boolean {
+    export function personArraysEqual(array1: PersonOrID[], array2: PersonOrID[]): boolean {
         const a1 = Util.getObjectIDs(array1).sort()
         const a2 = Util.getObjectIDs(array2).sort()
 

@@ -6,7 +6,8 @@ import * as path from "path"
 import {Setup} from "./Setup"
 import {Routes} from "./routes/Routes"
 import {Config} from "./Config"
-import {SocketHandler} from "./sockets/SocketHandler";
+import {SocketHandler} from "./sockets/SocketHandler"
+import {ColorHelper} from "./helper/ColorHelper"
 
 Error.stackTraceLimit = Infinity
 
@@ -29,6 +30,7 @@ Setup.addAsMiddleware(app, "db", db)
 SocketHandler.bindHandlers(app, io)
 
 Routes.init(app)
+ColorHelper.init()
 
 Setup.startServer(server)
 
