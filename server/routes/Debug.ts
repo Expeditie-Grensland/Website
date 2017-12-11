@@ -201,9 +201,11 @@ export namespace Debug {
 
             Promise.all([matthijs, diederik, maurice, ronald, martijnA])
                 .then(([matthijs, diederik, maurice, ronald, martijnA]) => {
-                    const diederikData = Location.removePingData(data.diederik.route, diederik).sort((l1, l2) => l1.timestamp - l2.timestamp)
+                    const diederikData = Location.removePingData(data.diederik.route, diederik).sort((l1, l2) => l1.timestamp - l2.timestamp).slice(0,-12) //Last values is bogus. Forgot to turn tracking off.
                     const mauriceData = Location.removePingData(data.maurice.route, maurice).sort((l1, l2) => l1.timestamp - l2.timestamp)
                     const ronaldData = Location.removePingData(data.ronald.route, ronald).sort((l1, l2) => l1.timestamp - l2.timestamp)
+
+                    console.log(diederikData)
 
                     const mauriceData1 = mauriceData.filter(location =>
                             location.timestamp <= diederikData[diederikData.length-1].timestamp
