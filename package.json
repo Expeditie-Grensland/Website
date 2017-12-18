@@ -42,6 +42,7 @@
     "cookie-parser": "^1.4.3",
     "express": "^4.15.5",
     "express-session": "^1.14.1",
+    "geo-tz": "*",
     "i18next": "^10.0.7",
     "i18next-express-middleware": "^1.0.7",
     "i18next-node-fs-backend": "^1.0.0",

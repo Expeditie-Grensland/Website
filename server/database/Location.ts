@@ -2,7 +2,7 @@ import {LegacyTableData, TableData, Tables} from "./Tables"
 import {Util} from "./Util"
 import {Route} from "./Route"
 import LocationDocument = TableData.Location.LocationDocument
-import * as mongoose from "mongoose";
+const geoTz: any = require('geo-tz')
 import {LocationHelper} from "../helper/LocationHelper"
 
 export namespace Location {
@@ -148,5 +148,18 @@ export namespace Location {
         console.log("Skipped " + duplicateCount + " of " + locations.length + " locations.")
 
         return l
+    }
+
+    export function fromBalkanLegacy(location: LegacyTableData.Balkan.LocationJSON, previousAltitude: number, person: PersonOrID): TableData.Location.Location {
+        const lat = location.latitudeE7 / 10E6
+        const lon = location.longitudeE7 / 10E6
+        return {
+            person: Util.getObjectID(person),
+            timestamp: Math.floor(parseInt(location.timestampMs) / 1000),
+            timezone: geoTz.tz(lat, lon),
+            lat: lat,
+            lon: lon,
+            altitude: location.altitude === undefined ? previousAltitude : location.altitude,
+        }
     }
 }

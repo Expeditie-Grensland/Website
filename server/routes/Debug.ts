@@ -7,6 +7,7 @@ import {Util} from "../database/Util"
 import {Route} from "../database/Route"
 import {ColorHelper} from "../helper/ColorHelper"
 import PersonDocument = TableData.Person.PersonDocument
+import {FeatureCollection, GeoJsonObject, LineString} from "geojson"
 
 export namespace Debug {
 
@@ -80,7 +81,7 @@ export namespace Debug {
                     name: "Balkan",
                     nameShort: "balkan",
                     subtitle: "2016",
-                    showMap: false,
+                    showMap: true,
                     color: "#e41a1c",
                     movieUrl: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/Balkan+the+Movie+(Web-Optimized).mp4",
                     movieCoverUrl: "https://s3-eu-west-1.amazonaws.com/expeditie/balkan/cover.jpg",
@@ -189,6 +190,10 @@ export namespace Debug {
             res.render('debug/importKaukasus')
         })
 
+        app.get('/import_balkan', (req, res) => {
+            res.render('debug/importBalkan')
+        })
+
         app.post('/import_kaukasus/data', (req, res) => {
             const maurice = Person.getPerson("Maurice Meedendorp")
             const ronald = Person.getPerson("Ronald Kremer")
@@ -246,6 +251,59 @@ export namespace Debug {
                 }).catch(err => {
                     res.send("Persons not found. Are people initialized? Error: " + err)
                     console.log(err)
+                })
+        })
+
+        app.post('/import_balkan/data', async (req, res) => {
+            const maurice = await Person.getPerson("Maurice Meedendorp")
+            const ronald = await Person.getPerson("Ronald Kremer")
+            const diederik = await Person.getPerson("Diederik Blaauw")
+            const matthijs = await Person.getPerson("Matthijs Nuus")
+            const martijnA = await Person.getPerson("Martijn Atema")
+            const robertSl = await Person.getPerson("Robert Slomp")
+            const robertSan = await Person.getPerson("Robert Sandee")
+            const balkan = Expeditie.getExpeditieByName("Balkan")
+
+            const data: LegacyTableData.Balkan.ExportJSON = req.body
+            const locations = data.locations.reverse().map((location, index, array) => {
+                let previousAltitude: number = null
+
+                for(let i = index; i > 0; --i) {
+                    if(array[i].altitude !== undefined) {
+                        previousAltitude = array[i].altitude
+                        break
+                    }
+                }
+
+                if(previousAltitude === null) {
+                    for (let i = index; i < array.length; i++) {
+                        if (array[i].altitude !== undefined) {
+                            previousAltitude = array[i].altitude
+                            break
+                        }
+                    }
+                }
+
+                return Location.fromBalkanLegacy(location, previousAltitude, maurice)
+            })
+
+            console.log("Location count: " + locations.length)
+
+            balkan.catch(err => {
+                res.send("Balkan not found. Are expedities initialized? Error: " + err)
+                console.log(err)
+            })
+
+            balkan.then(Expeditie.setFinished(false))
+                .then(Expeditie.setGroups([[maurice, ronald, diederik, matthijs, martijnA, robertSl, robertSan]]))
+                .then(Expeditie.addLocations(locations))
+                .then(Expeditie.setFinished(true))
+
+                .then(() => res.send("File received"))
+                .then(() => console.log("Done"))
+                .then(() => Tables.Location.aggregate({$group: {_id: { zoomLevel: "$zoomLevel" }, count: { $sum: 1 }}}).sort('_id.zoomLevel').exec())
+                .then((data) => {
+                    console.log(data)
                 })
         })
 

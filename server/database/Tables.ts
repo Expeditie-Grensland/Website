@@ -272,4 +272,32 @@ export namespace LegacyTableData {
             timezone: string
         }
     }
+
+    export namespace Balkan {
+        //Google Maps timeline export format.
+        export interface ExportJSON {
+            locations: LocationJSON[] //Locations are sorted backwards in time.
+        }
+
+        export interface LocationJSON {
+            timestampMs: string
+            latitudeE7: number
+            longitudeE7: number
+            accuracy: number
+            altitude?: number
+            velocity?: number
+            verticalAccuracy?: number
+            activity?: ActivityJSON[]
+        }
+
+        export interface ActivityJSON {
+            timestampMs?: string
+            activity: Activity2JSON[]
+        }
+
+        export interface Activity2JSON {
+            type: string
+            confidence: number
+        }
+    }
 }

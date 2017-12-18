@@ -1,0 +1,22 @@
+extend ../structure/simple.pug
+
+block title
+    title Expeditie - Balkan Import
+
+block styles
+    include ../includes/styles
+
+block scripts
+    include ../includes/scripts
+
+    script(src='/scripts/sockets/Sockets.js')
+    script(src='/scripts/sockets/SocketHandler.js')
+    script(src='/scripts/database/LegacyTables.js')
+    script(src='/scripts/database/Tables.js')
+    script(src="/scripts/debug/importBalkan.js")
+
+
+block body
+    p Enter location GeoJSON file here:
+    input#json(type='file')
+    input#submit(type='submit' value='upload')
