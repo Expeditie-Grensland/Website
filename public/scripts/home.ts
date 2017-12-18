@@ -54,8 +54,7 @@ $(document).ready(() => {
         const count = $('div.slick-active').length
 
         const links = hover.find('.links')
-        links.stop(true)
-        links.animate({'height': links[0].scrollHeight + 'px'}, 300, 'easeOutCirc')
+        links.css({'height': links[0].scrollHeight + 'px'})
 
         if (count > 1) {
             $(".column.slick-active").each(function () {
@@ -63,8 +62,7 @@ $(document).ready(() => {
                 const origWidth = window.innerWidth / count
                 const larger = origWidth * 1.20
                 const smaller = (window.innerWidth - larger) / (count - 1)
-                column.stop(true)
-                column.animate({'width': ((column.is(hover)) ? larger : smaller) + "px"}, 300, 'easeOutCirc')
+                column.css({'width': ((column.is(hover)) ? larger : smaller) + "px"})
             })
         }
     }, function () {
@@ -72,14 +70,12 @@ $(document).ready(() => {
         const count = $('div.slick-active').length
 
         const links = hover.find('.links')
-        links.stop(true)
-        links.animate({'height': '0px'}, 400, 'easeOutCirc')
+        links.css({'height': '0px'})
 
         if (count > 1) {
             $(".column.slick-active").each(function () {
                 const column = $(this)
-                column.stop(true)
-                column.animate({'width': window.innerWidth / count + "px"}, 300, 'easeOutCirc')
+                column.css({'width': window.innerWidth / count + "px"})
             })
         }
     })
@@ -102,7 +98,6 @@ $(document).ready(() => {
         const modalBody = modal.find('.modal-body')
 
         if (svgmap.length == 0) {
-            console.log(modalBody.find('.loadingSpinner'))
             modalBody.find('.loadingSpinner').on('mapLoaded', function () {
                 colorCountries(modal, color, countries)
             })

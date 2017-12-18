@@ -15,7 +15,7 @@ body
   white-space normal
   transform translate(0, 0, 0)
 
-  transition filter .5s, transform 1s
+  transition filter .5s, transform 1s, width 300ms cubic-bezier(0.075, 0.82, 0.165, 1)
   outline none
 
 .background
@@ -26,6 +26,7 @@ body
   background-repeat no-repeat
   filter brightness(0.8)
   transition inherit
+  overflow hidden
 
 .expeditie
   display block
@@ -34,9 +35,11 @@ body
   top 14%
   width inherit
   min-width inherit
+  overflow hidden
 
   h1, h2
     color white
+    overflow hidden
 
 .links
   display block
@@ -46,6 +49,7 @@ body
   width inherit
   max-width inherit
 
+  transition height 300ms cubic-bezier(0.075, 0.82, 0.165, 1)
   overflow hidden
 
 .link
@@ -55,6 +59,7 @@ body
   max width inherit
   cursor pointer
   margin-bottom 5px
+  overflow hidden
 
 .hidden
   display none
