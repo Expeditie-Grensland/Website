@@ -6,7 +6,6 @@ export namespace Home {
     export function init(app: express.Express) {
         app.get("/", (req, res) => {
             Expeditie.getExpeditiesCached().then((expedities) => {
-                console.log((<any>req).languages)
                 res.render("home", {
                     expedities: expedities,
                     t:          (<any>req).t,
