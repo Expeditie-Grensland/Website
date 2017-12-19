@@ -63,6 +63,7 @@ $(document).ready(() => {
                 const larger = origWidth * 1.20
                 const smaller = (window.innerWidth - larger) / (count - 1)
                 column.css({'width': ((column.is(hover)) ? larger : smaller) + "px"})
+                column.children('.background').css({'width': ((column.is(hover)) ? larger : smaller) + "px"})
             })
         }
     }, function () {
@@ -76,6 +77,7 @@ $(document).ready(() => {
             $(".column.slick-active").each(function () {
                 const column = $(this)
                 column.css({'width': window.innerWidth / count + "px"})
+                column.children('.background').css({'width': window.innerWidth / count + "px"})
             })
         }
     })
