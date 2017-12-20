@@ -57,11 +57,13 @@ $(document).ready(() => {
         links.css({'height': links[0].scrollHeight + 'px'})
 
         if (count > 1) {
+            const origWidth = window.innerWidth / count
+            const larger = origWidth * 1.20
+            const smaller = (window.innerWidth - larger) / (count - 1)
+
             $(".column.slick-active").each(function () {
                 const column = $(this)
-                const origWidth = window.innerWidth / count
-                const larger = origWidth * 1.20
-                const smaller = (window.innerWidth - larger) / (count - 1)
+
                 column.css({'width': ((column.is(hover)) ? larger : smaller) + "px"})
                 column.children('.background').css({'width': ((column.is(hover)) ? larger : smaller) + "px"})
             })
