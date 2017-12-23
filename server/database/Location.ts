@@ -31,54 +31,53 @@ export namespace Location {
         return Util.getDocuments(locations, getLocationsById)
     }
 
-    export function createLocation(location: TableData.Location.Location, route: RouteOrID): Promise<LocationDocument> {
-        return getRoute(route).then(route => {
-            if (location.node === undefined) {
-                return Route.getCurrentNodeWithPerson(location.person)(route).then(routeNode => {
-                    location.node = Util.getObjectID(routeNode)
-                    return location
-                })
-            }
+    export async function createLocation(location: TableData.Location.Location, route: RouteOrID): Promise<LocationDocument> {
+        const routeDoc = await getRoute(route)
 
+        if(location.node === undefined) {
+            const node = await Route.getCurrentNodeWithPerson(location.person)(routeDoc)
+            location.node = Util.getObjectID(node)
+        }
+
+        if(location.zoomLevel === undefined) {
+            location.zoomLevel = 0
+        }
+
+        const locationDoc = await Tables.Location.create(location)
+
+        await Route.expandBoundingBox([locationDoc])(routeDoc)
+
+        return LocationHelper.calculateZoomLevel(locationDoc)
+    }
+
+    export async function createLocations(locations: TableData.Location.Location[], route: RouteOrID): Promise<LocationDocument[]> {
+        const routeDoc = await getRoute(route)
+
+        let currentNodeWithPerson: Map<string, Promise<RouteNodeDocument>> = new Map()
+
+        function currentNodeWithPersonCached(person: PersonOrID): Promise<RouteNodeDocument> {
+            if(!currentNodeWithPerson.has(Util.getObjectID(person))) {
+                currentNodeWithPerson.set(Util.getObjectID(person), Route.getCurrentNodeWithPerson(person)(routeDoc))
+            }
+            return currentNodeWithPerson.get(Util.getObjectID(person))
+        }
+
+        for(let location of locations) {
             if(location.zoomLevel === undefined) {
                 location.zoomLevel = 0
             }
 
-            return location
-        }).then(location => {
-            return Tables.Location.create(location)
-        }).then(LocationHelper.calculateZoomLevel)
-    }
-
-    export function createLocations(locations: TableData.Location.Location[], route: RouteOrID): Promise<LocationDocument[]> {
-        return getRoute(route).then(route => {
-
-            let currentNodeWithPerson: Map<string, Promise<RouteNodeDocument>> = new Map()
-
-            function currentNodeWithPersonCached(person: PersonOrID): Promise<RouteNodeDocument> {
-                if(!currentNodeWithPerson.has(Util.getObjectID(person))) {
-                    currentNodeWithPerson.set(Util.getObjectID(person), Route.getCurrentNodeWithPerson(person)(route))
-                }
-                return currentNodeWithPerson.get(Util.getObjectID(person))
+            if(location.node === undefined) {
+                const node = await currentNodeWithPersonCached(location.person)
+                location.node = Util.getObjectID(node)
             }
+        }
 
-            return Promise.all(locations.map(location => {
-                if(location.zoomLevel === undefined) {
-                    location.zoomLevel = 0
-                }
+        const locationDocs = await Tables.Location.insertMany(locations)
 
-                if (location.node === undefined) {
-                    return currentNodeWithPersonCached(location.person).then(routeNode => {
-                        location.node = Util.getObjectID(routeNode)
-                        return location
-                    })
-                }
+        await Route.expandBoundingBox(locationDocs)(routeDoc)
 
-                return Promise.resolve(location)
-            }))
-        }).then(locations => {
-            return Tables.Location.insertMany(locations)
-        }).then(LocationHelper.calculateZoomLevels)
+        return LocationHelper.calculateZoomLevels(locationDocs)
     }
 
     export function removeLocation(location): Promise<void> {

@@ -3,10 +3,12 @@ import {Util} from "./Util"
 import {Expeditie} from "./Expeditie"
 import {Person} from "./Person"
 import {ColorHelper} from "../helper/ColorHelper"
+import {Location} from "./Location"
 import RouteDocument = TableData.Route.RouteDocument
 import RouteNode = TableData.RouteNode.RouteNode
 import RouteEdge = TableData.RouteEdge.RouteEdge
 import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
+
 
 export namespace Route {
     import ExpeditieOrID = TableData.ExpeditieOrID
@@ -14,8 +16,19 @@ export namespace Route {
     import RouteNodeOrID = TableData.RouteNodeOrID
     import PersonOrID = TableData.PersonOrID
     import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
+    import LocationOrID = TableData.LocationOrID
+    import RouteBoundingBox = TableData.RouteBoundingBox.RouteBoundingBox
 
     export function createRoute(route: TableData.Route.Route): Promise<RouteDocument> {
+        if(route.boundingBox === undefined) {
+            route.boundingBox = {
+                minLat: Number.POSITIVE_INFINITY,
+                minLon: Number.POSITIVE_INFINITY,
+                maxLat: Number.NEGATIVE_INFINITY,
+                maxLon: Number.NEGATIVE_INFINITY
+            }
+        }
+
         return Tables.Route.create(route)
     }
 
@@ -169,6 +182,38 @@ export namespace Route {
 
                 return route.save()
             })
+    }
+
+    export async function getBoundingBox(route: RouteOrID): Promise<RouteBoundingBox> {
+        return (await getRoute(route)).boundingBox
+    }
+
+    export function setBoundingBox(boundingBox: RouteBoundingBox): (route: RouteOrID) => Promise<RouteDocument> {
+        return route => Tables.Route.findByIdAndUpdate(Util.getObjectID(route), {boundingBox: boundingBox}, {new: true}).exec()
+    }
+
+    export function expandBoundingBox(locations: LocationOrID[]): (route: RouteOrID) => Promise<RouteDocument> {
+        return async r => {
+            const route = await getRoute(r)
+            const bbox = await getBoundingBox(route)
+
+            for(let location of await Location.getLocations(locations)) {
+                if(location.lat < bbox.minLat) {
+                    bbox.minLat = location.lat
+                }
+                if(location.lat > bbox.maxLat) {
+                    bbox.maxLat = location.lat
+                }
+                if(location.lon < bbox.minLon) {
+                    bbox.minLon = location.lon
+                }
+                if(location.lon > bbox.maxLon) {
+                    bbox.maxLon = location.lon
+                }
+            }
+
+            return setBoundingBox(bbox)(route)
+        }
     }
 
     export function personArraysEqual(array1: PersonOrID[], array2: PersonOrID[]): boolean {

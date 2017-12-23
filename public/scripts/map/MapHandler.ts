@@ -7,7 +7,6 @@ namespace MapHandler {
     const locationNodeMap: Map<string, Tables.Location[]> = new Map() //Map RouteNode ids to location
 
     let mapStyleLoaded = false
-    let shouldUpdateViewport = false
 
     export function init(mapboxMap: mapboxgl.Map) {
         map = mapboxMap
@@ -19,6 +18,8 @@ namespace MapHandler {
 
     export function setRoute(r: Tables.Route) {
         route = r
+
+        setViewportToBoundingBox(r.boundingBox)
     }
 
     export function addNodes(nodes: Tables.RouteNode[]) {
@@ -53,34 +54,24 @@ namespace MapHandler {
         }
 
         if(mapStyleLoaded)
-            updateMap(false)
+            updateMap()
     }
 
-    export function updateMap(updateViewport: boolean) {
+    export function updateMap() {
         const locationsGeoJSON = locationsToGeoJSON();
 
         (<mapboxgl.GeoJSONSource>map.getSource('route')).setData(locationsGeoJSON)
-
-        if(updateViewport || shouldUpdateViewport) {
-            if(locationMap.size <= 0) {
-                shouldUpdateViewport = true
-            } else {
-                setViewportToCoords(locationsGeoJSON)
-                shouldUpdateViewport = false
-            }
-        }
     }
 
-    export function setViewportToCoords(geoJSONLocations) {
+    export function setViewportToBoundingBox(bbox: Tables.RouteBoundingBox) {
         const bounds = new mapboxgl.LngLatBounds()
 
-        for(let location of locationMap.values()) {
-            bounds.extend(new mapboxgl.LngLat(location.lon, location.lat))
-        }
+        bounds.extend(new mapboxgl.LngLat(bbox.minLon, bbox.minLat))
+        bounds.extend(new mapboxgl.LngLat(bbox.maxLon, bbox.maxLat))
 
         map.fitBounds(bounds, {
             padding: 20
-        });
+        })
     }
 
     export function locationsToGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.LineString> {
@@ -116,7 +107,7 @@ namespace MapHandler {
     export function onMapStyleLoad() {
         mapStyleLoaded = true
 
-        updateMap(true)
+        updateMap()
     }
 
     export function getRoute() {

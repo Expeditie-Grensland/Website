@@ -188,19 +188,42 @@ export namespace TableData {
     }*/
 
     /**
+     * The bounding 'box' (more like a rectangle on a sphere) for a Route. All points in a Route lie on or within the
+     * defining coordinates of this rectangle.
+     */
+    export namespace RouteBoundingBox {
+        export const routeBoundingBoxSchema = new mongoose.Schema({
+            minLat: Number,
+            maxLat: Number,
+            minLon: Number,
+            maxLon: Number
+        })
+
+        export interface RouteBoundingBox {
+            minLat: number
+            maxLat: number
+            minLon: number
+            maxLon: number
+        }
+    }
+
+    /**
      * A Route is a directed acyclic graph representing the movement of people between different groups.
      * The startingNodes array contains all nodes which do not have any ancestors (there are no edges pointing to them)
      * The currentNodes array contains all nodes that do not have any children.
+     * The boundingBox tuple contains the outer two locations of
      */
     export namespace Route {
         export const routeSchema = new mongoose.Schema({
             startingNodes: [reference(TableIDs.RouteNode)],
-            currentNodes: [reference(TableIDs.RouteNode)]
+            currentNodes: [reference(TableIDs.RouteNode)],
+            boundingBox: RouteBoundingBox.routeBoundingBoxSchema
         })
 
         export interface Route {
             startingNodes?: RouteNodeOrID[]
             currentNodes?: RouteNodeOrID[]
+            boundingBox?: RouteBoundingBox.RouteBoundingBox
         }
 
         export interface RouteDocument extends Route, mongoose.Document {}

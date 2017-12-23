@@ -57,13 +57,19 @@ namespace Tables {
         language?: string
     }
 
-
     export interface Route {
         _id: string,
         startingNodes?: RouteNodeOrID[]
         currentNodes?: RouteNodeOrID[]
+        boundingBox: RouteBoundingBox
     }
 
+    export interface RouteBoundingBox {
+        minLat: number
+        maxLat: number
+        minLon: number
+        maxLon: number
+    }
 
     export interface RouteEdge {
         _id: string,
