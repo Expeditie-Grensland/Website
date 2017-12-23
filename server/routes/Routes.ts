@@ -14,9 +14,11 @@ export namespace Routes {
     export function init(app: express.Express) {
         user.init(app)
         home.init(app)
-        expeditie.init(app)
 
         //if(Config.debug)
         debug.init(app)
+
+        //This should always be last.
+        expeditie.init(app)
     }
 }

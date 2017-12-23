@@ -21,17 +21,15 @@ const sprintf = require('sprintf-js').sprintf
 export namespace Expeditie {
     import LocationDocument = TableData.Location.LocationDocument
     import ZoomLevel = LocationHelper.ZoomLevel
-    const expeditiesError = Promise.reject("The expedities variable has not been initialized! Are you accessing it directly?")
-    let expedities: Promise<ExpeditieDocument[]> = expeditiesError
+
+    let expeditiesCached = null
 
     export function getExpeditiesCached(): Promise<ExpeditieDocument[]> {
-        return expedities.catch(() => {
-            expedities = Tables.Expeditie.find({},
-                    'sequenceNumber name nameShort subtitle color background showMap mapUrl movieUrl movieCoverUrl countries'
-                ).sort({sequenceNumber: 1}).exec()
+        if(expeditiesCached === null) {
+            expeditiesCached = getExpedities()
+        }
 
-            return expedities
-        })
+        return expeditiesCached
     }
 
     export function getExpeditieByName(name: string): Promise<ExpeditieDocument> {
@@ -43,7 +41,7 @@ export namespace Expeditie {
     }
 
     function expeditiesChanged<T>(arg: T): Promise<T> {
-        expedities = expeditiesError
+        expeditiesCached = getExpedities()
 
         console.log("Invalidating Expeditie cache.")
 
