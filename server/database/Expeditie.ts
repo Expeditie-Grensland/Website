@@ -15,6 +15,8 @@ import ExpeditieOrID = TableData.ExpeditieOrID
 import RouteOrID = TableData.RouteOrID
 import PersonOrID = TableData.PersonOrID
 
+const sprintf = require('sprintf-js').sprintf
+
 
 export namespace Expeditie {
     import LocationDocument = TableData.Location.LocationDocument

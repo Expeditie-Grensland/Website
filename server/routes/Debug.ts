@@ -308,10 +308,9 @@ export namespace Debug {
         })
 
         app.get('/uptime', (req, res) => {
-            const date = new Date(Date.now() - process.uptime() * 1000)
-            const dateString = date.getFullYear() + '/' + date.getMonth() + '/' + date.getDay() + ' ' + date.getHours()
-            + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getTimezoneOffset()
-            res.send("The server has been running since: " + dateString)
+            const sprintf = require('sprintf-js').sprintf
+
+            res.send(sprintf("The server has been running for: %d seconds.", process.uptime()))
         })
     }
 }

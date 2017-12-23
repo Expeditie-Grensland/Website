@@ -33,7 +33,6 @@
     "@types/redis": "^2.8.1",
     "@types/slick-carousel": "^1.6.32",
     "@types/socket.io": "^1.4.30",
-    "@types/sprintf-js": "^1.1.0",
     "@types/stylus": "^0.48.28",
     "@types/topojson": "^3.0.2",
     "@types/video.js": "^6.2.2",

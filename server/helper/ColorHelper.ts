@@ -2,6 +2,7 @@ import {TableData} from "../database/Tables"
 import {Route} from "../database/Route"
 import {Util} from "../database/Util"
 import i18next = require("i18next")
+const sprintf = require('sprintf-js').sprintf
 
 export namespace ColorHelper {
 
