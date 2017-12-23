@@ -19,6 +19,7 @@ block scripts
     script.
         var expeditieNameShort = "!{expeditie.nameShort}"
 
+    script(src='/scripts/map/LoadingBar.js')
     script(src='/scripts/map/MapHandler.js')
     script(src='/scripts/sockets/Sockets.js')
     script(src='/scripts/sockets/SocketHandler.js')
@@ -27,3 +28,6 @@ block scripts
 
 block body
     #map
+    #loadingBar
+        include includes/loadSpinner
+        #loadingText &nbsp;Loading...

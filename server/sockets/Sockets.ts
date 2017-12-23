@@ -37,8 +37,10 @@ export namespace Sockets {
 
                 console.log('sending zoomLevel: ' + zoomLevel + ' with: ' + locationsAtZoom.length + ' locations')
                 if(locationsAtZoom.length > 0)
-                    io.emit(SocketIDs.GET_LOCATIONS, name, locationsAtZoom)
+                    io.emit(SocketIDs.GET_LOCATIONS, name, zoomLevel, locationsAtZoom)
             }
+
+            io.emit(SocketIDs.LOADING_DONE)
             console.log('location sending done.')
         }
     }

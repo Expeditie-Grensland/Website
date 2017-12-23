@@ -5,6 +5,7 @@ export namespace SocketIDs {
     export const GET_ROUTE = "GetRoute"
     export const GET_NODES = "GetNodes"
     export const GET_LOCATIONS = "GetLocations"
+    export const LOADING_DONE = "LoadingDone"
 }
 
 export namespace SocketHandler {

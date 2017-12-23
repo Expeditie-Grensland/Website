@@ -24,25 +24,6 @@ export namespace ExpeditieRoute {
             if(!res.headersSent)
                 res.sendStatus(404)
         })
-
-
-/**
-        Expeditie.getExpeditiesCached().then((expeditiesCached) => {
-            for (let expeditie of expeditiesCached) {
-                if(expeditie.showMap) {
-                    console.log("Registering " + expeditie.mapUrl + " as expeditie page.")
-
-                    //TODO this doesn't work when an expeditie is added while the server is running
-
-                    app.get(expeditie.mapUrl + '/?', (req, res) => {
-                        res.render("expeditie", {
-                            expeditie: expeditie
-                        })
-                    })
-                }
-            }
-        })
- **/
     }
 
     function removeTrailingSlash(path: string): string {

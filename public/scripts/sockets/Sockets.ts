@@ -1,7 +1,6 @@
 namespace Sockets {
     export function getRoute(expeditieNameShort: string, route: Tables.Route) {
-        console.log("received route: ")
-        console.log(route)
+        LoadingBar.setLoadingText("Received route.")
 
         MapHandler.setRoute(route)
 
@@ -9,17 +8,19 @@ namespace Sockets {
     }
 
     export function getNodes(expeditieNameShort: string, nodes: Tables.RouteNode[]) {
-        console.log("received nodes")
-        console.log(nodes)
+        LoadingBar.setLoadingText("Received nodes.")
 
         MapHandler.addNodes(nodes)
         SocketHandler.requestLocations(expeditieNameShort)
     }
 
-    export function getLocations(expeditieNameShort: string, locations: Tables.Location[]) {
-        console.log("received locations: ")
-        console.log(locations)
+    export function getLocations(expeditieNameShort: string, zoomLevel: number, locations: Tables.Location[]) {
+        LoadingBar.setLoadingText("Received locations for zoom level: " + zoomLevel)
 
         MapHandler.addLocations(locations)
+    }
+
+    export function loadingDone() {
+        LoadingBar.setLoadingDone(true)
     }
 }

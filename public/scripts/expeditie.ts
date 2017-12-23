@@ -2,6 +2,8 @@ declare var MapboxLanguage :any
 declare var expeditieNameShort :string
 
 $(document).ready(() => {
+    LoadingBar.setLoadingText("Loading map...")
+
     mapboxgl.accessToken = 'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw'
     const map = new mapboxgl.Map({
         container: 'map',
