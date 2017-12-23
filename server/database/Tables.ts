@@ -9,6 +9,8 @@ export namespace Tables {
     export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>
 
     export function initTables() {
+        TableData.Location.locationSchema.index({visualArea: -1})
+
         Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema)
         Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema)
         Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
@@ -99,13 +101,15 @@ export namespace TableData {
     /**
      * A Location describes the output of a GPS receiver, using latitude, longitude
      * altitude, and speed and bearing of travel. For each variable, an accuracy is provided.
-     * A lower `zoomLevel` indicates a higher importance of this particular location to the shape
-     * of the route it is part of. Valid values [0, 19].
+     * The `visualArea` indicates the area of the triangle formed by this location and it's two adjacent points in
+     * square meter. A bigger area indicates a bigger contribution to the visual 'shape' of a route line. This value is
+     * used to determine the order of points sent to a client. Locations with higher visual areas get sent before those
+     * with low visual area.
      * A Location belongs to one, and only one, RouteNode.
      */
     export namespace Location {
         export const locationSchema = new mongoose.Schema({
-            zoomLevel: Number,
+            visualArea: Number,
             person: reference(TableIDs.Person),
             node: reference(TableIDs.RouteNode),
             timestamp: Number,
@@ -122,7 +126,7 @@ export namespace TableData {
         })
 
         export interface Location {
-            zoomLevel?: number
+            visualArea?: number
             person: PersonOrID
             node?: RouteNodeOrID
             timestamp: number

@@ -294,7 +294,6 @@ export namespace Debug {
 
                 .then(() => res.send("File received"))
                 .then(() => console.log("Done"))
-                .then(() => Tables.Location.aggregate({$group: {_id: { zoomLevel: "$zoomLevel" }, count: { $sum: 1 }}}).sort('_id.zoomLevel').exec())
                 .then((data) => {
                     console.log(data)
                 })

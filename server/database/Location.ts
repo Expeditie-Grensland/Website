@@ -2,8 +2,8 @@ import {LegacyTableData, TableData, Tables} from "./Tables"
 import {Util} from "./Util"
 import {Route} from "./Route"
 import LocationDocument = TableData.Location.LocationDocument
-const geoTz: any = require('geo-tz')
 import {LocationHelper} from "../helper/LocationHelper"
+import {QueryCursor} from "mongoose"
 
 export namespace Location {
 
@@ -13,7 +13,6 @@ export namespace Location {
     import PersonOrID = TableData.PersonOrID
     import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
     import RouteNodeOrID = TableData.RouteNodeOrID
-    import ZoomLevel = LocationHelper.ZoomLevel
 
     export function getLocationById(_id: string): Promise<LocationDocument> {
         return Tables.Location.findById(_id).exec()
@@ -39,15 +38,16 @@ export namespace Location {
             location.node = Util.getObjectID(node)
         }
 
-        if(location.zoomLevel === undefined) {
-            location.zoomLevel = 0
+        if(location.visualArea === undefined) {
+            //By default sort first
+            location.visualArea = Number.POSITIVE_INFINITY
         }
 
         const locationDoc = await Tables.Location.create(location)
 
         await Route.expandBoundingBox([locationDoc])(routeDoc)
 
-        return LocationHelper.calculateZoomLevel(locationDoc)
+        return LocationHelper.setVisualArea(locationDoc)
     }
 
     export async function createLocations(locations: TableData.Location.Location[], route: RouteOrID): Promise<LocationDocument[]> {
@@ -63,8 +63,9 @@ export namespace Location {
         }
 
         for(let location of locations) {
-            if(location.zoomLevel === undefined) {
-                location.zoomLevel = 0
+            if(location.visualArea === undefined) {
+                //By default, load first
+                location.visualArea = Number.POSITIVE_INFINITY
             }
 
             if(location.node === undefined) {
@@ -77,7 +78,7 @@ export namespace Location {
 
         await Route.expandBoundingBox(locationDocs)(routeDoc)
 
-        return LocationHelper.calculateZoomLevels(locationDocs)
+        return LocationHelper.setVisualAreas(locationDocs)
     }
 
     export function removeLocation(location): Promise<void> {
@@ -86,16 +87,20 @@ export namespace Location {
         }).then(() => null)
     }
 
-    export function setLocationZoomLevel(zoomLevel: number): (location: LocationOrID) => Promise<LocationDocument> {
-        return (location) => Tables.Location.findByIdAndUpdate(Util.getObjectID(location), {zoomLevel: zoomLevel}, {new: true}).exec()
+    export function setLocationVisualArea(visualArea: number): (location: LocationOrID) => Promise<LocationDocument> {
+        return location => Tables.Location.findByIdAndUpdate(Util.getObjectID(location), {visualArea: visualArea}, {new: true}).exec()
     }
 
     export function getLocationsInRoute(route: RouteOrID): Promise<LocationDocument[]> {
         return Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).exec())
     }
 
-    export function getLocationsInRouteAtZoomLevel(zoomLevel: ZoomLevel): (route: RouteOrID) => Promise<LocationDocument[]> {
-        return route => Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}, zoomLevel: zoomLevel}).exec())
+    export function getLocationsInRouteSortedByArea(skip: number, limit: number): (route: RouteOrID) => Promise<LocationDocument[]> {
+        return async route => {
+            const nodes = await Route.getNodes(route)
+
+            return Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).sort({visualArea: 'desc'}).skip(skip).limit(limit).find().exec()
+        }
     }
 
     export function getLocationsInNode(node: RouteNodeOrID): Promise<LocationDocument[]> {

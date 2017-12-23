@@ -7,34 +7,31 @@ export namespace LocationHelper {
     import LocationDocument = TableData.Location.LocationDocument;
     import RouteNodeOrID = TableData.RouteNodeOrID
 
-    export type ZoomLevel = number
+    const lastLocationsMap: Map<string, Promise<[LocationDocument, LocationDocument]>> = new Map()
 
-    export const ZOOM_LEVEL_RANGE: ZoomLevel[] = Array.from(new Array(20), (x,i) => i)
-
-    const lastLocationsMap: Map<string, Promise<[LocationDocument[], LocationDocument]>> = new Map()
 
     /**
-     * Assigns the zoom level of the before-last location. This should be called when a new location is added to the
+     * Assigns the visual area of the before-last location. This should be called when a new location is added to the
      * database.
      *
      * Note: This function does not change the _current_ LocationDocument, but the one added before the current.
-     * @param {TableData.Location.LocationDocument} newLocation The location that was added to the database
-     * @returns {TableData.Location.LocationDocument} The value of the `newLocation` parameter.
+     * @param {TableData.Location.LocationDocument} location The location that was added to the database
+     * @returns {TableData.Location.LocationDocument} The value of the `location` parameter.
      */
-    export async function calculateZoomLevel(newLocation: LocationDocument): Promise<LocationDocument> {
-        const zoomLevel = await findLowestZoomLevel(newLocation)
-        const lastLocations = await getLastLocationsCached(newLocation.node)
+    export async function setVisualArea(location: LocationDocument): Promise<LocationDocument> {
+        const area = await calculateVisualArea(location)
+        const lastLocations = await getLastLocationsCached(location.node)
 
-        await Location.setLocationZoomLevel(zoomLevel)(lastLocations[1])
-        await addLocation(newLocation)
+        await Location.setLocationVisualArea(area)(lastLocations[1])
+        await addLocation(location)
 
-        return newLocation
+        return location
     }
 
-    export async function calculateZoomLevels(newLocations: LocationDocument[]): Promise<LocationDocument[]> {
+    export async function setVisualAreas(locations: LocationDocument[]): Promise<LocationDocument[]> {
         let nodeToLocationMap: Map<string, LocationDocument[]> = new Map()
 
-        for(let location of newLocations) {
+        for(let location of locations) {
             let array = nodeToLocationMap.get(Util.getObjectID(location.node))
 
             if(array === undefined) {
@@ -56,89 +53,61 @@ export namespace LocationHelper {
             lastLocationsMap.set(Util.getObjectID(lastLocations[1].node), Promise.resolve(lastLocations))
 
             for (let i = 3; i < locations.length; i++) {
-                const zoomLevel = await findLowestZoomLevel(locations[i])
+                const visualArea = await calculateVisualArea(locations[i])
 
-                locations[i-1].zoomLevel = zoomLevel
-                bulk.find({_id: locations[i-1]._id}).update({$set: {zoomLevel: zoomLevel}})
+                locations[i-1].visualArea = visualArea
+                bulk.find({_id: locations[i-1]._id}).update({$set: {visualArea: visualArea}})
 
                 addLocation(locations[i])
             }
         }
 
-        return bulk.execute().then(() => newLocations)
+        return bulk.execute().then(() => locations)
     }
 
-    function findLowestZoomLevel(location: LocationDocument, idx: number = 0): Promise<number> {
-        return shouldLocationBeDisplayedAtZoomLevel(location, ZOOM_LEVEL_RANGE[idx]).then(display => {
-            if(display) {
-                return ZOOM_LEVEL_RANGE[idx]
+    async function calculateVisualArea(location: LocationDocument): Promise<number> {
+        return getLastLocationsCached(Util.getObjectID(location.node)).then(lastLocations => {
+            if(lastLocations != undefined) {
+                const triangle = turf.polygon([[
+                    [lastLocations[0].lon, lastLocations[0].lat],
+                    [lastLocations[1].lon, lastLocations[1].lat],
+                    [location.lon, location.lat],
+
+                    [lastLocations[0].lon, lastLocations[0].lat],
+                ]])
+
+                return turf.area(triangle)
             }
-            return findLowestZoomLevel(location, idx+1)
+            //Either the first or the last element in the array. These should just be loaded first
+            return Number.POSITIVE_INFINITY
         })
     }
 
     function addLocation(location: LocationDocument) {
         let lastLocations = lastLocationsMap.get(Util.getObjectID(location.node)).then(lastLocations => {
-            let oldL0 = lastLocations[0]
-            let oldL1 = lastLocations[1]
-
-            let newL0 = oldL0.map((oldL, index) => (index >= oldL1.zoomLevel) ? oldL1 : oldL)
+            let newL0 = lastLocations[1]
             let newL1 = location
 
-            return [newL0, newL1] as [LocationDocument[], LocationDocument]
+            return [newL0, newL1] as [LocationDocument, LocationDocument]
         })
 
         lastLocationsMap.set(Util.getObjectID(location.node), lastLocations)
     }
 
-    /**
-     * Converts between the area of a polygon and a zoomLevel
-     * @param {number} area in m^2
-     * @returns {number} the largest zoomLevel this feature should be displayed at, from 0 up to and including 19.
-     */
-    function areaToZoomLevel(area: number): ZoomLevel {
-        //19 - ((x/(3*10^4))^3)
-        const zl = 19 - Math.pow(area / 50000, 3)
-        //const z1 = 19 - (area / Math.pow(2, 15))
-
-        return Math.floor(zl > 0 ? zl : 0)
-    }
-
-    function shouldLocationBeDisplayedAtZoomLevel(location: LocationDocument, zoomLevel: ZoomLevel): Promise<boolean> {
-        return getLastLocationsCached(Util.getObjectID(location.node)).then(lastLocations => {
-            if(lastLocations != undefined) {
-                const triangle = turf.polygon([[
-                    [lastLocations[0][zoomLevel].lon, lastLocations[0][zoomLevel].lat],
-                    [lastLocations[1].lon, lastLocations[1].lat],
-                    [location.lon, location.lat],
-
-                    [lastLocations[0][zoomLevel].lon, lastLocations[0][zoomLevel].lat],
-                ]])
-
-                const area = turf.area(triangle)
-
-                return areaToZoomLevel(area) <= zoomLevel
-            }
-            return true
-        })
-    }
-
-    function getLastLocations(locations: LocationDocument[]): Promise<[LocationDocument[], LocationDocument] | undefined> {
+    function getLastLocations(locations: LocationDocument[]): Promise<[LocationDocument, LocationDocument] | undefined> {
         return Promise.resolve(locations).then(sortByTimestampDescending)
             .then(locations => {
                 if(locations.length > 1) {
                     let l1: LocationDocument = locations[0]
-                    let l0: LocationDocument[] = ZOOM_LEVEL_RANGE.map(zoomLevel =>
-                        locations.slice(1).find(l => l.zoomLevel <= zoomLevel)
-                    )
+                    let l0: LocationDocument = locations[1]
 
-                    return [l0, l1] as [LocationDocument[], LocationDocument]
+                    return [l0, l1] as [LocationDocument, LocationDocument]
                 }
                 return undefined
             })
     }
 
-    function getLastLocationsCached(node: RouteNodeOrID): Promise<[LocationDocument[], LocationDocument] | undefined> {
+    function getLastLocationsCached(node: RouteNodeOrID): Promise<[LocationDocument, LocationDocument] | undefined> {
         let lastLocations = lastLocationsMap.get(Util.getObjectID(node))
 
         if(lastLocations === undefined) {

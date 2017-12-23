@@ -1,10 +1,17 @@
 import * as express from "express";
 import {SocketIDs} from "./SocketHandler";
 import {Expeditie} from "../database/Expeditie";
+import {Location} from "../database/Location";
 import {Route} from "../database/Route";
 import {LocationHelper} from "../helper/LocationHelper"
+import {QueryCursor} from "mongoose"
+import {TableData} from "../database/Tables"
+const sprintf = require('sprintf-js').sprintf
+
 
 export namespace Sockets {
+
+    import LocationDocument = TableData.Location.LocationDocument
 
     export function getRoute(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
         return async name => {
@@ -29,15 +36,20 @@ export namespace Sockets {
         return async name => {
             const expeditie = await Expeditie.getExpeditieByNameShort(name)
 
-            for(let zoomLevel of LocationHelper.ZOOM_LEVEL_RANGE) {
+            let batchSize = 200
+            let batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, 0, batchSize)
+            let batchCount = 1
+
+            while(batch.length > 0) {
                 if(!io.connected)
-                    break
+                    return
 
-                const locationsAtZoom = await Expeditie.getLocationsAtZoomLevel(zoomLevel)(expeditie)
+                console.log(sprintf("Sending batch %d with %d locations", batchCount, batch.length))
+                io.emit(SocketIDs.GET_LOCATIONS, name, batchCount, batch)
 
-                console.log('sending zoomLevel: ' + zoomLevel + ' with: ' + locationsAtZoom.length + ' locations')
-                if(locationsAtZoom.length > 0)
-                    io.emit(SocketIDs.GET_LOCATIONS, name, zoomLevel, locationsAtZoom)
+                batchCount++
+                batchSize *= 2
+                batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, batchCount * batchSize, batchSize)
             }
 
             io.emit(SocketIDs.LOADING_DONE)

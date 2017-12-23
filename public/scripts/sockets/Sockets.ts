@@ -14,8 +14,8 @@ namespace Sockets {
         SocketHandler.requestLocations(expeditieNameShort)
     }
 
-    export function getLocations(expeditieNameShort: string, zoomLevel: number, locations: Tables.Location[]) {
-        LoadingBar.setLoadingText("Received locations for zoom level: " + zoomLevel)
+    export function getLocations(expeditieNameShort: string, batchNumber: number, locations: Tables.Location[]) {
+        LoadingBar.setLoadingText("Received location batch " + batchNumber + " with " + locations.length + " locations")
 
         MapHandler.addLocations(locations)
     }

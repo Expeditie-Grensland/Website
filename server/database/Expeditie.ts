@@ -14,13 +14,13 @@ import RouteDocument = TableData.Route.RouteDocument
 import ExpeditieOrID = TableData.ExpeditieOrID
 import RouteOrID = TableData.RouteOrID
 import PersonOrID = TableData.PersonOrID
+import {QueryCursor} from "mongoose"
 
 const sprintf = require('sprintf-js').sprintf
 
 
 export namespace Expeditie {
     import LocationDocument = TableData.Location.LocationDocument
-    import ZoomLevel = LocationHelper.ZoomLevel
 
     let expeditiesCached = null
 
@@ -191,7 +191,7 @@ export namespace Expeditie {
         return getRoute(expeditie).then(Location.getLocationsInRoute)
     }
 
-    export function getLocationsAtZoomLevel(zoomLevel: ZoomLevel): (expeditie: ExpeditieOrID) => Promise<LocationDocument[]> {
-        return expeditie => getRoute(expeditie).then(Location.getLocationsInRouteAtZoomLevel(zoomLevel))
+    export function getLocationsSortedByVisualArea(expeditie: ExpeditieOrID, skip, limit): Promise<LocationDocument[]> {
+        return getRoute(expeditie).then(Location.getLocationsInRouteSortedByArea(skip, limit))
     }
 }
