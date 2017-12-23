@@ -149,16 +149,16 @@ export namespace Location {
         return l
     }
 
-    export function fromBalkanLegacy(location: LegacyTableData.Balkan.LocationJSON, previousAltitude: number, person: PersonOrID): TableData.Location.Location {
+    export function fromBalkanLegacy(location: LegacyTableData.Balkan.LocationJSON, person: PersonOrID): TableData.Location.Location {
         const lat = location.latitudeE7 / 10E6
         const lon = location.longitudeE7 / 10E6
         return {
             person: Util.getObjectID(person),
             timestamp: Math.floor(parseInt(location.timestampMs) / 1000),
-            timezone: geoTz.tz(lat, lon),
+            timezone: location.timezone,
             lat: lat,
             lon: lon,
-            altitude: location.altitude === undefined ? previousAltitude : location.altitude,
+            altitude: location.altitude,
         }
     }
 }

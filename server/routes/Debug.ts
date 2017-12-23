@@ -7,6 +7,9 @@ import {Util} from "../database/Util"
 import {Route} from "../database/Route"
 import {ColorHelper} from "../helper/ColorHelper"
 import PersonDocument = TableData.Person.PersonDocument
+const geoTz: any = require('geo-tz')
+import * as fs from 'fs';
+
 import {FeatureCollection, GeoJsonObject, LineString} from "geojson"
 
 export namespace Debug {
@@ -265,27 +268,17 @@ export namespace Debug {
             const balkan = Expeditie.getExpeditieByName("Balkan")
 
             const data: LegacyTableData.Balkan.ExportJSON = req.body
-            const locations = data.locations.reverse().map((location, index, array) => {
-                let previousAltitude: number = null
 
-                for(let i = index; i > 0; --i) {
-                    if(array[i].altitude !== undefined) {
-                        previousAltitude = array[i].altitude
-                        break
-                    }
-                }
+            console.log("reversing locations..")
 
-                if(previousAltitude === null) {
-                    for (let i = index; i < array.length; i++) {
-                        if (array[i].altitude !== undefined) {
-                            previousAltitude = array[i].altitude
-                            break
-                        }
-                    }
-                }
+            const legacyLocations = data.locations.reverse()
+            const locations: TableData.Location.Location[] = []
 
-                return Location.fromBalkanLegacy(location, previousAltitude, maurice)
-            })
+            console.log("Transforming locations to non-legacy locations..")
+
+            for(let location of legacyLocations) {
+                locations.push(Location.fromBalkanLegacy(location, maurice))
+            }
 
             console.log("Location count: " + locations.length)
 

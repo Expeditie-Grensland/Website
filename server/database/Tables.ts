@@ -307,10 +307,11 @@ export namespace LegacyTableData {
             latitudeE7: number
             longitudeE7: number
             accuracy: number
-            altitude?: number
+            altitude: number
             velocity?: number
             verticalAccuracy?: number
             activity?: ActivityJSON[]
+            timezone: string
         }
 
         export interface ActivityJSON {
