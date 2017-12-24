@@ -64,7 +64,7 @@ export namespace Route {
         return Util.getDocument(node, getRouteNodeById).then(node => node.populate('persons').execPopulate())
     }
 
-    function getRouteNode(node: RouteNodeOrID): Promise<RouteNodeDocument> {
+    export function getRouteNode(node: RouteNodeOrID): Promise<RouteNodeDocument> {
         return Util.getDocument(node, getRouteNodeById)
     }
 

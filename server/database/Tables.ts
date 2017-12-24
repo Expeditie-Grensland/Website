@@ -4,29 +4,32 @@ export namespace Tables {
     export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>
     export let Location: mongoose.Model<TableData.Location.LocationDocument>
     export let Person: mongoose.Model<TableData.Person.PersonDocument>
-//    export let Place: mongoose.Model<TableData.Place.PlaceDocument>
+    export let Place: mongoose.Model<TableData.Place.PlaceDocument>
     export let Route: mongoose.Model<TableData.Route.RouteDocument>
     export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>
 
     export function initTables() {
-        TableData.Location.locationSchema.index({visualArea: -1})
+        //Ensure fast retrieval of find query by visual area and place. This query is performed every site visit,
+        // so it should be performant
+        TableData.Location.locationSchema.index({visualArea: -1, place: 1})
+        TableData.Location.locationSchema.index({timestamp: -1})
 
         Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema)
         Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema)
         Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
-//        Place = mongoose.model(TableIDs.Place, TableData.Place.placeSchema)
+        Place = mongoose.model(TableIDs.Place, TableData.Place.placeSchema)
         Route = mongoose.model(TableIDs.Route, TableData.Route.routeSchema)
         RouteNode = mongoose.model(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema)
     }
 }
 
 export namespace TableIDs {
-    //TODO Image, LogEntry, Place
+    //TODO Image, LogEntry
 
     export const Expeditie = "Expeditie"
     export const Location = "Location"
     export const Person = "Person"
-//    export const Place = "Place"
+    export const Place = "Place"
     export const Route = "Route"
     export const RouteNode = "RouteNode"
 }
@@ -35,6 +38,7 @@ export namespace TableData {
 
     export type DocumentOrID<T extends mongoose.Document> = T | string
     export type ExpeditieOrID = DocumentOrID<Expeditie.ExpeditieDocument>
+    export type PlaceOrID = DocumentOrID<Place.PlaceDocument>
     export type LocationOrID = DocumentOrID<Location.LocationDocument>
     export type PersonOrID = DocumentOrID<Person.PersonDocument>
     export type RouteOrID = DocumentOrID<Route.RouteDocument>
@@ -112,6 +116,7 @@ export namespace TableData {
             visualArea: Number,
             person: reference(TableIDs.Person),
             node: reference(TableIDs.RouteNode),
+            place: reference(TableIDs.Place),
             timestamp: Number,
             timezone: String,
             lat: Number,
@@ -129,6 +134,7 @@ export namespace TableData {
             visualArea?: number
             person: PersonOrID
             node?: RouteNodeOrID
+            place?: PlaceOrID
             timestamp: number
             timezone: string
             lat: number
@@ -171,25 +177,30 @@ export namespace TableData {
     }
 
     /**
-     * A Place is a spot where there are too many points to clearly display on the map, depending on zoomlevel. It
-     * has a radius and a location and is displayed on the map as a circle.
-     *//*
+     * A Place is a spot where a group of people stayed in one place for too long, creating a jumble of GPS points
+     * very close to each other which creates a mess on the map. It has a radius, latitude, longitude
+     * and is displayed on the map as a circle.
+     * Radius is in meters.
+     *
+     * Each Place can be part of multiple routes, if multiple groups stay at the same place for example.
+     */
     export namespace Place {
         export const placeSchema = new mongoose.Schema({
-            zoomLevel: Number,
-            latlon: reference(TableIDs.Location),
-            radius: Number
+            lat: Number,
+            lon: Number,
+            radius: Number,
+            nodes: [reference(TableIDs.RouteNode)]
         })
 
         export interface Place {
-            zoomLevel: number,
-            latlon: string | Location.Location, //Because location is not allowed for some reason
+            lat: number
+            lon: number
             radius: number
+            nodes: RouteNodeOrID[]
         }
 
-        export interface PlaceDocument extends Place, mongoose.Document {
-        }
-    }*/
+        export interface PlaceDocument extends Place, mongoose.Document {}
+    }
 
     /**
      * The bounding 'box' (more like a rectangle on a sphere) for a Route. All points in a Route lie on or within the

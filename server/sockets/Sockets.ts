@@ -36,7 +36,7 @@ export namespace Sockets {
         return async name => {
             const expeditie = await Expeditie.getExpeditieByNameShort(name)
 
-            let batchSize = 200
+            let batchSize = 100
             let batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, 0, batchSize)
             let batchCount = 1
 

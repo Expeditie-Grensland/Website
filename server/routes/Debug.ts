@@ -7,10 +7,7 @@ import {Util} from "../database/Util"
 import {Route} from "../database/Route"
 import {ColorHelper} from "../helper/ColorHelper"
 import PersonDocument = TableData.Person.PersonDocument
-const geoTz: any = require('geo-tz')
-import * as fs from 'fs';
-
-import {FeatureCollection, GeoJsonObject, LineString} from "geojson"
+import {PlaceHelper} from "../helper/PlaceHelper"
 
 export namespace Debug {
 
@@ -163,7 +160,9 @@ export namespace Debug {
             promises.push(Tables.Route.remove({}))
             promises.push(Tables.RouteNode.remove({}))
             promises.push(Tables.Location.remove({}))
+            promises.push(Tables.Place.remove({}))
             promises.push(ColorHelper.resetCache())
+            promises.push(PlaceHelper.resetCache())
 
             Promise.all(promises).then(() => res.send("Database cleared.")).catch(err => {
                 res.send("Error Occurred: " + err)
@@ -213,8 +212,6 @@ export namespace Debug {
                     const mauriceData = Location.removePingData(data.maurice.route, maurice).sort((l1, l2) => l1.timestamp - l2.timestamp)
                     const ronaldData = Location.removePingData(data.ronald.route, ronald).sort((l1, l2) => l1.timestamp - l2.timestamp)
 
-                    console.log(diederikData)
-
                     const mauriceData1 = mauriceData.filter(location =>
                             location.timestamp <= diederikData[diederikData.length-1].timestamp
                         ) //Baku
@@ -225,8 +222,6 @@ export namespace Debug {
                     const mauriceData3 = mauriceData.filter(location =>
                             location.timestamp > ronaldData[0].timestamp
                         ) //Moscow
-
-                    console.log("mauriceData lengths: " + mauriceData.length + " " + mauriceData1.length + " " + mauriceData2.length + " " + mauriceData3.length)
 
                     kaukasus.catch(err => {
                         res.send("Kaukasus not found. Are expedities initialized? Error: " + err)
@@ -246,8 +241,6 @@ export namespace Debug {
                         .then(Expeditie.setFinished(true))
 
                         .then(() => res.send("File received")).then(() => console.log("Done"))
-                        .then(() => console.log("mauriceData lengths: " + mauriceData.length + " " + mauriceData1.length + " " + mauriceData2.length + " " + mauriceData3.length))
-                        .then(() => Tables.Location.aggregate({$group: {_id: { zoomLevel: "$zoomLevel" }, count: { $sum: 1 }}}).sort('_id.zoomLevel').exec())
                         .then((data) => {
                             console.log(data)
                         })
@@ -294,6 +287,8 @@ export namespace Debug {
 
                 .then(() => res.send("File received"))
                 .then(() => console.log("Done"))
+                .then(() => Tables.Place.find({}).exec())
+                .then(places => console.log("created x amount of places: " + places.length))
                 .then((data) => {
                     console.log(data)
                 })

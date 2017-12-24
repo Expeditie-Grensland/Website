@@ -3,7 +3,7 @@ import {Util} from "./Util"
 import {Route} from "./Route"
 import LocationDocument = TableData.Location.LocationDocument
 import {LocationHelper} from "../helper/LocationHelper"
-import {QueryCursor} from "mongoose"
+import {PlaceHelper} from "../helper/PlaceHelper"
 
 export namespace Location {
 
@@ -13,6 +13,7 @@ export namespace Location {
     import PersonOrID = TableData.PersonOrID
     import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
     import RouteNodeOrID = TableData.RouteNodeOrID
+    import PlaceOrID = TableData.PlaceOrID
 
     export function getLocationById(_id: string): Promise<LocationDocument> {
         return Tables.Location.findById(_id).exec()
@@ -43,11 +44,13 @@ export namespace Location {
             location.visualArea = Number.POSITIVE_INFINITY
         }
 
-        const locationDoc = await Tables.Location.create(location)
+        let locationDoc = await Tables.Location.create(location)
 
         await Route.expandBoundingBox([locationDoc])(routeDoc)
 
-        return LocationHelper.setVisualArea(locationDoc)
+        locationDoc = await LocationHelper.setVisualArea(locationDoc)
+
+        return PlaceHelper.findPlaceForLocation(locationDoc)
     }
 
     export async function createLocations(locations: TableData.Location.Location[], route: RouteOrID): Promise<LocationDocument[]> {
@@ -76,9 +79,17 @@ export namespace Location {
 
         const locationDocs = await Tables.Location.insertMany(locations)
 
-        await Route.expandBoundingBox(locationDocs)(routeDoc)
+        const boundsPromise = Route.expandBoundingBox(locationDocs)(routeDoc)
 
-        return LocationHelper.setVisualAreas(locationDocs)
+        const locationsPromise = LocationHelper.setVisualAreas(locationDocs)
+
+        for(let location of locationDocs) {
+            await PlaceHelper.findPlaceForLocation(location)
+        }
+
+        await boundsPromise
+        //TODO this doesn't update the locations in the locationsPromise array with the values returned from findPlaceForLocation.
+        return await locationsPromise
     }
 
     export function removeLocation(location): Promise<void> {
@@ -91,6 +102,10 @@ export namespace Location {
         return location => Tables.Location.findByIdAndUpdate(Util.getObjectID(location), {visualArea: visualArea}, {new: true}).exec()
     }
 
+    export function getLocationsInPlace(place: PlaceOrID): Promise<LocationDocument[]> {
+        return Tables.Location.find({place: Util.getObjectID(place)}).exec()
+    }
+
     export function getLocationsInRoute(route: RouteOrID): Promise<LocationDocument[]> {
         return Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).exec())
     }
@@ -99,12 +114,16 @@ export namespace Location {
         return async route => {
             const nodes = await Route.getNodes(route)
 
-            return Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).sort({visualArea: 'desc'}).skip(skip).limit(limit).find().exec()
+            return Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}, place: {$exists : false}}).sort({visualArea: 'desc'}).skip(skip).limit(limit).find().exec()
         }
     }
 
-    export function getLocationsInNode(node: RouteNodeOrID): Promise<LocationDocument[]> {
-        return Tables.Location.find({node: Util.getObjectID(node)}).exec()
+    export function setPlace(place: PlaceOrID): (location: LocationOrID) => Promise<LocationDocument> {
+        return location => Tables.Location.findByIdAndUpdate(Util.getObjectID(location), {place: Util.getObjectID(place)}, {new: true}).exec()
+    }
+
+    export function getLocationsInNodeByTimestampDescending(node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> {
+        return Tables.Location.find({node: Util.getObjectID(node)}).sort({timestamp: 'desc'}).skip(skip).limit(limit).exec()
     }
 
     export function fromKaukasusLegacy(location: LegacyTableData.Kaukasus.LocationJSON, person: PersonOrID): TableData.Location.Location {

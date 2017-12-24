@@ -84,7 +84,7 @@ export namespace LocationHelper {
     }
 
     function addLocation(location: LocationDocument) {
-        let lastLocations = lastLocationsMap.get(Util.getObjectID(location.node)).then(lastLocations => {
+        let lastLocations = getLastLocationsCached(location.node).then(lastLocations => {
             let newL0 = lastLocations[1]
             let newL1 = location
 
@@ -94,7 +94,7 @@ export namespace LocationHelper {
         lastLocationsMap.set(Util.getObjectID(location.node), lastLocations)
     }
 
-    function getLastLocations(locations: LocationDocument[]): Promise<[LocationDocument, LocationDocument] | undefined> {
+    async function getLastLocations(locations: LocationDocument[]): Promise<[LocationDocument, LocationDocument] | undefined> {
         return Promise.resolve(locations).then(sortByTimestampDescending)
             .then(locations => {
                 if(locations.length > 1) {
@@ -111,8 +111,7 @@ export namespace LocationHelper {
         let lastLocations = lastLocationsMap.get(Util.getObjectID(node))
 
         if(lastLocations === undefined) {
-            lastLocations = Location.getLocationsInNode(Util.getObjectID(node))
-                .then(locations => locations.slice(1))
+            lastLocations = Location.getLocationsInNodeByTimestampDescending(Util.getObjectID(node), 1, 2)
                 .then(getLastLocations)
 
             lastLocationsMap.set(Util.getObjectID(node), lastLocations)
