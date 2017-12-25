@@ -30,8 +30,6 @@ $(document).ready(() => {
         }
 
         map.addControl(mapLanguage);
-
-        map.addSource('route', { type: 'geojson', data: null });
     })
 
     map.on('load', () => {

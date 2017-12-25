@@ -6,6 +6,7 @@ import {Route} from "../database/Route";
 import {LocationHelper} from "../helper/LocationHelper"
 import {QueryCursor} from "mongoose"
 import {TableData} from "../database/Tables"
+import {Place} from "../database/Place"
 const sprintf = require('sprintf-js').sprintf
 
 
@@ -52,8 +53,19 @@ export namespace Sockets {
                 batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, batchCount * batchSize, batchSize)
             }
 
-            io.emit(SocketIDs.LOADING_DONE)
+            io.emit(SocketIDs.LOCATIONS_DONE, name)
             console.log('location sending done.')
+        }
+    }
+
+    export function getPlaces(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
+        return async name => {
+            const expeditie = await Expeditie.getExpeditieByNameShort(name)
+            const route = await Expeditie.getRoute(expeditie)
+            const places = await Place.getPlacesInRoute(route)
+
+            console.log("Sending places..")
+            io.emit(SocketIDs.GET_PLACES, name, places)
         }
     }
 }

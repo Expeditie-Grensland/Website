@@ -14,7 +14,7 @@ export namespace PlaceHelper {
     const historyLength = 300
 
     //Minimum location density to form a place in places/km^2.
-    const minLocationDensity = 89500
+    const minLocationDensity = 80000
     //The minimum amount of locations to form a place.
     const minLocationCount = 10
 
@@ -77,6 +77,8 @@ export namespace PlaceHelper {
 
         for(let location of locationsInPlace) {
             promises.push(Location.setPlace(placeDoc)(location))
+
+            location.place = Util.getObjectID(placeDoc)
         }
 
         await Promise.all(promises)
@@ -105,7 +107,7 @@ export namespace PlaceHelper {
                 break; //TODO merge or something?
             }
 
-            locationsInPlace.push(history[i++])
+            locationsInPlace.push(nextPlace)
             circle = getSmallestEnclosingCircle(locationsInPlace)
             isValidPlace = true
         }
@@ -171,10 +173,21 @@ export namespace PlaceHelper {
         const history = getCachedLocationHistoryForNode(location.node)
 
         history.then(history => {
-            history.push(location)
+            let cachedIdx = -1
+            const cached = history.find((l, idx) => {
+                cachedIdx = idx
+                return l._id === location._id
+            })
 
-            while (history.length > historyLength) {
-                history.pop()
+            if(cached !== undefined) {
+                cached.place = location.place
+                history[cachedIdx] = cached
+            } else {
+                history.unshift(location)
+
+                while (history.length > historyLength) {
+                    history.pop()
+                }
             }
         })
 

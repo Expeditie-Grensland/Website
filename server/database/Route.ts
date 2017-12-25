@@ -18,6 +18,7 @@ export namespace Route {
     import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
     import LocationOrID = TableData.LocationOrID
     import RouteBoundingBox = TableData.RouteBoundingBox.RouteBoundingBox
+    import PlaceDocument = TableData.Place.PlaceDocument
 
     export function createRoute(route: TableData.Route.Route): Promise<RouteDocument> {
         if(route.boundingBox === undefined) {
@@ -177,7 +178,7 @@ export namespace Route {
                         route.startingNodes.push(...newNodesWithoutToEdge.map(node => Util.getObjectID(node)))
                     }
 
-                    return Promise.all([route.save(), ...setEdgePromises]).then((res) => res[0])
+                    return Promise.all(<any[]>[route.save(), ...setEdgePromises]).then((res) => res[0])
                 }
 
                 return route.save()

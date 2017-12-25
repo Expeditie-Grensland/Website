@@ -1,5 +1,6 @@
 import {TableData, Tables} from "./Tables"
 import {Util} from "./Util"
+import {Route} from "./Route"
 
 export namespace Place {
 
@@ -58,5 +59,12 @@ export namespace Place {
             },
             {new: true}
         ).exec()
+    }
+
+    export async function getPlacesInRoute(route: RouteOrID): Promise<PlaceDocument[]> {
+        const routeDoc = await Route.getRoute(route)
+        const nodes = await Route.getNodes(routeDoc)
+
+        return Tables.Place.find({node: {$in: Util.getObjectIDs(nodes)}}).exec()
     }
 }

@@ -5,7 +5,8 @@ export namespace SocketIDs {
     export const GET_ROUTE = "GetRoute"
     export const GET_NODES = "GetNodes"
     export const GET_LOCATIONS = "GetLocations"
-    export const LOADING_DONE = "LoadingDone"
+    export const LOCATIONS_DONE = "LocationsDone"
+    export const GET_PLACES = "GetPlaces"
 }
 
 export namespace SocketHandler {
@@ -20,6 +21,7 @@ export namespace SocketHandler {
             socket.on(SocketIDs.GET_ROUTE, Sockets.getRoute(app, socket))
             socket.on(SocketIDs.GET_NODES, Sockets.getNodes(app, socket))
             socket.on(SocketIDs.GET_LOCATIONS, Sockets.getLocations(app, socket))
+            socket.on(SocketIDs.GET_PLACES, Sockets.getPlaces(app, socket))
         }
     }
 }
