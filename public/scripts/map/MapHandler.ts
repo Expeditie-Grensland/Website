@@ -35,17 +35,17 @@ namespace MapHandler {
             placeNodeMap.set(node._id, [])
 
             //TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
-            // map.addLayer({
-            //     id: LOCATION_SOURCE + node._id,
-            //     type: "line",
-            //     source: LOCATION_SOURCE,
-            //     paint: {
-            //         "line-color": node.color,
-            //         "line-opacity": 1,
-            //         "line-width": 3
-            //     },
-            //     filter: ["==", "node-id", node._id]
-            // })
+            map.addLayer({
+                id: LOCATION_SOURCE + node._id,
+                type: "line",
+                source: LOCATION_SOURCE,
+                paint: {
+                    "line-color": node.color,
+                    "line-opacity": 1,
+                    "line-width": 3
+                },
+                filter: ["==", "node-id", node._id]
+            })
 
             map.addLayer({
                 id: PLACE_SOURCE + node._id,
