@@ -6,7 +6,6 @@ import {LegacyTableData, TableData, Tables} from "../database/Tables"
 import {Util} from "../database/Util"
 import {Route} from "../database/Route"
 import {ColorHelper} from "../helper/ColorHelper"
-import PersonDocument = TableData.Person.PersonDocument
 import {PlaceHelper} from "../helper/PlaceHelper"
 
 export namespace Debug {
@@ -29,26 +28,18 @@ export namespace Debug {
             Promise.all(promises).then(() => res.send('People created')).catch(err => res.send("Error Occurred: " + err))
         })
 
-        app.get("/generate_expedities", (req, res) => {
-            let maurice = Person.getPerson("Maurice Meedendorp")
-            let ronald = Person.getPerson("Ronald Kremer")
-            let diederik = Person.getPerson("Diederik Blaauw")
-            let matthijs = Person.getPerson("Matthijs Nuus")
-            let martijnA = Person.getPerson("Martijn Atema")
-            let martijnB = Person.getPerson("Martijn Bakker")
-            let robertSan = Person.getPerson("Robert Sandee")
-            let robertSl = Person.getPerson("Robert Slomp")
+        app.get("/generate_expedities", async (req, res) => {
+            try {
+                let maurice = await Person.getPerson("Maurice Meedendorp")
+                let ronald = await Person.getPerson("Ronald Kremer")
+                let diederik = await Person.getPerson("Diederik Blaauw")
+                let matthijs = await Person.getPerson("Matthijs Nuus")
+                let martijnA = await Person.getPerson("Martijn Atema")
+                let martijnB = await Person.getPerson("Martijn Bakker")
+                let robertSan = await Person.getPerson("Robert Sandee")
+                let robertSl = await Person.getPerson("Robert Slomp")
 
-            let allPeoplePromise: Promise<PersonDocument[]> = Promise.all<PersonDocument>([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl])
-            let noordkaapPersonPromise1 = Promise.all([maurice, ronald, diederik, martijnA, robertSan])
-            let noordkaapPersonPromise2 = martijnB
-            let balkanPersonPromise = Promise.all([maurice, ronald, diederik, martijnA, robertSan, matthijs, robertSl])
-            let kaukasusPersonPromise1 = Promise.all([maurice, ronald, martijnA])
-            let kaukasusPersonPromise2 = Promise.all([diederik, matthijs])
-
-            const noordkaapPromise = Promise.all([noordkaapPersonPromise1, noordkaapPersonPromise2]).then(([group, martijnB]) => {
-                console.log("Noordkaap people successfully retrieved!")
-                return Expeditie.createExpeditie({
+                const noordkaapPromise = Expeditie.createExpeditie({
                     sequenceNumber: 0,
                     name: "Noordkaap",
                     nameShort: "noordkaap",
@@ -64,19 +55,17 @@ export namespace Debug {
                             y: 50,
                         },
                     },
-                    participants: Util.getObjectIDs(group.concat(martijnB)),
+                    participants: Util.getObjectIDs([maurice, ronald, diederik, martijnA, robertSan, martijnB]),
                     countries: [
                         "Netherlands", "Germany", "Poland", "Lithuania", "Latvia", "Estonia", "Finland", "Sweden", "Norway", "Denmark",
                     ],
-                })//.then(Expeditie.setGroups([group.concat(martijnB)])).then(Expeditie.setGroups([group, [martijnB]]))
-            }).then((expeditie) => {
-                console.log("Noordkaap expeditie successfully created!")
-                return expeditie
-            }).catch(err => Promise.reject("Something went wrong during the creation of the Noordkaap Expeditie: " + err))
+                }).then((expeditie) => {
+                        console.log("Noordkaap expeditie successfully created!")
+                        return expeditie
+                    }).then(Expeditie.setFinished(true))
+                    .catch(err => Promise.reject("Something went wrong during the creation of the Noordkaap Expeditie: " + err))
 
-            const balkanPromise = balkanPersonPromise.then((persons) => {
-                console.log("Balkan people successfully retrieved!")
-                return Expeditie.createExpeditie({
+                const balkanPromise = Expeditie.createExpeditie({
                     sequenceNumber: 1,
                     name: "Balkan",
                     nameShort: "balkan",
@@ -92,20 +81,17 @@ export namespace Debug {
                             y: 50,
                         },
                     },
-                    participants: Util.getObjectIDs(persons),
+                    participants: Util.getObjectIDs([maurice, diederik, ronald, matthijs, robertSl, robertSan, martijnA]),
                     countries: [
                         "Netherlands", "Germany", "Austria", "Slovenia", "Croatia", "Bosnia and Herz.", "Montenegro", "Albania", "Kosovo", "Macedonia", "Greece", "Bulgaria", "Romania", "Moldova", "Hungary", "Slovakia", "Czech Rep.",
                     ],
-                })//.then(Expeditie.setGroups([persons]))
-            }).then((expeditie) => {
-                console.log("Balkan expeditie successfully created!")
-                return expeditie
-            }).then(Expeditie.setFinished(true))
-                .catch(err => Promise.reject("Something went wrong during the creation of the Balkan Expeditie: " + err))
+                }).then((expeditie) => {
+                    console.log("Balkan expeditie successfully created!")
+                    return expeditie
+                }).then(Expeditie.setFinished(true))
+                    .catch(err => Promise.reject("Something went wrong during the creation of the Balkan Expeditie: " + err))
 
-            const kaukasusPromise = Promise.all([kaukasusPersonPromise1, kaukasusPersonPromise2]).then(([baku, teheran]) => {
-                console.log("Kaukasus people successfully retrieved!")
-                return Expeditie.createExpeditie({
+                const kaukasusPromise = Expeditie.createExpeditie({
                     sequenceNumber: 2,
                     name: "Kaukasus",
                     nameShort: "kaukasus",
@@ -121,35 +107,79 @@ export namespace Debug {
                             y: 70,
                         },
                     },
-                    participants: Util.getObjectIDs(teheran).concat(Util.getObjectIDs(baku)),
+                    participants: Util.getObjectIDs([maurice, diederik, ronald, matthijs, martijnA]),
                     countries: [
                         "Netherlands", "Iran", "Azerbaijan", "Georgia", "Armenia", "Russia", "Abkhazia", "Belarus", "Lithuania", "Belgium",
                     ],
+                }).then((expeditie) => {
+                    console.log("Kaukasus expeditie successfully created!")
+                    return expeditie
                 }).then(Expeditie.setFinished(true))
                     .catch(err => Promise.reject("Something went wrong during the creation of the Kaukasus Expeditie: " + err))
-            })
 
-            return Promise.all([noordkaapPromise, balkanPromise, kaukasusPromise]).then(([nk, bk, kk]) => {
-                /**return allPeoplePromise.then(([maurice, ronald, diederik, matthijs, martijnA, martijnB, robertSan, robertSl]) => {
-                    console.log("Setting Kaukasus groups..")
+                const japanPromise = Expeditie.createExpeditie({
+                    sequenceNumber: 3,
+                    name: "Japan",
+                    nameShort: "japan",
+                    subtitle: "Winter 2017",
+                    showMap: false,
+                    color: "#EF3340", //Japan red
+                    movieUrl: null,
+                    movieCoverUrl: null,
+                    background: {
+                        imageUrl: "https://s3-eu-west-1.amazonaws.com/expeditie/japan/background.jpg",
+                        position: {
+                            x: 40,
+                            y: 70,
+                        },
+                    },
+                    participants: Util.getObjectIDs([maurice, martijnA, diederik, ronald, matthijs, martijnB]),
+                    countries: [
+                        "Netherlands", "Japan"
+                    ],
+                }).then((expeditie) => {
+                    console.log("Japan expeditie successfully created!")
+                    return expeditie
+                }).then(Expeditie.setFinished(true))
+                    .catch(err => Promise.reject("Something went wrong during the creation of the Japan Expeditie: " + err))
 
-                    let baku: TableData.PersonOrID[] = [ronald, martijnA, maurice]
-                    let teheran = [matthijs, diederik]
-                    let moscow = [matthijs, diederik, martijnA, maurice]
+                const stanPromise = Expeditie.createExpeditie({
+                    sequenceNumber: 4,
+                    name: "Op zoek naar -stan",
+                    nameShort: "stan",
+                    subtitle: "2018",
+                    showMap: false,
+                    color: "#00afca", //Kazachstan blue
+                    movieUrl: null,
+                    movieCoverUrl: null,
+                    background: {
+                        imageUrl: "https://s3-eu-west-1.amazonaws.com/expeditie/stan/background.jpg",
+                        position: {
+                            x: 55,
+                            y: 50,
+                        },
+                    },
+                    participants: Util.getObjectIDs([maurice, martijnA, diederik, ronald, matthijs, martijnB]),
+                    countries: [
+                        "Netherlands", "Kazakhstan", "Kyrgyzstan"
+                    ],
+                }).then((expeditie) => {
+                    console.log("Op Zoek Naar -stan expeditie successfully created!")
+                    return expeditie
+                }).then(Expeditie.setFinished(true))
+                    .catch(err => Promise.reject("Something went wrong during the creation of the Op Zoek Naar -stan  Expeditie: " + err))
 
-                    console.log("Setting groups: [baku, teheran]")
-                    return Expeditie.setGroups([baku, teheran])(kk).then((kk) => {
-                        console.log("Setting groups: [baku ++ teheran]")
-                        return Expeditie.setGroups([baku.concat(teheran)])(kk)
-                    }).then((kk) => {
-                        console.log("Setting groups: [moscow, [ronald]]")
-                        return Expeditie.setGroups([moscow, [ronald]])(kk)
-                    })
-                })*/
-            }).then(() => res.send("Expedities Generated")).catch(err => {
-                res.send("Something went wrong during the setting of the Kaukasus Expeditie groups: " + err)
+                await noordkaapPromise
+                await balkanPromise
+                await kaukasusPromise
+                await japanPromise
+                await stanPromise
+
+                res.send("Expedities Generated!")
+            } catch(err) {
+                res.send("Something went wrong..: " + err)
                 console.log(err)
-            })
+            }
         })
 
         app.get('/reset_database', (req, res) => {
@@ -208,7 +238,7 @@ export namespace Debug {
 
             Promise.all([matthijs, diederik, maurice, ronald, martijnA])
                 .then(([matthijs, diederik, maurice, ronald, martijnA]) => {
-                    const diederikData = Location.removePingData(data.diederik.route, diederik).sort((l1, l2) => l1.timestamp - l2.timestamp).slice(0,-12) //Last values is bogus. Forgot to turn tracking off.
+                    const diederikData = Location.removePingData(data.diederik.route, diederik).sort((l1, l2) => l1.timestamp - l2.timestamp).slice(0,-12) //Last values are bogus. Forgot to turn tracking off.
                     const mauriceData = Location.removePingData(data.maurice.route, maurice).sort((l1, l2) => l1.timestamp - l2.timestamp)
                     const ronaldData = Location.removePingData(data.ronald.route, ronald).sort((l1, l2) => l1.timestamp - l2.timestamp)
 
@@ -241,9 +271,6 @@ export namespace Debug {
                         .then(Expeditie.setFinished(true))
 
                         .then(() => res.send("File received")).then(() => console.log("Done"))
-                        .then((data) => {
-                            console.log(data)
-                        })
                 }).catch(err => {
                     res.send("Persons not found. Are people initialized? Error: " + err)
                     console.log(err)
