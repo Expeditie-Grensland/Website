@@ -12,6 +12,7 @@ $(document).ready(() => {
         speed:          400,
         infinite:       false,
         slidesToShow:   Math.min(5, expeditieCount),
+        variableWidth:  true,
         slidesToScroll: 1,
         responsive:     [
             {
@@ -75,14 +76,20 @@ $(document).ready(() => {
         const links = hover.find('.links')
         links.css({'height': '0px'})
 
+        const width = window.innerWidth / count
+
         if (count > 1) {
             $(".column.slick-active").each(function () {
                 const column = $(this)
-                column.css({'width': window.innerWidth / count + "px"})
-                column.children('.background').css({'width': window.innerWidth / count + "px"})
+
+                column.css({'width': width + "px"})
+                column.children('.background').css({'width': width + "px"})
             })
         }
     })
+
+    //Set initial widths of the columns.
+    column.trigger('mouseleave')
 
     $('.videoModal').on('hide.bs.modal', function () {
         videojs($(this).find('.video-js')[0]).pause()
