@@ -32,14 +32,15 @@ block body
                     h1= expeditie.name
                     h2= expeditie.subtitle
                 .links
+                    button.link.btn.btn-secondary(role="button" data-toggle='modal' href='.overviewMapModal' data-modal-title=t_ucf('overview') + ' ' + expeditie.name data-expeditie-color=expeditie.color data-countries=expeditie.countries.join('\\'))
+                        | #{t_ucf('overview')}
                     if expeditie.movieUrl !== null
                         button.link.btn.btn-default.btn-secondary(data-toggle='modal' href='.movieModal' + expeditie.nameShort)
                             | #{t_ucf('movie')}
-                    button.link.btn.btn-secondary(role="button" data-toggle='modal' href='.overviewMapModal' data-modal-title=t_ucf('overview') + ' ' + expeditie.name data-expeditie-color=expeditie.color data-countries=expeditie.countries.join('\\'))
-                        | #{t_ucf('overview')}
                     if expeditie.showMap
                         a.link.btn.btn-default.btn-primary(href= expeditie.mapUrl role="button")
                             | #{t_ucf('map')}
+
     #modals
         each expeditie in expedities
             if expeditie.movieUrl !== null
