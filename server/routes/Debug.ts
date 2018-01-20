@@ -129,8 +129,8 @@ export namespace Debug {
                     background: {
                         imageUrl: "https://s3-eu-west-1.amazonaws.com/expeditie/japan/background.jpg",
                         position: {
-                            x: 40,
-                            y: 70,
+                            x: 45,
+                            y: 50,
                         },
                     },
                     participants: Util.getObjectIDs([maurice, martijnA, diederik, ronald, matthijs, martijnB]),
