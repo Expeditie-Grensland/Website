@@ -25,7 +25,7 @@ block styles
 
 block body
     #columns
-        each expeditie in expedities
+        each expeditie in expedities.reverse()
             .column
                 .background(style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background.imageUrl + "); background-position: " + expeditie.background.position.x + "% " + expeditie.background.position.y + "%")
                 .expeditie(id=expeditie.nameShort)

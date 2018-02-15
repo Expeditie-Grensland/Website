@@ -1,6 +1,6 @@
 import * as express from "express"
 import {Expeditie} from "../database/Expeditie"
-import * as i18next from "i18next"
+
 
 export namespace Home {
     export function init(app: express.Express) {

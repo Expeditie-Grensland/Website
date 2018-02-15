@@ -16,6 +16,7 @@ const server = http.createServer(app)
 const io = socket(server)
 
 const db = Setup.setupDatabase(Config.db.address, Config.db.port, Config.db.db, Config.db.user.name, Config.db.user.password)
+//TODO: if mongo can't reach database, server crashes
 
 Setup.setupExpress(app, __dirname + "/../")
 Setup.setupAuthGoogle(Config.auth.id, Config.auth.secret)
