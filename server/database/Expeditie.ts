@@ -49,7 +49,7 @@ export namespace Expeditie {
     }
 
     export function getExpedities(): Promise<ExpeditieDocument[]> {
-        return Tables.Expeditie.find({}).sort({sequenceNumber: 1}).exec()
+        return Tables.Expeditie.find({}).sort({sequenceNumber: -1}).exec()
     }
 
     export function getExpeditieById(_id: string): Promise<ExpeditieDocument> {
