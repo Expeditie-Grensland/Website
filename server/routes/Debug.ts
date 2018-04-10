@@ -143,8 +143,34 @@ export namespace Debug {
                 }).then(Expeditie.setFinished(true))
                     .catch(err => Promise.reject("Something went wrong during the creation of the Japan Expeditie: " + err))
 
-                const stanPromise = Expeditie.createExpeditie({
+                const moiPromise = Expeditie.createExpeditie({
                     sequenceNumber: 4,
+                    name: "Holte & Moi",
+                    nameShort: "moi",
+                    subtitle: "Lente 2018",
+                    showMap: false,
+                    color: "#377eb8",
+                    movieUrl: null,
+                    movieCoverUrl: null,
+                    background: {
+                        imageUrl: "https://s3-eu-west-1.amazonaws.com/expeditie/moi/background.jpg",
+                        position: {
+                            x: 61,
+                            y: 50,
+                        },
+                    },
+                    participants: Util.getObjectIDs([maurice, martijnA, diederik, ronald, matthijs, martijnB]),
+                    countries: [
+                        "Netherlands", "Germany", "Sweden", "Norway", "Denmark"
+                    ],
+                }).then((expeditie) => {
+                    console.log("Moi expeditie successfully created!")
+                    return expeditie
+                }).then(Expeditie.setFinished(true))
+                    .catch(err => Promise.reject("Something went wrong during the creation of the Moi Expeditie: " + err))
+
+                const stanPromise = Expeditie.createExpeditie({
+                    sequenceNumber: 5,
                     name: "Op zoek naar -stan",
                     nameShort: "stan",
                     subtitle: "2018",
@@ -173,6 +199,7 @@ export namespace Debug {
                 await balkanPromise
                 await kaukasusPromise
                 await japanPromise
+                await moiPromise
                 await stanPromise
 
                 res.send("Expedities Generated!")
