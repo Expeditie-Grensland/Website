@@ -61,7 +61,7 @@ export namespace Woordenboek {
         },
         {
             word:       "Kerosine",
-            definitions: ["Bizar sterke koffie, gebrouwen door R. Sandee. Ultiem hulpmiddel voor chauffeurs en bijrijders tijdens lange roadtrips."],
+            definitions: ["Bizar sterke koffie, gebrouwen door R. Sandee. Ultiem hulpmiddel voor chauffeurs en bijrijders tijdens lange ritten. Kerosine bestaat uit de dubbele aanbevolen hoeveelheden koffiepoeder, plus een schep suiker voor elke aanbevolen schep koffiepoeder."],
         },
         {
             word:       "Kökbörü",
