@@ -4,21 +4,20 @@ import {User} from "./User"
 import {Home} from "./Home"
 import {ExpeditieRoute} from "./ExpeditieRoute"
 import {Debug} from "./Debug"
+import {Woordenboek} from "./Woordenboek"
 
 export namespace Routes {
-    export const debug = Debug
-    export const user = User
-    export const home = Home
-    export const expeditie = ExpeditieRoute
 
     export function init(app: express.Express) {
-        user.init(app)
-        home.init(app)
+        User.init(app)
+        Home.init(app)
+
+        Woordenboek.init(app)
 
         //if(Config.debug)
-        debug.init(app)
+        Debug.init(app)
 
         //This should always be last.
-        expeditie.init(app)
+        ExpeditieRoute.init(app)
     }
 }

@@ -1,0 +1,25 @@
+extend structure/simple.pug
+
+block title
+    title Expeditie - Woordenboek
+
+block scripts
+
+
+block styles
+    include includes/styles.pug
+    link(rel="stylesheet" href="/styles/woordenboek.css")
+
+    meta(name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no')
+
+block body
+    #dictionary
+        each entry in dictionary
+            .entry
+                .word #{entry.word}
+
+                .definitions
+                    each definition, index in entry.definitions
+                        .index #{index+1}.
+                        .definition #{definition}
+                        br

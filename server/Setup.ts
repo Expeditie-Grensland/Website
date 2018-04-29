@@ -15,6 +15,7 @@ import * as FileSystemBackend from "i18next-node-fs-backend"
 import {Config} from "./Config"
 import {Routes} from "./routes/Routes"
 import {Tables} from "./database/Tables"
+import {User} from "./routes/User"
 
 const authGoogle = require('passport-google-oauth2')
 
@@ -98,7 +99,7 @@ export namespace Setup {
         const googleLogin = {
             clientID:          googleID,
             clientSecret:      googleSecret,
-            callbackURL:       Config.auth.callback + Routes.user.AUTH_CALLBACK,
+            callbackURL:       Config.auth.callback + User.AUTH_CALLBACK,
             passReqToCallback: true
         }
 
