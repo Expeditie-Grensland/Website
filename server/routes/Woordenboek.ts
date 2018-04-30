@@ -21,7 +21,10 @@ export namespace Woordenboek {
         },
         {
             word:       'Atekouk',
-            definitions: ["Pannekoeken (Gronings: Pankouk) op primitive wijze gemaakt door R. M. Atema. Verder geen specificaties bekend."]
+            definitions: [
+                "Pannekoeken (Gronings: Pankouk) op primitive wijze gemaakt door R. M. Atema. Verder geen specificaties bekend.",
+                "Bijnaam voor R. M. Atema. Voor het eerst op deze wijze gebruikt door M. H. Nuus op Expeditie Balkan."
+            ]
         },
         {
             word:       "Bert Slomp",
