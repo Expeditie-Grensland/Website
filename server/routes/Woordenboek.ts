@@ -69,7 +69,10 @@ export namespace Woordenboek {
         },
         {
             word:       "Kökbörü",
-            definitions: ["De nationale sport van Kyrgyzstan waar men al rijdend op een paard een dood geit in een put moet gooien. Tevens ook de meest recente toevoeging aan bijnamen voor R. M. Atema. Is afgeleid van het woord Koukerū."],
+            definitions: [
+                "De nationale sport van Kyrgyzstan waar men al rijdend op een paard een dood geit in een put moet gooien.",
+                "De meest recente toevoeging aan bijnamen voor R. M. Atema. Is afgeleid van het woord Koukerū."
+            ],
         },
         {
             word:       "Koukerū",
