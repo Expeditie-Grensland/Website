@@ -108,7 +108,7 @@ export namespace Woordenboek {
         },
         {
             word:       "Punt'n, honderd",
-            definitions: ["Iets wat dermate interessant, belonend, lovend, ‘cool’, of bewonderends waardig is dat het deze ‘100 punt'n’ verdient. Uitdrukking geïntrodiceerd door R. Slomp tijdens de Balkanreis."],
+            definitions: ["Iets wat dermate interessant, belonend, lovend, ‘cool’, of bewonderends waardig is dat het deze ‘100 punt'n’ verdient. Uitdrukking geïntroduceerd door R. Slomp tijdens de Balkanreis."],
         },
         {
             word:       "Sankouk",
