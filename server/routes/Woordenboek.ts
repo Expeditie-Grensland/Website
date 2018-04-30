@@ -7,10 +7,14 @@ export namespace Woordenboek {
         definitions: string[]
     }
 
-    /**
-     *    */
-
     export const dictionary: DictionaryEntry[] = [
+        {
+            word: "Atema",
+            definitions: [
+                "Bijnaam voor —en tevens achternaam van— R. M. Atema",
+                "Een vervanging voor vrijwel elk woord in vrijwel elke songtekst. Voorbeeld: 'Atemaaa, Ate-, Ate-, Ate-, Ate-maaa, ...' ipv 'Jag känner en bot. Hon heter Anna. Anna heter hon' in het nummer 'Boten Anna' van Basshunter."
+            ]
+        },
         {
             word:       'Atebarf',
             definitions: ["Al rijdende in een voertuig uw maaginhoud legen door het raam. Vernoemd naar R. M. Atema tijdens de examenuitreiking van R. Slomp."]
