@@ -90,6 +90,18 @@ export namespace Woordenboek {
             definitions: ["Zeer zelden gebruikte uitdrukking voor het legen van de maaginhoud in een museum. De origine van het woord is een uitstapje naar het Darwin Museum te Moskou met een Matthaüs Barfsion ten gevolge."],
         },
         {
+            word: "May Ke",
+            definitions: [
+                "De (voormalige) Facebook gebruikersnaam van Maaike Schuurke, moeder van R. M. Atema. Daarna redelijk snel overgenomen door de expeditieleden als vaste bijnaam. Ook bekend van het nummer met de titel (en tevens enige songtekst) 'May Ke m'n liefste Cay Ke'"
+            ]
+        },
+        {
+            word: "Noorman",
+            definitions: [
+                "Een bijnaam voor H. (Erik) Meedendorp ontstaan uit het feit dat zijn uiterlijk en zijn voornaam gelijken op die van een stereotype viking."
+            ]
+        },
+        {
             word:       "Patronkje",
             definitions: ["Synoniem voor lachgaspatronen. Voor het eerst gebruikt vlak na de oprichting van ‘de geheime jonkjes van Ashgabad’"],
         },
