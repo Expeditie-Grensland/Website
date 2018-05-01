@@ -92,13 +92,13 @@ export namespace Woordenboek {
         {
             word: "May Ke",
             definitions: [
-                "De (voormalige) Facebook gebruikersnaam van Maaike Schuurke, moeder van R. M. Atema. Daarna redelijk snel overgenomen door de expeditieleden als vaste bijnaam. Ook bekend van het nummer met de titel (en tevens enige songtekst) 'May Ke m'n liefste Cay Ke'"
+                "De (voormalige) Facebook gebruikersnaam van Maaike Schuurke, moeder van R. M. Atema. Daarna redelijk snel overgenomen door de expeditieleden als vaste bijnaam. Ook bekend van het nummer met de titel (en tevens enige songtekst) 'May Ke m'n liefste Cay Ke'."
             ]
         },
         {
-            word: "Noorman",
+            word: "Noorman, De",
             definitions: [
-                "Een bijnaam voor H. (Erik) Meedendorp ontstaan uit het feit dat zijn uiterlijk en zijn voornaam gelijken op die van een stereotype viking."
+                "De bijnaam van H. (Erik) Meedendorp, vader van M. G. Meedendorp. Ontstaan door het zijn uiterlijk, dat met een dikke bos blond haar en een grof postuur sterk overeenkomt met die van de oude Noormannen."
             ]
         },
         {
