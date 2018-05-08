@@ -20,7 +20,7 @@ block body
 
     #dictionary
         each entry in dictionary
-            .entry
+            .entry(id=entry.word)
                 .word !{entry.word}
                 if(entry.audioFile)
                     p Uitgesproken als:
