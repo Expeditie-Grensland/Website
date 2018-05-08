@@ -20,7 +20,7 @@ block body
 
     #dictionary
         each entry in dictionary
-            .entry(id=entry.word)
+            .entry(id=entry.word.toLowerCase())
                 .word !{entry.word}
                 if(entry.audioFile)
                     p Uitgesproken als:
