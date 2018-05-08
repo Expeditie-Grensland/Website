@@ -4,7 +4,8 @@ export namespace Woordenboek {
 
     export type DictionaryEntry = {
         word: string,
-        definitions: string[]
+        definitions: string[],
+        audioFile?: string,
     }
 
     export const dictionary: DictionaryEntry[] = [
@@ -82,10 +83,6 @@ export namespace Woordenboek {
             definitions: ["Japanse bijnaam voor R. M. Atema. Is afgeleid van het woord Atekouk."],
         },
         {
-            word:       "Marjonkje",
-            definitions: ["Zie Gestapo Marion. Origine van het woord is onbekend."],
-        },
-        {
             word:       "Matthaüs Barfsion",
             definitions: ["Zeer zelden gebruikte uitdrukking voor het legen van de maaginhoud in een museum. De origine van het woord is een uitstapje naar het Darwin Museum te Moskou met een Matthaüs Barfsion ten gevolge."],
         },
@@ -141,6 +138,15 @@ export namespace Woordenboek {
             word:       "Unit",
             definitions: ["Eenheid voor vrijwel alles. Bij het zien van een groot voorwerp kan men bijvoorbeeld zeggen:’Dat is een flinke unit.’"],
         },
+        {
+            word:       "Kapot",
+            definitions: ["Een mentale en fysieke gemoedstoestand die een of meerdere malen per Expeditie bereikt kan worden door onder meer slaaptekort, lokale zuivel (vooral yoghurtjes en kaas), drank en onderweg zijn. Symptomen: bearspray, barfen, extreme vermoeidheid en het opgeven van activiteit waar een gezond jonkje U tegen zegt (bijvoorbeeld Khazbegi of een avondje in Minsk)."],
+            audioFile: "kapot.mp3"
+        },
+        {
+            word: "Bearspray",
+            definitions: ["Synoniem voor explosieve diarree. Een combinatie van beer'n en sprayen in <i>bear country</i> in Finland. Voor het eerst gebruikt op Expeditie Noordkaap bij het kamp bij Kolimajärvi waar na een pan elandpasta vier jonkjes het bos in trokken met een rol toiletpapier.", "Een van de mogelijke symptomen van kapot gaan."]
+        }
     ].sort((entry1, entry2) => {
         if(entry1.word < entry2.word)
             return -1
