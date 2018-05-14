@@ -148,7 +148,7 @@ export namespace Woordenboek {
             definitions: ["Synoniem voor explosieve diarree. Een combinatie van beer'n en sprayen in <i>bear country</i> in Finland. Voor het eerst gebruikt op Expeditie Noordkaap bij het kamp bij Kolimajärvi waar na een pan elandpasta vier jonkjes het bos in trokken met een rol toiletpapier.", "Een van de mogelijke symptomen van kapot gaan."]
         },
         {
-            word: "Berliner Junks",
+            word: "Berliner Jungs",
             definitions: ["De groep jongens die in de zomer van 2016 een midweek met de flixbus naar Berlijn is geweest. Bestaande uit: R.B. Kremer, M.H. Nuus, R.M. Atema en M.G. Meedendorp."]
         },
         {
