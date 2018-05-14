@@ -161,7 +161,7 @@ export namespace Woordenboek {
         },
         {
             word: "Baku boys",
-            definitions: ["Een bijnaam voor R.M. Atema, R.B. Kremer en M.G. Meedendorp, die tijdens EXPEDITIE Kaukasus hun reis begonnen Baku, in tegenstelling tot M.H. Nuus en D.H. Blaauw die in Teheran begonnen."]
+            definitions: ["Een bijnaam voor R.M. Atema, R.B. Kremer en M.G. Meedendorp, die tijdens EXPEDITIE Kaukasus hun reis begonnen in Baku, in tegenstelling tot M.H. Nuus en D.H. Blaauw die in Teheran begonnen."]
         },
         {
             word: "Gagarin, naar ~ gaan",
