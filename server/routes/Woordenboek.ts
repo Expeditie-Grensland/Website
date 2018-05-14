@@ -146,6 +146,38 @@ export namespace Woordenboek {
         {
             word: "Bearspray",
             definitions: ["Synoniem voor explosieve diarree. Een combinatie van beer'n en sprayen in <i>bear country</i> in Finland. Voor het eerst gebruikt op Expeditie Noordkaap bij het kamp bij Kolimajärvi waar na een pan elandpasta vier jonkjes het bos in trokken met een rol toiletpapier.", "Een van de mogelijke symptomen van kapot gaan."]
+        },
+        {
+            word: "Berliner Junks",
+            definitions: ["De groep jongens die in de zomer van 2016 een midweek met de flixbus naar Berlijn is geweest. Bestaande uit: R.B. Kremer, M.H. Nuus, R.M. Atema en M.G. Meedendorp."]
+        },
+        {
+            word: "Backseat boys",
+            definitions: ["Een bijnaam voor M.H. Nuus en R.M. Atema. Ontstaan doordat ze tijdens EXPEDITIE Holte & Moi constant in de achterste rij stoelen in de Marion Mobilae zaten."]
+        },
+        {
+            word: "Marion Mobilae",
+            definitions: ["De Toyota Previa van M.J.S.M. (Marion) Meedendorp, die mee was op EXPEDITIE Holte & Moi. De naam is afgeleid van perpetuum mobile, omdat de auto ondanks alle piepende, krakende en versleten onderdelen toch altijd door bleef rijden."]
+        },
+        {
+            word: "Baku boys",
+            definitions: ["Een bijnaam voor R.M. Atema, R.B. Kremer en M.G. Meedendorp, die tijdens EXPEDITIE Kaukasus hun reis begonnen Baku, in tegenstelling tot M.H. Nuus en D.H. Blaauw die in Teheran begonnen."]
+        },
+        {
+            word: "Gagarin, naar ~ gaan",
+            definitions: ["Trippen, van de wereld gaan. Vaak onder invloed van, maar niet gelimiteerd tot, snus, alcohol, patronkjes of op de kop gezichten bekijken."]
+        },
+        {
+            word: "Vråltjes",
+            definitions: ["Zweedse dropjes genaamd Djunglevrål, een vast onderdeel van expedities door Scandinavië."]
+        },
+        {
+            word: "Jonkjes, Poolse",
+            definitions: ["Kleurrijke, gekke sokken van het merk Many Mornings uit Polen. Voor het eerst gedragen tijdens EXPEDITIE Holte & Moi."]
+        },
+        {
+            word: "Atehouk",
+            definitions: ["De twee achterste hoeken van de Marion Mobilae, waar R.M. Atema als onderdeel van de Backseat boys zich bevond tijdens EXPEDITIE Holte & Moi."]
         }
     ].sort((entry1, entry2) => {
         if(entry1.word < entry2.word)
