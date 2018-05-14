@@ -178,6 +178,10 @@ export namespace Woordenboek {
         {
             word: "Atehouk",
             definitions: ["De twee achterste hoeken van de Marion Mobilae, waar R.M. Atema als onderdeel van de Backseat boys zich bevond tijdens EXPEDITIE Holte & Moi."]
+        },
+        {
+            word: "Matthew McNuus",
+            definitions: ["Een manier van urineren in een rijdende auto die bestaat uit het plassen in een fles en die vervolgens uit het raam gooien. De grondlegger van dit fenomeen is M.H. Nuus."]
         }
     ].sort((entry1, entry2) => {
         if(entry1.word < entry2.word)
