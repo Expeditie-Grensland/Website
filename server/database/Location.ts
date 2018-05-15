@@ -1,6 +1,7 @@
 import {LegacyTableData, TableData, Tables} from "./Tables"
 import {Util} from "./Util"
 import {Route} from "./Route"
+import * as gpxparse from 'gpx-parse'
 import {LocationHelper} from "../helper/LocationHelper"
 import LocationDocument = TableData.Location.LocationDocument
 
@@ -184,5 +185,35 @@ export namespace Location {
             lon: lon,
             altitude: location.altitude,
         }
+    }
+
+    export function fromGPX(gpx, person: PersonOrID): Promise<TableData.Location.Location[]> {
+        return new Promise(resolve => gpxparse.parseGpx(gpx, (error, data) => {
+            if(error)
+                return console.error(error)
+
+            const personId = Util.getObjectID(person)
+            const track = data.tracks[0]
+
+            console.log("Track length: " + track.length())
+
+            const locations:TableData.Location.Location[] = []
+
+            for(let seg of track.segments) {
+                for(let waypoint of seg) {
+
+                    locations.push({
+                        person: personId,
+                        timestamp: Date.parse(waypoint.time).valueOf(),
+                        timezone: "Europe/Amsterdam",
+                        lat: waypoint.lat,
+                        lon: waypoint.lon,
+                        altitude: waypoint.elevation,
+                    })
+                }
+            }
+
+            resolve(locations)
+        }))
     }
 }

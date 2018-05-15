@@ -7,6 +7,7 @@ import {Util} from "../database/Util"
 import {Route} from "../database/Route"
 import {ColorHelper} from "../helper/ColorHelper"
 import {PlaceHelper} from "../helper/PlaceHelper"
+import bodyParser = require("body-parser")
 
 export namespace Debug {
 
@@ -18,7 +19,7 @@ export namespace Debug {
         });
 
         app.get("/generate_people", (req, res) => {
-            let users = ["Maurice Meedendorp", "Ronald Kremer", "Diederik Blaauw", "Matthijs Nuus", "Martijn Atema", "Martijn Bakker", "Robert Sandee", "Robert Slomp"]
+            let users = ["Maurice Meedendorp", "Ronald Kremer", "Diederik Blaauw", "Matthijs Nuus", "Martijn Atema", "Martijn Bakker", "Robert Sandee", "Robert Slomp", "Roy Steneker"]
             let promises = []
 
             for(let name of users) {
@@ -38,6 +39,7 @@ export namespace Debug {
                 let martijnB = await Person.getPerson("Martijn Bakker")
                 let robertSan = await Person.getPerson("Robert Sandee")
                 let robertSl = await Person.getPerson("Robert Slomp")
+                let roy = await Person.getPerson("Roy Steneker")
 
                 const noordkaapPromise = Expeditie.createExpeditie({
                     sequenceNumber: 0,
@@ -148,7 +150,7 @@ export namespace Debug {
                     name: "Holte & Moi",
                     nameShort: "moi",
                     subtitle: "Lente 2018",
-                    showMap: false,
+                    showMap: true,
                     color: "#377eb8",
                     movieUrl: null,
                     movieCoverUrl: null,
@@ -159,7 +161,7 @@ export namespace Debug {
                             y: 50,
                         },
                     },
-                    participants: Util.getObjectIDs([maurice, martijnA, diederik, ronald, matthijs, martijnB]),
+                    participants: Util.getObjectIDs([maurice, martijnA, diederik, roy, matthijs, martijnB]),
                     countries: [
                         "Netherlands", "Germany", "Sweden", "Norway", "Denmark"
                     ],
@@ -251,6 +253,10 @@ export namespace Debug {
 
         app.get('/import_balkan', (req, res) => {
             res.render('debug/importBalkan')
+        })
+
+        app.get('/import_moi', (req, res) => {
+            res.render('debug/importMoi')
         })
 
         app.post('/import_kaukasus/data', (req, res) => {
@@ -346,6 +352,40 @@ export namespace Debug {
                 .then((data) => {
                     console.log(data)
                 })
+        })
+
+        app.use('/import_moi/data', bodyParser.text({type: 'application/gpx', limit: '80MB'}));
+        app.post('/import_moi/data', async (req, res) => {
+            const maurice = await Person.getPerson("Maurice Meedendorp")
+            const roy = await Person.getPerson("Roy Steneker")
+            const diederik = await Person.getPerson("Diederik Blaauw")
+            const matthijs = await Person.getPerson("Matthijs Nuus")
+            const martijnA = await Person.getPerson("Martijn Atema")
+            const martijnB = await Person.getPerson("Martijn Bakker")
+            const moi = Expeditie.getExpeditieByName("Holte & Moi")
+
+            const data: any = req.body
+
+            moi.catch(err => {
+
+                res.send("Moi not found. Are expedities initialized? Error: " + err)
+                console.log(err)
+            })
+
+            const locations = await Location.fromGPX(data, maurice)
+
+            moi.then(Expeditie.setFinished(false))
+                .then(Expeditie.setGroups([[maurice, diederik, matthijs, martijnA, martijnB, roy]]))
+                .then(Expeditie.addLocations(locations))
+                .then(Expeditie.setFinished(true))
+
+                .then(() => res.send("File received"))
+                .then(() => console.log("Done"))
+                //.then(() => Tables.Place.find({}).exec())
+                //.then(places => console.log("created x amount of places: " + places.length))
+                // .then((data) => {
+                //     console.log(data)
+                // })
         })
 
         app.get('/uptime', (req, res) => {

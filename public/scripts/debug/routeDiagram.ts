@@ -1,5 +1,6 @@
 declare var routeData: Tables.Route
 declare var nodeData: Tables.RouteNode[]
+declare var d3
 
 $(document).ready(() => {
     const svg = d3.select('svg'),

@@ -1,12 +1,13 @@
 $(document).ready(() => {
 
-    function getFileContents(file): Promise<LegacyTables.Kaukasus.ExportJSON> {
+    function getFileContents(file): Promise<any> {
         return new Promise((resolve, reject) => {
             if(file) {
                 let reader = new FileReader()
                 reader.readAsText(file, "UTF-8")
-                reader.onload = (e) => {
-                    resolve(JSON.parse((<any>e.target).result))
+                reader.onload = (e: any) => {
+                    console.log(e.target.result)
+                    resolve(e.target.result)
                 }
                 reader.onerror = (e) => {
                     alert("error")
@@ -26,11 +27,11 @@ $(document).ready(() => {
         jsonContents.then(content => {
             console.log("Uploading...")
 
-            const uri = "/import_balkan/data"
+            const uri = "/import_moi/data"
             const xhr = new XMLHttpRequest()
 
             xhr.open("POST", uri, true)
-            xhr.setRequestHeader("Content-Type", "application/json")
+            xhr.setRequestHeader("Content-Type", "application/gpx")
             xhr.onreadystatechange = () => {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     console.log("Uploading done.")
@@ -38,7 +39,7 @@ $(document).ready(() => {
                 }
             }
 
-            xhr.send(JSON.stringify(content))
+            xhr.send(content)
         }).catch(reason => alert("Could not parse file: " + reason))
     })
 

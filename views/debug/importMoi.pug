@@ -1,0 +1,18 @@
+extend ../structure/simple.pug
+
+block title
+    title Expeditie - Moi & Holte Import
+
+block styles
+    include ../includes/styles
+
+block scripts
+    include ../includes/scripts
+
+    script(src="/scripts/debug/importMoi.js")
+
+
+block body
+    p Enter location GPX file here:
+    input#json(type='file')
+    input#submit(type='submit' value='upload')
