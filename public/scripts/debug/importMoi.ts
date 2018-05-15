@@ -6,7 +6,6 @@ $(document).ready(() => {
                 let reader = new FileReader()
                 reader.readAsText(file, "UTF-8")
                 reader.onload = (e: any) => {
-                    console.log(e.target.result)
                     resolve(e.target.result)
                 }
                 reader.onerror = (e) => {
