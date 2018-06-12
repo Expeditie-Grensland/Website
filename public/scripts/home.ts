@@ -1,95 +1,49 @@
 $(document).ready(() => {
     console.log('Document ready')
 
-    const columns = $('#columns')
-    const column = $('.column')
+    const columnDiv = $('#columns')
+    const columns = $('.column')
+    const leftArrow = $('.arrow.left')
+    const rightArrow = $('.arrow.right')
+    const html = $('html')
 
-    const expeditieCount = column.length
+    const expeditieCount = columns.length
 
-    columns.slick({
-        dots:           expeditieCount > 5,
-        arrows:         expeditieCount > 5,
-        speed:          400,
-        infinite:       false,
-        slidesToShow:   Math.min(5, expeditieCount),
-        variableWidth:  true,
-        slidesToScroll: 1,
-        responsive:     [
-            {
-                breakpoint: 1500,
-                settings:   {
-                    dots:         expeditieCount > 4,
-                    arrows:       expeditieCount > 4,
-                    slidesToShow: Math.min(4, expeditieCount)
-                }
-            },
-            {
-                breakpoint: 1200,
-                settings:   {
-                    dots:         expeditieCount > 3,
-                    arrows:       expeditieCount > 3,
-                    slidesToShow: Math.min(3, expeditieCount)
-                }
-            },
-            {
-                breakpoint: 900,
-                settings:   {
-                    dots:         expeditieCount > 2,
-                    arrows:       expeditieCount > 2,
-                    slidesToShow: Math.min(2, expeditieCount)
-                }
-            },
-            {
-                breakpoint: 600,
-                settings:   {
-                    dots:         expeditieCount > 1,
-                    arrows:       expeditieCount > 1,
-                    slidesToShow: 1
-                }
-            }
-        ]
+    const columnWidth = columnDiv.width() / expeditieCount
+
+    if($(window).scrollLeft() <= 0)
+        leftArrow.addClass('grey')
+
+    if($(window).scrollLeft()+1 >= (expeditieCount * columnWidth) - $(window).width())
+        rightArrow.addClass('grey')
+
+    leftArrow.click(() => {
+        let newScroll = $(window).scrollLeft() - columnWidth
+
+        if(newScroll < 0)
+            newScroll = 0
+
+        rightArrow.removeClass('grey')
+        html.stop().animate({ scrollLeft: newScroll }, 500);
+
+        if(Math.round(newScroll) <= 0)
+            leftArrow.addClass('grey')
     })
 
-    column.hover(function () {
-        const hover = $(this)
-        const count = $('div.slick-active').length
+    rightArrow.click(() => {
+        let newScroll = $(window).scrollLeft() + columnWidth
 
-        const links = hover.find('.links')
-        links.css({'height': links[0].scrollHeight + 'px'})
+        if(newScroll > expeditieCount * columnWidth)
+            newScroll = expeditieCount * columnWidth
 
-        if (count > 1) {
-            const origWidth = window.innerWidth / count
-            const larger = origWidth * 1.20
-            const smaller = (window.innerWidth - larger) / (count - 1)
+        leftArrow.removeClass('grey')
+        html.stop().animate({
+            scrollLeft: newScroll
+        }, 500);
 
-            $(".column.slick-active").each(function () {
-                const column = $(this)
-
-                column.css({'width': ((column.is(hover)) ? larger : smaller) + "px"})
-                column.children('.background').css({'width': ((column.is(hover)) ? larger : smaller) + "px"})
-            })
-        }
-    }, function () {
-        const hover = $(this)
-        const count = $('div.slick-active').length
-
-        const links = hover.find('.links')
-        links.css({'height': '0px'})
-
-        const width = window.innerWidth / count
-
-        if (count > 1) {
-            $(".column.slick-active").each(function () {
-                const column = $(this)
-
-                column.css({'width': width + "px"})
-                column.children('.background').css({'width': width + "px"})
-            })
-        }
+        if(Math.round(newScroll) >= Math.round((expeditieCount * columnWidth) - $(window).width()))
+            rightArrow.addClass('grey')
     })
-
-    //Set initial widths of the columns.
-    column.trigger('mouseleave')
 
     $('.videoModal').on('hide.bs.modal', function () {
         videojs($(this).find('.video-js')[0]).pause()
