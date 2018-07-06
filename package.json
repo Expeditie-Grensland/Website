@@ -1,15 +1,16 @@
 {
-  "name": "Expeditie-Website",
+  "name": "expeditiegrensland-website",
   "version": "0.0.1",
-  "description": "Basic node setup the expeditie website",
+  "description": "The Expeditie Grensland website.",
   "main": "server/server.js",
-  "author": {
-    "name": "Maurice",
-    "email": "mauricemeedendorp@gmail.com"
-  },
+  "author": "Expeditie Grensland Admins",
+  "contributors": [
+    "Maurice Meedendorp <mauricemeedendorp@gmail.com>",
+    "Martijn Atema <martijn@atema.one>"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/seremis/expeditie-website.git"
+    "url": "https://github.com/Expeditie-Grensland/Website.git"
   },
   "license": "GPL-3.0",
   "dependencies": {
