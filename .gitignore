@@ -3,6 +3,7 @@ node_modules/
 server/Config.ts
 
 *.js
+*.js.map
 *.css
 
 !**/3rdparty/*.js
