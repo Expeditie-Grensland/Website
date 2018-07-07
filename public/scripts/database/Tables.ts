@@ -8,9 +8,17 @@ namespace Tables {
     export type RouteNodeOrID = DocumentOrID<RouteNode>
     export type PlaceOrID = DocumentOrID<Place>
 
+    export interface Device {
+        _id: string
+        token: string
+        person: PersonOrID
+        timestamp: number
+        expire: number
+        agent: string
+    }
 
     export interface Expeditie {
-        _id: string,
+        _id: string
         sequenceNumber: number
         name: string
         nameShort: string
@@ -22,7 +30,7 @@ namespace Tables {
                 x: number
                 y: number
             }
-        },
+        }
         showMap: boolean
         mapUrl?: string
         movieUrl: string

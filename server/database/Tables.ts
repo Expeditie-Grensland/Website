@@ -26,6 +26,7 @@ export namespace Tables {
 export namespace TableIDs {
     //TODO Image, LogEntry
 
+    export const Devices = "Devices"
     export const Expeditie = "Expeditie"
     export const Location = "Location"
     export const Person = "Person"
@@ -46,6 +47,29 @@ export namespace TableData {
 
     function reference(to: string): {} {
         return {type: String, ref: to}
+    }
+
+    /**
+     * TODO: description
+     */
+    export namespace Device {
+        export const deviceSchema = new mongoose.Schema({
+            token: String,
+            person: reference(TableIDs.Person),
+            timestamp: Number,
+            expire: Number,
+            agent: String
+        })
+
+        export interface Device {
+            token: string
+            person: PersonOrID
+            timestamp: number
+            expire: number
+            agent: string
+        }
+
+        export interface DeviceDocument extends Device, mongoose.Document {}
     }
 
     /**
