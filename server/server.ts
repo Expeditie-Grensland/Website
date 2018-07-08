@@ -1,7 +1,6 @@
 ﻿import * as express from "express"
 import * as http from "http"
 import * as socket from "socket.io"
-import * as path from "path"
 
 import {Setup} from "./Setup"
 import {Routes} from "./routes/Routes"
