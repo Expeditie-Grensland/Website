@@ -1,8 +1,10 @@
-import {LegacyTableData, TableData, Tables} from "./Tables"
-import {Util} from "./Util"
-import {Route} from "./Route"
 import * as gpxparse from 'gpx-parse'
-import {LocationHelper} from "../helper/LocationHelper"
+
+import {LocationHelper} from '../helper/LocationHelper'
+import {Route} from './Route'
+import {LegacyTableData, TableData, Tables} from './Tables'
+import {Util} from './Util'
+
 import LocationDocument = TableData.Location.LocationDocument
 
 export namespace Location {

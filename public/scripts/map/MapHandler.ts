@@ -99,8 +99,8 @@ namespace MapHandler {
         const locationSource = map.getSource(LOCATION_SOURCE) as mapboxgl.GeoJSONSource
         const placeSource = map.getSource(PLACE_SOURCE) as mapboxgl.GeoJSONSource
 
-        const locationsGeoJSON = generateLocationsGeoJSON();
-        const placesGeoJSON = generatePlacesGeoJSON();
+        const locationsGeoJSON = generateLocationsGeoJSON()
+        const placesGeoJSON = generatePlacesGeoJSON()
 
         console.log(placesGeoJSON)
 
@@ -179,8 +179,8 @@ namespace MapHandler {
     export function onMapStyleLoad() {
         mapStyleLoaded = true
 
-        map.addSource(LOCATION_SOURCE, { type: 'geojson', data: null });
-        map.addSource(PLACE_SOURCE, { type: 'geojson', data: null });
+        map.addSource(LOCATION_SOURCE, { type: 'geojson', data: null })
+        map.addSource(PLACE_SOURCE, { type: 'geojson', data: null })
 
         updateMap()
     }

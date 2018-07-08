@@ -1,4 +1,4 @@
-import * as mongoose from "mongoose"
+import * as mongoose from 'mongoose'
 
 export namespace Tables {
     export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>

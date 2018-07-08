@@ -1,22 +1,23 @@
-import * as express from "express"
-import {Person} from "../database/Person"
-import {Expeditie} from "../database/Expeditie"
-import {Location} from "../database/Location"
-import {LegacyTableData, TableData, Tables} from "../database/Tables"
-import {Util} from "../database/Util"
-import {Route} from "../database/Route"
-import {ColorHelper} from "../helper/ColorHelper"
-import {PlaceHelper} from "../helper/PlaceHelper"
-import bodyParser = require("body-parser")
+import bodyParser = require('body-parser')
+import * as express from 'express'
+
+import {Expeditie} from '../database/Expeditie'
+import {Location} from '../database/Location'
+import {Person} from '../database/Person'
+import {Route} from '../database/Route'
+import {LegacyTableData, TableData, Tables} from '../database/Tables'
+import {Util} from '../database/Util'
+import {ColorHelper} from '../helper/ColorHelper'
+import {PlaceHelper} from '../helper/PlaceHelper'
 
 export namespace Debug {
 
     export async function init(app: express.Express) {
 
         process.on('unhandledRejection', (reason, p) => {
-            console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+            console.log('Unhandled Rejection at: Promise', p, 'reason:', reason)
             // application specific logging, throwing an error, or other logic here
-        });
+        })
 
         app.get("/generate_people", (req, res) => {
             let users = ["Maurice Meedendorp", "Ronald Kremer", "Diederik Blaauw", "Matthijs Nuus", "Martijn Atema", "Martijn Bakker", "Robert Sandee", "Robert Slomp", "Roy Steneker"]
@@ -354,7 +355,7 @@ export namespace Debug {
                 })
         })
 
-        app.use('/import_moi/data', bodyParser.text({type: 'application/gpx', limit: '80MB'}));
+        app.use('/import_moi/data', bodyParser.text({type: 'application/gpx', limit: '80MB'}))
         app.post('/import_moi/data', async (req, res) => {
             const maurice = await Person.getPerson("Maurice Meedendorp")
             const roy = await Person.getPerson("Roy Steneker")

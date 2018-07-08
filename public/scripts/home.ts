@@ -24,7 +24,7 @@ $(document).ready(() => {
             newScroll = 0
 
         rightArrow.removeClass('grey')
-        html.stop().animate({ scrollLeft: newScroll }, 500);
+        html.stop().animate({ scrollLeft: newScroll }, 500)
 
         if(Math.round(newScroll) <= 0)
             leftArrow.addClass('grey')
@@ -39,7 +39,7 @@ $(document).ready(() => {
         leftArrow.removeClass('grey')
         html.stop().animate({
             scrollLeft: newScroll
-        }, 500);
+        }, 500)
 
         if(Math.round(newScroll) >= Math.round((expeditieCount * columnWidth) - $(window).width()))
             rightArrow.addClass('grey')

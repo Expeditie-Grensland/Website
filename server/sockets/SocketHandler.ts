@@ -1,5 +1,6 @@
-import * as express from "express"
-import {Sockets} from "./Sockets";
+import * as express from 'express'
+
+import {Sockets} from './Sockets'
 
 export namespace SocketIDs {
     export const GET_ROUTE = "GetRoute"

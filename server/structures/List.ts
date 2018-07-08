@@ -1,4 +1,4 @@
-import {Tuple} from "./Tuple"
+import {Tuple} from './Tuple'
 
 export abstract class List<A> {
     protected h: A

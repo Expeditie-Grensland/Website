@@ -1,9 +1,10 @@
-import {TableData} from "../database/Tables"
-import {Place} from "../database/Place"
-import {Route} from "../database/Route"
-import {Util} from "../database/Util"
-import {Location} from "../database/Location"
-import * as turf from "@turf/turf"
+import * as turf from '@turf/turf'
+
+import {Location} from '../database/Location'
+import {Place} from '../database/Place'
+import {Route} from '../database/Route'
+import {TableData} from '../database/Tables'
+import {Util} from '../database/Util'
 
 export namespace PlaceHelper {
 
@@ -104,7 +105,7 @@ export namespace PlaceHelper {
             const nextPlace = history[i++]
 
             if(nextPlace.place !== undefined) {
-                break; //TODO merge or something?
+                break //TODO merge or something?
             }
 
             locationsInPlace.push(nextPlace)

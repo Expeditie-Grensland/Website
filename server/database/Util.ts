@@ -1,6 +1,8 @@
-import * as mongoose from "mongoose"
-import {ObjectID, ObjectId} from "bson"
-import {TableData} from "./Tables"
+import {ObjectId} from 'bson'
+import * as mongoose from 'mongoose'
+
+import {TableData} from './Tables'
+
 import DocumentOrID = TableData.DocumentOrID
 
 export namespace Util {

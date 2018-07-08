@@ -1,5 +1,6 @@
-import * as express from "express"
-import {Expeditie} from "../database/Expeditie"
+import * as express from 'express'
+
+import {Expeditie} from '../database/Expeditie'
 
 export namespace ExpeditieRoute {
 
@@ -27,6 +28,6 @@ export namespace ExpeditieRoute {
     }
 
     function removeTrailingSlash(path: string): string {
-        return path.replace(/\/$/, "");
+        return path.replace(/\/$/, "")
     }
 }

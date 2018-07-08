@@ -1,9 +1,11 @@
-import {TableData, Tables} from "./Tables"
-import {Expeditie} from "./Expeditie"
+import {ObjectID} from 'bson'
+
+import {Expeditie} from './Expeditie'
+import {TableData, Tables} from './Tables'
+import {Util} from './Util'
+
 import PersonDocument = TableData.Person.PersonDocument
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
-import {Util} from "./Util"
-import {ObjectID} from "bson"
 
 export namespace Person {
 

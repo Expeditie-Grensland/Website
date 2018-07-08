@@ -1,8 +1,8 @@
-import * as express from "express"
+import * as express from 'express'
 
-import {Home} from "./Home"
-import {ExpeditieRoute} from "./ExpeditieRoute"
-import {Debug} from "./Debug"
+import {Debug} from './Debug'
+import {ExpeditieRoute} from './ExpeditieRoute'
+import {Home} from './Home'
 
 export namespace Routes {
 

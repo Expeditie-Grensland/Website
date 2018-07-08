@@ -1,14 +1,14 @@
-import {TableData, Tables} from "./Tables"
-import {Util} from "./Util"
-import {Expeditie} from "./Expeditie"
-import {Person} from "./Person"
-import {ColorHelper} from "../helper/ColorHelper"
-import {Location} from "./Location"
+import {ColorHelper} from '../helper/ColorHelper'
+import {Expeditie} from './Expeditie'
+import {Location} from './Location'
+import {Person} from './Person'
+import {TableData, Tables} from './Tables'
+import {Util} from './Util'
+
 import RouteDocument = TableData.Route.RouteDocument
 import RouteNode = TableData.RouteNode.RouteNode
 import RouteEdge = TableData.RouteEdge.RouteEdge
 import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
-
 
 export namespace Route {
     import ExpeditieOrID = TableData.ExpeditieOrID

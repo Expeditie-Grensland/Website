@@ -1,10 +1,11 @@
-import {TableData, Tables} from "../database/Tables";
-import {Location} from "../database/Location"
-import {Util} from "../database/Util"
-import * as turf from "@turf/turf"
+import * as turf from '@turf/turf'
+
+import {Location} from '../database/Location'
+import {TableData, Tables} from '../database/Tables'
+import {Util} from '../database/Util'
 
 export namespace LocationHelper {
-    import LocationDocument = TableData.Location.LocationDocument;
+    import LocationDocument = TableData.Location.LocationDocument
     import RouteNodeOrID = TableData.RouteNodeOrID
 
     const lastLocationsMap: Map<string, Promise<[LocationDocument, LocationDocument]>> = new Map()

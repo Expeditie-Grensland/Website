@@ -1,12 +1,11 @@
-import * as express from "express";
-import {SocketIDs} from "./SocketHandler";
-import {Expeditie} from "../database/Expeditie";
-import {Location} from "../database/Location";
-import {Route} from "../database/Route";
-import {LocationHelper} from "../helper/LocationHelper"
-import {QueryCursor} from "mongoose"
-import {TableData} from "../database/Tables"
-import {Place} from "../database/Place"
+import * as express from 'express'
+
+import {Expeditie} from '../database/Expeditie'
+import {Place} from '../database/Place'
+import {Route} from '../database/Route'
+import {TableData} from '../database/Tables'
+import {SocketIDs} from './SocketHandler'
+
 const sprintf = require('sprintf-js').sprintf
 
 

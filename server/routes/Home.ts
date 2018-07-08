@@ -1,5 +1,6 @@
-import * as express from "express"
-import {Expeditie} from "../database/Expeditie"
+import * as express from 'express'
+
+import {Expeditie} from '../database/Expeditie'
 
 
 export namespace Home {
