@@ -24,7 +24,7 @@ export namespace Expeditie {
     let expeditiesCached = null
 
     export function getExpeditiesCached(): Promise<ExpeditieDocument[]> {
-        if(expeditiesCached === null) {
+        if (expeditiesCached === null) {
             expeditiesCached = getExpedities()
         }
 
@@ -62,11 +62,11 @@ export namespace Expeditie {
     export function createExpeditie(expeditie: Expeditie): Promise<ExpeditieDocument> {
         return Promise.resolve().then(() => {
 
-            if(expeditie.mapUrl == undefined) {
+            if (expeditie.mapUrl == undefined) {
                 expeditie.mapUrl = '/' + expeditie.nameShort
             }
 
-            if(expeditie.route == undefined) {
+            if (expeditie.route == undefined) {
                 return Route.createRoute({}).then((route) => {
                     expeditie.route = Util.getObjectID(route)
 
@@ -77,7 +77,7 @@ export namespace Expeditie {
                 })
             }
 
-            if(expeditie.finished === undefined) {
+            if (expeditie.finished === undefined) {
                 expeditie.finished = false
             }
 
@@ -87,7 +87,7 @@ export namespace Expeditie {
         }).then((expeditie) => {
             let promises: Promise<PersonDocument>[] = []
 
-            for(let person of expeditie.participants) {
+            for (let person of expeditie.participants) {
                 promises.push(Person.addExpeditie(expeditie)(person))
             }
 
@@ -105,7 +105,7 @@ export namespace Expeditie {
     export function checkFinished(actionVerb: string): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie => new Promise((resolve, reject) => {
             return getExpeditie(expeditie).then(expeditie => {
-                if(expeditie.finished) {
+                if (expeditie.finished) {
                     reject(sprintf(i18next.t("expeditie_finished_generic_error"), actionVerb, expeditie.name))
                 }
                 resolve(expeditie)
@@ -151,14 +151,14 @@ export namespace Expeditie {
     }
 
     export function getRoute(expeditie: ExpeditieOrID): Promise<RouteDocument> {
-        return Util.getDocument(expeditie, getExpeditieById).then(expeditie =>  Util.getDocument(expeditie.route, Route.getRouteById))
+        return Util.getDocument(expeditie, getExpeditieById).then(expeditie => Util.getDocument(expeditie.route, Route.getRouteById))
     }
 
     export function setGroups(groups: PersonOrID[][]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return (expeditie: ExpeditieOrID) => checkFinished("expeditie_action_set_groups")(expeditie).then((expeditie) => {
             const pExpeditie = Util.getDocument(expeditie, getExpeditieById)
             const pRoute = pExpeditie.then((expeditie) => {
-                if(expeditie.route === undefined) {
+                if (expeditie.route === undefined) {
                     return Route.createRoute({}).then(route => {
                         setRoute(route)(expeditie)
                         return route

@@ -28,7 +28,7 @@ export namespace ColorHelper {
     export async function init() {
         const routes = await Route.getRoutes()
 
-        for(let route of routes) {
+        for (let route of routes) {
             nodesCached.set(route._id, await Route.getNodes(route))
         }
     }
@@ -58,7 +58,7 @@ export namespace ColorHelper {
             return similarNode.color
         }
 
-        if(cache)
+        if (cache)
             addCachedNode(node)
 
         return getColorByIndex(existingNodes.length)
@@ -67,7 +67,7 @@ export namespace ColorHelper {
     function addCachedNode(node: TableData.RouteNode.RouteNode) {
         let nodes = []
 
-        if(nodesCached.has(Util.getObjectID(node.route))) {
+        if (nodesCached.has(Util.getObjectID(node.route))) {
             nodes = nodesCached.get(Util.getObjectID(node.route))
         }
 
@@ -83,8 +83,8 @@ export namespace ColorHelper {
     }
 
     function getColorByIndex(index: number): Color {
-        if(index >= getAmountOfColors()) {
-            throw new RangeError(sprintf(i18next.t("colorhelper_error_not_enough_colors"), getAmountOfColors(), index+1))
+        if (index >= getAmountOfColors()) {
+            throw new RangeError(sprintf(i18next.t("colorhelper_error_not_enough_colors"), getAmountOfColors(), index + 1))
         }
 
         return Color[Object.keys(Color)[index]]

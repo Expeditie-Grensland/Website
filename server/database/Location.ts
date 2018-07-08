@@ -36,12 +36,12 @@ export namespace Location {
     export async function createLocation(location: TableData.Location.Location, route: RouteOrID): Promise<LocationDocument> {
         const routeDoc = await getRoute(route)
 
-        if(location.node === undefined) {
+        if (location.node === undefined) {
             const node = await Route.getCurrentNodeWithPerson(location.person)(routeDoc)
             location.node = Util.getObjectID(node)
         }
 
-        if(location.visualArea === undefined) {
+        if (location.visualArea === undefined) {
             //By default sort first
             location.visualArea = Number.POSITIVE_INFINITY
         }
@@ -61,19 +61,19 @@ export namespace Location {
         let currentNodeWithPerson: Map<string, Promise<RouteNodeDocument>> = new Map()
 
         function currentNodeWithPersonCached(person: PersonOrID): Promise<RouteNodeDocument> {
-            if(!currentNodeWithPerson.has(Util.getObjectID(person))) {
+            if (!currentNodeWithPerson.has(Util.getObjectID(person))) {
                 currentNodeWithPerson.set(Util.getObjectID(person), Route.getCurrentNodeWithPerson(person)(routeDoc))
             }
             return currentNodeWithPerson.get(Util.getObjectID(person))
         }
 
-        for(let location of locations) {
-            if(location.visualArea === undefined) {
+        for (let location of locations) {
+            if (location.visualArea === undefined) {
                 //By default, load first
                 location.visualArea = Number.POSITIVE_INFINITY
             }
 
-            if(location.node === undefined) {
+            if (location.node === undefined) {
                 const node = await currentNodeWithPersonCached(location.person)
                 location.node = Util.getObjectID(node)
             }
@@ -111,7 +111,7 @@ export namespace Location {
         return async route => {
             const nodes = await Route.getNodes(route)
 
-            return Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}, place: {$exists : false}}).sort({visualArea: 'desc'}).skip(skip).limit(limit).find().exec()
+            return Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}, place: {$exists: false}}).sort({visualArea: 'desc'}).skip(skip).limit(limit).find().exec()
         }
     }
 
@@ -142,8 +142,8 @@ export namespace Location {
         let l: TableData.Location.Location[] = []
         let duplicateCount = 0
 
-        while(true) {
-            if(idx >= locations.length)
+        while (true) {
+            if (idx >= locations.length)
                 break
 
             const current = locations[idx]
@@ -152,10 +152,10 @@ export namespace Location {
 
             let i = 0
 
-            for(i = idx+1; i < locations.length; i++) {
+            for (i = idx + 1; i < locations.length; i++) {
                 const next = locations[i]
 
-                if(next.lat === current.lat && next.lon === current.lon && next.alt == current.alt) {
+                if (next.lat === current.lat && next.lon === current.lon && next.alt == current.alt) {
                     duplicateCount++
                 } else {
                     break
@@ -185,7 +185,7 @@ export namespace Location {
 
     export function fromGPX(gpx, person: PersonOrID): Promise<TableData.Location.Location[]> {
         return new Promise(resolve => gpxparse.parseGpx(gpx, (error, data) => {
-            if(error)
+            if (error)
                 return console.error(error)
 
             const personId = Util.getObjectID(person)
@@ -193,10 +193,10 @@ export namespace Location {
 
             console.log("Track length: " + track.length())
 
-            const locations:TableData.Location.Location[] = []
+            const locations: TableData.Location.Location[] = []
 
-            for(let seg of track.segments) {
-                for(let waypoint of seg) {
+            for (let seg of track.segments) {
+                for (let waypoint of seg) {
 
                     locations.push({
                         person: personId,

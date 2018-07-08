@@ -21,7 +21,7 @@ export namespace Route {
     import PlaceDocument = TableData.Place.PlaceDocument
 
     export function createRoute(route: TableData.Route.Route): Promise<RouteDocument> {
-        if(route.boundingBox === undefined) {
+        if (route.boundingBox === undefined) {
             route.boundingBox = {
                 minLat: Number.POSITIVE_INFINITY,
                 minLon: Number.POSITIVE_INFINITY,
@@ -50,7 +50,7 @@ export namespace Route {
     }
 
     function createRouteNode(node: RouteNode): Promise<RouteNodeDocument> {
-        if(node.color === undefined) {
+        if (node.color === undefined) {
             node.color = ColorHelper.generateColorForRouteNode(node)
         }
 
@@ -80,7 +80,7 @@ export namespace Route {
     export function getCurrentNodeWithPerson(person: PersonOrID): (route: RouteOrID) => Promise<RouteNodeDocument> {
         return route => getRoute(route).then(route => Tables.RouteNode.findOne(
             {
-                _id: { $in: Util.getObjectIDs(route.currentNodes) },
+                _id: {$in: Util.getObjectIDs(route.currentNodes)},
                 route: Util.getObjectID(route),
                 persons: Util.getObjectID(person)
             }).exec())
@@ -126,34 +126,34 @@ export namespace Route {
             .then(([expeditie, route, oldCurrentNodes, startingNodes, newCurrentNodes]) => {
                 route.currentNodes = Util.getObjectIDs(newCurrentNodes)
 
-                if(oldCurrentNodes.length == 0 && startingNodes.length == 0) {
+                if (oldCurrentNodes.length == 0 && startingNodes.length == 0) {
                     route.startingNodes = Util.getObjectIDs(newCurrentNodes)
                 } else {
                     let setEdgePromises: Promise<RouteNodeDocument>[] = []
                     let newNodesWithToEdge: string[] = []
 
-                    for(let oldCurrentNode of oldCurrentNodes) {
+                    for (let oldCurrentNode of oldCurrentNodes) {
                         const edges: RouteEdge[] = []
 
-                        for(let newCurrentNode of newCurrentNodes) {
-                            if(Util.getObjectID(oldCurrentNode) === Util.getObjectID(newCurrentNode)) {
+                        for (let newCurrentNode of newCurrentNodes) {
+                            if (Util.getObjectID(oldCurrentNode) === Util.getObjectID(newCurrentNode)) {
                                 break
                             }
 
-                            for(let oldPersonId of Util.getObjectIDs(oldCurrentNode.persons)) {
-                                for(let newPersonId of Util.getObjectIDs(newCurrentNode.persons)) {
-                                    if(oldPersonId === newPersonId) {
+                            for (let oldPersonId of Util.getObjectIDs(oldCurrentNode.persons)) {
+                                for (let newPersonId of Util.getObjectIDs(newCurrentNode.persons)) {
+                                    if (oldPersonId === newPersonId) {
 
                                         let existingEdge: RouteEdge = null
 
-                                        for(let edge of edges) {
-                                            if(Util.getObjectID(edge.to) === Util.getObjectID(newCurrentNode)) {
+                                        for (let edge of edges) {
+                                            if (Util.getObjectID(edge.to) === Util.getObjectID(newCurrentNode)) {
                                                 existingEdge = edge
                                                 break
                                             }
                                         }
 
-                                        if(existingEdge != null) {
+                                        if (existingEdge != null) {
                                             existingEdge.people.push(Util.getObjectID(oldPersonId))
                                         } else {
                                             edges.push({
@@ -168,13 +168,13 @@ export namespace Route {
                             }
                         }
 
-                        if(edges.length > 0)
+                        if (edges.length > 0)
                             setEdgePromises.push(setNodeEdges(edges)(oldCurrentNode))
                     }
 
                     const newNodesWithoutToEdge = newCurrentNodes.filter(node => !newNodesWithToEdge.includes(Util.getObjectID(node)))
 
-                    if(newNodesWithoutToEdge.length > 0) {
+                    if (newNodesWithoutToEdge.length > 0) {
                         route.startingNodes.push(...newNodesWithoutToEdge.map(node => Util.getObjectID(node)))
                     }
 
@@ -198,17 +198,17 @@ export namespace Route {
             const route = await getRoute(r)
             const bbox = await getBoundingBox(route)
 
-            for(let location of await Location.getLocations(locations)) {
-                if(location.lat < bbox.minLat) {
+            for (let location of await Location.getLocations(locations)) {
+                if (location.lat < bbox.minLat) {
                     bbox.minLat = location.lat
                 }
-                if(location.lat > bbox.maxLat) {
+                if (location.lat > bbox.maxLat) {
                     bbox.maxLat = location.lat
                 }
-                if(location.lon < bbox.minLon) {
+                if (location.lon < bbox.minLon) {
                     bbox.minLon = location.lon
                 }
-                if(location.lon > bbox.maxLon) {
+                if (location.lon > bbox.maxLon) {
                     bbox.maxLon = location.lon
                 }
             }
@@ -221,9 +221,9 @@ export namespace Route {
         const a1 = Util.getObjectIDs(array1).sort()
         const a2 = Util.getObjectIDs(array2).sort()
 
-        for(let person1 of a1) {
-            for(let person2 of a2) {
-                if(person1 != person2)
+        for (let person1 of a1) {
+            for (let person2 of a2) {
+                if (person1 != person2)
                     return false
             }
         }
@@ -235,9 +235,9 @@ export namespace Route {
 
         const newGroupsPersonIds: string[] = [].concat(...groups)
 
-        for(let group of oldGroups) {
-            for(let personId of group) {
-                if(newGroupsPersonIds.indexOf(personId) < 0) {
+        for (let group of oldGroups) {
+            for (let personId of group) {
+                if (newGroupsPersonIds.indexOf(personId) < 0) {
                     return Person.getPersonById(personId).then(person =>
                         Promise.reject("The new groups should at least contain all people from the old groups! Person '" + person.name + "' is not specified in the new groups!")
                     )
@@ -245,7 +245,7 @@ export namespace Route {
             }
         }
 
-        if((new Set(newGroupsPersonIds)).size !== newGroupsPersonIds.length) {
+        if ((new Set(newGroupsPersonIds)).size !== newGroupsPersonIds.length) {
             let ids: string[] = []
             const duplicatePeople: string[] = newGroupsPersonIds.filter((id) => {
                 const value = ids.includes(id)
@@ -302,9 +302,9 @@ export namespace Route {
 
             pRouteNodes.push(...newRouteNodes.map((groupIds) => {
                 return createRouteNode({
-                    route:   Util.getObjectID(route),
+                    route: Util.getObjectID(route),
                     persons: groupIds,
-                    edges:   []
+                    edges: []
                 })
             }))
 
@@ -316,36 +316,36 @@ export namespace Route {
         return Util.getDocument(route, getRouteById).then(route => {
 
             return getNodes(route).then(allNodes => {
-                    const map: Map<string, RouteNodeDocument> = new Map()
+                const map: Map<string, RouteNodeDocument> = new Map()
 
-                    for(let node of allNodes) {
-                        map.set(Util.getObjectID(node), node)
+                for (let node of allNodes) {
+                    map.set(Util.getObjectID(node), node)
+                }
+
+                const startingNodes = route.startingNodes
+                let currentNodes = route.startingNodes
+
+                function next(node: RouteNodeOrID, depthLeft: number): Promise<RouteNodeDocument> {
+                    if (depthLeft <= 0) {
+                        return Promise.reject("Route graph could not be resolved. Either the graph is extremely large or contains circular references.")
                     }
+                    node = map.get(Util.getObjectID(node))
 
-                    const startingNodes = route.startingNodes
-                    let currentNodes = route.startingNodes
+                    node.edges.map(edge =>
+                        next(edge.to, depthLeft - 1).then(to => {
+                            edge.to = to
+                            return edge
+                        })
+                    )
 
-                    function next(node: RouteNodeOrID, depthLeft: number): Promise<RouteNodeDocument> {
-                        if(depthLeft <= 0) {
-                            return Promise.reject("Route graph could not be resolved. Either the graph is extremely large or contains circular references.")
-                        }
-                        node = map.get(Util.getObjectID(node))
+                    return Promise.resolve(node)
+                }
 
-                        node.edges.map(edge =>
-                            next(edge.to, depthLeft-1).then(to => {
-                                edge.to = to
-                                return edge
-                            })
-                        )
-
-                        return Promise.resolve(node)
-                    }
-
-                    return Promise.all(route.startingNodes.map(node => next(node, 100))).then((startingNodes) => {
-                        route.startingNodes = startingNodes
-                        return route
-                    })
+                return Promise.all(route.startingNodes.map(node => next(node, 100))).then((startingNodes) => {
+                    route.startingNodes = startingNodes
+                    return route
                 })
+            })
         })
     }
 }

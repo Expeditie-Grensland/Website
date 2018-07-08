@@ -32,10 +32,10 @@ export namespace LocationHelper {
     export async function setVisualAreas(locations: LocationDocument[]): Promise<LocationDocument[]> {
         let nodeToLocationMap: Map<string, LocationDocument[]> = new Map()
 
-        for(let location of locations) {
+        for (let location of locations) {
             let array = nodeToLocationMap.get(Util.getObjectID(location.node))
 
-            if(array === undefined) {
+            if (array === undefined) {
                 array = []
             }
 
@@ -46,7 +46,7 @@ export namespace LocationHelper {
 
         const bulk = Tables.Location.collection.initializeUnorderedBulkOp()
 
-        for(let locations of nodeToLocationMap.values()) {
+        for (let locations of nodeToLocationMap.values()) {
             locations = sortByTimestampDescending(locations)
 
             const lastLocations = await getLastLocations(locations.slice(-2))
@@ -56,8 +56,8 @@ export namespace LocationHelper {
             for (let i = 3; i < locations.length; i++) {
                 const visualArea = await calculateVisualArea(locations[i])
 
-                locations[i-1].visualArea = visualArea
-                bulk.find({_id: locations[i-1]._id}).update({$set: {visualArea: visualArea}})
+                locations[i - 1].visualArea = visualArea
+                bulk.find({_id: locations[i - 1]._id}).update({$set: {visualArea: visualArea}})
 
                 addLocation(locations[i])
             }
@@ -68,7 +68,7 @@ export namespace LocationHelper {
 
     async function calculateVisualArea(location: LocationDocument): Promise<number> {
         return getLastLocationsCached(Util.getObjectID(location.node)).then(lastLocations => {
-            if(lastLocations != undefined) {
+            if (lastLocations != undefined) {
                 const triangle = turf.polygon([[
                     [lastLocations[0].lon, lastLocations[0].lat],
                     [lastLocations[1].lon, lastLocations[1].lat],
@@ -98,7 +98,7 @@ export namespace LocationHelper {
     async function getLastLocations(locations: LocationDocument[]): Promise<[LocationDocument, LocationDocument] | undefined> {
         return Promise.resolve(locations).then(sortByTimestampDescending)
             .then(locations => {
-                if(locations.length > 1) {
+                if (locations.length > 1) {
                     let l1: LocationDocument = locations[0]
                     let l0: LocationDocument = locations[1]
 
@@ -111,7 +111,7 @@ export namespace LocationHelper {
     function getLastLocationsCached(node: RouteNodeOrID): Promise<[LocationDocument, LocationDocument] | undefined> {
         let lastLocations = lastLocationsMap.get(Util.getObjectID(node))
 
-        if(lastLocations === undefined) {
+        if (lastLocations === undefined) {
             lastLocations = Location.getLocationsInNodeByTimestampDescending(Util.getObjectID(node), 1, 2)
                 .then(getLastLocations)
 

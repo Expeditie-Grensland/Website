@@ -28,5 +28,5 @@ export namespace Countries {
         "Vanuatu", "Yemen", "South_Africa", "Zambia", "Zimbabwe", "Ilemi_Triangle", "South_Ossetia", "Nagorno-Karabakh",
         "Aksai_Chin", "Turkish_Republic_of_Northern_Cyprus", "Abkhazia", "Somaliland",
         "Western_Sahara", "Kashmir", "Abyei",
-    ].map((countryID) => <Country>{id: countryID})
+    ].map((countryID) => <Country>{ id: countryID })
 }

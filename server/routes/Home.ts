@@ -9,9 +9,9 @@ export namespace Home {
             Expeditie.getExpeditiesCached().then((expedities) => {
                 res.render("home", {
                     expedities: expedities,
-                    t:          (<any>req).t,
-                    t_ucf:      ucFirstWrapper((<any>req).t),
-                    ucf:        ucFirst
+                    t: (<any>req).t,
+                    t_ucf: ucFirstWrapper((<any>req).t),
+                    ucf: ucFirst
                 })
             })
         })

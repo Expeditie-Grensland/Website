@@ -13,8 +13,8 @@ export namespace ExpeditieRoute {
 
             const expedities = await getExpeditiesCached()
 
-            for(let expeditie of expedities) {
-                if(expeditie.showMap && expeditie.mapUrl === removeTrailingSlash(req.path)) {
+            for (let expeditie of expedities) {
+                if (expeditie.showMap && expeditie.mapUrl === removeTrailingSlash(req.path)) {
                     res.render('expeditie', {
                         expeditie: expeditie
                     })
@@ -22,7 +22,7 @@ export namespace ExpeditieRoute {
                 }
             }
 
-            if(!res.headersSent)
+            if (!res.headersSent)
                 res.sendStatus(404)
         })
     }

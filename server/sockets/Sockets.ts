@@ -10,9 +10,6 @@ const sprintf = require('sprintf-js').sprintf
 
 
 export namespace Sockets {
-
-    import LocationDocument = TableData.Location.LocationDocument
-
     export function getRoute(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
         return async name => {
             const expeditie = await Expeditie.getExpeditieByNameShort(name)
@@ -40,8 +37,8 @@ export namespace Sockets {
             let batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, 0, batchSize)
             let batchCount = 1
 
-            while(batch.length > 0) {
-                if(!io.connected)
+            while (batch.length > 0) {
+                if (!io.connected)
                     return
 
                 console.log(sprintf("Sending batch %d with %d locations", batchCount, batch.length))

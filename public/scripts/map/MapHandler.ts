@@ -28,7 +28,7 @@ namespace MapHandler {
     }
 
     export function addNodes(nodes: Tables.RouteNode[]) {
-        for(let node of nodes) {
+        for (let node of nodes) {
             nodeMap.set(node._id, node)
 
             locationNodeMap.set(node._id, [])
@@ -65,7 +65,7 @@ namespace MapHandler {
     }
 
     export function addLocations(locations: Tables.Location[]) {
-        for(let location of locations) {
+        for (let location of locations) {
             const nodeLocations = locationNodeMap.get(<string>location.node)
 
             nodeLocations.push(location._id)
@@ -74,13 +74,13 @@ namespace MapHandler {
             locationNodeMap.set(<string>location.node, nodeLocations)
         }
 
-        if(mapStyleLoaded)
+        if (mapStyleLoaded)
             updateMap()
     }
 
     export function addPlaces(places: Tables.Place[]) {
-        for(let place of places) {
-            for(let nodeId of <string[]>place.nodes) {
+        for (let place of places) {
+            for (let nodeId of <string[]>place.nodes) {
                 const nodePlaces = placeNodeMap.get(nodeId)
 
                 nodePlaces.push(place._id)
@@ -91,7 +91,7 @@ namespace MapHandler {
             placeMap.set(place._id, place)
         }
 
-        if(mapStyleLoaded)
+        if (mapStyleLoaded)
             updateMap()
     }
 
@@ -122,15 +122,15 @@ namespace MapHandler {
     export function generateLocationsGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.LineString> {
         const features: GeoJSON.Feature<GeoJSON.LineString>[] = []
 
-        for(let node of nodeMap.values()) {
+        for (let node of nodeMap.values()) {
             const coords: mapboxgl.LngLat[] = []
             const nodeLocations = locationNodeMap.get(node._id).map(l => getLocation(l)).sort((l1, l2) => l1.timestamp - l2.timestamp)
 
-            for(let location of nodeLocations) {
+            for (let location of nodeLocations) {
                 coords.push(new mapboxgl.LngLat(location.lon, location.lat))
             }
 
-            if(coords.length >= 2) {
+            if (coords.length >= 2) {
                 features.push({
                     type: "Feature",
                     properties: {
@@ -153,10 +153,10 @@ namespace MapHandler {
     export function generatePlacesGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.Point> {
         const features: GeoJSON.Feature<GeoJSON.Point>[] = []
 
-        for(let node of nodeMap.values()) {
+        for (let node of nodeMap.values()) {
             const places = placeNodeMap.get(node._id).map(l => getPlace(l)) //TODO sort
 
-            for(let place of places) {
+            for (let place of places) {
                 features.push({
                     type: "Feature",
                     properties: {
@@ -179,8 +179,8 @@ namespace MapHandler {
     export function onMapStyleLoad() {
         mapStyleLoaded = true
 
-        map.addSource(LOCATION_SOURCE, { type: 'geojson', data: null })
-        map.addSource(PLACE_SOURCE, { type: 'geojson', data: null })
+        map.addSource(LOCATION_SOURCE, {type: 'geojson', data: null})
+        map.addSource(PLACE_SOURCE, {type: 'geojson', data: null})
 
         updateMap()
     }

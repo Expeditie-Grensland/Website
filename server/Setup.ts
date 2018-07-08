@@ -1,16 +1,15 @@
-import * as http from "http"
-import * as express from "express"
-import * as path from "path"
-import * as stylus from "stylus"
-import * as mongoose from "mongoose"
-import * as bodyParser from "body-parser"
-import * as session from "express-session"
-import * as i18next from "i18next"
-import * as i18nextMiddleware from "i18next-express-middleware"
-import * as FileSystemBackend from "i18next-node-fs-backend"
+import * as bodyParser from 'body-parser'
+import * as express from 'express'
+import * as http from 'http'
+import * as i18next from 'i18next'
+import * as i18nextMiddleware from 'i18next-express-middleware'
+import * as FileSystemBackend from 'i18next-node-fs-backend'
+import * as mongoose from 'mongoose'
+import * as path from 'path'
+import * as stylus from 'stylus'
 
-import {Config} from "./Config"
-import {Tables} from "./database/Tables"
+import {Config} from './Config'
+import {Tables} from './database/Tables'
 
 export namespace Setup {
     export function startServer(server: http.Server) {
@@ -25,13 +24,13 @@ export namespace Setup {
             .use(FileSystemBackend)
             .use(i18nextMiddleware.LanguageDetector)
             .init({
-                preload:      ['en', 'nl'],
+                preload: ['en', 'nl'],
                 lowerCaseLng: true,
-                fallbackLng:  'en',
-                saveMissing:  true,
-                backend:      {
-                    loadPath:   path.join(root, 'server/locales/{{lng}}/{{ns}}.json'),
-                    addPath:    path.join(root, 'server/locales/{{lng}}/{{ns}}.missing.json'),
+                fallbackLng: 'en',
+                saveMissing: true,
+                backend: {
+                    loadPath: path.join(root, 'server/locales/{{lng}}/{{ns}}.json'),
+                    addPath: path.join(root, 'server/locales/{{lng}}/{{ns}}.missing.json'),
                     jsonIndent: 2
                 }
             });
