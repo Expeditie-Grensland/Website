@@ -52,7 +52,6 @@ export namespace Location {
 
         locationDoc = await LocationHelper.setVisualArea(locationDoc)
 
-        //return PlaceHelper.findPlaceForLocation(locationDoc)
         return locationDoc
     }
 
@@ -86,12 +85,7 @@ export namespace Location {
 
         const locationsPromise = LocationHelper.setVisualAreas(locationDocs)
 
-        // for(let location of locationDocs) {
-        //     await PlaceHelper.findPlaceForLocation(location)
-        // }
-
         await boundsPromise
-        //TODO this doesn't update the locations in the locationsPromise array with the values returned from findPlaceForLocation.
         return await locationsPromise
     }
 
