@@ -8,8 +8,8 @@ import * as mongoose from 'mongoose'
 import * as path from 'path'
 import * as stylus from 'stylus'
 
-import {Config} from './Config'
-import {Tables} from './database/Tables'
+import {Config} from './config'
+import {Tables} from './database/tables'
 
 export namespace Setup {
     export function startServer(server: http.Server) {

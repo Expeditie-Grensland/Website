@@ -1,10 +1,9 @@
 import * as express from 'express'
 
-import {Expeditie} from '../database/Expeditie'
-import {Place} from '../database/Place'
-import {Route} from '../database/Route'
-import {TableData} from '../database/Tables'
-import {SocketIDs} from './SocketHandler'
+import {Expeditie} from '../database/expeditie'
+import {Place} from '../database/place'
+import {Route} from '../database/route'
+import {SocketIDs} from './socketHandler'
 
 const sprintf = require('sprintf-js').sprintf
 

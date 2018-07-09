@@ -1,9 +1,9 @@
-import {ColorHelper} from '../helper/ColorHelper'
-import {Expeditie} from './Expeditie'
-import {Location} from './Location'
-import {Person} from './Person'
-import {TableData, Tables} from './Tables'
-import {Util} from './Util'
+import {ColorHelper} from '../helper/colorHelper'
+import {Expeditie} from './expeditie'
+import {Location} from './location'
+import {Person} from './person'
+import {TableData, Tables} from './tables'
+import {Util} from './util'
 
 import RouteDocument = TableData.Route.RouteDocument
 import RouteNode = TableData.RouteNode.RouteNode

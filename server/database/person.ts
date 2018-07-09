@@ -1,8 +1,8 @@
 import {ObjectID} from 'bson'
 
-import {Expeditie} from './Expeditie'
-import {TableData, Tables} from './Tables'
-import {Util} from './Util'
+import {Expeditie} from './expeditie'
+import {TableData, Tables} from './tables'
+import {Util} from './util'
 
 import PersonDocument = TableData.Person.PersonDocument
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument

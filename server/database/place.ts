@@ -1,6 +1,6 @@
-import {Route} from './Route'
-import {TableData, Tables} from './Tables'
-import {Util} from './Util'
+import {Route} from './route'
+import {TableData, Tables} from './tables'
+import {Util} from './util'
 
 export namespace Place {
 

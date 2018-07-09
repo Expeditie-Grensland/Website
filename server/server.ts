@@ -2,11 +2,11 @@
 import * as http from "http"
 import * as socket from "socket.io"
 
-import {Setup} from "./Setup"
-import {Routes} from "./routes/Routes"
-import {Config} from "./Config"
-import {SocketHandler} from "./sockets/SocketHandler"
-import {ColorHelper} from "./helper/ColorHelper"
+import {Setup} from "./setup"
+import {Routes} from "./routes/routes"
+import {Config} from "./config"
+import {SocketHandler} from "./sockets/socketHandler"
+import {ColorHelper} from "./helper/colorHelper"
 
 Error.stackTraceLimit = Infinity
 

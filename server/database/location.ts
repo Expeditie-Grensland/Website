@@ -1,9 +1,9 @@
 import * as gpxparse from 'gpx-parse'
 
-import {LocationHelper} from '../helper/LocationHelper'
-import {Route} from './Route'
-import {LegacyTableData, TableData, Tables} from './Tables'
-import {Util} from './Util'
+import {LocationHelper} from '../helper/locationHelper'
+import {Route} from './route'
+import {LegacyTableData, TableData, Tables} from './tables'
+import {Util} from './util'
 
 import LocationDocument = TableData.Location.LocationDocument
 

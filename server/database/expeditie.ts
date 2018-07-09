@@ -1,11 +1,11 @@
 import * as i18next from 'i18next'
 
-import {Countries} from './Countries'
-import {Location} from './Location'
-import {Person} from './Person'
-import {Route} from './Route'
-import {TableData, Tables} from './Tables'
-import {Util} from './Util'
+import {Countries} from './countries'
+import {Location} from './location'
+import {Person} from './person'
+import {Route} from './route'
+import {TableData, Tables} from './tables'
+import {Util} from './util'
 
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
 import PersonDocument = TableData.Person.PersonDocument

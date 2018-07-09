@@ -1,8 +1,8 @@
 import * as turf from '@turf/turf'
 
-import {Location} from '../database/Location'
-import {TableData, Tables} from '../database/Tables'
-import {Util} from '../database/Util'
+import {Location} from '../database/location'
+import {TableData, Tables} from '../database/tables'
+import {Util} from '../database/util'
 
 export namespace LocationHelper {
     import LocationDocument = TableData.Location.LocationDocument

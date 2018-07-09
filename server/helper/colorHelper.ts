@@ -1,8 +1,8 @@
 import i18next = require('i18next')
 
-import {Route} from '../database/Route'
-import {TableData} from '../database/Tables'
-import {Util} from '../database/Util'
+import {Route} from '../database/route'
+import {TableData} from '../database/tables'
+import {Util} from '../database/util'
 
 const sprintf = require('sprintf-js').sprintf
 

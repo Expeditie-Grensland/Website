@@ -1,7 +1,7 @@
 import {ObjectId} from 'bson'
 import * as mongoose from 'mongoose'
 
-import {TableData} from './Tables'
+import {TableData} from './tables'
 
 import DocumentOrID = TableData.DocumentOrID
 
