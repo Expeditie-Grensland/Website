@@ -4,7 +4,7 @@ import * as socket from "socket.io"
 
 import {Setup} from "./setup"
 import {Routes} from "./routes/routes"
-import {Config} from "./config"
+import {config} from "./helpers/configHelper"
 import {SocketHandler} from "./sockets/socketHandler"
 import {ColorHelper} from "./helpers/colorHelper"
 
@@ -14,7 +14,7 @@ const app = express()
 const server = http.createServer(app)
 const io = socket(server)
 
-const db = Setup.setupDatabase(app, Config.database.host, Config.database.port, Config.database.db, Config.database.user, Config.database.pass)
+const db = Setup.setupDatabase(app, config.mongo)
 //TODO: if mongo can't reach database, server crashes
 
 Setup.setupExpress(app, __dirname + "/../")
@@ -25,6 +25,6 @@ SocketHandler.bindHandlers(app, io)
 Routes.init(app)
 ColorHelper.init()
 
-Setup.startServer(server)
+Setup.startServer(server, config.port)
 
-console.log("Server started on port: " + Config.port)
+console.log("Server started on port: " + config.port)

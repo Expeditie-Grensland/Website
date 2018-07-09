@@ -1,6 +1,6 @@
 node_modules/
 
-server/Config.ts
+config.json
 
 *.js
 *.js.map

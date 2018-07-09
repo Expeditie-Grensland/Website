@@ -1,0 +1,11 @@
+{
+  "port": 3000,
+
+  "mongo": {
+    "host": "localhost",
+    "port": 27017,
+    "db": "expeditie-grensland",
+    "user": "expeditie-grensland",
+    "pass": ""
+  }
+}

@@ -8,12 +8,12 @@ import * as mongoose from 'mongoose'
 import * as path from 'path'
 import * as stylus from 'stylus'
 
-import {Config} from './config'
+import {ConfigHelper} from './helpers/configHelper'
 import {Tables} from './database/tables'
 
 export namespace Setup {
-    export function startServer(server: http.Server) {
-        server.listen(Config.port)
+    export function startServer(server: http.Server, port: number) {
+        server.listen(port)
     }
 
     export function setupExpress(app: express.Express, root: string) {
@@ -45,11 +45,12 @@ export namespace Setup {
         app.use(express.static(publicDir))
     }
 
-    export function setupDatabase(app: express.Express, address: string, port: number, database: string, user: string, password: string): mongoose.Connection {
+    export function setupDatabase(app: express.Express, mConfig: ConfigHelper.Structure["mongo"]): mongoose.Connection {
         mongoose.set('debug', app.get("env") == "development" ? true : false);
 
         (<any>mongoose).Promise = Promise
-        mongoose.connect("mongodb://" + address + ":" + port + "/" + database, {user: user, pass: password, useMongoClient: true})
+        mongoose.connect("mongodb://" + mConfig.host + ":" + mConfig.port + "/" + mConfig.db,
+            {user: mConfig.user, pass: mConfig.pass, useMongoClient: true})
         const db = mongoose.connection
 
         db.on('error', console.error.bind(console, 'connection error:'))
