@@ -6,7 +6,7 @@ import {Setup} from "./setup"
 import {Routes} from "./routes/routes"
 import {Config} from "./config"
 import {SocketHandler} from "./sockets/socketHandler"
-import {ColorHelper} from "./helper/colorHelper"
+import {ColorHelper} from "./helpers/colorHelper"
 
 Error.stackTraceLimit = Infinity
 

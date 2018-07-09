@@ -1,4 +1,4 @@
-import {ColorHelper} from '../helper/colorHelper'
+import {ColorHelper} from '../helpers/colorHelper'
 import {Expeditie} from './expeditie'
 import {Location} from './location'
 import {Person} from './person'

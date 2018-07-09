@@ -1,6 +1,6 @@
 import * as gpxparse from 'gpx-parse'
 
-import {LocationHelper} from '../helper/locationHelper'
+import {LocationHelper} from '../helpers/locationHelper'
 import {Route} from './route'
 import {LegacyTableData, TableData, Tables} from './tables'
 import {Util} from './util'
