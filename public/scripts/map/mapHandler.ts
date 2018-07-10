@@ -1,6 +1,5 @@
 namespace MapHandler {
     const LOCATION_SOURCE = "locations"
-    const PLACE_SOURCE = "places"
 
     export let map: mapboxgl.Map = null
 
@@ -8,8 +7,6 @@ namespace MapHandler {
     const nodeMap: Map<string, Tables.RouteNode> = new Map()
     const locationMap: Map<string, Tables.Location> = new Map()
     const locationNodeMap: Map<string, string[]> = new Map() //Map RouteNode ids to location ids.
-    const placeMap: Map<string, Tables.Place> = new Map()
-    const placeNodeMap: Map<string, string[]> = new Map() // Map routeNode id to place ids.
 
     let mapStyleLoaded = false
 
@@ -32,7 +29,6 @@ namespace MapHandler {
             nodeMap.set(node._id, node)
 
             locationNodeMap.set(node._id, [])
-            placeNodeMap.set(node._id, [])
 
             //TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
             map.addLayer({
@@ -43,21 +39,6 @@ namespace MapHandler {
                     "line-color": node.color,
                     "line-opacity": 1,
                     "line-width": 3
-                },
-                filter: ["==", "node-id", node._id]
-            })
-
-            map.addLayer({
-                id: PLACE_SOURCE + node._id,
-                type: "circle",
-                source: PLACE_SOURCE,
-                paint: {
-                    // make circles larger as the user zooms from z12 to z22
-                    'circle-radius': {
-                        base: 1.75,
-                        stops: [[12, 2], [22, 180]]
-                    },
-                    'circle-color': '#0f0f0f'
                 },
                 filter: ["==", "node-id", node._id]
             })
@@ -78,34 +59,12 @@ namespace MapHandler {
             updateMap()
     }
 
-    export function addPlaces(places: Tables.Place[]) {
-        for (let place of places) {
-            for (let nodeId of <string[]>place.nodes) {
-                const nodePlaces = placeNodeMap.get(nodeId)
-
-                nodePlaces.push(place._id)
-
-                placeNodeMap.set(nodeId, nodePlaces)
-            }
-
-            placeMap.set(place._id, place)
-        }
-
-        if (mapStyleLoaded)
-            updateMap()
-    }
-
     export function updateMap() {
         const locationSource = map.getSource(LOCATION_SOURCE) as mapboxgl.GeoJSONSource
-        const placeSource = map.getSource(PLACE_SOURCE) as mapboxgl.GeoJSONSource
 
         const locationsGeoJSON = generateLocationsGeoJSON()
-        const placesGeoJSON = generatePlacesGeoJSON()
-
-        console.log(placesGeoJSON)
 
         locationSource.setData(locationsGeoJSON)
-        placeSource.setData(placesGeoJSON)
     }
 
     export function setViewportToBoundingBox(bbox: Tables.RouteBoundingBox) {
@@ -150,37 +109,10 @@ namespace MapHandler {
         }
     }
 
-    export function generatePlacesGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.Point> {
-        const features: GeoJSON.Feature<GeoJSON.Point>[] = []
-
-        for (let node of nodeMap.values()) {
-            const places = placeNodeMap.get(node._id).map(l => getPlace(l)) //TODO sort
-
-            for (let place of places) {
-                features.push({
-                    type: "Feature",
-                    properties: {
-                        "node-id": node._id
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [place.lon, place.lat]
-                    }
-                })
-            }
-        }
-
-        return {
-            type: "FeatureCollection",
-            features: features
-        }
-    }
-
     export function onMapStyleLoad() {
         mapStyleLoaded = true
 
         map.addSource(LOCATION_SOURCE, {type: 'geojson', data: null})
-        map.addSource(PLACE_SOURCE, {type: 'geojson', data: null})
 
         updateMap()
     }
@@ -195,9 +127,5 @@ namespace MapHandler {
 
     export function getLocation(_id: string) {
         return locationMap.get(_id)
-    }
-
-    export function getPlace(_id: string) {
-        return placeMap.get(_id)
     }
 }

@@ -6,7 +6,6 @@ namespace Tables {
     export type PersonOrID = DocumentOrID<Person>
     export type RouteOrID = DocumentOrID<Route>
     export type RouteNodeOrID = DocumentOrID<RouteNode>
-    export type PlaceOrID = DocumentOrID<Place>
 
     export interface Device {
         _id: string
@@ -45,7 +44,6 @@ namespace Tables {
         visualArea: number
         person: PersonOrID
         node?: RouteNodeOrID
-        place?: PlaceOrID
         timestamp: number
         timezone: string
         lat: number
@@ -57,14 +55,6 @@ namespace Tables {
         bearingAccuracy?: number
         speed?: number
         speedAccuracy?: number
-    }
-
-    export interface Place {
-        _id: string
-        lat: number
-        lon: number
-        radius: number
-        nodes: RouteNodeOrID[]
     }
 
     export interface Person {

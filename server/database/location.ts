@@ -15,7 +15,6 @@ export namespace Location {
     import PersonOrID = TableData.PersonOrID
     import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument
     import RouteNodeOrID = TableData.RouteNodeOrID
-    import PlaceOrID = TableData.PlaceOrID
 
     export function getLocationById(_id: string): Promise<LocationDocument> {
         return Tables.Location.findById(_id).exec()
@@ -99,10 +98,6 @@ export namespace Location {
         return location => Tables.Location.findByIdAndUpdate(Util.getObjectID(location), {visualArea: visualArea}, {new: true}).exec()
     }
 
-    export function getLocationsInPlace(place: PlaceOrID): Promise<LocationDocument[]> {
-        return Tables.Location.find({place: Util.getObjectID(place)}).exec()
-    }
-
     export function getLocationsInRoute(route: RouteOrID): Promise<LocationDocument[]> {
         return Route.getNodes(route).then(nodes => Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).exec())
     }
@@ -111,12 +106,8 @@ export namespace Location {
         return async route => {
             const nodes = await Route.getNodes(route)
 
-            return Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}, place: {$exists: false}}).sort({visualArea: 'desc'}).skip(skip).limit(limit).find().exec()
+            return Tables.Location.find({node: {$in: Util.getObjectIDs(nodes)}}).sort({visualArea: 'desc'}).skip(skip).limit(limit).find().exec()
         }
-    }
-
-    export function setPlace(place: PlaceOrID): (location: LocationOrID) => Promise<LocationDocument> {
-        return location => Tables.Location.findByIdAndUpdate(Util.getObjectID(location), {place: Util.getObjectID(place)}, {new: true}).exec()
     }
 
     export function getLocationsInNodeByTimestampDescending(node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> {

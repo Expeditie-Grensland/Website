@@ -20,15 +20,5 @@ namespace Sockets {
         MapHandler.addLocations(locations)
     }
 
-    export function locationsDone(expeditieNameShort: string) {
-        SocketHandler.requestPlaces(expeditieNameShort)
-    }
-
-    export function getPlaces(expeditieNameShort: string, places: Tables.Place[]) {
-        LoadingBar.setLoadingText("Received " + places.length + " places")
-
-        MapHandler.addPlaces(places)
-
-        LoadingBar.setLoadingDone(true)
-    }
+    export function locationsDone(expeditieNameShort: string) {}
 }

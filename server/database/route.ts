@@ -18,7 +18,6 @@ export namespace Route {
     import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
     import LocationOrID = TableData.LocationOrID
     import RouteBoundingBox = TableData.RouteBoundingBox.RouteBoundingBox
-    import PlaceDocument = TableData.Place.PlaceDocument
 
     export function createRoute(route: TableData.Route.Route): Promise<RouteDocument> {
         if (route.boundingBox === undefined) {

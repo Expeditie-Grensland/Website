@@ -1,7 +1,6 @@
 import * as express from 'express'
 
 import {Expeditie} from '../database/expeditie'
-import {Place} from '../database/place'
 import {Route} from '../database/route'
 import {SocketIDs} from './socketHandler'
 
@@ -50,17 +49,6 @@ export namespace Sockets {
 
             io.emit(SocketIDs.LOCATIONS_DONE, name)
             console.log('location sending done.')
-        }
-    }
-
-    export function getPlaces(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
-        return async name => {
-            const expeditie = await Expeditie.getExpeditieByNameShort(name)
-            const route = await Expeditie.getRoute(expeditie)
-            const places = await Place.getPlacesInRoute(route)
-
-            console.log("Sending places..")
-            io.emit(SocketIDs.GET_PLACES, name, places)
         }
     }
 }
