@@ -147,10 +147,7 @@ export namespace TableData {
 
     /**
      * A Person describes a person who participates in an expeditie. They are guaranteed to have a name
-     * and a list of expedities in which they participate (can be empty). Users can be invited by entering an email
-     * address. This will send them an email with login instructions and a link to the app.
-     * Users can log in using Google's OAuth v2 on the website and the app.
-     * Users can also specify their preferred language.
+     * and a list of expedities in which they participate (can be empty).
      */
     export namespace Person {
         export const personSchema = new mongoose.Schema({
