@@ -13,8 +13,11 @@ export async function addLocations(locations: any): Promise<number[]> {
             locs.push(l);
         }
     });
-    console.log(locs);
-    stan.then(Expeditie.addLocations(locs));
+    if (locs.length == 1) {
+        stan.then(Expeditie.addLocation(locs[0]))
+    } else {
+        stan.then(Expeditie.addLocations(locs));
+    }
     return ids;
 }
 
@@ -26,12 +29,12 @@ function createLocation(location: any): TableData.Location.Location {
         lat: undefined,
         lon: undefined,
         altitude: undefined,
-        horizontalAccuracy: undefined,
-        verticalAccuracy: undefined,
-        bearing: undefined,
-        bearingAccuracy: undefined,
-        speed: undefined,
-        speedAccuracy: undefined
+        // horizontalAccuracy: undefined,
+        // verticalAccuracy: undefined,
+        // bearing: undefined,
+        // bearingAccuracy: undefined,
+        // speed: undefined,
+        // speedAccuracy: undefined
     };
 
     let essValues = [
@@ -40,12 +43,12 @@ function createLocation(location: any): TableData.Location.Location {
         'lat',
         'lon',
         'altitude',
-        'horizontalAccuracy',
-        'verticalAccuracy',
-        'bearing',
-        'bearingAccuracy',
-        'speed',
-        'speedAccuracy'
+        // 'horizontalAccuracy',
+        // 'verticalAccuracy',
+        // 'bearing',
+        // 'bearingAccuracy',
+        // 'speed',
+        // 'speedAccuracy'
     ];
 
     for (let i = 0; i < essValues.length; i++) {
