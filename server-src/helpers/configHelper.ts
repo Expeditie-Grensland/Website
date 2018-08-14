@@ -1,17 +1,19 @@
-const configJson = require('../../config.json')
+const configJson = require('../../config.json');
 
-export const config: any = configJson
+export const config: ConfigHelper.Config = configJson;
 
 export namespace ConfigHelper {
-    export interface Structure {
-        port: number,
+    export interface Config {
+        port: number;
         mongo: {
-            host: string,
-            port: number,
-            db: string,
-            user: string,
-            pass: string,
-        },
+            host: string;
+            port: number;
+            db: string;
+            user: string;
+            pass: string;
+        };
     }
+
+    export type MongoConfig = Config["mongo"]
     // TODO: config validation
 }

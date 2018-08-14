@@ -1,47 +1,45 @@
-import * as mongoose from 'mongoose'
+import * as mongoose from 'mongoose';
 
 export namespace Tables {
-    export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>
-    export let Location: mongoose.Model<TableData.Location.LocationDocument>
-    export let Person: mongoose.Model<TableData.Person.PersonDocument>
-    export let Route: mongoose.Model<TableData.Route.RouteDocument>
-    export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>
+    export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>;
+    export let Location: mongoose.Model<TableData.Location.LocationDocument>;
+    export let Person: mongoose.Model<TableData.Person.PersonDocument>;
+    export let Route: mongoose.Model<TableData.Route.RouteDocument>;
+    export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>;
+    export let Word: mongoose.Model<TableData.Word.WordDocument>;
 
-    export function initTables() {
-        //Ensure fast retrieval of find query by visual area. This query is performed every site visit,
-        // so it should be performant
-        TableData.Location.locationSchema.index({visualArea: -1})
-        TableData.Location.locationSchema.index({timestamp: -1})
-
-        Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema)
-        Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema)
-        Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema)
-        Route = mongoose.model(TableIDs.Route, TableData.Route.routeSchema)
-        RouteNode = mongoose.model(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema)
+    export function init() {
+        Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema);
+        Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema);
+        Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema);
+        Route = mongoose.model(TableIDs.Route, TableData.Route.routeSchema);
+        RouteNode = mongoose.model(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema);
+        Word = mongoose.model(TableIDs.Word, TableData.Word.wordSchema);
     }
 }
 
 export namespace TableIDs {
     //TODO Image, LogEntry
 
-    export const Expeditie = "Expeditie"
-    export const Location = "Location"
-    export const Person = "Person"
-    export const Route = "Route"
-    export const RouteNode = "RouteNode"
+    export const Expeditie = 'Expeditie';
+    export const Location = 'Location';
+    export const Person = 'Person';
+    export const Route = 'Route';
+    export const RouteNode = 'RouteNode';
+    export const Word = 'Word';
 }
 
 export namespace TableData {
-
-    export type DocumentOrID<T extends mongoose.Document> = T | string
-    export type ExpeditieOrID = DocumentOrID<Expeditie.ExpeditieDocument>
-    export type LocationOrID = DocumentOrID<Location.LocationDocument>
-    export type PersonOrID = DocumentOrID<Person.PersonDocument>
-    export type RouteOrID = DocumentOrID<Route.RouteDocument>
-    export type RouteNodeOrID = DocumentOrID<RouteNode.RouteNodeDocument>
+    export type DocumentOrID<T extends mongoose.Document> = T | string;
+    export type ExpeditieOrID = DocumentOrID<Expeditie.ExpeditieDocument>;
+    export type LocationOrID = DocumentOrID<Location.LocationDocument>;
+    export type PersonOrID = DocumentOrID<Person.PersonDocument>;
+    export type RouteOrID = DocumentOrID<Route.RouteDocument>;
+    export type RouteNodeOrID = DocumentOrID<RouteNode.RouteNodeDocument>;
+    export type WordOrID = DocumentOrID<Word.WordDocument>;
 
     function reference(to: string): {} {
-        return {type: String, ref: to}
+        return { type: String, ref: to };
     }
 
     /**
@@ -69,30 +67,30 @@ export namespace TableData {
             finished: Boolean,
             participants: [reference(TableIDs.Person)],
             route: reference(TableIDs.Route),
-            countries: [String],
-        })
+            countries: [String]
+        });
 
         export interface Expeditie {
-            sequenceNumber: number
-            name: string
-            nameShort: string
-            subtitle: string
-            color: string
+            sequenceNumber: number;
+            name: string;
+            nameShort: string;
+            subtitle: string;
+            color: string;
             background: {
-                imageUrl: string
+                imageUrl: string;
                 position: {
-                    x: number
-                    y: number
-                }
-            },
-            showMap: boolean
-            mapUrl?: string
-            movieUrl: string
-            movieCoverUrl: string
-            finished?: boolean
-            participants: PersonOrID[]
-            route?: RouteOrID
-            countries: string[]
+                    x: number;
+                    y: number;
+                };
+            };
+            showMap: boolean;
+            mapUrl?: string;
+            movieUrl: string;
+            movieCoverUrl: string;
+            finished?: boolean;
+            participants: PersonOrID[];
+            route?: RouteOrID;
+            countries: string[];
         }
 
         export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
@@ -123,23 +121,28 @@ export namespace TableData {
             bearingAccuracy: Number,
             speed: Number,
             speedAccuracy: Number
-        })
+        });
+
+        // Ensure fast retrieval of find query by visual area. This query is performed every site visit, so it should
+        // be performant.
+        locationSchema.index({ visualArea: -1 });
+        locationSchema.index({ timestamp: -1 });
 
         export interface Location {
-            visualArea?: number
-            person: PersonOrID
-            node?: RouteNodeOrID
-            timestamp: number
-            timezone: string
-            lat: number
-            lon: number
-            altitude: number
-            horizontalAccuracy?: number
-            verticalAccuracy?: number
-            bearing?: number
-            bearingAccuracy?: number
-            speed?: number
-            speedAccuracy?: number
+            visualArea?: number;
+            person: PersonOrID;
+            node?: RouteNodeOrID;
+            timestamp: number;
+            timezone: string;
+            lat: number;
+            lon: number;
+            altitude: number;
+            horizontalAccuracy?: number;
+            verticalAccuracy?: number;
+            bearing?: number;
+            bearingAccuracy?: number;
+            speed?: number;
+            speedAccuracy?: number;
         }
 
         export interface LocationDocument extends Location, mongoose.Document {}
@@ -155,13 +158,13 @@ export namespace TableData {
             name: String,
             expedities: [reference(TableIDs.Expeditie)],
             language: String
-        })
+        });
 
         export interface Person {
-            email?: string
-            name: string
-            expedities?: ExpeditieOrID[]
-            language?: string
+            email?: string;
+            name: string;
+            expedities?: ExpeditieOrID[];
+            language?: string;
         }
 
         export interface PersonDocument extends Person, mongoose.Document {}
@@ -177,13 +180,13 @@ export namespace TableData {
             maxLat: Number,
             minLon: Number,
             maxLon: Number
-        })
+        });
 
         export interface RouteBoundingBox {
-            minLat: number
-            maxLat: number
-            minLon: number
-            maxLon: number
+            minLat: number;
+            maxLat: number;
+            minLon: number;
+            maxLon: number;
         }
     }
 
@@ -198,12 +201,12 @@ export namespace TableData {
             startingNodes: [reference(TableIDs.RouteNode)],
             currentNodes: [reference(TableIDs.RouteNode)],
             boundingBox: RouteBoundingBox.routeBoundingBoxSchema
-        })
+        });
 
         export interface Route {
-            startingNodes?: RouteNodeOrID[]
-            currentNodes?: RouteNodeOrID[]
-            boundingBox?: RouteBoundingBox.RouteBoundingBox
+            startingNodes?: RouteNodeOrID[];
+            currentNodes?: RouteNodeOrID[];
+            boundingBox?: RouteBoundingBox.RouteBoundingBox;
         }
 
         export interface RouteDocument extends Route, mongoose.Document {}
@@ -216,11 +219,11 @@ export namespace TableData {
         export const routeEdgeSchema = new mongoose.Schema({
             to: reference(TableIDs.RouteNode),
             people: [reference(TableIDs.Person)]
-        })
+        });
 
         export interface RouteEdge {
-            to: RouteNodeOrID
-            people: PersonOrID[]
+            to: RouteNodeOrID;
+            people: PersonOrID[];
         }
     }
 
@@ -235,73 +238,91 @@ export namespace TableData {
             color: String,
             persons: [reference(TableIDs.Person)],
             edges: [RouteEdge.routeEdgeSchema]
-        })
+        });
 
         export interface RouteNode {
-            route: RouteOrID
-            color?: string
-            persons: PersonOrID[]
-            edges: RouteEdge.RouteEdge[]
+            route: RouteOrID;
+            color?: string;
+            persons: PersonOrID[];
+            edges: RouteEdge.RouteEdge[];
         }
 
         export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
     }
+
+    /**
+     * TODO: Add definition
+     */
+    export namespace Word {
+        export const wordSchema = new mongoose.Schema({
+            word: {type: String, index: true},
+            definitions: [String],
+            audioFile: String
+        });
+
+        export interface Word {
+            word: string;
+            definitions: string[];
+            audioFile?: string;
+        }
+
+        export interface WordDocument extends Word, mongoose.Document {}
+    }
 }
 
 export namespace LegacyTableData {
-
     export namespace Kaukasus {
         export interface ExportJSON {
-            diederik: PersonJSON,
-            maurice: PersonJSON,
-            ronald: PersonJSON
+            diederik: PersonJSON;
+            maurice: PersonJSON;
+            ronald: PersonJSON;
         }
 
         export interface PersonJSON {
-            personName: string
-            lastUpdateTime: number
-            lastUpdateTimezoneOffset: number
-            lastUpdateTimezoneName: string
-            route: LocationJSON[]
+            personName: string;
+            lastUpdateTime: number;
+            lastUpdateTimezoneOffset: number;
+            lastUpdateTimezoneName: string;
+            route: LocationJSON[];
         }
 
         export interface LocationJSON {
-            lat: number
-            lon: number
-            alt: number
-            acc: number
-            person: string
-            stamp: number
-            timezone: string
+            lat: number;
+            lon: number;
+            alt: number;
+            acc: number;
+            person: string;
+            stamp: number;
+            timezone: string;
         }
     }
 
     export namespace Balkan {
         //Google Maps timeline export format.
         export interface ExportJSON {
-            locations: LocationJSON[] //Locations are sorted backwards in time.
+            locations: LocationJSON[]; //Locations are sorted backwards in time.
         }
 
         export interface LocationJSON {
-            timestampMs: string
-            latitudeE7: number
-            longitudeE7: number
-            accuracy: number
-            altitude: number
-            velocity?: number
-            verticalAccuracy?: number
-            activity?: ActivityJSON[]
-            timezone: string
+            timestampMs: string;
+            latitudeE7: number;
+            longitudeE7: number;
+            accuracy: number;
+            altitude: number;
+            velocity?: number;
+            verticalAccuracy?: number;
+            activity?: ActivityJSON[];
+            timezone: string;
         }
 
         export interface ActivityJSON {
-            timestampMs?: string
-            activity: Activity2JSON[]
+            timestampMs?: string;
+            activity: Activity2JSON[];
         }
 
         export interface Activity2JSON {
-            type: string
-            confidence: number
+            type: string;
+            confidence: number;
         }
     }
 }
