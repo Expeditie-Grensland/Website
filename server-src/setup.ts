@@ -31,8 +31,8 @@ export namespace Setup {
                 backend: {
                     loadPath: path.join(root, 'locales/{{lng}}/{{ns}}.json'),
                     addPath: path.join(root, 'locales/{{lng}}/{{ns}}.missing.json'),
-                    jsonIndent: 2
-                }
+                    jsonIndent: 2,
+                },
             });
 
 
@@ -41,7 +41,11 @@ export namespace Setup {
         app.use(i18nextMiddleware.handle(i18next))
         app.use(bodyParser.urlencoded({extended: true}))
         app.use(bodyParser.json({limit: '80MB'})) //TODO change this to something more sensible after importing.
-        app.use(stylus.middleware(publicDir))
+        app.use(stylus.middleware({
+            src: path.join(publicDir, 'styles-src'),
+            dest: path.join(publicDir, 'styles'),
+            sourceMap: true,
+        }))
         app.use(express.static(publicDir))
     }
 

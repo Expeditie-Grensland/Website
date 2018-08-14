@@ -2,8 +2,8 @@ node_modules/
 
 /config.json
 /public/scripts/
+/public/styles/
 /server/
-/public/styles/**/*.css
 
 .idea/
 .vscode/

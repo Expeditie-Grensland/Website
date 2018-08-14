@@ -6,6 +6,7 @@
   "scripts": {
     "clean:server": "rimraf ./server",
     "clean:client": "rimraf ./public/scripts",
+    "clean:styles": "rimraf ./public/styles",
     "build:server": "tsc -p ./server-src/tsconfig.json",
     "build:client": "tsc -p ./public/scripts-src/tsconfig.json",
     "start:server": "node ./server/server.js",
