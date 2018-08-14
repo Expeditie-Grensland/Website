@@ -20,6 +20,9 @@ export namespace Setup {
         const viewsDir = path.join(root, 'views')
         const publicDir = path.join(root, 'public')
 
+        app.set('view engine', 'pug')
+        app.set('views', viewsDir)
+
         i18next
             .use(FileSystemBackend)
             .use(i18nextMiddleware.LanguageDetector)
@@ -34,18 +37,17 @@ export namespace Setup {
                     jsonIndent: 2,
                 },
             });
-
-
-        app.set('view engine', 'pug')
-        app.set('views', viewsDir)
         app.use(i18nextMiddleware.handle(i18next))
+
         app.use(bodyParser.urlencoded({extended: true}))
         app.use(bodyParser.json({limit: '80MB'})) //TODO change this to something more sensible after importing.
+
         app.use(stylus.middleware({
             src: path.join(publicDir, 'styles-src'),
             dest: path.join(publicDir, 'styles'),
-            sourceMap: true,
+            compress: true,
         }))
+
         app.use(express.static(publicDir))
     }
 
