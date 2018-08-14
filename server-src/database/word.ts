@@ -11,11 +11,11 @@ export namespace Word {
     }
 
     export function getWord(word: string): Promise<WordDocument> {
-        return Tables.Word.findOne({ word: word }).exec();
+        return Tables.Word.findOne({ word: word }).collation({locale: 'nl', strength: 1}).exec();
     }
 
     export function getWords(): Promise<WordDocument[]> {
-        return Tables.Word.find({}).sort({word: 1}).exec();
+        return Tables.Word.find({}).collation({locale: 'nl', strength: 1}).sort({word: 1}).exec();
     }
 
     export function getWordById(id: string): Promise<WordDocument> {

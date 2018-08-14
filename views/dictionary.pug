@@ -4,33 +4,37 @@ block title
     title Expeditie - Woordenboek
 
 block scripts
-
+    script(src="/scripts/dictionary.js")
 
 block styles
     include includes/styles.pug
+
+    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700&subset=latin-ext')
     link(rel="stylesheet" href="/styles/dictionary.css")
 
     meta(name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no')
 
+//- TODO: Introductie toevoegen
+
 block body
-    h1 Het grote woorden- en uitdrukkingenboek der Expeditie Grensland
-    h3 Eerste Editie
+    h1
+        span Het Grote Woordenboek der Expediets&#32;
+        span.edition Eerste Editie
 
-    p Dit woordenboek beschrijft het Expediets, de taal die ontstaat tijdens expedities.
+    dl
+        each entry, ind in dictionary
+            dt
+                span.word !{entry.word}&nbsp;
+                if(entry.phonetic)
+                    span.phon [!{entry.phonetic}]
+                    span.word &nbsp;
+                if(entry.audio)
+                    audio(src='/content/dictionary/'+entry.audio type='audio/mpeg' id='player'+ind)
+                    a.audio(href='#' onclick='return playAudio('+ind+')') afspelen
 
-    br
-
-    #dictionary
-        each entry in dictionary
-            .entry(id=entry.word.toLowerCase())
-                .word !{entry.word}
-                if(entry.audioFile)
-                    p Uitgesproken als:
-                    audio.audio(controls)
-                        source(src='/content/dictionary/'+entry.audioFile type='audio/mpeg')
-
-                .definitions
+            dd
+                ol
                     each definition, index in entry.definitions
-                        .index #{index+1}.
-                        .definition !{definition}
-                        br
+                        li
+                            span.index #{index+1}.&#32;
+                            span.def !{definition}

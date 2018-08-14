@@ -4,6 +4,7 @@ node_modules/
 /public/scripts/
 /public/styles/
 /server/
+/public/content/
 
 .idea/
 .vscode/

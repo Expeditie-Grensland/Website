@@ -255,15 +255,19 @@ export namespace TableData {
      */
     export namespace Word {
         export const wordSchema = new mongoose.Schema({
-            word: {type: String, index: true},
+            word: String,
             definitions: [String],
-            audioFile: String
+            phonetic: String,
+            audio: String
         });
+
+        wordSchema.index({word: 1}, {collation: {locale: 'nl', strength: 1}});
 
         export interface Word {
             word: string;
             definitions: string[];
-            audioFile?: string;
+            phonetic?: string;
+            audio?: string;
         }
 
         export interface WordDocument extends Word, mongoose.Document {}
