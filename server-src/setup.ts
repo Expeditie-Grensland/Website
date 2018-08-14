@@ -29,8 +29,8 @@ export namespace Setup {
                 fallbackLng: 'en',
                 saveMissing: true,
                 backend: {
-                    loadPath: path.join(root, 'server/locales/{{lng}}/{{ns}}.json'),
-                    addPath: path.join(root, 'server/locales/{{lng}}/{{ns}}.missing.json'),
+                    loadPath: path.join(root, 'locales/{{lng}}/{{ns}}.json'),
+                    addPath: path.join(root, 'locales/{{lng}}/{{ns}}.missing.json'),
                     jsonIndent: 2
                 }
             });

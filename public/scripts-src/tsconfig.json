@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "sourceMap": false,
+    "sourceMap": true,
+    "outDir": "../scripts",
     "lib": [
       "es2016",
       "es2016.array.include",

@@ -1,13 +1,9 @@
 node_modules/
 
-config.json
-
-*.js
-*.js.map
-*.css
-
-!**/3rdparty/*.js
-!**/3rdparty/*.css
+/config.json
+/public/scripts/
+/server/
+/public/styles/**/*.css
 
 .idea/
 .vscode/
