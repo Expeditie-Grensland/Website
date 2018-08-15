@@ -5,12 +5,10 @@ import { ExpeditieRoute } from './expeditieRoute';
 import { Home } from './home';
 import { router as apiRouter } from './api';
 import { router as dictionaryRouter } from './dictionary';
-import { router as importStanRouter } from './importStan';
 
 export namespace Routes {
     export function init(app: express.Express) {
         app.use('/api', apiRouter);
-        app.use('/import_stan', importStanRouter);
         app.use('/dictionary', dictionaryRouter);
         app.use('/woordenboek', dictionaryRouter);
 
