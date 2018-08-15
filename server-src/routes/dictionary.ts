@@ -3,4 +3,6 @@ import { Word } from '../database/word';
 
 export const router = express.Router();
 
-router.get('/', async (req, res) => res.render('dictionary', { dictionary: await Word.getWords() }));
+router.get('/', async (req, res) => {
+    res.render('dictionary', { dictionary: Word.addLinksToWords(await Word.getWords()) });
+});

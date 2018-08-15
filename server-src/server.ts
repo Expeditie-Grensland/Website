@@ -3,7 +3,7 @@ import * as http from 'http';
 import * as socket from 'socket.io';
 
 import { Setup } from './setup';
-import { Routes } from './routes/routes';
+import { Routes } from './routes';
 import { config } from './helpers/configHelper';
 import { SocketHandler } from './sockets/socketHandler';
 import { ColorHelper } from './helpers/colorHelper';

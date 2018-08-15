@@ -23,7 +23,7 @@ block body
 
     dl
         each entry, ind in dictionary
-            dt
+            dt(id=entry.simple)
                 span.word !{entry.word}&nbsp;
                 if(entry.phonetic)
                     span.phon [!{entry.phonetic}]

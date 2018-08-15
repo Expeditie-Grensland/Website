@@ -254,20 +254,39 @@ export namespace TableData {
      * TODO: Add definition
      */
     export namespace Word {
-        export const wordSchema = new mongoose.Schema({
-            word: String,
-            definitions: [String],
-            phonetic: String,
-            audio: String
+        export const wordSchema = new mongoose.Schema(
+            {
+                word: String,
+                definitions: [String],
+                phonetic: String,
+                audio: String
+            },
+            {
+                toJSON: {
+                    virtuals: true
+                },
+                toObject: {
+                    virtuals: true
+                }
+            }
+        );
+
+        wordSchema.virtual('simple').get(function() {
+            return this.word
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^0-9a-z]+/gi, '-');
         });
 
-        wordSchema.index({word: 1}, {collation: {locale: 'nl', strength: 1}});
+        wordSchema.index({ word: 1 }, { collation: { locale: 'nl', strength: 1 } });
 
         export interface Word {
             word: string;
             definitions: string[];
             phonetic?: string;
             audio?: string;
+            readonly simple: string;
         }
 
         export interface WordDocument extends Word, mongoose.Document {}

@@ -3,7 +3,7 @@ const configJson = require('../../config.json');
 export const config: ConfigHelper.Config = configJson;
 
 export namespace ConfigHelper {
-    export interface Config {
+    export type Config = {
         port: number;
         mongo: {
             host: string;
