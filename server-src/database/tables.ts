@@ -125,8 +125,8 @@ export namespace TableData {
 
         // Ensure fast retrieval of find query by visual area. This query is performed every site visit, so it should
         // be performant.
-        locationSchema.index({ visualArea: -1 });
-        locationSchema.index({ timestamp: -1 });
+        locationSchema.index({ node: 1, visualArea: -1 });
+        locationSchema.index({ node: 1, timestamp: -1 });
 
         export interface Location {
             visualArea?: number;
