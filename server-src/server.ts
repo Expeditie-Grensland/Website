@@ -15,7 +15,7 @@ const server = http.createServer(app);
 const io = socket(server);
 
 const db = Setup.setupDatabase(app, config.mongo);
-// FIX: if mongo can't reach database, server crashes
+// FIXME: if mongo can't reach database, server crashes
 
 Setup.setupExpress(app, __dirname + '/../');
 Setup.addAsMiddleware(app, 'db', db);

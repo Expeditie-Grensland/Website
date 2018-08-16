@@ -178,7 +178,7 @@ export namespace Route {
     export async function getBoundingBox(route: RouteOrID): Promise<RouteBoundingBox> {
         const nodes = Util.getObjectIDs(await getNodes(route));
 
-        // FIX: too much of the same :(
+        // FIXME: too much of the same :(
         const minLat = Tables.Location.find({node: {$in: nodes}}).sort({lat: 1}).limit(1);
         const maxLat = Tables.Location.find({node: {$in: nodes}}).sort({lat: -1}).limit(1);
         const minLon = Tables.Location.find({node: {$in: nodes}}).sort({lon: 1}).limit(1);
