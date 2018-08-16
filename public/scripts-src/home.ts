@@ -46,6 +46,6 @@ $(document).ready(() => {
     })
 
     $('.videoModal').on('hide.bs.modal', function () {
-        videojs($(this).find('.video-js')[0]).pause()
+        (<HTMLVideoElement>$(this).find('video')[0]).pause()
     })
 })

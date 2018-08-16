@@ -9,14 +9,12 @@ block scripts
     script(src='https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js' integrity='sha256-DHF4zGyjT7GOMPBwpeehwoey18z8uiz98G4PRu2lV0A=' crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js' integrity='sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49' crossorigin='anonymous')
     script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js' integrity='sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy' crossorigin='anonymous')
-    script(src='https://vjs.zencdn.net/7.1.0/video.min.js')
 
     script(src="/scripts/home.js")
 
 block styles
     include includes/styles.pug
     link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css' integrity='sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO' crossorigin='anonymous')
-    link(rel='stylesheet' href='https://vjs.zencdn.net/7.1.0/video-js.min.css')
 
     link(rel='stylesheet' href='/styles/home.css' type='text/css')
 
@@ -81,7 +79,7 @@ block body
         each expeditie in expedities
             if expeditie.movieUrl !== null
                 +modal('videoModal movieModal' + expeditie.nameShort, expeditie.name + " " + t('movie_additive'))(class="modal-lg")
-                    video.video-js.vjs-default-skin.vjs-16-9(controls poster=expeditie.movieCoverUrl preload='auto' data-setup='{}')
-                        source(src=expeditie.movieUrl type='video/mp4')
-                        p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
-                            a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video
+                    .embed-responsive.embed-responsive-16by9
+                        video.embed-responsive-item(controls poster=expeditie.movieCoverUrl preload='auto')
+                            source(src=expeditie.movieUrl type='video/mp4')
+                            p I'm sorry, your browser doesn't support viewing this video.
