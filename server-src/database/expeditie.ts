@@ -1,6 +1,5 @@
 import * as i18next from 'i18next'
 
-import {Countries} from './countries'
 import {Location} from './location'
 import {Person} from './person'
 import {Route} from './route'
@@ -9,7 +8,6 @@ import {Util} from './util'
 
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
 import PersonDocument = TableData.Person.PersonDocument
-import Country = Countries.Country
 import Expeditie = TableData.Expeditie.Expeditie
 import RouteDocument = TableData.Route.RouteDocument
 import ExpeditieOrID = TableData.ExpeditieOrID
@@ -135,14 +133,6 @@ export namespace Expeditie {
         return (expeditie) => checkFinished("expeditie_action_remove_participants")(expeditie)
             .then(expeditie => Promise.all(participants.map(Person.removeExpeditie(expeditie))))
             .then(() => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {$pullAll: {participants: Util.getObjectIDs(participants)}}, {new: true}).exec())
-    }
-
-    export function addCountries(...countries: Country[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {$pushAll: {countries: countries.map(c => c.id)}}, {new: true}).exec().then(expeditiesChanged)
-    }
-
-    export function removeCountries(...countries: Country[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return (expeditie) => Tables.Expeditie.findByIdAndUpdate(Util.getObjectID(expeditie), {$pullAll: {countries: countries.map(c => c.id)}}, {new: true}).exec().then(expeditiesChanged)
     }
 
     export function setRoute(route: RouteOrID): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
