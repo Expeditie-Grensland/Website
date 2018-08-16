@@ -7,15 +7,6 @@ namespace Tables {
     export type RouteOrID = DocumentOrID<Route>
     export type RouteNodeOrID = DocumentOrID<RouteNode>
 
-    export interface Device {
-        _id: string
-        token: string
-        person: PersonOrID
-        timestamp: number
-        expire: number
-        agent: string
-    }
-
     export interface Expeditie {
         _id: string
         sequenceNumber: number
