@@ -1,10 +1,10 @@
 node_modules/
 
-/config.json
-/public/scripts/
-/public/styles/
-/server/
 /public/content/
+/public/scripts-dist/
+/public/styles-dist/
+/server-dist/
+/config/config.json
 
 .idea/
 .vscode/

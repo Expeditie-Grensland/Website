@@ -44,8 +44,8 @@ export namespace Setup {
 
         app.use(
             stylus.middleware({
-                src: path.join(publicDir, 'styles-src'),
-                dest: path.join(publicDir, 'styles'),
+                src: path.join(publicDir, 'styles'),
+                dest: path.join(publicDir, 'styles-dist'),
                 compress: true
             })
         );

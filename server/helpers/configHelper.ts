@@ -1,4 +1,4 @@
-const configJson = require('../../config.json');
+const configJson = require('../../config/config.json');
 
 export const config: ConfigHelper.Config = configJson;
 
