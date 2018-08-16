@@ -68,8 +68,6 @@ block body
                     h1= expeditie.name
                     h2= expeditie.subtitle
                 .links
-                    button.link.btn.btn-secondary(role="button" data-toggle='modal' href='.overviewMapModal' data-modal-title=t_ucf('overview') + ' ' + expeditie.name data-expeditie-color=expeditie.color data-countries=expeditie.countries.join('\\'))
-                        | #{t_ucf('overview')}
                     if expeditie.movieUrl !== null
                         button.link.btn.btn-default.btn-secondary(data-toggle='modal' href='.movieModal' + expeditie.nameShort)
                             | #{t_ucf('movie')}
@@ -87,6 +85,3 @@ block body
                         source(src=expeditie.movieUrl type='video/mp4')
                         p.vjs-no-js To view this video please enable JavaScript, and consider upgrading to a web browser that
                             a(href="http://videojs.com/html5-video-support/" target="_blank") supports HTML5 video
-        +modal('overviewMapModal', t_ucf('overview'), large=true)(class="modal-lg")
-            div#overviewMap
-                include includes/loadSpinner

@@ -15,10 +15,6 @@ export namespace Home {
                 })
             })
         })
-
-        app.get('/overviewMap', (req, res) => {
-            res.render("world")
-        })
     }
 
     export function ucFirstWrapper(f: (s: string) => string): (s: string) => string {
