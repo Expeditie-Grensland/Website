@@ -127,6 +127,8 @@ export namespace TableData {
         // be performant.
         locationSchema.index({ node: 1, visualArea: -1 });
         locationSchema.index({ node: 1, timestamp: -1 });
+        locationSchema.index({ node: 1, lat: 1 });
+        locationSchema.index({ node: 1, lon: 1 });
 
         export interface Location {
             visualArea?: number;
