@@ -4,6 +4,14 @@ namespace Sockets {
 
         MapHandler.setRoute(route);
 
+        SocketHandler.requestBoundingBox(expeditieNameShort);
+    }
+
+    export function getBoundingBox(expeditieNameShort: string, boundingBox: Tables.RouteBoundingBox) {
+        LoadingBar.setLoadingText('Received bounding box.');
+
+        MapHandler.setBoundingBox(boundingBox);
+
         SocketHandler.requestNodes(expeditieNameShort);
     }
 
@@ -17,7 +25,7 @@ namespace Sockets {
 
     export function getLocations(expeditieNameShort: string, batchNumber: number, locations: Tables.Location[]) {
         LoadingBar.setLoadingText(
-            'Received location batch ' + batchNumber + ' with ' + locations.length + ' locations'
+            'Received location batch ' + batchNumber + ' with ' + locations.length + ' locations.'
         );
 
         MapHandler.addLocations(locations);

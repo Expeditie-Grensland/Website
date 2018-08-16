@@ -20,15 +20,6 @@ export namespace Route {
     import RouteBoundingBox = TableData.RouteBoundingBox.RouteBoundingBox
 
     export function createRoute(route: TableData.Route.Route): Promise<RouteDocument> {
-        if (route.boundingBox === undefined) {
-            route.boundingBox = {
-                minLat: Number.POSITIVE_INFINITY,
-                minLon: Number.POSITIVE_INFINITY,
-                maxLat: Number.NEGATIVE_INFINITY,
-                maxLon: Number.NEGATIVE_INFINITY
-            }
-        }
-
         return Tables.Route.create(route)
     }
 
@@ -185,34 +176,19 @@ export namespace Route {
     }
 
     export async function getBoundingBox(route: RouteOrID): Promise<RouteBoundingBox> {
-        return (await getRoute(route)).boundingBox
-    }
+        const nodes = Util.getObjectIDs(await getNodes(route));
 
-    export function setBoundingBox(boundingBox: RouteBoundingBox): (route: RouteOrID) => Promise<RouteDocument> {
-        return route => Tables.Route.findByIdAndUpdate(Util.getObjectID(route), {boundingBox: boundingBox}, {new: true}).exec()
-    }
+        // FIX: too much of the same :(
+        const minLat = Tables.Location.find({node: {$in: nodes}}).sort({lat: 1}).limit(1);
+        const maxLat = Tables.Location.find({node: {$in: nodes}}).sort({lat: -1}).limit(1);
+        const minLon = Tables.Location.find({node: {$in: nodes}}).sort({lon: 1}).limit(1);
+        const maxLon = Tables.Location.find({node: {$in: nodes}}).sort({lon: -1}).limit(1);
 
-    export function expandBoundingBox(locations: LocationOrID[]): (route: RouteOrID) => Promise<RouteDocument> {
-        return async r => {
-            const route = await getRoute(r)
-            const bbox = await getBoundingBox(route)
-
-            for (let location of await Location.getLocations(locations)) {
-                if (location.lat < bbox.minLat) {
-                    bbox.minLat = location.lat
-                }
-                if (location.lat > bbox.maxLat) {
-                    bbox.maxLat = location.lat
-                }
-                if (location.lon < bbox.minLon) {
-                    bbox.minLon = location.lon
-                }
-                if (location.lon > bbox.maxLon) {
-                    bbox.maxLon = location.lon
-                }
-            }
-
-            return setBoundingBox(bbox)(route)
+        return {
+            minLat: (await minLat)[0].lat,
+            maxLat: (await maxLat)[0].lat,
+            minLon: (await minLon)[0].lon,
+            maxLon: (await maxLon)[0].lon
         }
     }
 

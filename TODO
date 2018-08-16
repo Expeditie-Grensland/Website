@@ -3,3 +3,4 @@ TODO: Make places in again
 TODO: Make devices in again
 FIXME: Circular dependencies
 TODO: Rework Routes / RouteEdges / RouteNodes (overcomplicated)
+TODO: Socket loading speed improvements

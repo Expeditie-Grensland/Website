@@ -17,6 +17,16 @@ export namespace Sockets {
         };
     }
 
+    export function getBoundingBox(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
+        return async name => {
+            const expeditie = await Expeditie.getExpeditieByNameShort(name);
+            const route = await Expeditie.getRoute(expeditie);
+            const boundingBox = await Route.getBoundingBox(route);
+
+            io.emit(SocketIDs.GET_BOUNDINGBOX, name, boundingBox);
+        };
+    }
+
     export function getNodes(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
         return async name => {
             const expeditie = await Expeditie.getExpeditieByNameShort(name);

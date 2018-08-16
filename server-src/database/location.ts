@@ -47,8 +47,6 @@ export namespace Location {
 
         let locationDoc = await Tables.Location.create(location)
 
-        await Route.expandBoundingBox([locationDoc])(routeDoc)
-
         locationDoc = await LocationHelper.setVisualArea(locationDoc)
 
         return locationDoc
@@ -80,11 +78,8 @@ export namespace Location {
 
         const locationDocs = await Tables.Location.insertMany(locations)
 
-        const boundsPromise = Route.expandBoundingBox(locationDocs)(routeDoc)
-
         const locationsPromise = LocationHelper.setVisualAreas(locationDocs)
 
-        await boundsPromise
         return await locationsPromise
     }
 
