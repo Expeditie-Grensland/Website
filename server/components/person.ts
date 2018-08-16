@@ -1,5 +1,5 @@
-import {TableData, Tables} from './tables'
-import {Util} from './util'
+import {TableData, Tables} from '../models/tables'
+import {Util} from '../models/util'
 
 import PersonDocument = TableData.Person.PersonDocument
 

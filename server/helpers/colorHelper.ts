@@ -1,8 +1,8 @@
 import i18next = require('i18next')
 
-import {Route} from '../database/route'
-import {TableData} from '../database/tables'
-import {Util} from '../database/util'
+import {Route} from '../components/route'
+import {TableData} from '../models/tables'
+import {Util} from '../models/util'
 
 const sprintf = require('sprintf-js').sprintf
 
@@ -42,8 +42,8 @@ export namespace ColorHelper {
      * people as an existing node, the color will be the same.
      *
      * ColorHelper maintains an internal cache of all RouteNodes to which, by default, all nodes are added. This should
-     * obviously only happen if the node is going to be saved to the database, so if a node will not be saved to the
-     * database, set the `cache` parameter to false.
+     * obviously only happen if the node is going to be saved to the models, so if a node will not be saved to the
+     * models, set the `cache` parameter to false.
      *
      * @param {TableData.RouteNode.RouteNode} node The RouteNode to get the color for.
      * @param {boolean} cache Whether to save `node` in the internal cache of ColorHelper.

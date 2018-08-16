@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Word } from '../database/word';
+import { Word } from '../components/word';
 
 export const router = express.Router();
 

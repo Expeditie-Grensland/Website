@@ -3,8 +3,8 @@ import * as i18next from 'i18next'
 import {Location} from './location'
 import {Person} from './person'
 import {Route} from './route'
-import {TableData, Tables} from './tables'
-import {Util} from './util'
+import {TableData, Tables} from '../models/tables'
+import {Util} from '../models/util'
 
 import ExpeditieDocument = TableData.Expeditie.ExpeditieDocument
 import PersonDocument = TableData.Person.PersonDocument

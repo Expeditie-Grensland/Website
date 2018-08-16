@@ -1,6 +1,6 @@
 import * as express from 'express'
 
-import {Expeditie} from '../database/expeditie'
+import {Expeditie} from '../components/expeditie'
 
 
 export namespace Home {

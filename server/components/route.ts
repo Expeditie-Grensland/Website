@@ -1,8 +1,8 @@
 import { ColorHelper } from '../helpers/colorHelper';
 import { Expeditie } from './expeditie';
 import { Person } from './person';
-import { TableData, Tables } from './tables';
-import { Util } from './util';
+import { TableData, Tables } from '../models/tables';
+import { Util } from '../models/util';
 
 import RouteDocument = TableData.Route.RouteDocument;
 import RouteNode = TableData.RouteNode.RouteNode;

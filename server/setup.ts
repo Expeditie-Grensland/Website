@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as stylus from 'stylus';
 
 import { ConfigHelper } from './helpers/configHelper';
-import { Tables } from './database/tables';
+import { Tables } from './models/tables';
 
 export namespace Setup {
     export function startServer(server: http.Server, port: number) {
@@ -69,7 +69,7 @@ export namespace Setup {
 
         db.on('error', console.error.bind(console, 'connection error:'));
         db.once('open', function(callback) {
-            console.log('Connected to database');
+            console.log('Connected to models');
         });
 
         Tables.init();

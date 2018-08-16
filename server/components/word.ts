@@ -1,4 +1,4 @@
-import { TableData, Tables } from './tables';
+import { TableData, Tables } from '../models/tables';
 
 import WordDocument = TableData.Word.WordDocument;
 

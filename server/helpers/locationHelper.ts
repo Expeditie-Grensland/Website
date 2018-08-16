@@ -1,8 +1,8 @@
 import * as turf from '@turf/turf'
 
-import {Location} from '../database/location'
-import {TableData, Tables} from '../database/tables'
-import {Util} from '../database/util'
+import {Location} from '../components/location'
+import {TableData, Tables} from '../models/tables'
+import {Util} from '../models/util'
 
 export namespace LocationHelper {
     import LocationDocument = TableData.Location.LocationDocument
@@ -13,10 +13,10 @@ export namespace LocationHelper {
 
     /**
      * Assigns the visual area of the before-last location. This should be called when a new location is added to the
-     * database.
+     * models.
      *
      * Note: This function does not change the _current_ LocationDocument, but the one added before the current.
-     * @param {TableData.Location.LocationDocument} location The location that was added to the database
+     * @param {TableData.Location.LocationDocument} location The location that was added to the models
      * @returns {TableData.Location.LocationDocument} The value of the `location` parameter.
      */
     export async function setVisualArea(location: LocationDocument): Promise<LocationDocument> {
