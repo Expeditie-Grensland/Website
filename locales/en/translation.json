@@ -2,7 +2,7 @@
   "expeditie": "expedition",
   "map": "map",
   "movie": "movie",
-  "movie_additive": "the Movie",
+  "movie_additive": "The Movie",
   "expeditie_finished_generic_error": "Cannot %s expeditie %s because it is marked as finished.",
   "expeditie_action_add_participants": "add participants to",
   "expeditie_action_remove_participants": "remove participants from",

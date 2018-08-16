@@ -78,8 +78,8 @@ block body
     #modals
         each expeditie in expedities
             if expeditie.movieUrl !== null
-                +modal('videoModal movieModal' + expeditie.nameShort, expeditie.name + " " + t('movie_additive'))(class="modal-lg")
+                +modal('videoModal movieModal' + expeditie.nameShort, expeditie.name + ": " + t('movie_additive'))(class="modal-lg")
                     .embed-responsive.embed-responsive-16by9
                         video.embed-responsive-item(controls poster=expeditie.movieCoverUrl preload='auto')
                             source(src=expeditie.movieUrl type='video/mp4')
-                            p I'm sorry, your browser doesn't support viewing this video.
+                            p Sorry, your browser doesn't support viewing this video.
