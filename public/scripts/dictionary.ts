@@ -5,7 +5,7 @@ function playAudio (ind) {
 }
 
 function gotoWord (word) {
-    var top = document.getElementById(word).offsetTop;
+    let top = document.getElementById(word).offsetTop;
     window.scrollTo(0, top);
     return false;
 }

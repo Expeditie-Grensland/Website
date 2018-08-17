@@ -43,7 +43,7 @@ export namespace Word {
     export function addLinksToWord(word: WordDocument): WordDocument {
         for (let i in word.definitions) {
             if (!isNaN(<any>i)) {
-                word.definitions[i] = word.definitions[i].replace(/\[\[[^\]]*\]\]/g, str => {
+                word.definitions[i] = word.definitions[i].replace(/\[\[[^\]]*]]/g, str => {
                     str = str.slice(2, -2);
                     let strSimple = generateSimple(str);
                     return '<a class="pageLink" href="#" onClick="return gotoWord(\'' + strSimple + '\')">' + str + '</a>';

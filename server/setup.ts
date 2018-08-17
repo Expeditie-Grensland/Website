@@ -53,8 +53,8 @@ export namespace Setup {
         app.use(express.static(publicDir));
     }
 
-    export function setupDatabase(app: express.Express, mConfig: ConfigHelper.MongoConfig): mongoose.Connection {
-        mongoose.set('debug', app.get('env') == 'development' ? true : false);
+    export function setupDatabase(app: express.Express, mConfig: ConfigHelper.MongoConfig) {
+        mongoose.set('debug', app.get('env') == 'development');
 
         (<any>mongoose).Promise = Promise;
         mongoose.connect(
@@ -68,16 +68,16 @@ export namespace Setup {
         const db = mongoose.connection;
 
         db.on('error', console.error.bind(console, 'connection error:'));
-        db.once('open', function(callback) {
+        db.once('open', function() {
             console.log('Connected to models');
         });
 
         Tables.init();
 
-        return db;
+        addAsMiddleware(app, 'db', db);
     }
 
-    export function addAsMiddleware(app: express.Express, name: string, data) {
+    function addAsMiddleware(app: express.Express, name: string, data) {
         app.use((req: express.Request, res: express.Response, next) => {
             req[name] = data;
             next();

@@ -86,10 +86,7 @@ export namespace LocationHelper {
 
     function addLocation(location: LocationDocument) {
         let lastLocations = getLastLocationsCached(location.node).then(lastLocations => {
-            let newL0 = lastLocations[1]
-            let newL1 = location
-
-            return [newL0, newL1] as [LocationDocument, LocationDocument]
+            return [lastLocations[1], location] as [LocationDocument, LocationDocument]
         })
 
         lastLocationsMap.set(Util.getObjectID(location.node), lastLocations)
@@ -99,10 +96,7 @@ export namespace LocationHelper {
         return Promise.resolve(locations).then(sortByTimestampDescending)
             .then(locations => {
                 if (locations.length > 1) {
-                    let l1: LocationDocument = locations[0]
-                    let l0: LocationDocument = locations[1]
-
-                    return [l0, l1] as [LocationDocument, LocationDocument]
+                    return [locations[1], locations[0]] as [LocationDocument, LocationDocument]
                 }
                 return undefined
             })

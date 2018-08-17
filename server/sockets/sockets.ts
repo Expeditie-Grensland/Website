@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as socketio from "socket.io";
 
 import { Expeditie } from '../components/expeditie';
 import { Route } from '../components/route';
@@ -8,7 +9,7 @@ import { TableData } from '../models/tables';
 const sprintf = require('sprintf-js').sprintf;
 
 export namespace Sockets {
-    export function getRoute(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
+    export function getRoute(app: express.Express, io: socketio.Socket): (expeditieName: string) => void {
         return async name => {
             const expeditie = await Expeditie.getExpeditieByNameShort(name);
             const route = await Expeditie.getRoute(expeditie);
@@ -17,7 +18,7 @@ export namespace Sockets {
         };
     }
 
-    export function getBoundingBox(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
+    export function getBoundingBox(app: express.Express, io: socketio.Socket): (expeditieName: string) => void {
         return async name => {
             const expeditie = await Expeditie.getExpeditieByNameShort(name);
             const route = await Expeditie.getRoute(expeditie);
@@ -27,7 +28,7 @@ export namespace Sockets {
         };
     }
 
-    export function getNodes(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
+    export function getNodes(app: express.Express, io: socketio.Socket): (expeditieName: string) => void {
         return async name => {
             const expeditie = await Expeditie.getExpeditieByNameShort(name);
             const route = await Expeditie.getRoute(expeditie);
@@ -37,7 +38,7 @@ export namespace Sockets {
         };
     }
 
-    export function getLocations(app: express.Express, io: SocketIO.Socket): (expeditieName: string) => void {
+    export function getLocations(app: express.Express, io: socketio.Socket): (expeditieName: string) => void {
         return async name => {
             const expeditie = await Expeditie.getExpeditieByNameShort(name);
             const initBatch = 100;

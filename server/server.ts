@@ -14,11 +14,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socket(server);
 
-const db = Setup.setupDatabase(app, config.mongo);
 // FIXME: if mongo can't reach models, server crashes
-
 Setup.setupExpress(app, __dirname + '/../');
-Setup.addAsMiddleware(app, 'db', db);
+Setup.setupDatabase(app, config.mongo);
 
 SocketHandler.bindHandlers(app, io);
 

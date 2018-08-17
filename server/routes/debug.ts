@@ -1,4 +1,3 @@
-import bodyParser = require('body-parser')
 import * as express from 'express'
 
 export namespace Debug {

@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as socketio from "socket.io";
 
 import { Sockets } from './sockets';
 
@@ -11,9 +12,9 @@ export namespace SocketIDs {
 }
 
 export namespace SocketHandler {
-    type Handler = (socket: SocketIO.Socket) => void;
+    type Handler = (socket: socketio.Socket) => void;
 
-    export function bindHandlers(app: express.Express, io: SocketIO.Server) {
+    export function bindHandlers(app: express.Express, io: socketio.Server) {
         io.on('connection', connection(app));
     }
 
