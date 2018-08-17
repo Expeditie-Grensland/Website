@@ -46,8 +46,7 @@ export namespace Route {
     }
 
     export function setExpeditie(expeditie: ExpeditieOrID): (route: RouteOrID) => Promise<RouteDocument> {
-        return route =>
-            Tables.Route.findByIdAndUpdate(Util.getObjectID(route), { expeditie: Util.getObjectID(expeditie) }).exec();
+        return route => Tables.Route.findByIdAndUpdate(Util.getObjectID(route), { expeditie: Util.getObjectID(expeditie) }).exec();
     }
 
     export function populateNodePersons(node: RouteNodeOrID): Promise<RouteNodeDocument> {
@@ -90,8 +89,7 @@ export namespace Route {
     }
 
     function setNodeEdges(edges: RouteEdge[]): (node: RouteNodeOrID) => Promise<RouteNodeDocument> {
-        return node =>
-            Tables.RouteNode.findByIdAndUpdate(Util.getObjectID(node), { edges: edges }, { new: true }).exec();
+        return node => Tables.RouteNode.findByIdAndUpdate(Util.getObjectID(node), { edges: edges }, { new: true }).exec();
     }
 
     function getEdgeTo(edge: RouteEdge): Promise<RouteNodeDocument> {
@@ -111,8 +109,7 @@ export namespace Route {
         const pStartingNodes = pRoute.then(Route.getStartingNodes);
         const pCheckGroups = pCurrentNodes.then(currentNodes => checkGroups(groupsIds, currentNodes));
         const pNewCurrentNodes = Promise.all([pExpeditie, pRoute, pCurrentNodes, pCheckGroups]).then(
-            ([expeditie, route, currentNodes, checkedGroups]) =>
-                createGroups(expeditie, route, currentNodes, checkedGroups)
+            ([expeditie, route, currentNodes, checkedGroups]) => createGroups(expeditie, route, currentNodes, checkedGroups)
         );
 
         return Promise.all([pExpeditie, pRoute, pCurrentNodes, pStartingNodes, pNewCurrentNodes]).then(
@@ -163,9 +160,7 @@ export namespace Route {
                         if (edges.length > 0) setEdgePromises.push(setNodeEdges(edges)(oldCurrentNode));
                     }
 
-                    const newNodesWithoutToEdge = newCurrentNodes.filter(
-                        node => !newNodesWithToEdge.includes(Util.getObjectID(node))
-                    );
+                    const newNodesWithoutToEdge = newCurrentNodes.filter(node => !newNodesWithToEdge.includes(Util.getObjectID(node)));
 
                     if (newNodesWithoutToEdge.length > 0) {
                         route.startingNodes.push(...newNodesWithoutToEdge.map(node => Util.getObjectID(node)));
@@ -200,12 +195,14 @@ export namespace Route {
             .limit(1)
             .exec();
 
-        return {
-            minLat: (await minLat)[0].lat,
-            maxLat: (await maxLat)[0].lat,
-            minLon: (await minLon)[0].lon,
-            maxLon: (await maxLon)[0].lon
-        };
+        return Promise.all([minLat, maxLat, minLon, maxLon]).then(([minLat, maxLat, minLon, maxLon]) => {
+            return {
+                minLat: minLat[0].lat,
+                maxLat: maxLat[0].lat,
+                minLon: minLon[0].lon,
+                maxLon: maxLon[0].lon
+            }
+        });
     }
 
     export function personArraysEqual(array1: PersonOrID[], array2: PersonOrID[]): boolean {
@@ -252,9 +249,7 @@ export namespace Route {
             return Person.getPersonsByIds(duplicatePeople).then(persons => {
                 const str = persons.map(person => person.name + ' ');
 
-                return Promise.reject(
-                    "People can't exist in multiple groups at the same time! Duplicates: [" + str + ']'
-                );
+                return Promise.reject("People can't exist in multiple groups at the same time! Duplicates: [" + str + ']');
             });
         }
 
@@ -271,9 +266,7 @@ export namespace Route {
             .then(() => {
                 const personIds: string[] = [].concat(...groups.map(group => Util.getObjectIDs(group)));
 
-                const peopleNotInExpeditie = personIds.filter(
-                    p => !Util.getObjectIDs(expeditie.participants).includes(p)
-                );
+                const peopleNotInExpeditie = personIds.filter(p => !Util.getObjectIDs(expeditie.participants).includes(p));
 
                 if (peopleNotInExpeditie.length > 0) {
                     console.log('Adding as participants: ' + peopleNotInExpeditie);

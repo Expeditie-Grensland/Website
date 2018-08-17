@@ -1,14 +1,13 @@
-import i18next = require('i18next')
+import i18next = require('i18next');
 
-import {Route} from '../components/route'
-import {TableData} from '../models/tables'
-import {Util} from '../models/util'
+import { Route } from '../components/route';
+import { TableData } from '../models/tables';
+import { Util } from '../models/util';
 
-const sprintf = require('sprintf-js').sprintf
+const sprintf = require('sprintf-js').sprintf;
 
 export namespace ColorHelper {
-
-    import RouteOrID = TableData.RouteOrID
+    import RouteOrID = TableData.RouteOrID;
 
     export enum Color {
         Red = '#e6194b',
@@ -20,21 +19,21 @@ export namespace ColorHelper {
         Brown = '#aa6e28',
         Maroon = '#800000',
         Navy = '#000080',
-        Grey = '#808080',
+        Grey = '#808080'
     }
 
-    let nodesCached: Map<string, TableData.RouteNode.RouteNode[]> = new Map()
+    let nodesCached: Map<string, TableData.RouteNode.RouteNode[]> = new Map();
 
     export async function init() {
-        const routes = await Route.getRoutes()
+        const routes = await Route.getRoutes();
 
         for (let route of routes) {
-            nodesCached.set(route._id, await Route.getNodes(route))
+            nodesCached.set(route._id, await Route.getNodes(route));
         }
     }
 
     export function resetCache() {
-        nodesCached = new Map()
+        nodesCached = new Map();
     }
 
     /**
@@ -50,47 +49,46 @@ export namespace ColorHelper {
      * @returns {string} A hex color string.
      */
     export function generateColorForRouteNode(node: TableData.RouteNode.RouteNode, cache: boolean = true): string {
-        const existingNodes = getCachedRouteNodes(node.route)
+        const existingNodes = getCachedRouteNodes(node.route);
 
-        const similarNode = existingNodes.find((n) => Route.personArraysEqual(n.persons, node.persons))
+        const similarNode = existingNodes.find(n => Route.personArraysEqual(n.persons, node.persons));
 
         if (similarNode !== undefined) {
-            return similarNode.color
+            return similarNode.color;
         }
 
-        if (cache)
-            addCachedNode(node)
+        if (cache) addCachedNode(node);
 
-        return getColorByIndex(existingNodes.length)
+        return getColorByIndex(existingNodes.length);
     }
 
     function addCachedNode(node: TableData.RouteNode.RouteNode) {
-        let nodes = []
+        let nodes = [];
 
         if (nodesCached.has(Util.getObjectID(node.route))) {
-            nodes = nodesCached.get(Util.getObjectID(node.route))
+            nodes = nodesCached.get(Util.getObjectID(node.route));
         }
 
-        nodes.push(node)
+        nodes.push(node);
 
-        nodesCached.set(Util.getObjectID(node.route), nodes)
+        nodesCached.set(Util.getObjectID(node.route), nodes);
     }
 
     function getCachedRouteNodes(route: RouteOrID): TableData.RouteNode.RouteNode[] {
-        const nodes = nodesCached.get(Util.getObjectID(route))
+        const nodes = nodesCached.get(Util.getObjectID(route));
 
-        return nodes === undefined ? [] : nodes
+        return nodes === undefined ? [] : nodes;
     }
 
     function getColorByIndex(index: number): Color {
         if (index >= getAmountOfColors()) {
-            throw new RangeError(sprintf(i18next.t("colorhelper_error_not_enough_colors"), getAmountOfColors(), index + 1))
+            throw new RangeError(sprintf(i18next.t('colorhelper_error_not_enough_colors'), getAmountOfColors(), index + 1));
         }
 
-        return Color[Object.keys(Color)[index]]
+        return Color[Object.keys(Color)[index]];
     }
 
     function getAmountOfColors(): number {
-        return Object.keys(Color).length
+        return Object.keys(Color).length;
     }
 }

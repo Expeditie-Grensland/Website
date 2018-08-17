@@ -12,8 +12,8 @@ export namespace ConfigHelper {
             user: string;
             pass: string;
         };
-    }
+    };
 
-    export type MongoConfig = Config["mongo"]
+    export type MongoConfig = Config['mongo'];
     // TODO: config validation
 }

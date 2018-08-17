@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as socketio from "socket.io";
+import * as socketio from 'socket.io';
 
 import { Expeditie } from '../components/expeditie';
 import { Route } from '../components/route';

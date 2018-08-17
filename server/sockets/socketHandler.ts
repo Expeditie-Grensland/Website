@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as socketio from "socket.io";
+import * as socketio from 'socket.io';
 
 import { Sockets } from './sockets';
 
