@@ -1,51 +1,49 @@
 $(document).ready(() => {
-    console.log('Document ready')
+    console.log('Document ready');
 
-    const columnDiv = $('#columns')
-    const columns = $('.column')
-    const leftArrow = $('.arrow.left')
-    const rightArrow = $('.arrow.right')
-    const html = $('html')
+    const columnDiv = $('#columns');
+    const columns = $('.column');
+    const leftArrow = $('.arrow.left');
+    const rightArrow = $('.arrow.right');
+    const html = $('html');
 
-    const expeditieCount = columns.length
+    const expeditieCount = columns.length;
 
-    const columnWidth = columnDiv.width() / expeditieCount
+    const columnWidth = columnDiv.width() / expeditieCount;
 
-    if ($(window).scrollLeft() <= 0)
-        leftArrow.addClass('grey')
+    if ($(window).scrollLeft() <= 0) leftArrow.addClass('grey');
 
-    if ($(window).scrollLeft() + 1 >= (expeditieCount * columnWidth) - $(window).width())
-        rightArrow.addClass('grey')
+    if ($(window).scrollLeft() + 1 >= expeditieCount * columnWidth - $(window).width()) rightArrow.addClass('grey');
 
     leftArrow.click(() => {
-        let newScroll = $(window).scrollLeft() - columnWidth
+        let newScroll = $(window).scrollLeft() - columnWidth;
 
-        if (newScroll < 0)
-            newScroll = 0
+        if (newScroll < 0) newScroll = 0;
 
-        rightArrow.removeClass('grey')
-        html.stop().animate({scrollLeft: newScroll}, 500)
+        rightArrow.removeClass('grey');
+        html.stop().animate({ scrollLeft: newScroll }, 500);
 
-        if (Math.round(newScroll) <= 0)
-            leftArrow.addClass('grey')
-    })
+        if (Math.round(newScroll) <= 0) leftArrow.addClass('grey');
+    });
 
     rightArrow.click(() => {
-        let newScroll = $(window).scrollLeft() + columnWidth
+        let newScroll = $(window).scrollLeft() + columnWidth;
 
-        if (newScroll > expeditieCount * columnWidth)
-            newScroll = expeditieCount * columnWidth
+        if (newScroll > expeditieCount * columnWidth) newScroll = expeditieCount * columnWidth;
 
-        leftArrow.removeClass('grey')
-        html.stop().animate({
-            scrollLeft: newScroll
-        }, 500)
+        leftArrow.removeClass('grey');
+        html.stop().animate(
+            {
+                scrollLeft: newScroll
+            },
+            500
+        );
 
-        if (Math.round(newScroll) >= Math.round((expeditieCount * columnWidth) - $(window).width()))
-            rightArrow.addClass('grey')
-    })
+        if (Math.round(newScroll) >= Math.round(expeditieCount * columnWidth - $(window).width()))
+            rightArrow.addClass('grey');
+    });
 
-    $('.videoModal').on('hide.bs.modal', function () {
-        (<HTMLVideoElement>$(this).find('video')[0]).pause()
-    })
-})
+    $('.videoModal').on('hide.bs.modal', function() {
+        (<HTMLVideoElement>$(this).find('video')[0]).pause();
+    });
+});
