@@ -1,9 +1,9 @@
 import { ObjectId } from 'bson';
 import * as mongoose from 'mongoose';
 
-import { TableData } from './tables';
+import { Tables } from './tables';
 
-import DocumentOrID = TableData.DocumentOrID;
+import DocumentOrID = Tables.DocumentOrID;
 
 export namespace Util {
     export function isDocument<T extends mongoose.Document>(document: DocumentOrID<T>): document is T {

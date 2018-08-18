@@ -1,12 +1,12 @@
 import * as turf from '@turf/turf';
 
 import { Location } from '../components/location';
-import { TableData, Tables } from '../models/tables';
+import { Tables } from '../models/tables';
 import { Util } from '../models/util';
 
 export namespace LocationHelper {
-    import LocationDocument = TableData.Location.LocationDocument;
-    import RouteNodeOrID = TableData.RouteNodeOrID;
+    import LocationDocument = Tables.Location.LocationDocument;
+    import RouteNodeOrID = Tables.RouteNodeOrID;
 
     const lastLocationsMap: Map<string, Promise<[LocationDocument, LocationDocument]>> = new Map();
 
@@ -15,8 +15,8 @@ export namespace LocationHelper {
      * models.
      *
      * Note: This function does not change the _current_ LocationDocument, but the one added before the current.
-     * @param {TableData.Location.LocationDocument} location The location that was added to the models
-     * @returns {TableData.Location.LocationDocument} The value of the `location` parameter.
+     * @param {Tables.Location.LocationDocument} location The location that was added to the models
+     * @returns {Tables.Location.LocationDocument} The value of the `location` parameter.
      */
     export async function setVisualArea(location: LocationDocument): Promise<LocationDocument> {
         const area = await calculateVisualArea(location);
@@ -43,7 +43,7 @@ export namespace LocationHelper {
             nodeToLocationMap.set(Util.getObjectID(location.node), array);
         }
 
-        const bulk = Tables.Location.collection.initializeUnorderedBulkOp();
+        const bulk = Tables.Location.LocationSchema.collection.initializeUnorderedBulkOp();
 
         for (let locations of nodeToLocationMap.values()) {
             locations = sortByTimestampDescending(locations);

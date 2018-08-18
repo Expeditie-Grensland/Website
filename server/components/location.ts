@@ -2,25 +2,25 @@ import * as gpxparse from 'gpx-parse';
 
 import { LocationHelper } from '../helpers/locationHelper';
 import { Route } from './route';
-import { TableData, Tables } from '../models/tables';
+import { Tables } from '../models/tables';
 import { Util } from '../models/util';
 
-import LocationDocument = TableData.Location.LocationDocument;
+import LocationDocument = Tables.Location.LocationDocument;
 
 export namespace Location {
-    import LocationOrID = TableData.LocationOrID;
-    import RouteOrID = TableData.RouteOrID;
+    import LocationOrID = Tables.LocationOrID;
+    import RouteOrID = Tables.RouteOrID;
     import getRoute = Route.getRoute;
-    import PersonOrID = TableData.PersonOrID;
-    import RouteNodeDocument = TableData.RouteNode.RouteNodeDocument;
-    import RouteNodeOrID = TableData.RouteNodeOrID;
+    import PersonOrID = Tables.PersonOrID;
+    import RouteNodeDocument = Tables.RouteNode.RouteNodeDocument;
+    import RouteNodeOrID = Tables.RouteNodeOrID;
 
     export function getLocationById(_id: string): Promise<LocationDocument> {
-        return Tables.Location.findById(_id).exec();
+        return Tables.Location.LocationSchema.findById(_id).exec();
     }
 
     export function getLocationsById(ids: string[]): Promise<LocationDocument[]> {
-        return Tables.Location.find({ _id: { $in: ids } }).exec();
+        return Tables.Location.LocationSchema.find({ _id: { $in: ids } }).exec();
     }
 
     export function getLocation(location: LocationOrID): Promise<LocationDocument> {
@@ -31,7 +31,7 @@ export namespace Location {
         return Util.getDocuments(locations, getLocationsById);
     }
 
-    export async function createLocation(location: TableData.Location.Location, route: RouteOrID): Promise<LocationDocument> {
+    export async function createLocation(location: Tables.Location.Location, route: RouteOrID): Promise<LocationDocument> {
         const routeDoc = await getRoute(route);
 
         if (location.node === undefined) {
@@ -44,14 +44,14 @@ export namespace Location {
             location.visualArea = Number.POSITIVE_INFINITY;
         }
 
-        let locationDoc = await Tables.Location.create(location);
+        let locationDoc = await Tables.Location.LocationSchema.create(location);
 
         locationDoc = await LocationHelper.setVisualArea(locationDoc);
 
         return locationDoc;
     }
 
-    export async function createLocations(locations: TableData.Location.Location[], route: RouteOrID): Promise<LocationDocument[]> {
+    export async function createLocations(locations: Tables.Location.Location[], route: RouteOrID): Promise<LocationDocument[]> {
         const routeDoc = await getRoute(route);
 
         let currentNodeWithPerson: Map<string, Promise<RouteNodeDocument>> = new Map();
@@ -75,7 +75,7 @@ export namespace Location {
             }
         }
 
-        const locationDocs = await Tables.Location.insertMany(locations);
+        const locationDocs = await Tables.Location.LocationSchema.insertMany(locations);
 
         const locationsPromise = LocationHelper.setVisualAreas(locationDocs);
 
@@ -91,18 +91,18 @@ export namespace Location {
     }
 
     export function setLocationVisualArea(visualArea: number): (location: LocationOrID) => Promise<LocationDocument> {
-        return location => Tables.Location.findByIdAndUpdate(Util.getObjectID(location), { visualArea: visualArea }, { new: true }).exec();
+        return location => Tables.Location.LocationSchema.findByIdAndUpdate(Util.getObjectID(location), { visualArea: visualArea }, { new: true }).exec();
     }
 
     export function getLocationsInRoute(route: RouteOrID): Promise<LocationDocument[]> {
-        return Route.getNodes(route).then(nodes => Tables.Location.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
+        return Route.getNodes(route).then(nodes => Tables.Location.LocationSchema.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
     }
 
     export function getLocationsInRouteSortedByArea(skip: number, limit: number): (route: RouteOrID) => Promise<LocationDocument[]> {
         return async route => {
             const nodes = await Route.getNodes(route);
 
-            return Tables.Location.find({ node: { $in: Util.getObjectIDs(nodes) } })
+            return Tables.Location.LocationSchema.find({ node: { $in: Util.getObjectIDs(nodes) } })
                 .sort({ visualArea: 'desc' })
                 .skip(skip)
                 .limit(limit)
@@ -112,14 +112,14 @@ export namespace Location {
     }
 
     export function getLocationsInNodeByTimestampDescending(node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> {
-        return Tables.Location.find({ node: Util.getObjectID(node) })
+        return Tables.Location.LocationSchema.find({ node: Util.getObjectID(node) })
             .sort({ timestamp: 'desc' })
             .skip(skip)
             .limit(limit)
             .exec();
     }
 
-    export function fromGPX(gpx, person: PersonOrID): Promise<TableData.Location.Location[]> {
+    export function fromGPX(gpx, person: PersonOrID): Promise<Tables.Location.Location[]> {
         return new Promise(resolve =>
             gpxparse.parseGpx(gpx, (error, data) => {
                 if (error) return console.error(error);
@@ -129,7 +129,7 @@ export namespace Location {
 
                 console.log('Track length: ' + track.length());
 
-                const locations: TableData.Location.Location[] = [];
+                const locations: Tables.Location.Location[] = [];
 
                 for (let seg of track.segments) {
                     for (let waypoint of seg) {

@@ -9,7 +9,6 @@ import * as path from 'path';
 import * as stylus from 'stylus';
 
 import { ConfigHelper } from './helpers/configHelper';
-import { Tables } from './models/tables';
 
 export namespace Setup {
     export function startServer(server: http.Server, port: number) {

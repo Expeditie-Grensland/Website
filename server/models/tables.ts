@@ -11,7 +11,7 @@ export namespace TableIDs {
     export const Word = 'Word';
 }
 
-export namespace TableData {
+export namespace Tables {
     export type DocumentOrID<T extends mongoose.Document> = T | string;
     export type ExpeditieOrID = DocumentOrID<Expeditie.ExpeditieDocument>;
     export type LocationOrID = DocumentOrID<Location.LocationDocument>;
@@ -29,7 +29,7 @@ export namespace TableData {
      * one column.
      */
     export namespace Expeditie {
-        export const expeditieSchema = new mongoose.Schema({
+        const schema = new mongoose.Schema({
             sequenceNumber: Number,
             name: String,
             nameShort: String,
@@ -76,6 +76,8 @@ export namespace TableData {
         }
 
         export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
+
+        export const ExpeditieSchema = mongoose.model<ExpeditieDocument>(TableIDs.Expeditie, schema);
     }
 
     /**
@@ -88,7 +90,7 @@ export namespace TableData {
      * A Location belongs to one, and only one, RouteNode.
      */
     export namespace Location {
-        export const locationSchema = new mongoose.Schema({
+        const schema = new mongoose.Schema({
             visualArea: Number,
             person: reference(TableIDs.Person),
             node: reference(TableIDs.RouteNode),
@@ -107,10 +109,10 @@ export namespace TableData {
 
         // Ensure fast retrieval of find query by visual area. This query is performed every site visit, so it should
         // be performant.
-        locationSchema.index({ node: 1, visualArea: -1 });
-        locationSchema.index({ node: 1, timestamp: -1 });
-        locationSchema.index({ node: 1, lat: 1 });
-        locationSchema.index({ node: 1, lon: 1 });
+        schema.index({ node: 1, visualArea: -1 });
+        schema.index({ node: 1, timestamp: -1 });
+        schema.index({ node: 1, lat: 1 });
+        schema.index({ node: 1, lon: 1 });
 
         export interface Location {
             visualArea?: number;
@@ -130,6 +132,8 @@ export namespace TableData {
         }
 
         export interface LocationDocument extends Location, mongoose.Document {}
+
+        export const LocationSchema = mongoose.model<Tables.Location.LocationDocument>(TableIDs.Location, schema);
     }
 
     /**
@@ -137,7 +141,7 @@ export namespace TableData {
      * and a list of expedities in which they participate (can be empty).
      */
     export namespace Person {
-        export const personSchema = new mongoose.Schema({
+        const schema = new mongoose.Schema({
             email: String,
             name: String,
             expedities: [reference(TableIDs.Expeditie)],
@@ -152,6 +156,8 @@ export namespace TableData {
         }
 
         export interface PersonDocument extends Person, mongoose.Document {}
+
+        export const PersonSchema = mongoose.model<Tables.Person.PersonDocument>(TableIDs.Person, schema);
     }
 
     /**
@@ -173,7 +179,7 @@ export namespace TableData {
      * The currentNodes array contains all nodes that do not have any children.
      */
     export namespace Route {
-        export const routeSchema = new mongoose.Schema({
+        const schema = new mongoose.Schema({
             startingNodes: [reference(TableIDs.RouteNode)],
             currentNodes: [reference(TableIDs.RouteNode)]
         });
@@ -184,6 +190,8 @@ export namespace TableData {
         }
 
         export interface RouteDocument extends Route, mongoose.Document {}
+
+        export const RouteSchema = mongoose.model<Tables.Route.RouteDocument>(TableIDs.Route, schema);
     }
 
     /**
@@ -207,7 +215,7 @@ export namespace TableData {
      * this node is deactivated.
      */
     export namespace RouteNode {
-        export const routeNodeSchema = new mongoose.Schema({
+        const schema = new mongoose.Schema({
             route: reference(TableIDs.Route),
             color: String,
             persons: [reference(TableIDs.Person)],
@@ -222,13 +230,15 @@ export namespace TableData {
         }
 
         export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
+
+        export const RouteNodeSchema = mongoose.model<RouteNodeDocument>(TableIDs.RouteNode, schema);
     }
 
     /**
      * TODO: Add definition
      */
     export namespace Word {
-        export const wordSchema = new mongoose.Schema(
+        export const schema = new mongoose.Schema(
             {
                 word: String,
                 definitions: [String],
@@ -245,7 +255,7 @@ export namespace TableData {
             }
         );
 
-        wordSchema.virtual('simple').get(function() {
+        schema.virtual('simple').get(function() {
             return this.word
                 .toLowerCase()
                 .normalize('NFD')
@@ -253,7 +263,7 @@ export namespace TableData {
                 .replace(/[^0-9a-z]+/gi, '-');
         });
 
-        wordSchema.index({ word: 1 }, { collation: { locale: 'nl', strength: 1 } });
+        schema.index({ word: 1 }, { collation: { locale: 'nl', strength: 1 } });
 
         export interface Word {
             word: string;
@@ -264,14 +274,7 @@ export namespace TableData {
         }
 
         export interface WordDocument extends Word, mongoose.Document {}
-    }
-}
 
-export namespace Tables {
-    export let Expeditie = mongoose.model<TableData.Expeditie.ExpeditieDocument>(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema);
-    export let Location = mongoose.model<TableData.Location.LocationDocument>(TableIDs.Location, TableData.Location.locationSchema);
-    export let Person = mongoose.model<TableData.Person.PersonDocument>(TableIDs.Person, TableData.Person.personSchema);
-    export let Route = mongoose.model<TableData.Route.RouteDocument>(TableIDs.Route, TableData.Route.routeSchema);
-    export let RouteNode = mongoose.model<TableData.RouteNode.RouteNodeDocument>(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema);
-    export let Word = mongoose.model<TableData.Word.WordDocument>(TableIDs.Word, TableData.Word.wordSchema);
+        export const WordSchema = mongoose.model<WordDocument>(TableIDs.Word, schema);
+    }
 }

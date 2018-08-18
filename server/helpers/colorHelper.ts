@@ -1,13 +1,13 @@
 import i18next = require('i18next');
 
 import { Route } from '../components/route';
-import { TableData } from '../models/tables';
+import { Tables } from '../models/tables';
 import { Util } from '../models/util';
 
 const sprintf = require('sprintf-js').sprintf;
 
 export namespace ColorHelper {
-    import RouteOrID = TableData.RouteOrID;
+    import RouteOrID = Tables.RouteOrID;
 
     export enum Color {
         Red = '#e6194b',
@@ -22,7 +22,7 @@ export namespace ColorHelper {
         Grey = '#808080'
     }
 
-    let nodesCached: Map<string, TableData.RouteNode.RouteNode[]> = new Map();
+    let nodesCached: Map<string, Tables.RouteNode.RouteNode[]> = new Map();
 
     export async function init() {
         const routes = await Route.getRoutes();
@@ -44,11 +44,11 @@ export namespace ColorHelper {
      * obviously only happen if the node is going to be saved to the models, so if a node will not be saved to the
      * models, set the `cache` parameter to false.
      *
-     * @param {TableData.RouteNode.RouteNode} node The RouteNode to get the color for.
+     * @param {Tables.RouteNode.RouteNode} node The RouteNode to get the color for.
      * @param {boolean} cache Whether to save `node` in the internal cache of ColorHelper.
      * @returns {string} A hex color string.
      */
-    export function generateColorForRouteNode(node: TableData.RouteNode.RouteNode, cache: boolean = true): string {
+    export function generateColorForRouteNode(node: Tables.RouteNode.RouteNode, cache: boolean = true): string {
         const existingNodes = getCachedRouteNodes(node.route);
 
         const similarNode = existingNodes.find(n => Route.personArraysEqual(n.persons, node.persons));
@@ -62,7 +62,7 @@ export namespace ColorHelper {
         return getColorByIndex(existingNodes.length);
     }
 
-    function addCachedNode(node: TableData.RouteNode.RouteNode) {
+    function addCachedNode(node: Tables.RouteNode.RouteNode) {
         let nodes = [];
 
         if (nodesCached.has(Util.getObjectID(node.route))) {
@@ -74,7 +74,7 @@ export namespace ColorHelper {
         nodesCached.set(Util.getObjectID(node.route), nodes);
     }
 
-    function getCachedRouteNodes(route: RouteOrID): TableData.RouteNode.RouteNode[] {
+    function getCachedRouteNodes(route: RouteOrID): Tables.RouteNode.RouteNode[] {
         const nodes = nodesCached.get(Util.getObjectID(route));
 
         return nodes === undefined ? [] : nodes;
