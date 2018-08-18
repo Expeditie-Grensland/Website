@@ -1,23 +1,5 @@
 import * as mongoose from 'mongoose';
 
-export namespace Tables {
-    export let Expeditie: mongoose.Model<TableData.Expeditie.ExpeditieDocument>;
-    export let Location: mongoose.Model<TableData.Location.LocationDocument>;
-    export let Person: mongoose.Model<TableData.Person.PersonDocument>;
-    export let Route: mongoose.Model<TableData.Route.RouteDocument>;
-    export let RouteNode: mongoose.Model<TableData.RouteNode.RouteNodeDocument>;
-    export let Word: mongoose.Model<TableData.Word.WordDocument>;
-
-    export function init() {
-        Expeditie = mongoose.model(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema);
-        Location = mongoose.model(TableIDs.Location, TableData.Location.locationSchema);
-        Person = mongoose.model(TableIDs.Person, TableData.Person.personSchema);
-        Route = mongoose.model(TableIDs.Route, TableData.Route.routeSchema);
-        RouteNode = mongoose.model(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema);
-        Word = mongoose.model(TableIDs.Word, TableData.Word.wordSchema);
-    }
-}
-
 export namespace TableIDs {
     //TODO Image, LogEntry
 
@@ -283,4 +265,13 @@ export namespace TableData {
 
         export interface WordDocument extends Word, mongoose.Document {}
     }
+}
+
+export namespace Tables {
+    export let Expeditie = mongoose.model<TableData.Expeditie.ExpeditieDocument>(TableIDs.Expeditie, TableData.Expeditie.expeditieSchema);
+    export let Location = mongoose.model<TableData.Location.LocationDocument>(TableIDs.Location, TableData.Location.locationSchema);
+    export let Person = mongoose.model<TableData.Person.PersonDocument>(TableIDs.Person, TableData.Person.personSchema);
+    export let Route = mongoose.model<TableData.Route.RouteDocument>(TableIDs.Route, TableData.Route.routeSchema);
+    export let RouteNode = mongoose.model<TableData.RouteNode.RouteNodeDocument>(TableIDs.RouteNode, TableData.RouteNode.routeNodeSchema);
+    export let Word = mongoose.model<TableData.Word.WordDocument>(TableIDs.Word, TableData.Word.wordSchema);
 }

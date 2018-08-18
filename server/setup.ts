@@ -72,8 +72,6 @@ export namespace Setup {
             console.log('Connected to models');
         });
 
-        Tables.init();
-
         addAsMiddleware(app, 'db', db);
     }
 
