@@ -1,28 +1,21 @@
-import { ColorHelper } from '../helpers/colorHelper';
-import { Expeditie } from './expeditie';
-import { Person } from './person';
-import { Tables } from '../models/tables';
-import { Util } from '../models/util';
+import { ColorHelper } from '../../helpers/colorHelper';
+import { Expeditie } from '../expeditie';
+import { Person } from '../person';
+import { Util } from '../document/util';
 
-import RouteDocument = Tables.Route.RouteDocument;
-import RouteNode = Tables.RouteNode.RouteNode;
-import RouteEdge = Tables.RouteEdge.RouteEdge;
-import RouteNodeDocument = Tables.RouteNode.RouteNodeDocument;
+import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeSchema } from "../routenode/model";
+import { IBoundingBox, IRoute, RouteDocument, RouteOrID, RouteSchema } from "./model";
+import { LocationSchema } from "../location/model";
+import { ExpeditieDocument, ExpeditieOrID } from "../expeditie/model";
+import { PersonOrID } from "../person/model";
 
 export namespace Route {
-    import ExpeditieOrID = Tables.ExpeditieOrID;
-    import RouteOrID = Tables.RouteOrID;
-    import RouteNodeOrID = Tables.RouteNodeOrID;
-    import PersonOrID = Tables.PersonOrID;
-    import ExpeditieDocument = Tables.Expeditie.ExpeditieDocument;
-    import RouteBoundingBox = Tables.RouteBoundingBox.RouteBoundingBox;
-
-    export function createRoute(route: Tables.Route.Route): Promise<RouteDocument> {
-        return Tables.Route.RouteSchema.create(route);
+    export function createRoute(route: IRoute): Promise<RouteDocument> {
+        return RouteSchema.create(route);
     }
 
     export function getRouteById(_id: string): Promise<RouteDocument> {
-        return Tables.Route.RouteSchema.findById(_id).exec();
+        return RouteSchema.findById(_id).exec();
     }
 
     export function getRoute(route: RouteOrID): Promise<RouteDocument> {
@@ -30,23 +23,23 @@ export namespace Route {
     }
 
     export function getRoutes(): Promise<RouteDocument[]> {
-        return Tables.Route.RouteSchema.find({}).exec();
+        return RouteSchema.find({}).exec();
     }
 
     export function getNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
-        return Tables.RouteNode.RouteNodeSchema.find({ route: Util.getObjectID(route) }).exec();
+        return RouteNodeSchema.find({ route: Util.getObjectID(route) }).exec();
     }
 
-    function createRouteNode(node: RouteNode): Promise<RouteNodeDocument> {
+    function createRouteNode(node: IRouteNode): Promise<RouteNodeDocument> {
         if (node.color === undefined) {
             node.color = ColorHelper.generateColorForRouteNode(node);
         }
 
-        return Tables.RouteNode.RouteNodeSchema.create(node);
+        return RouteNodeSchema.create(node);
     }
 
     export function setExpeditie(expeditie: ExpeditieOrID): (route: RouteOrID) => Promise<RouteDocument> {
-        return route => Tables.Route.RouteSchema.findByIdAndUpdate(Util.getObjectID(route), { expeditie: Util.getObjectID(expeditie) }).exec();
+        return route => RouteSchema.findByIdAndUpdate(Util.getObjectID(route), { expeditie: Util.getObjectID(expeditie) }).exec();
     }
 
     export function populateNodePersons(node: RouteNodeOrID): Promise<RouteNodeDocument> {
@@ -68,7 +61,7 @@ export namespace Route {
     export function getCurrentNodeWithPerson(person: PersonOrID): (route: RouteOrID) => Promise<RouteNodeDocument> {
         return route =>
             getRoute(route).then(route =>
-                Tables.RouteNode.RouteNodeSchema.findOne({
+                RouteNodeSchema.findOne({
                     _id: { $in: Util.getObjectIDs(route.currentNodes) },
                     route: Util.getObjectID(route),
                     persons: Util.getObjectID(person)
@@ -81,22 +74,22 @@ export namespace Route {
     }
 
     function getRouteNodeById(_id: string): Promise<RouteNodeDocument> {
-        return Tables.RouteNode.RouteNodeSchema.findById(_id).exec();
+        return RouteNodeSchema.findById(_id).exec();
     }
 
     function getRouteNodesById(ids: string[]): Promise<RouteNodeDocument[]> {
-        return Tables.RouteNode.RouteNodeSchema.find({ _id: { $in: ids } }).exec();
+        return RouteNodeSchema.find({ _id: { $in: ids } }).exec();
     }
 
-    function setNodeEdges(edges: RouteEdge[]): (node: RouteNodeOrID) => Promise<RouteNodeDocument> {
-        return node => Tables.RouteNode.RouteNodeSchema.findByIdAndUpdate(Util.getObjectID(node), { edges: edges }, { new: true }).exec();
+    function setNodeEdges(edges: IRouteEdge[]): (node: RouteNodeOrID) => Promise<RouteNodeDocument> {
+        return node => RouteNodeSchema.findByIdAndUpdate(Util.getObjectID(node), { edges: edges }, { new: true }).exec();
     }
 
-    function getEdgeTo(edge: RouteEdge): Promise<RouteNodeDocument> {
+    function getEdgeTo(edge: IRouteEdge): Promise<RouteNodeDocument> {
         return getRouteNode(edge.to);
     }
 
-    function getNodeEdges(node: RouteNodeOrID): Promise<RouteEdge[]> {
+    function getNodeEdges(node: RouteNodeOrID): Promise<IRouteEdge[]> {
         return getRouteNode(node).then(node => node.edges);
     }
 
@@ -123,7 +116,7 @@ export namespace Route {
                     let newNodesWithToEdge: string[] = [];
 
                     for (let oldCurrentNode of oldCurrentNodes) {
-                        const edges: RouteEdge[] = [];
+                        const edges: IRouteEdge[] = [];
 
                         for (let newCurrentNode of newCurrentNodes) {
                             if (Util.getObjectID(oldCurrentNode) === Util.getObjectID(newCurrentNode)) {
@@ -133,7 +126,7 @@ export namespace Route {
                             for (let oldPersonId of Util.getObjectIDs(oldCurrentNode.persons)) {
                                 for (let newPersonId of Util.getObjectIDs(newCurrentNode.persons)) {
                                     if (oldPersonId === newPersonId) {
-                                        let existingEdge: RouteEdge = null;
+                                        let existingEdge: IRouteEdge = null;
 
                                         for (let edge of edges) {
                                             if (Util.getObjectID(edge.to) === Util.getObjectID(newCurrentNode)) {
@@ -174,23 +167,23 @@ export namespace Route {
         );
     }
 
-    export async function getBoundingBox(route: RouteOrID): Promise<RouteBoundingBox> {
+    export async function getBoundingBox(route: RouteOrID): Promise<IBoundingBox> {
         const nodes = Util.getObjectIDs(await getNodes(route));
 
         // FIXME: too much of the same :( & should be in location namespace
-        const minLat = Tables.Location.LocationSchema.find({ node: { $in: nodes } })
+        const minLat = LocationSchema.find({ node: { $in: nodes } })
             .sort({ lat: 1 })
             .limit(1)
             .exec();
-        const maxLat = Tables.Location.LocationSchema.find({ node: { $in: nodes } })
+        const maxLat = LocationSchema.find({ node: { $in: nodes } })
             .sort({ lat: -1 })
             .limit(1)
             .exec();
-        const minLon = Tables.Location.LocationSchema.find({ node: { $in: nodes } })
+        const minLon = LocationSchema.find({ node: { $in: nodes } })
             .sort({ lon: 1 })
             .limit(1)
             .exec();
-        const maxLon = Tables.Location.LocationSchema.find({ node: { $in: nodes } })
+        const maxLon = LocationSchema.find({ node: { $in: nodes } })
             .sort({ lon: -1 })
             .limit(1)
             .exec();

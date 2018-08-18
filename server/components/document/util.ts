@@ -1,9 +1,11 @@
 import { ObjectId } from 'bson';
 import * as mongoose from 'mongoose';
 
-import { Tables } from './tables';
+export type DocumentOrID<T extends mongoose.Document> = T | string
 
-import DocumentOrID = Tables.DocumentOrID;
+export function reference(to: string): {} {
+    return { type: String, ref: to };
+}
 
 export namespace Util {
     export function isDocument<T extends mongoose.Document>(document: DocumentOrID<T>): document is T {

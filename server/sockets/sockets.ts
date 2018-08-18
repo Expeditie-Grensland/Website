@@ -4,7 +4,7 @@ import * as socketio from 'socket.io';
 import { Expeditie } from '../components/expeditie';
 import { Route } from '../components/route';
 import { SocketIDs } from './socketHandler';
-import { Tables } from '../models/tables';
+import { LocationDocument } from "../components/location/model";
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -43,7 +43,7 @@ export namespace Sockets {
             const expeditie = await Expeditie.getExpeditieByNameShort(name);
             const initBatch = 100;
 
-            let batch: Tables.Location.LocationDocument[];
+            let batch: LocationDocument[];
             let batchN = 0;
 
             do {

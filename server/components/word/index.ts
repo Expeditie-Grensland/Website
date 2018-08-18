@@ -1,33 +1,29 @@
-import { Tables } from '../models/tables';
-
-import WordDocument = Tables.Word.WordDocument;
+import { IWord, WordDocument, WordSchema } from "./model";
 
 export namespace Word {
-    import Word = Tables.Word.Word;
-
-    export function createWord(word: Word): Promise<WordDocument> {
-        return Tables.Word.WordSchema.create(word);
+    export function createWord(word: IWord): Promise<WordDocument> {
+        return WordSchema.create(word);
     }
 
     export function getWord(word: string): Promise<WordDocument> {
-        return Tables.Word.WordSchema.findOne({ word: word })
+        return WordSchema.findOne({ word: word })
             .collation({ locale: 'nl', strength: 1 })
             .exec();
     }
 
     export function getWords(): Promise<WordDocument[]> {
-        return Tables.Word.WordSchema.find({})
+        return WordSchema.find({})
             .collation({ locale: 'nl', strength: 1 })
             .sort({ word: 1 })
             .exec();
     }
 
     export function getWordById(id: string): Promise<WordDocument> {
-        return Tables.Word.WordSchema.findById(id).exec();
+        return WordSchema.findById(id).exec();
     }
 
     export function getWordsByIds(ids: string[]): Promise<WordDocument[]> {
-        return Tables.Word.WordSchema.find({ _id: { $in: ids } }).exec();
+        return WordSchema.find({ _id: { $in: ids } }).exec();
     }
 
     // TODO: find a better place for these three functions
