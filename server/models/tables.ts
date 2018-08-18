@@ -266,7 +266,7 @@ export namespace Tables {
             definitions: string[];
             phonetic?: string;
             audio?: string;
-            readonly simple: string;
+            readonly simple?: string;
         }
 
         export interface WordDocument extends Word, mongoose.Document {}
