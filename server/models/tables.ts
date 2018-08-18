@@ -1,17 +1,13 @@
 import * as mongoose from 'mongoose';
 
-export namespace TableIDs {
-    //TODO Image, LogEntry
-
-    export const Expeditie = 'Expeditie';
-    export const Location = 'Location';
-    export const Person = 'Person';
-    export const Route = 'Route';
-    export const RouteNode = 'RouteNode';
-    export const Word = 'Word';
-}
-
 export namespace Tables {
+    export const ExpeditieID = 'Expeditie';
+    export const LocationID = 'Location';
+    export const PersonID = 'Person';
+    export const RouteID = 'Route';
+    export const RouteNodeID = 'RouteNode';
+    export const WordID = 'Word';
+
     export type DocumentOrID<T extends mongoose.Document> = T | string;
     export type ExpeditieOrID = DocumentOrID<Expeditie.ExpeditieDocument>;
     export type LocationOrID = DocumentOrID<Location.LocationDocument>;
@@ -47,8 +43,8 @@ export namespace Tables {
             movieUrl: String,
             movieCoverUrl: String,
             finished: Boolean,
-            participants: [reference(TableIDs.Person)],
-            route: reference(TableIDs.Route),
+            participants: [reference(Tables.PersonID)],
+            route: reference(Tables.RouteID),
             countries: [String]
         });
 
@@ -77,7 +73,7 @@ export namespace Tables {
 
         export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
 
-        export const ExpeditieSchema = mongoose.model<ExpeditieDocument>(TableIDs.Expeditie, schema);
+        export const ExpeditieSchema = mongoose.model<ExpeditieDocument>(Tables.ExpeditieID, schema);
     }
 
     /**
@@ -92,8 +88,8 @@ export namespace Tables {
     export namespace Location {
         const schema = new mongoose.Schema({
             visualArea: Number,
-            person: reference(TableIDs.Person),
-            node: reference(TableIDs.RouteNode),
+            person: reference(Tables.PersonID),
+            node: reference(Tables.RouteNodeID),
             timestamp: Number,
             timezone: String,
             lat: Number,
@@ -133,7 +129,7 @@ export namespace Tables {
 
         export interface LocationDocument extends Location, mongoose.Document {}
 
-        export const LocationSchema = mongoose.model<Tables.Location.LocationDocument>(TableIDs.Location, schema);
+        export const LocationSchema = mongoose.model<Tables.Location.LocationDocument>(Tables.LocationID, schema);
     }
 
     /**
@@ -144,7 +140,7 @@ export namespace Tables {
         const schema = new mongoose.Schema({
             email: String,
             name: String,
-            expedities: [reference(TableIDs.Expeditie)],
+            expedities: [reference(Tables.ExpeditieID)],
             language: String
         });
 
@@ -157,7 +153,7 @@ export namespace Tables {
 
         export interface PersonDocument extends Person, mongoose.Document {}
 
-        export const PersonSchema = mongoose.model<Tables.Person.PersonDocument>(TableIDs.Person, schema);
+        export const PersonSchema = mongoose.model<Tables.Person.PersonDocument>(Tables.PersonID, schema);
     }
 
     /**
@@ -180,8 +176,8 @@ export namespace Tables {
      */
     export namespace Route {
         const schema = new mongoose.Schema({
-            startingNodes: [reference(TableIDs.RouteNode)],
-            currentNodes: [reference(TableIDs.RouteNode)]
+            startingNodes: [reference(Tables.RouteNodeID)],
+            currentNodes: [reference(Tables.RouteNodeID)]
         });
 
         export interface Route {
@@ -191,7 +187,7 @@ export namespace Tables {
 
         export interface RouteDocument extends Route, mongoose.Document {}
 
-        export const RouteSchema = mongoose.model<Tables.Route.RouteDocument>(TableIDs.Route, schema);
+        export const RouteSchema = mongoose.model<Tables.Route.RouteDocument>(Tables.RouteID, schema);
     }
 
     /**
@@ -199,8 +195,8 @@ export namespace Tables {
      */
     export namespace RouteEdge {
         export const routeEdgeSchema = new mongoose.Schema({
-            to: reference(TableIDs.RouteNode),
-            people: [reference(TableIDs.Person)]
+            to: reference(Tables.RouteNodeID),
+            people: [reference(Tables.PersonID)]
         });
 
         export interface RouteEdge {
@@ -216,9 +212,9 @@ export namespace Tables {
      */
     export namespace RouteNode {
         const schema = new mongoose.Schema({
-            route: reference(TableIDs.Route),
+            route: reference(Tables.RouteID),
             color: String,
-            persons: [reference(TableIDs.Person)],
+            persons: [reference(Tables.PersonID)],
             edges: [RouteEdge.routeEdgeSchema]
         });
 
@@ -231,7 +227,7 @@ export namespace Tables {
 
         export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
 
-        export const RouteNodeSchema = mongoose.model<RouteNodeDocument>(TableIDs.RouteNode, schema);
+        export const RouteNodeSchema = mongoose.model<RouteNodeDocument>(Tables.RouteNodeID, schema);
     }
 
     /**
@@ -275,6 +271,6 @@ export namespace Tables {
 
         export interface WordDocument extends Word, mongoose.Document {}
 
-        export const WordSchema = mongoose.model<WordDocument>(TableIDs.Word, schema);
+        export const WordSchema = mongoose.model<WordDocument>(Tables.WordID, schema);
     }
 }
