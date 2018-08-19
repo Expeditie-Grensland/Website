@@ -25,6 +25,23 @@ export namespace Location {
         return Util.getDocuments(locations, getLocationsById);
     }
 
+    export function getMinMaxLatLonLocation(nodes: RouteNodeOrID[], minMax: 'min' | 'max', latLon: 'lat' | 'lon'): Promise<LocationDocument[]> {
+        const nodeIDs = Util.getObjectIDs(nodes);
+
+        let sorting;
+
+        if (latLon === 'lat') {
+            sorting = { lat: minMax == 'min' ? 1 : -1 };
+        } else {
+            sorting = { lon: minMax == 'min' ? 1 : -1 };
+        }
+
+        return LocationSchema.find({ node: { $in: nodeIDs } })
+            .sort(sorting)
+            .limit(1)
+            .exec();
+    }
+
     export async function createLocation(location: ILocation, route: RouteOrID): Promise<LocationDocument> {
         const routeDoc = await Route.getRoute(route);
 

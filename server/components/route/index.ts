@@ -5,6 +5,7 @@ import { Util } from '../document/util';
 
 import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeSchema } from "../routenode/model";
 import { IBoundingBox, IRoute, RouteDocument, RouteOrID, RouteSchema } from "./model";
+import { Location } from "../location";
 import { LocationSchema } from "../location/model";
 import { ExpeditieDocument, ExpeditieOrID } from "../expeditie/model";
 import { PersonOrID } from "../person/model";
@@ -168,25 +169,12 @@ export namespace Route {
     }
 
     export async function getBoundingBox(route: RouteOrID): Promise<IBoundingBox> {
-        const nodes = Util.getObjectIDs(await getNodes(route));
+        const nodes = await getNodes(route);
 
-        // FIXME: too much of the same :( & should be in location namespace
-        const minLat = LocationSchema.find({ node: { $in: nodes } })
-            .sort({ lat: 1 })
-            .limit(1)
-            .exec();
-        const maxLat = LocationSchema.find({ node: { $in: nodes } })
-            .sort({ lat: -1 })
-            .limit(1)
-            .exec();
-        const minLon = LocationSchema.find({ node: { $in: nodes } })
-            .sort({ lon: 1 })
-            .limit(1)
-            .exec();
-        const maxLon = LocationSchema.find({ node: { $in: nodes } })
-            .sort({ lon: -1 })
-            .limit(1)
-            .exec();
+        const minLat = Location.getMinMaxLatLonLocation(nodes, 'min', 'lat');
+        const maxLat = Location.getMinMaxLatLonLocation(nodes, 'max', 'lat');
+        const minLon = Location.getMinMaxLatLonLocation(nodes, 'min', 'lon');
+        const maxLon = Location.getMinMaxLatLonLocation(nodes, 'max', 'lon');
 
         return Promise.all([minLat, maxLat, minLon, maxLon]).then(([minLat, maxLat, minLon, maxLon]) => {
             return {
