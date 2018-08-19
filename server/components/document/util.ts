@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import * as mongoose from 'mongoose';
 
-export type DocumentOrID<T extends mongoose.Document> = T | string
+export type DocumentOrID<T extends mongoose.Document> = T | string;
 
 export function reference(to: string): {} {
     return { type: String, ref: to };

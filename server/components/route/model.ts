@@ -1,6 +1,6 @@
-import * as mongoose from "mongoose";
+import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../document/util';
-import { RouteNodeID, RouteNodeOrID } from "../routenode/model";
+import { RouteNodeID, RouteNodeOrID } from '../routenode/model';
 
 export const RouteID = 'Route';
 

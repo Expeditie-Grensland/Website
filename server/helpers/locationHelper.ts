@@ -2,8 +2,8 @@ import * as turf from '@turf/turf';
 
 import { Location } from '../components/location';
 import { Util } from '../components/document/util';
-import { LocationDocument, LocationSchema } from "../components/location/model";
-import { RouteNodeOrID } from "../components/routenode/model";
+import { LocationDocument, LocationSchema } from '../components/location/model';
+import { RouteNodeOrID } from '../components/routenode/model';
 
 export namespace LocationHelper {
     const lastLocationsMap: Map<string, Promise<[LocationDocument, LocationDocument]>> = new Map();
@@ -112,10 +112,6 @@ export namespace LocationHelper {
         }
 
         return lastLocations;
-    }
-
-    export function sortByTimestampAscending(locations: LocationDocument[]): LocationDocument[] {
-        return locations.sort((l1, l2) => l1.timestamp - l2.timestamp);
     }
 
     export function sortByTimestampDescending(locations: LocationDocument[]): LocationDocument[] {

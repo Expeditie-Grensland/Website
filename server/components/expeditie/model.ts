@@ -1,14 +1,14 @@
-import * as mongoose from "mongoose";
+import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../document/util';
-import { RouteID, RouteOrID } from "../route/model";
-import { PersonID, PersonOrID } from "../person/model";
+import { RouteID, RouteOrID } from '../route/model';
+import { PersonID, PersonOrID } from '../person/model';
+
+export const ExpeditieID = 'Expeditie';
 
 /**
  * The expeditie is the wrapping object for all data related to one trip. This is represented on the home page by
  * one column.
  */
-
-export const ExpeditieID = 'Expeditie';
 
 const schema = new mongoose.Schema({
     sequenceNumber: Number,

@@ -4,10 +4,10 @@ import { Location } from '../location';
 import { Person } from '../person';
 import { Route } from '../route';
 import { Util } from '../document/util';
-import { ExpeditieDocument, ExpeditieOrID, ExpeditieSchema, IExpeditie } from "./model";
-import { PersonDocument, PersonOrID } from "../person/model";
-import { RouteDocument, RouteOrID } from "../route/model";
-import { ILocation, LocationDocument } from "../location/model";
+import { ExpeditieDocument, ExpeditieOrID, ExpeditieSchema, IExpeditie } from './model';
+import { PersonDocument, PersonOrID } from '../person/model';
+import { RouteDocument, RouteOrID } from '../route/model';
+import { ILocation, LocationDocument } from '../location/model';
 
 const sprintf = require('sprintf-js').sprintf;
 

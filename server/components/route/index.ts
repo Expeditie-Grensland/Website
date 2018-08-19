@@ -2,13 +2,11 @@ import { ColorHelper } from '../../helpers/colorHelper';
 import { Expeditie } from '../expeditie';
 import { Person } from '../person';
 import { Util } from '../document/util';
-
-import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeSchema } from "../routenode/model";
-import { IBoundingBox, IRoute, RouteDocument, RouteOrID, RouteSchema } from "./model";
-import { Location } from "../location";
-import { LocationSchema } from "../location/model";
-import { ExpeditieDocument, ExpeditieOrID } from "../expeditie/model";
-import { PersonOrID } from "../person/model";
+import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeSchema } from '../routenode/model';
+import { IBoundingBox, IRoute, RouteDocument, RouteOrID, RouteSchema } from './model';
+import { Location } from '../location';
+import { ExpeditieDocument, ExpeditieOrID } from '../expeditie/model';
+import { PersonOrID } from '../person/model';
 
 export namespace Route {
     export function createRoute(route: IRoute): Promise<RouteDocument> {

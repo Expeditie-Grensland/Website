@@ -3,8 +3,8 @@ import * as express from 'express';
 import { Debug } from './debug';
 import { ExpeditieRoute } from './expeditieRoute';
 import { Home } from './home';
-import { router as apiRouter } from './api';
-import { router as dictionaryRouter } from './dictionary';
+import { apiRouter } from './api';
+import { dictionaryRouter } from './dictionary';
 
 export namespace Routes {
     export function init(app: express.Express) {

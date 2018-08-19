@@ -1,4 +1,4 @@
-import * as mongoose from "mongoose";
+import * as mongoose from 'mongoose';
 import { DocumentOrID } from '../document/util';
 import { Word } from '.';
 

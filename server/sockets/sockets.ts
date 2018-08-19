@@ -4,7 +4,7 @@ import * as socketio from 'socket.io';
 import { Expeditie } from '../components/expeditie';
 import { Route } from '../components/route';
 import { SocketIDs } from './socketHandler';
-import { LocationDocument } from "../components/location/model";
+import { LocationDocument } from '../components/location/model';
 
 const sprintf = require('sprintf-js').sprintf;
 

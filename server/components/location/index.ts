@@ -1,12 +1,10 @@
-import * as gpxparse from 'gpx-parse';
-
 import { LocationHelper } from '../../helpers/locationHelper';
 import { Route } from '../route';
 import { Util } from '../document/util';
-import { ILocation, LocationDocument, LocationOrID, LocationSchema } from "./model";
-import { RouteOrID } from "../route/model";
-import { RouteNodeDocument, RouteNodeOrID } from "../routenode/model";
-import { PersonOrID } from "../person/model";
+import { ILocation, LocationDocument, LocationOrID, LocationSchema } from './model';
+import { RouteOrID } from '../route/model';
+import { RouteNodeDocument, RouteNodeOrID } from '../routenode/model';
+import { PersonOrID } from '../person/model';
 
 export namespace Location {
     export function getLocationById(_id: string): Promise<LocationDocument> {
@@ -128,35 +126,5 @@ export namespace Location {
             .skip(skip)
             .limit(limit)
             .exec();
-    }
-
-    export function fromGPX(gpx, person: PersonOrID): Promise<ILocation[]> {
-        return new Promise(resolve =>
-            gpxparse.parseGpx(gpx, (error, data) => {
-                if (error) return console.error(error);
-
-                const personId = Util.getObjectID(person);
-                const track = data.tracks[0];
-
-                console.log('Track length: ' + track.length());
-
-                const locations: ILocation[] = [];
-
-                for (let seg of track.segments) {
-                    for (let waypoint of seg) {
-                        locations.push({
-                            person: personId,
-                            timestamp: Date.parse(waypoint.time).valueOf(),
-                            timezone: 'Europe/Amsterdam',
-                            lat: waypoint.lat,
-                            lon: waypoint.lon,
-                            altitude: waypoint.elevation
-                        });
-                    }
-                }
-
-                resolve(locations);
-            })
-        );
     }
 }

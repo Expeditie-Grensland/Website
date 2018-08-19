@@ -1,4 +1,4 @@
-import { IWord, WordDocument, WordSchema } from "./model";
+import { IWord, WordDocument, WordSchema } from './model';
 
 export namespace Word {
     export function createWord(word: IWord): Promise<WordDocument> {

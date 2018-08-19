@@ -2,8 +2,8 @@ import i18next = require('i18next');
 
 import { Route } from '../components/route';
 import { Util } from '../components/document/util';
-import { IRouteNode } from "../components/routenode/model";
-import { RouteOrID } from "../components/route/model";
+import { IRouteNode } from '../components/routenode/model';
+import { RouteOrID } from '../components/route/model';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -58,6 +58,7 @@ export namespace ColorHelper {
 
         if (cache) addCachedNode(node);
 
+        // FIXME: doesn't take into account similarNodes (non-unique colors)
         return getColorByIndex(existingNodes.length);
     }
 

@@ -1,7 +1,9 @@
-import * as mongoose from "mongoose";
+import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../document/util';
-import { PersonID, PersonOrID } from "../person/model";
-import { RouteNodeID, RouteNodeOrID } from "../routenode/model";
+import { PersonID, PersonOrID } from '../person/model';
+import { RouteNodeID, RouteNodeOrID } from '../routenode/model'
+
+export const LocationID = 'Location';
 
 /**
  * A Location describes the output of a GPS receiver, using latitude, longitude
@@ -12,8 +14,6 @@ import { RouteNodeID, RouteNodeOrID } from "../routenode/model";
  * with low visual area.
  * A Location belongs to one, and only one, IRouteNode.
  */
-
-export const LocationID = 'Location';
 
 const schema = new mongoose.Schema({
     visualArea: Number,
