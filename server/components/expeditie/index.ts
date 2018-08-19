@@ -55,10 +55,6 @@ export namespace Expeditie {
     export function createExpeditie(expeditie: IExpeditie): Promise<ExpeditieDocument> {
         return Promise.resolve()
             .then(() => {
-                if (expeditie.mapUrl == undefined) {
-                    expeditie.mapUrl = '/' + expeditie.nameShort;
-                }
-
                 if (expeditie.route == undefined) {
                     return Route.createRoute({})
                         .then(route => {

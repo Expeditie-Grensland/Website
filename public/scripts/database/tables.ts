@@ -21,7 +21,6 @@ namespace Tables {
             };
         };
         showMap: boolean;
-        mapUrl?: string;
         movieUrl: string;
         movieCoverUrl: string;
         participants: PersonOrID[];

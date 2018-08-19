@@ -2,7 +2,7 @@ import * as express from 'express';
 import { Word } from '../components/word';
 import { WordDocument } from '../components/word/model';
 
-export const dictionaryRouter = express.Router();
+export const router = express.Router();
 
 function addLinksToWord(word: WordDocument): WordDocument {
     for (let i in word.definitions) {
@@ -21,6 +21,6 @@ function addLinksToWords(words: WordDocument[]): WordDocument[] {
     return words.map(word => addLinksToWord(word));
 }
 
-dictionaryRouter.get('/', async (req, res) => {
+router.get('/', async (req, res) => {
     res.render('dictionary', { dictionary: addLinksToWords(await Word.getWords()) });
 });

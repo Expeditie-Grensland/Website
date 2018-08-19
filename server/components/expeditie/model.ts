@@ -24,7 +24,6 @@ const schema = new mongoose.Schema({
         }
     },
     showMap: Boolean,
-    mapUrl: String,
     movieUrl: String,
     movieCoverUrl: String,
     finished: Boolean,
@@ -47,7 +46,6 @@ export interface IExpeditie {
         };
     };
     showMap: boolean;
-    mapUrl?: string;
     movieUrl: string;
     movieCoverUrl: string;
     finished?: boolean;

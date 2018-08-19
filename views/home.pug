@@ -70,7 +70,7 @@ block body
                         button.link.btn.btn-default.btn-secondary(data-toggle='modal' href='.movieModal' + expeditie.nameShort)
                             | #{t_ucf('movie')}
                     if expeditie.showMap
-                        a.link.btn.btn-default.btn-primary(href= expeditie.mapUrl role="button")
+                        a.link.btn.btn-default.btn-primary(href=expeditie.nameShort role="button")
                             | #{t_ucf('map')}
 
     a.arrow.right
