@@ -1,5 +1,6 @@
 import * as mongoose from "mongoose";
 import { DocumentOrID } from '../document/util';
+import { Word } from '.';
 
 export const WordID = 'Word';
 
@@ -25,11 +26,7 @@ const schema = new mongoose.Schema(
 );
 
 schema.virtual('simple').get(function() {
-    return this.word
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^0-9a-z]+/gi, '-');
+    return Word.generateSimple(this.word);
 });
 
 schema.index({ word: 1 }, { collation: { locale: 'nl', strength: 1 } });
