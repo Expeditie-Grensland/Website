@@ -1,21 +1,18 @@
 import * as express from 'express';
 
 import { Expeditie } from '../components/expeditie';
-import getExpeditiesCached = Expeditie.getExpeditiesCached;
 
-export const router = express.Router();
+export const router = express.Router({ mergeParams: true });
 
-router.get('/:expeditieID', async (req, res) => {
-    const expedities = await getExpeditiesCached();
+router.get('/', async (req, res) => {
+    const expedities = await Expeditie.getExpeditiesCached();
+    const expeditie = expedities.find(e => e.showMap && e.nameShort === req.params.expeditie);
 
-    for (let expeditie of expedities) {
-        if (expeditie.showMap && expeditie.nameShort === req.params.expeditieID) {
-            res.render('expeditie', {
-                expeditie: expeditie
-            });
-            break;
-        }
+    if (expeditie !== undefined) {
+        res.render('expeditie', {
+            expeditie: expeditie,
+        });
+    } else {
+        res.sendStatus(404);
     }
-
-    if (!res.headersSent) res.sendStatus(404);
 });

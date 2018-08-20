@@ -15,6 +15,6 @@ export namespace Routes {
         if (app.get('env') == 'development') app.use('/debug', debugRouter);
 
         app.use('/', homeRouter);
-        app.use('/', expeditieRouter);
+        app.use('/:expeditie', expeditieRouter);
     }
 }
