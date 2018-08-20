@@ -57,7 +57,7 @@ export namespace Setup {
 
         (<any>mongoose).Promise = Promise;
         mongoose.connect(
-            'mongodb://' + mConfig.host + ':' + mConfig.port + '/' + mConfig.db,
+            mConfig.url,
             {
                 user: mConfig.user,
                 pass: mConfig.pass,

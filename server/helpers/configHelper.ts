@@ -6,9 +6,7 @@ export namespace ConfigHelper {
     export type Config = {
         port: number;
         mongo: {
-            host: string;
-            port: number;
-            db: string;
+            url: string;
             user: string;
             pass: string;
         };

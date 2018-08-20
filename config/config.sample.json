@@ -2,9 +2,7 @@
   "port": 3000,
 
   "mongo": {
-    "host": "localhost",
-    "port": 27017,
-    "db": "expeditie-grensland",
+    "url": "mongodb://localhost:27017/expeditie-grensland",
     "user": "expeditie-grensland",
     "pass": ""
   }
