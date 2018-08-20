@@ -4,7 +4,7 @@ import * as socketio from 'socket.io';
 import { Expeditie } from '../components/expeditie';
 import { Route } from '../components/route';
 import { SocketIDs } from './socketHandler';
-import { LocationDocument } from '../components/location/model';
+import { LocationDocument } from '../components/location/model'
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -54,14 +54,14 @@ export namespace Sockets {
 
                 batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, skip, count);
 
-                console.log(sprintf('Sending batch %d with %d locations.', batchN + 1, batch.length));
+                console.info(sprintf('Sending batch %d with %d locations.', batchN + 1, batch.length));
                 io.emit(SocketIDs.GET_LOCATIONS, name, batchN + 1, batch);
 
                 batchN++;
             } while (batch.length > 0);
 
             io.emit(SocketIDs.LOCATIONS_DONE, name);
-            console.log('Location sending done.');
+            console.info('Location sending done.');
         };
     }
 }

@@ -25,4 +25,4 @@ ColorHelper.init();
 
 Setup.startServer(server, config.port);
 
-console.log('Server started on port: ' + config.port);
+console.info('Server started on port: ' + config.port);

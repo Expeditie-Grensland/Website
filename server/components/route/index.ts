@@ -248,7 +248,7 @@ export namespace Route {
                 const peopleNotInExpeditie = personIds.filter(p => !Util.getObjectIDs(expeditie.participants).includes(p));
 
                 if (peopleNotInExpeditie.length > 0) {
-                    console.log('Adding as participants: ' + peopleNotInExpeditie);
+                    console.info('Adding as participants: ' + peopleNotInExpeditie);
                     return Expeditie.addParticipants(peopleNotInExpeditie)(expeditie);
                 } else {
                     return expeditie;

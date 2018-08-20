@@ -33,7 +33,7 @@ export namespace Expeditie {
     function expeditiesChanged<T>(arg: T): Promise<T> {
         expeditiesCached = getExpedities();
 
-        console.log('Invalidating Expeditie cache.');
+        console.info('Invalidating Expeditie cache.');
 
         return Promise.resolve(arg);
     }
@@ -55,6 +55,10 @@ export namespace Expeditie {
     export function createExpeditie(expeditie: IExpeditie): Promise<ExpeditieDocument> {
         return Promise.resolve()
             .then(() => {
+                if (expeditie.finished === undefined) {
+                    expeditie.finished = false;
+                }
+
                 if (expeditie.route == undefined) {
                     return Route.createRoute({})
                         .then(route => {
@@ -63,13 +67,9 @@ export namespace Expeditie {
                             return expeditie;
                         })
                         .catch(err => {
-                            console.log('Creating route failed! ' + err);
+                            console.warn('Creating route failed!', err);
                             return expeditie;
                         });
-                }
-
-                if (expeditie.finished === undefined) {
-                    expeditie.finished = false;
                 }
 
                 return expeditie;

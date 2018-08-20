@@ -13,7 +13,7 @@ export namespace GpxHelper {
                 const personId = Util.getObjectID(person);
                 const track = data.tracks[0];
 
-                console.log('Track length: ' + track.length());
+                console.info('Track length: ' + track.length());
 
                 const locations: ILocation[] = [];
 

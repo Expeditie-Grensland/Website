@@ -68,7 +68,7 @@ export namespace Setup {
 
         db.on('error', console.error.bind(console, 'connection error:'));
         db.once('open', function() {
-            console.log('Connected to models');
+            console.info('Connected to models');
         });
 
         addAsMiddleware(app, 'db', db);
@@ -85,6 +85,6 @@ export namespace Setup {
 
 // TODO: Came from routes/debug (only load if env == devlopment)
 // process.on('unhandledRejection', (reason, p) => {
-//     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+//     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
 //     // application specific logging, throwing an error, or other logic here
 // });
