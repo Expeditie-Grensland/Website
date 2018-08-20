@@ -6,15 +6,17 @@ import { router as homeRouter } from './home';
 import { router as apiRouter } from './api';
 import { router as dictionaryRouter } from './dictionary';
 
-export namespace Routes {
-    export function init(app: express.Express) {
-        app.use('/api', apiRouter);
-        app.use('/dictionary', dictionaryRouter);
-        app.use('/woordenboek', dictionaryRouter);
+export function Router(dev: boolean): express.Router {
+    const router = express.Router();
 
-        if (app.get('env') == 'development') app.use('/debug', debugRouter);
+    router.use('/api', apiRouter);
+    router.use('/dictionary', dictionaryRouter);
+    router.use('/woordenboek', dictionaryRouter);
 
-        app.use('/', homeRouter);
-        app.use('/:expeditie', expeditieRouter);
-    }
+    if (dev) router.use('/debug', debugRouter);
+
+    router.use('/', homeRouter);
+    router.use('/:expeditie', expeditieRouter);
+
+    return router;
 }

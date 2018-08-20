@@ -52,8 +52,8 @@ export namespace Setup {
         app.use(express.static(publicDir));
     }
 
-    export function setupDatabase(app: express.Express, mConfig: ConfigHelper.MongoConfig) {
-        mongoose.set('debug', app.get('env') == 'development');
+    export function setupDatabase(app: express.Express, mConfig: ConfigHelper.MongoConfig, dev: boolean) {
+        mongoose.set('debug', dev);
 
         (<any>mongoose).Promise = Promise;
         mongoose.connect(

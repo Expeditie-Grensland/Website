@@ -4,7 +4,7 @@ import { Expeditie } from '../components/expeditie';
 
 export const router = express.Router({ mergeParams: true });
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     const expedities = await Expeditie.getExpeditiesCached();
     const expeditie = expedities.find(e => e.showMap && e.nameShort === req.params.expeditie);
 
@@ -13,6 +13,6 @@ router.get('/', async (req, res) => {
             expeditie: expeditie,
         });
     } else {
-        res.sendStatus(404);
+        next();
     }
 });
