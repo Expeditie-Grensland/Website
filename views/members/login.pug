@@ -1,0 +1,12 @@
+extends ../structure/simple
+
+block title
+    title Expeditie - Log In
+
+block body
+    form(action='/members/login' method='post')
+        label(for='username')
+        input(type='text' id='username' name='username')
+        label(for='password')
+        input(type='password' id='password' name='password')
+        input(type='submit' value='Log in')

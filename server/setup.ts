@@ -7,8 +7,13 @@ import * as FileSystemBackend from 'i18next-node-fs-backend';
 import * as mongoose from 'mongoose';
 import * as path from 'path';
 import * as stylus from 'stylus';
+import * as passport from 'passport';
+import * as ldapauth from 'passport-ldapauth';
 
-import { ConfigHelper } from './helpers/configHelper';
+import { config, MongoConfig } from './helpers/configHelper';
+import { Person } from './components/person';
+import { Util } from './components/document/util';
+import { PersonDocument } from './components/person/model';
 
 export namespace Setup {
     export function startServer(server: http.Server, port: number) {
@@ -38,8 +43,8 @@ export namespace Setup {
             });
         app.use(i18nextMiddleware.handle(i18next));
 
-        app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '80MB' })); //TODO change this to something more sensible after importing.
+        app.use(bodyParser.urlencoded({ extended: false }));
 
         app.use(
             stylus.middleware({
@@ -50,9 +55,18 @@ export namespace Setup {
         );
 
         app.use(express.static(publicDir));
+
+        passport.use(new ldapauth({
+            server: config.ldap
+        }, async (user, done) => done(null, await Person.getPersonByLdapId(user.ipaUniqueID))));
+
+        passport.serializeUser((user: PersonDocument, done) => done(null, Util.getObjectID(user)));
+        passport.deserializeUser((userId: string, done) => done(null, Person.getPersonById(userId)));
+
+        app.use(passport.initialize());
     }
 
-    export function setupDatabase(app: express.Express, mConfig: ConfigHelper.MongoConfig, dev: boolean) {
+    export function setupDatabase(app: express.Express, mConfig: MongoConfig, dev: boolean) {
         mongoose.set('debug', dev);
 
         (<any>mongoose).Promise = Promise;
@@ -67,7 +81,7 @@ export namespace Setup {
         const db = mongoose.connection;
 
         db.on('error', console.error.bind(console, 'connection error:'));
-        db.once('open', function() {
+        db.once('open', function () {
             console.info('Connected to models');
         });
 

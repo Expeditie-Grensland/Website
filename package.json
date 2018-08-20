@@ -31,6 +31,8 @@
     "i18next-express-middleware": "^1.2.1",
     "i18next-node-fs-backend": "^1.2.1",
     "mongoose": "^5.2.8",
+    "passport": "^0.4.0",
+    "passport-ldapauth": "^2.0.0",
     "pug": "^2.0.3",
     "socket.io": "^2.1.1",
     "sprintf-js": "^1.1.1",
