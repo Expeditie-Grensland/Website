@@ -1,7 +1,13 @@
+import * as express from 'express';
 import * as ldapauth from 'ldapauth-fork';
+import * as redisStore from 'connect-redis';
 
-export const config = require('../../config/config.json');
-config.ldap.searchAttributes = ['ipaUniqueID'];
+export const config: Config = require('../../config/config.json');
+if (config.ldap.searchAttributes == undefined) {
+    config.ldap.searchAttributes = [config.ldap.idField];
+} else {
+    config.ldap.searchAttributes.push(config.ldap.idField);
+}
 
 export type Config = {
     port: number;
@@ -10,10 +16,15 @@ export type Config = {
         user: string;
         pass: string;
     };
-    ldap: ldapauth.Options;
+    ldap: ldapauth.Options & {
+        idField: string;
+    };
+    session: {
+        secret: string;
+        cookie: express.CookieOptions;
+        useRedis: boolean;
+    },
+    redis: redisStore.RedisStoreOptions
 };
-
-export type MongoConfig = Config['mongo'];
-export type LDAPConfig = Config['ldap'];
 
 // TODO: config validation

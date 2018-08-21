@@ -1,12 +1,19 @@
 import * as express from 'express';
-import * as passport from 'passport';
 
 export const router = express.Router();
 
-router.get('/login', (req, res) => {
-    res.render('members/login');
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
 });
 
-router.post('/login', passport.authenticate('ldapauth'), (req, res) => {
-    res.send(req.user);
+router.use((req, res, next) => {
+    if (req.isAuthenticated()) {
+        next();
+    }
+    else res.redirect('/login');
+});
+
+router.get('/', (req, res) => {
+    res.send(req.user.name + " is authenticated");
 });

@@ -13,6 +13,20 @@
     "bindCredentials": "",
     "searchBase": "cn=users,cn=accounts,dc=example,dc=org",
     "searchScope": "one",
-    "searchFilter": "(mailAlternateAddress={{username}}@expeditiegrensland.nl)"
+    "searchFilter": "(mailAlternateAddress={{username}}@expeditiegrensland.nl)",
+    "idField": "ipaUniqueID"
+  },
+
+  "session": {
+    "secret": "something very secret",
+    "cookie": {
+      "secure": true
+    },
+    "useRedis": true
+  },
+
+  "redis": {
+    "url": "redis://localhost:6379/7",
+    "ttl": 864000
   }
 }
