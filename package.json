@@ -4,13 +4,7 @@
   "description": "The Expeditie Grensland website.",
   "main": "server-dist/server.js",
   "scripts": {
-    "clean:server": "rimraf server-dist",
-    "clean:client": "rimraf public/scripts-dist",
-    "clean:styles": "rimraf public/styles-dist",
-    "build:server": "tsc -p server/tsconfig.json",
-    "build:client": "tsc -p public/scripts/tsconfig.json",
-    "start:server": "node server-dist/server.js",
-    "start": "run-s clean:* build:* start:server"
+    "start": "node server-dist/server.js"
   },
   "author": "Expeditie Admins",
   "contributors": [
@@ -60,7 +54,6 @@
     "gulp-newer": "^1.4.0",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-typescript": "^5.0.0-alpha.3",
-    "npm-run-all": "^4.1.3",
     "typescript": "^3.0.1"
   }
 }
