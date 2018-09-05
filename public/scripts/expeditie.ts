@@ -27,7 +27,7 @@ $(document).ready(() => {
         const browserLanguage = (navigator.languages ? navigator.languages[0] : navigator.language).split('-')[0];
 
         //There's a bug in MapboxLanguage that crashes if the browser language is a non-supported language.
-        if (!mapLanguage.supportedLanguages.includes(browserLanguage)) {
+        if (mapLanguage.supportedLanguages.indexOf(browserLanguage) < 0) {
             mapLanguage._defaultLanguage = 'en';
 
             console.log('Browser language not supported by mapbox. Switching to English.');

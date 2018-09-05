@@ -1,10 +1,9 @@
 import * as express from 'express';
 import * as socketio from 'socket.io';
 
-import { Expeditie } from '../components/expeditie';
-import { Route } from '../components/route';
-import { SocketIDs } from './socketHandler';
-import { LocationDocument } from '../components/location/model'
+import {Expeditie} from '../components/expeditie';
+import {Route} from '../components/route';
+import {SocketIDs} from './socketHandler';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -43,21 +42,21 @@ export namespace Sockets {
             const expeditie = await Expeditie.getExpeditieByNameShort(name);
             const initBatch = 100;
 
-            let batch: LocationDocument[];
+            let batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, 0, initBatch);
             let batchN = 0;
 
             do {
                 if (!io.connected) return;
 
+                batchN++;
+
+                console.info(sprintf('Sending batch %d with %d locations.', batchN, batch.length));
+                io.emit(SocketIDs.GET_LOCATIONS, name, batchN, batch);
+
                 let skip = initBatch * (2 ** batchN - 1);
                 let count = initBatch * 2 ** batchN;
 
                 batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, skip, count);
-
-                console.info(sprintf('Sending batch %d with %d locations.', batchN + 1, batch.length));
-                io.emit(SocketIDs.GET_LOCATIONS, name, batchN + 1, batch);
-
-                batchN++;
             } while (batch.length > 0);
 
             io.emit(SocketIDs.LOCATIONS_DONE, name);
