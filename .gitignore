@@ -1,6 +1,8 @@
 node_modules/
 
 /public/content/
+/public/favicon/**/*
+!/public/favicon/source-icon.png
 /public/scripts-dist/
 /public/styles-dist/
 /server-dist/
