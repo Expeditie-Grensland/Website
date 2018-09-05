@@ -8,6 +8,8 @@ import { config } from './helpers/configHelper';
 import { SocketHandler } from './sockets/socketHandler';
 import { ColorHelper } from './helpers/colorHelper';
 
+import 'source-map-support/register'
+
 Error.stackTraceLimit = Infinity;
 
 const app = express();
