@@ -52,6 +52,7 @@
     "gulp-sourcemaps": "^2.6.4",
     "gulp-stylus": "^2.7.0",
     "gulp-typescript": "^5.0.0-alpha.3",
+    "gulp-uglify": "^3.0.1",
     "typescript": "^3.0.1"
   }
 }

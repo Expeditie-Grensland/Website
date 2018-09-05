@@ -6,6 +6,7 @@ const newer = require('gulp-newer');
 const sourcemaps = require('gulp-sourcemaps');
 const stylus = require('gulp-stylus');
 const typescript = require('gulp-typescript');
+const uglify = require('gulp-uglify');
 
 
 const clientProject = typescript.createProject('public/scripts/tsconfig.json');
@@ -16,6 +17,7 @@ const clientBuild = function () {
         .pipe(sourcemaps.init())
         .pipe(clientProject())
         .js
+        .pipe(uglify())
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('public/scripts-dist/'));
 };
