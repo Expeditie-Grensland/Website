@@ -5,9 +5,9 @@ namespace MapHandler {
 
     let route: Tables.Route = null;
     let boundingBox: Tables.RouteBoundingBox = null;
-    const nodeMap: Map<string, Tables.RouteNode> = new Map();
-    const locationMap: Map<string, Tables.Location> = new Map();
-    const locationNodeMap: Map<string, string[]> = new Map(); //Map RouteNode ids to location ids.
+    const nodeMap: { [key:string]: Tables.RouteNode } = {};
+    const locationMap: { [key:string]: Tables.Location } = {};
+    const locationNodeMap: { [key:string]: string[] } = {}; //Map RouteNode ids to location ids.
 
     let mapStyleLoaded = false;
 
@@ -31,9 +31,9 @@ namespace MapHandler {
 
     export function addNodes(nodes: Tables.RouteNode[]) {
         for (let node of nodes) {
-            nodeMap.set(node._id, node);
+            nodeMap[node._id] = node;
 
-            locationNodeMap.set(node._id, []);
+            locationNodeMap[node._id] = [];
 
             //TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
             map.addLayer({
@@ -52,12 +52,12 @@ namespace MapHandler {
 
     export function addLocations(locations: Tables.Location[]) {
         for (let location of locations) {
-            const nodeLocations = locationNodeMap.get(<string>location.node);
+            const nodeLocations = locationNodeMap[<string>location.node];
 
             nodeLocations.push(location._id);
 
-            locationMap.set(location._id, location);
-            locationNodeMap.set(<string>location.node, nodeLocations);
+            locationMap[location._id] = location;
+            locationNodeMap[<string>location.node] = nodeLocations;
         }
 
         if (mapStyleLoaded) updateMap();
@@ -85,10 +85,11 @@ namespace MapHandler {
     export function generateLocationsGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.LineString> {
         const features: GeoJSON.Feature<GeoJSON.LineString>[] = [];
 
-        for (let node of nodeMap.values()) {
+        for (let key of Object.keys(nodeMap)) {
+            const node = nodeMap[key]
+
             const coords: mapboxgl.LngLat[] = [];
-            const nodeLocations = locationNodeMap
-                .get(node._id)
+            const nodeLocations = locationNodeMap[node._id]
                 .map(l => getLocation(l))
                 .sort((l1, l2) => l1.timestamp - l2.timestamp);
 
@@ -129,10 +130,10 @@ namespace MapHandler {
     }
 
     export function getNode(_id: string) {
-        return nodeMap.get(_id);
+        return nodeMap[_id];
     }
 
     export function getLocation(_id: string) {
-        return locationMap.get(_id);
+        return locationMap[_id];
     }
 }
