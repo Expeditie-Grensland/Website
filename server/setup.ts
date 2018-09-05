@@ -6,7 +6,6 @@ import * as i18nextMiddleware from 'i18next-express-middleware';
 import * as FileSystemBackend from 'i18next-node-fs-backend';
 import * as mongoose from 'mongoose';
 import * as path from 'path';
-import * as stylus from 'stylus';
 
 import { ConfigHelper } from './helpers/configHelper';
 
@@ -40,14 +39,6 @@ export namespace Setup {
 
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '80MB' })); //TODO change this to something more sensible after importing.
-
-        app.use(
-            stylus.middleware({
-                src: path.join(publicDir, 'styles'),
-                dest: path.join(publicDir, 'styles-dist'),
-                compress: true
-            })
-        );
 
         app.use(express.static(publicDir));
     }
