@@ -1,4 +1,4 @@
-extends structure/simple.pug
+extends default.pug
 
 block title
     title Expeditie - Woordenboek
@@ -6,9 +6,7 @@ block title
 block scripts
     script(src="/scripts-dist/dictionary.js")
 
-block styles
-    include includes/styles.pug
-
+append styles
     link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700&subset=latin-ext')
     link(rel="stylesheet" href="/styles-dist/dictionary.css")
 
