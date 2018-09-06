@@ -15,5 +15,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/', (req, res) => {
-    res.send(req.user.name + " is authenticated");
+    res.render('members/index', {
+        user: req.user
+    });
 });

@@ -14,7 +14,7 @@ export function Router(dev: boolean): express.Router {
     router.use('/api', apiRouter);
     router.use('/dictionary', dictionaryRouter);
     router.use('/woordenboek', dictionaryRouter);
-    router.use('/login', loginRouter)
+    router.use('/login', loginRouter);
     router.use('/members', membersRouter);
 
     if (dev) router.use('/debug', debugRouter);
