@@ -1,3 +1,7 @@
+/// <reference path="../map/loadingBar.ts" />
+/// <reference path="../map/mapHandler.ts" />
+/// <reference path="socketHandler.ts" />
+
 namespace Sockets {
     export function getRoute(expeditieNameShort: string, route: Tables.Route) {
         LoadingBar.setLoadingText('Received route.');

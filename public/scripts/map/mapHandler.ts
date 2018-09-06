@@ -1,3 +1,5 @@
+/// <reference path="../database/Tables.ts" />
+
 namespace MapHandler {
     const LOCATION_SOURCE = 'locations';
 
@@ -11,7 +13,7 @@ namespace MapHandler {
 
     let mapStyleLoaded = false;
 
-    export function init(mapboxMap: mapboxgl.Map) {
+    export function init(mapboxMap: mapboxgl.Map, expeditieNameShort: string) {
         map = mapboxMap;
 
         map.on('style.load', onMapStyleLoad);

@@ -1,3 +1,5 @@
+/// <reference path="sockets.ts" />
+
 declare const io;
 
 namespace SocketIDs {

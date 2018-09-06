@@ -1,3 +1,7 @@
+/// <reference path="map/loadingBar.ts" />
+/// <reference path="map/mapHandler.ts" />
+/// <reference path="sockets/socketHandler.ts" />
+
 declare var MapboxLanguage: any;
 declare var expeditieNameShort: string;
 
@@ -45,5 +49,5 @@ $(document).ready(() => {
     });
 
     SocketHandler.init();
-    MapHandler.init(map);
+    MapHandler.init(map, expeditieNameShort);
 });
