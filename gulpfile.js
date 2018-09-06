@@ -11,8 +11,8 @@ const uglify = require('gulp-uglify');
 
 const clientProject = typescript.createProject('public/scripts/tsconfig.json');
 
-const clientBuild = function () {
-    return clientProject.src()
+const clientBuild = () =>
+    clientProject.src()
         .pipe(newer({dest: 'public/scripts-dist/', ext: '.js'}))
         .pipe(sourcemaps.init())
         .pipe(clientProject())
@@ -20,17 +20,15 @@ const clientBuild = function () {
         .pipe(uglify())
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('public/scripts-dist/'));
-};
 
-const clientClean = function () {
-    return del([
+const clientClean = () =>
+    del([
         'public/scripts-dist/**/*'
     ]);
-};
 
 
-const faviconBuild = function () {
-    return gulp.src('public/favicon/source-icon.png')
+const faviconBuild = () =>
+    gulp.src('public/favicon/source-icon.png')
         .pipe(newer('public/favicon/favicon.ico'))
         .pipe(favicons({
             appName: 'Expeditie Grensland',
@@ -41,41 +39,38 @@ const faviconBuild = function () {
             start_url: '/',
             html: 'include.html',
             pipeHTML: true,
-            replace: true
+            replace: true,
+            loggin: true
         }))
         .on('error', fancyLog)
         .pipe(gulp.dest('public/favicon/'));
-};
 
-const faviconClean = function () {
-    return del([
+const faviconClean = () =>
+    del([
         'public/favicon/**/*',
         '!public/favicon/source-icon.png'
     ]);
-};
 
 
 const serverProject = typescript.createProject('server/tsconfig.json');
 
-const serverBuild = function () {
-    return serverProject.src()
+const serverBuild = () =>
+    serverProject.src()
         .pipe(newer({dest: 'server-dist/', ext: '.js'}))
         .pipe(sourcemaps.init())
         .pipe(serverProject())
         .js
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('server-dist/'))
-};
+        .pipe(gulp.dest('server-dist/'));
 
-const serverClean = function () {
-    return del([
+const serverClean = () =>
+    del([
         'server-dist/**/*'
     ]);
-};
 
 
-const styleBuild = function () {
-    return gulp.src('public/styles/**/*.styl')
+const styleBuild = () =>
+    gulp.src('public/styles/**/*.styl')
         .pipe(newer({dest: 'public/styles-dist/', ext: '.css', extra: 'server-dist/**/*.css'}))
         .pipe(sourcemaps.init())
         .pipe(stylus({
@@ -84,13 +79,10 @@ const styleBuild = function () {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('public/styles-dist/'));
 
-};
-
-const styleClean = function () {
-    return del([
+const styleClean = () =>
+    del([
         'public/styles-dist/**/*'
     ]);
-};
 
 
 const build = gulp.parallel(clientBuild, faviconBuild, serverBuild, styleBuild);
