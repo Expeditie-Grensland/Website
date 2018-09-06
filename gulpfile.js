@@ -4,6 +4,7 @@ const fancyLog = require('fancy-log');
 const gulp = require('gulp');
 const newer = require('gulp-newer');
 const sourcemaps = require('gulp-sourcemaps');
+const childProcess = require('child_process');
 const stylus = require('gulp-stylus');
 const typescript = require('gulp-typescript');
 const uglify = require('gulp-uglify');
@@ -71,7 +72,7 @@ const serverClean = () =>
 
 const styleBuild = () =>
     gulp.src('public/styles/**/*.styl')
-        .pipe(newer({dest: 'public/styles-dist/', ext: '.css', extra: 'server-dist/**/*.css'}))
+        .pipe(newer({dest: 'public/styles-dist/', ext: '.css', extra: 'public/styles-dist/**/*.css'}))
         .pipe(sourcemaps.init())
         .pipe(stylus({
             compress: true
@@ -85,8 +86,33 @@ const styleClean = () =>
     ]);
 
 
+let node;
+
+const server = async () => {
+    if (node) node.kill();
+
+    node = childProcess.spawn('node', ['server-dist/server.js'], {stdio: 'inherit'});
+
+    node.on('close', () => {
+        fancyLog('Node closed, waiting for changes...');
+    });
+};
+
+process.on('exit', () => {
+    if (node) node.kill()
+});
+
+
 const build = gulp.parallel(clientBuild, faviconBuild, serverBuild, styleBuild);
+
 const clean = gulp.parallel(clientClean, faviconClean, serverClean, styleBuild);
+
+const watch = gulp.series(build, server, async () => {
+    gulp.watch('public/scripts/**/*.ts', clientBuild);
+    gulp.watch('public/favicon/source-icon.png', faviconBuild);
+    gulp.watch('server/**/*.ts', {delay: 2500}, gulp.series(serverBuild, server));
+    gulp.watch('public/styles/**/*.styl', styleBuild);
+});
 
 
 module.exports = {
@@ -99,5 +125,7 @@ module.exports = {
     styleBuild,
     styleClean,
     build,
-    clean
+    clean,
+    watch,
+    default: watch
 };
