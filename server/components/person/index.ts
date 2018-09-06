@@ -19,6 +19,10 @@ export namespace Person {
         return PersonSchema.find({ _id: { $in: ids } }).exec();
     }
 
+    export function getPersonByLdapId(id: string): Promise<PersonDocument> {
+        return PersonSchema.findOne({ldapId: id}).exec();
+    }
+
     export function addExpeditie(expeditie: ExpeditieOrID): (person: PersonOrID) => Promise<PersonDocument> {
         return person =>
             PersonSchema.findByIdAndUpdate(

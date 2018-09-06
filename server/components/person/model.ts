@@ -13,7 +13,8 @@ const schema = new mongoose.Schema({
     email: String,
     name: String,
     expedities: [reference(ExpeditieID)],
-    language: String
+    language: String,
+    ldapId: String
 });
 
 export interface IPerson {
@@ -21,6 +22,7 @@ export interface IPerson {
     name: string;
     expedities?: ExpeditieOrID[];
     language?: string;
+    ldapId?: string;
 }
 
 export interface PersonDocument extends IPerson, mongoose.Document {}

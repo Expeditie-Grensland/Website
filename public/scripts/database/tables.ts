@@ -52,6 +52,7 @@ namespace Tables {
         name: string;
         expedities?: ExpeditieOrID[];
         language?: string;
+        ldapId?: string;
     }
 
     export interface Route {

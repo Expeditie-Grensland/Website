@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as http from 'http';
-import * as socket from 'socket.io';
+import * as socketio from 'socket.io';
 
 import { Setup } from './setup';
 import { Router } from './routes';
@@ -14,12 +14,14 @@ Error.stackTraceLimit = Infinity;
 
 const app = express();
 const server = http.createServer(app);
-const io = socket(server);
+const io = socketio(server);
 const dev = (app.get('env') == 'development');
 
 // FIXME: if mongo can't reach models, server crashes
 Setup.setupExpress(app, __dirname + '/../');
-Setup.setupDatabase(app, config.mongo, dev);
+Setup.setupSession(app, io);
+Setup.addAuthMiddleware(app);
+Setup.setupDatabase(app, dev);
 
 SocketHandler.bindHandlers(app, io);
 
