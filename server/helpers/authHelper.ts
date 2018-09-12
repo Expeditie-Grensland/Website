@@ -5,7 +5,7 @@ import { PersonOrID } from '../components/person/model';
 import { Util } from '../components/document/util';
 
 export namespace AuthHelper {
-    export const generateJWT = (person: PersonOrID, callback: jwt.SignCallback): void => {
+    export const generateJwt = (person: PersonOrID, callback: jwt.SignCallback): void => {
         jwt.sign(
             {
                 id: Util.getObjectID(person)
@@ -17,7 +17,7 @@ export namespace AuthHelper {
             callback);
     };
 
-    export const parseJWT = (token: string, callback: jwt.VerifyCallback): void => {
+    export const parseJwt = (token: string, callback: jwt.VerifyCallback): void => {
         jwt.verify(
             token,
             config.session.secret,

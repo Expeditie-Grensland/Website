@@ -20,7 +20,7 @@ export namespace LocationHelper {
         const area = await calculateVisualArea(location);
         const lastLocations = await getLastLocationsCached(location.node);
 
-        await Location.setLocationVisualArea(area)(lastLocations[1]);
+        await Location.setVisualArea(area)(lastLocations[1]);
         await addLocation(location);
 
         return location;
@@ -106,7 +106,7 @@ export namespace LocationHelper {
         let lastLocations = lastLocationsMap.get(Util.getObjectID(node));
 
         if (lastLocations === undefined) {
-            lastLocations = Location.getLocationsInNodeByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
+            lastLocations = Location.getInNodeByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
 
             lastLocationsMap.set(Util.getObjectID(node), lastLocations);
         }

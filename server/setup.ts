@@ -76,7 +76,7 @@ export namespace Setup {
         passport.use(new ldapauth({
             server: config.ldap
         }, (user, done) => {
-            Person.getPersonByLdapId(user.ipaUniqueID)
+            Person.getByLdapId(user.ipaUniqueID)
                 .then((p) => {
                     done(null, p);
                 });
@@ -86,7 +86,7 @@ export namespace Setup {
             done(null, Util.getObjectID(user))
         });
         passport.deserializeUser((userId: string, done) => {
-            Person.getPersonById(userId).then((p) => done(null, p));
+            Person.getById(userId).then((p) => done(null, p));
         });
 
         app.use(passport.initialize());

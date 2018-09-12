@@ -23,5 +23,5 @@ function addLinksToWords(words: WordDocument[]): WordDocument[] {
 }
 
 router.get('/', async (req, res) => {
-    res.render('dictionary', { dictionary: addLinksToWords(await Word.getWords()) });
+    res.render('dictionary', { dictionary: addLinksToWords(await Word.getAll()) });
 });

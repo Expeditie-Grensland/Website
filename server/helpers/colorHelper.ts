@@ -24,7 +24,7 @@ export namespace ColorHelper {
     let nodesCached: Map<string, IRouteNode[]> = new Map();
 
     export async function init() {
-        const routes = await Route.getRoutes();
+        const routes = await Route.getAll();
 
         for (let route of routes) {
             nodesCached.set(route._id, await Route.getNodes(route));

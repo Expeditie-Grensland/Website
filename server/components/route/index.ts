@@ -9,19 +9,19 @@ import { ExpeditieDocument, ExpeditieOrID } from '../expeditie/model';
 import { PersonOrID } from '../person/model';
 
 export namespace Route {
-    export function createRoute(route: IRoute): Promise<RouteDocument> {
+    export function create(route: IRoute): Promise<RouteDocument> {
         return RouteSchema.create(route);
     }
 
-    export function getRouteById(_id: string): Promise<RouteDocument> {
+    export function getById(_id: string): Promise<RouteDocument> {
         return RouteSchema.findById(_id).exec();
     }
 
-    export function getRoute(route: RouteOrID): Promise<RouteDocument> {
-        return Util.getDocument(route, getRouteById);
+    export function getDocument(route: RouteOrID): Promise<RouteDocument> {
+        return Util.getDocument(route, getById);
     }
 
-    export function getRoutes(): Promise<RouteDocument[]> {
+    export function getAll(): Promise<RouteDocument[]> {
         return RouteSchema.find({}).exec();
     }
 
@@ -50,16 +50,16 @@ export namespace Route {
     }
 
     export function getCurrentNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
-        return getRoute(route).then(route => getRouteNodes(route.currentNodes));
+        return getDocument(route).then(route => getRouteNodes(route.currentNodes));
     }
 
     export function getStartingNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
-        return getRoute(route).then(route => getRouteNodes(route.startingNodes));
+        return getDocument(route).then(route => getRouteNodes(route.startingNodes));
     }
 
     export function getCurrentNodeWithPerson(person: PersonOrID): (route: RouteOrID) => Promise<RouteNodeDocument> {
         return route =>
-            getRoute(route).then(route =>
+            getDocument(route).then(route =>
                 RouteNodeSchema.findOne({
                     _id: { $in: Util.getObjectIDs(route.currentNodes) },
                     route: Util.getObjectID(route),
@@ -95,7 +95,7 @@ export namespace Route {
     export function setGroups(expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<RouteDocument> {
         const groupsIds: string[][] = groups.map(group => Util.getObjectIDs(group));
 
-        const pExpeditie = Util.getDocument(expeditie, Expeditie.getExpeditieById);
+        const pExpeditie = Util.getDocument(expeditie, Expeditie.getById);
         const pRoute = pExpeditie.then(Expeditie.getRoute);
         const pCurrentNodes = pRoute.then(Route.getCurrentNodes);
         const pStartingNodes = pRoute.then(Route.getStartingNodes);
@@ -204,7 +204,7 @@ export namespace Route {
         for (let group of oldGroups) {
             for (let personId of group) {
                 if (newGroupsPersonIds.indexOf(personId) < 0) {
-                    return Person.getPersonById(personId).then(person =>
+                    return Person.getById(personId).then(person =>
                         Promise.reject(
                             "The new groups should at least contain all people from the old groups! Person '" +
                                 person.name +
@@ -225,7 +225,7 @@ export namespace Route {
                 return value;
             });
 
-            return Person.getPersonsByIds(duplicatePeople).then(persons => {
+            return Person.getByIds(duplicatePeople).then(persons => {
                 const str = persons.map(person => person.name + ' ');
 
                 return Promise.reject("People can't exist in multiple groups at the same time! Duplicates: [" + str + ']');

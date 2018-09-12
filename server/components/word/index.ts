@@ -1,28 +1,22 @@
 import { IWord, WordDocument, WordSchema } from './model';
 
 export namespace Word {
-    export function createWord(word: IWord): Promise<WordDocument> {
+    export function create(word: IWord): Promise<WordDocument> {
         return WordSchema.create(word);
     }
 
-    export function getWord(word: string): Promise<WordDocument> {
-        return WordSchema.findOne({ word: word })
-            .collation({ locale: 'nl', strength: 1 })
-            .exec();
-    }
-
-    export function getWords(): Promise<WordDocument[]> {
+    export function getAll(): Promise<WordDocument[]> {
         return WordSchema.find({})
             .collation({ locale: 'nl', strength: 1 })
             .sort({ word: 1 })
             .exec();
     }
 
-    export function getWordById(id: string): Promise<WordDocument> {
+    export function getById(id: string): Promise<WordDocument> {
         return WordSchema.findById(id).exec();
     }
 
-    export function getWordsByIds(ids: string[]): Promise<WordDocument[]> {
+    export function getByIds(ids: string[]): Promise<WordDocument[]> {
         return WordSchema.find({ _id: { $in: ids } }).exec();
     }
 

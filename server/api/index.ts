@@ -21,7 +21,7 @@ router.post('/authenticate', (req, res, next) => {
         else if (!user)
             next([401, info]);
         else
-            AuthHelper.generateJWT(user, (err2, token) => {
+            AuthHelper.generateJwt(user, (err2, token) => {
                 if (err2)
                     next(err2);                else
 
@@ -32,11 +32,11 @@ router.post('/authenticate', (req, res, next) => {
 
 router.use((req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == 'Bearer')
-        AuthHelper.parseJWT(req.headers.authorization.split(' ')[1], (err, decoded: { id }) => {
+        AuthHelper.parseJwt(req.headers.authorization.split(' ')[1], (err, decoded: { id }) => {
             if (err)
                 next([401, err.message]);
             else {
-                Person.getPersonById(decoded.id)
+                Person.getById(decoded.id)
                     .then(person => {
                         req.user = person;
                         next();

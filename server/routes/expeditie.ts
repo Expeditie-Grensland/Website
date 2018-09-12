@@ -5,7 +5,7 @@ import { Expeditie } from '../components/expeditie';
 export const router = express.Router({ mergeParams: true });
 
 router.get('/', async (req, res, next) => {
-    const expedities = await Expeditie.getExpeditiesCached();
+    const expedities = await Expeditie.getCached();
     const expeditie = expedities.find(e => e.showMap && e.nameShort === req.params.expeditie);
 
     if (expeditie !== undefined) {

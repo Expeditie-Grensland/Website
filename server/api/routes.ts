@@ -5,7 +5,7 @@ export const router = express.Router();
 
 router.route('/')
     .get((req, res, next) => {
-        Route.getRoutes()
+        Route.getAll()
             .then(routes => {
                 if (routes)
                     res.status(200).json(routes);
@@ -17,7 +17,7 @@ router.route('/')
 
 router.route('/:id([a-f\\d]{24})')
     .get((req, res, next) => {
-        Route.getRouteById(req.params.id)
+        Route.getById(req.params.id)
             .then(route => {
                 if (route)
                     res.status(200).json(route);

@@ -5,7 +5,7 @@ export const router = express.Router();
 
 router.route('/')
     .get((req, res, next) => {
-        Word.getWords()
+        Word.getAll()
             .then(words => {
                 if (words)
                     res.status(200).json(words);
@@ -17,7 +17,7 @@ router.route('/')
 
 router.route('/:id([a-f\\d]{24})')
     .get((req, res, next) => {
-        Word.getWordById(req.params.id)
+        Word.getById(req.params.id)
             .then(word => {
                 if (word)
                     res.status(200).json(word);

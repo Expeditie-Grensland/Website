@@ -7,20 +7,20 @@ import { RouteNodeDocument, RouteNodeOrID } from '../routenode/model';
 import { PersonOrID } from '../person/model';
 
 export namespace Location {
-    export function getLocationById(_id: string): Promise<LocationDocument> {
+    export function getById(_id: string): Promise<LocationDocument> {
         return LocationSchema.findById(_id).exec();
     }
 
-    export function getLocationsById(ids: string[]): Promise<LocationDocument[]> {
+    export function getByIds(ids: string[]): Promise<LocationDocument[]> {
         return LocationSchema.find({ _id: { $in: ids } }).exec();
     }
 
-    export function getLocation(location: LocationOrID): Promise<LocationDocument> {
-        return Util.getDocument(location, getLocationById);
+    export function getDocument(location: LocationOrID): Promise<LocationDocument> {
+        return Util.getDocument(location, getById);
     }
 
-    export function getLocations(locations: LocationOrID[]): Promise<LocationDocument[]> {
-        return Util.getDocuments(locations, getLocationsById);
+    export function getDocuments(locations: LocationOrID[]): Promise<LocationDocument[]> {
+        return Util.getDocuments(locations, getByIds);
     }
 
     export function getMinMaxLatLonLocation(nodes: RouteNodeOrID[], minMax: 'min' | 'max', latLon: 'lat' | 'lon'): Promise<LocationDocument[]> {
@@ -40,8 +40,8 @@ export namespace Location {
             .exec();
     }
 
-    export async function createLocation(location: ILocation, route: RouteOrID): Promise<LocationDocument> {
-        const routeDoc = await Route.getRoute(route);
+    export async function create(location: ILocation, route: RouteOrID): Promise<LocationDocument> {
+        const routeDoc = await Route.getDocument(route);
 
         if (location.node === undefined) {
             const node = await Route.getCurrentNodeWithPerson(location.person)(routeDoc);
@@ -60,8 +60,8 @@ export namespace Location {
         return locationDoc;
     }
 
-    export async function createLocations(locations: ILocation[], route: RouteOrID): Promise<LocationDocument[]> {
-        const routeDoc = await Route.getRoute(route);
+    export async function createMany(locations: ILocation[], route: RouteOrID): Promise<LocationDocument[]> {
+        const routeDoc = await Route.getDocument(route);
 
         let currentNodeWithPerson: Map<string, Promise<RouteNodeDocument>> = new Map();
 
@@ -91,23 +91,23 @@ export namespace Location {
         return await locationsPromise;
     }
 
-    export function removeLocation(location): Promise<void> {
-        return getLocation(location)
+    export function remove(location): Promise<void> {
+        return getDocument(location)
             .then(document => {
                 return document.remove();
             })
             .then(() => null);
     }
 
-    export function setLocationVisualArea(visualArea: number): (location: LocationOrID) => Promise<LocationDocument> {
+    export function setVisualArea(visualArea: number): (location: LocationOrID) => Promise<LocationDocument> {
         return location => LocationSchema.findByIdAndUpdate(Util.getObjectID(location), { visualArea: visualArea }, { new: true }).exec();
     }
 
-    export function getLocationsInRoute(route: RouteOrID): Promise<LocationDocument[]> {
+    export function getInRoute(route: RouteOrID): Promise<LocationDocument[]> {
         return Route.getNodes(route).then(nodes => LocationSchema.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
     }
 
-    export function getLocationsInRouteSortedByArea(skip: number, limit: number): (route: RouteOrID) => Promise<LocationDocument[]> {
+    export function getInRouteSortedByArea(skip: number, limit: number): (route: RouteOrID) => Promise<LocationDocument[]> {
         return async route => {
             const nodes = await Route.getNodes(route);
 
@@ -120,7 +120,7 @@ export namespace Location {
         };
     }
 
-    export function getLocationsInNodeByTimestampDescending(node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> {
+    export function getInNodeByTimestampDescending(node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> {
         return LocationSchema.find({ node: Util.getObjectID(node) })
             .sort({ timestamp: 'desc' })
             .skip(skip)

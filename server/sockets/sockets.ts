@@ -10,7 +10,7 @@ const sprintf = require('sprintf-js').sprintf;
 export namespace Sockets {
     export function getRoute(app: express.Express, io: socketio.Socket): (expeditieName: string) => void {
         return async name => {
-            const expeditie = await Expeditie.getExpeditieByNameShort(name);
+            const expeditie = await Expeditie.getByNameShort(name);
             const route = await Expeditie.getRoute(expeditie);
 
             io.emit(SocketIDs.GET_ROUTE, name, route);
@@ -19,7 +19,7 @@ export namespace Sockets {
 
     export function getBoundingBox(app: express.Express, io: socketio.Socket): (expeditieName: string) => void {
         return async name => {
-            const expeditie = await Expeditie.getExpeditieByNameShort(name);
+            const expeditie = await Expeditie.getByNameShort(name);
             const route = await Expeditie.getRoute(expeditie);
             const boundingBox = await Route.getBoundingBox(route);
 
@@ -29,7 +29,7 @@ export namespace Sockets {
 
     export function getNodes(app: express.Express, io: socketio.Socket): (expeditieName: string) => void {
         return async name => {
-            const expeditie = await Expeditie.getExpeditieByNameShort(name);
+            const expeditie = await Expeditie.getByNameShort(name);
             const route = await Expeditie.getRoute(expeditie);
             const nodes = await Route.getNodes(route);
 
@@ -39,7 +39,7 @@ export namespace Sockets {
 
     export function getLocations(app: express.Express, io: socketio.Socket): (expeditieName: string) => void {
         return async name => {
-            const expeditie = await Expeditie.getExpeditieByNameShort(name);
+            const expeditie = await Expeditie.getByNameShort(name);
             const initBatch = 100;
 
             let batch = await Expeditie.getLocationsSortedByVisualArea(expeditie, 0, initBatch);
