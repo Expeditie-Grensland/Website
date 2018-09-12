@@ -107,7 +107,9 @@ const build = gulp.parallel(clientBuild, faviconBuild, serverBuild, styleBuild);
 
 const clean = gulp.parallel(clientClean, faviconClean, serverClean, styleBuild);
 
-const watch = gulp.series(build, server, async () => {
+const once = gulp.series(build, server);
+
+const watch = gulp.series(once, async () => {
     gulp.watch('public/scripts/**/*.ts', clientBuild);
     gulp.watch('public/favicon/source-icon.png', faviconBuild);
     gulp.watch('server/**/*.ts', {delay: 2500}, gulp.series(serverBuild, server));
@@ -126,6 +128,7 @@ module.exports = {
     styleClean,
     build,
     clean,
+    once,
     watch,
     default: watch
 };
