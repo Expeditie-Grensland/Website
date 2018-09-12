@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Person } from '../../components/person';
+import { Person } from '../components/person/index';
 
 export const router = express.Router();
 

@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Route } from '../../components/route';
+import { Route } from '../components/route/index';
 
 export const router = express.Router();
 

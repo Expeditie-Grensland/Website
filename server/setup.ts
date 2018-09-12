@@ -16,6 +16,7 @@ import { config } from './helpers/configHelper';
 import { Person } from './components/person';
 import { Util } from './components/document/util';
 import { PersonDocument } from './components/person/model';
+import { router as apiRouter } from './api';
 
 export namespace Setup {
     export function startServer(server: http.Server, port: number) {
@@ -28,6 +29,11 @@ export namespace Setup {
 
         app.set('view engine', 'pug');
         app.set('views', viewsDir);
+
+        app.use(bodyParser.json({ limit: '80MB' })); //TODO change this to something more sensible after importing.
+        app.use(bodyParser.urlencoded({ extended: true }));
+
+        app.use('/api', apiRouter);
 
         i18next
             .use(FileSystemBackend)
@@ -44,9 +50,6 @@ export namespace Setup {
                 }
             });
         app.use(i18nextMiddleware.handle(i18next));
-
-        app.use(bodyParser.json({ limit: '80MB' })); //TODO change this to something more sensible after importing.
-        app.use(bodyParser.urlencoded({ extended: true }));
 
         app.use(express.static(publicDir));
     }

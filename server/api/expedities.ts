@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Expeditie } from '../../components/expeditie';
+import { Expeditie } from '../components/expeditie/index';
 
 export const router = express.Router();
 

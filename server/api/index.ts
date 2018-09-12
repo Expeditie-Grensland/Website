@@ -1,8 +1,8 @@
 import * as express from 'express';
 import * as passport from 'passport';
 
-import { AuthHelper } from '../../helpers/authHelper';
-import { Person } from '../../components/person';
+import { AuthHelper } from '../helpers/authHelper';
+import { Person } from '../components/person/index';
 import { router as expeditiesRouter } from './expedities';
 import { router as personsRouter } from './persons';
 import { router as routesRouter } from './routes';
