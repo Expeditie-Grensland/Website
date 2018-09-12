@@ -14,7 +14,7 @@ router.get('/login', (req, res, next) => {
 });
 
 router.post('/login', passport.authenticate('ldapauth', {
-    successRedirect: '/members',
+    successReturnToOrRedirect: '/members',
     failureRedirect: '/members/login'
 }));
 
@@ -27,7 +27,10 @@ router.use((req, res, next) => {
     if (req.isAuthenticated()) {
         next();
     }
-    else res.redirect('/login');
+    else {
+        req.session.returnTo = req.originalUrl;
+        res.redirect('/members/login');
+    }
 });
 
 router.get('/', (req, res) => {
