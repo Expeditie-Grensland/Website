@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Route } from '../components/route/index';
+import { Route } from '../components/route';
 
 export const router = express.Router();
 
@@ -8,7 +8,7 @@ router.route('/')
         Route.getRoutes()
             .then(routes => {
                 if (routes)
-                    res.status(200).json({ status: 200, routes });
+                    res.status(200).json(routes);
                 else
                     next();
             })
@@ -20,7 +20,7 @@ router.route('/:id([a-f\\d]{24})')
         Route.getRouteById(req.params.id)
             .then(route => {
                 if (route)
-                    res.status(200).json({ status: 200, route });
+                    res.status(200).json(route);
                 else
                     next();
             })

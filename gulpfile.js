@@ -126,6 +126,7 @@ module.exports = {
     serverClean,
     styleBuild,
     styleClean,
+    server,
     build,
     clean,
     once,

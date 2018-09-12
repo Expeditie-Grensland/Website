@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Word } from '../components/word/index';
+import { Word } from '../components/word';
 
 export const router = express.Router();
 
@@ -8,7 +8,7 @@ router.route('/')
         Word.getWords()
             .then(words => {
                 if (words)
-                    res.status(200).json({ status: 200, words });
+                    res.status(200).json(words);
                 else
                     next();
             })
@@ -20,7 +20,7 @@ router.route('/:id([a-f\\d]{24})')
         Word.getWordById(req.params.id)
             .then(word => {
                 if (word)
-                    res.status(200).json({ status: 200, word });
+                    res.status(200).json(word);
                 else
                     next();
             })

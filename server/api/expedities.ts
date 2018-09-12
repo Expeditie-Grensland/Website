@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Expeditie } from '../components/expeditie/index';
+import { Expeditie } from '../components/expeditie';
 
 export const router = express.Router();
 
@@ -8,7 +8,7 @@ router.route('/')
         Expeditie.getExpedities()
             .then(expedities => {
                 if (expedities)
-                    res.status(200).json({ status: 200, expedities });
+                    res.status(200).json(expedities);
                 else
                     next();
             })
@@ -20,7 +20,7 @@ router.route('/:id([a-f\\d]{24})')
         Expeditie.getExpeditieById(req.params.id)
             .then(expeditie => {
                 if (expeditie)
-                    res.status(200).json({ status: 200, expeditie });
+                    res.status(200).json(expeditie);
                 else
                     next();
             })

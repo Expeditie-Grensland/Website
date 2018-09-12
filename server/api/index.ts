@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as passport from 'passport';
 
 import { AuthHelper } from '../helpers/authHelper';
-import { Person } from '../components/person/index';
+import { Person } from '../components/person';
 import { router as expeditiesRouter } from './expedities';
 import { router as personsRouter } from './persons';
 import { router as routesRouter } from './routes';
@@ -11,7 +11,7 @@ import { router as wordsRouter } from './words';
 export const router = express.Router();
 
 router.get('/', (req, res) => {
-    res.json({ status: 'ok' });
+    res.status(200).json({});
 });
 
 router.post('/authenticate', (req, res, next) => {
@@ -19,13 +19,13 @@ router.post('/authenticate', (req, res, next) => {
         if (err)
             next(err);
         else if (!user)
-            res.status(401).json({ status: 401, error: info.message });
+            next([401, info]);
         else
-            AuthHelper.generateJWT(user, (err2, encoded) => {
+            AuthHelper.generateJWT(user, (err2, token) => {
                 if (err2)
-                    next(err2);
-                else
-                    res.status(200).json({ status: 200, token: encoded });
+                    next(err2);                else
+
+                    res.status(200).json({ token });
             });
     })(req, res, next);
 });
@@ -54,7 +54,7 @@ router.use('/routes', routesRouter);
 router.use('/words', wordsRouter);
 
 router.use((req, res, next) =>
-    res.status(404).json({status: 404, error: 'Not found'}));
+    res.status(404).json({ message: 'Not found' }));
 
 router.use((err, req, res, next) => {
     let status = 500;
@@ -62,6 +62,6 @@ router.use((err, req, res, next) => {
     if (Array.isArray(err))
         [status, err] = err;
 
-    res.status(status).json({status, error: err.message})
+    res.status(status).json({ message: err.message });
 });
 
