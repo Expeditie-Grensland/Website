@@ -14,14 +14,6 @@ const schema = new mongoose.Schema(
         definitions: [String],
         phonetic: String,
         audio: String
-    },
-    {
-        toJSON: {
-            virtuals: true
-        },
-        toObject: {
-            virtuals: true
-        }
     }
 );
 
