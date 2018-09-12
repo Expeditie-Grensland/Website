@@ -7,6 +7,10 @@ export namespace Person {
         return PersonSchema.create(person);
     }
 
+    export function getPersons(): Promise<PersonDocument[]> {
+        return PersonSchema.find({}).exec();
+    }
+
     export function getPerson(name: string): Promise<PersonDocument> {
         return PersonSchema.findOne({ name: name }).exec();
     }
