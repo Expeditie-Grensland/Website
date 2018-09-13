@@ -96,7 +96,6 @@ export namespace Setup {
     export function setupDatabase(app: express.Express, dev: boolean) {
         mongoose.set('debug', dev);
 
-        (<any>mongoose).Promise = Promise;
         mongoose.connect(
             config.mongo.url,
             {
@@ -108,24 +107,6 @@ export namespace Setup {
         const db = mongoose.connection;
 
         db.on('error', console.error.bind(console, 'connection error:'));
-        db.once('open', () => {
-            console.info('Connected to models');
-        });
-
-        addAsMiddleware(app, 'db', db);
-    }
-
-    function addAsMiddleware(app: express.Express, name: string, data) {
-        app.use((req, res, next) => {
-            req[name] = data;
-            next();
-        });
+        db.once('open', () => console.info('Connected to models'));
     }
 }
-
-
-// TODO: Came from routes/debug (only load if env == devlopment)
-// process.on('unhandledRejection', (reason, p) => {
-//     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
-//     // application specific logging, throwing an error, or other logic here
-// });
