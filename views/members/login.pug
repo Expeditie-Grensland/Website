@@ -12,8 +12,14 @@ append scripts
 
 block body
     .container
+
         form.form-login(action='/members/login' method='post')
             h2.form-login-heading Please sign in
+
+            if messages
+                each message in messages
+                    .alert.alert-danger(role='alert') !{message}
+
             label(for='username' class='sr-only') Username
             input.form-control(type='text' id='username' name='username' placeholder='Username' required autofocus)
             label(for='password' class='sr-only') Password

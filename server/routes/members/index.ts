@@ -10,12 +10,13 @@ router.get('/login', (req, res, next) => {
         next();
     }
 }, (req, res) => {
-    res.render('members/login');
+    res.render('members/login', { messages: req.flash('error') });
 });
 
 router.post('/login', passport.authenticate('ldapauth', {
     successReturnToOrRedirect: '/members',
-    failureRedirect: '/members/login'
+    failureRedirect: '/members/login',
+    failureFlash: true
 }));
 
 router.get('/logout', (req, res) => {
