@@ -62,34 +62,28 @@ export namespace Setup {
             saveUninitialized: false
         };
 
-        if (config.session.useRedis) {
-            const redisStore = redisConnect(session);
-            sessionOptions.store = new redisStore(config.redis);
-        }
+        if (config.session.useRedis)
+            sessionOptions.store = new (redisConnect(session))(config.redis);
 
         const sessionMiddle = session(sessionOptions);
-
         io.use((socket, next) => sessionMiddle(socket.request, socket.request.res, next));
         app.use(sessionMiddle);
+
         app.use(flash());
     }
 
     export function addAuthMiddleware(app: express.Express) {
-        passport.use(new ldapauth({
-            server: config.ldap
-        }, (user, done) => {
+        passport.use(new ldapauth({ server: config.ldap }, (user, done) =>
             Person.getByLdapId(user.ipaUniqueID)
-                .then((p) => {
-                    done(null, p);
-                });
-        }));
+                .then(p => done(null, p))));
 
-        passport.serializeUser((user: PersonDocument, done) => {
-            done(null, Util.getObjectID(user));
-        });
-        passport.deserializeUser((userId: string, done) => {
-            Person.getById(userId).then((p) => done(null, p));
-        });
+        passport.serializeUser((user: PersonDocument, done) =>
+            done(null, Util.getObjectID(user)));
+
+        passport.deserializeUser((userId: string, done) =>
+            Person.getById(userId)
+                .then(p => done(null, p))
+                .catch(e => done(e, null)));
 
         app.use(passport.initialize());
         app.use(passport.session());
@@ -106,9 +100,9 @@ export namespace Setup {
                 useNewUrlParser: true
             }
         );
-        const db = mongoose.connection;
 
-        db.on('error', console.error.bind(console, 'connection error:'));
-        db.once('open', () => console.info('Connected to models'));
+        mongoose.connection
+            .on('error', console.error.bind(console, 'connection error:'))
+            .once('open', () => console.info('Connected to models'));
     }
 }

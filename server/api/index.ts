@@ -23,8 +23,8 @@ router.post('/authenticate', (req, res, next) => {
         else
             AuthHelper.generateJwt(user, (err2, token) => {
                 if (err2)
-                    next(err2);                else
-
+                    next(err2);
+                else
                     res.status(200).json({ token });
             });
     })(req, res, next);

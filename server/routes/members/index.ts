@@ -25,9 +25,8 @@ router.get('/logout', (req, res) => {
 });
 
 router.use((req, res, next) => {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated())
         next();
-    }
     else {
         req.session.returnTo = req.originalUrl;
         res.redirect('/members/login');
