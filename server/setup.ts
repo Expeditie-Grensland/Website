@@ -17,6 +17,7 @@ import { Person } from './components/person';
 import { Util } from './components/document/util';
 import { PersonDocument } from './components/person/model';
 import { router as apiRouter } from './api';
+import flash = require('connect-flash');
 
 export namespace Setup {
     export function startServer(server: http.Server, port: number) {
@@ -70,6 +71,7 @@ export namespace Setup {
 
         io.use((socket, next) => sessionMiddle(socket.request, socket.request.res, next));
         app.use(sessionMiddle);
+        app.use(flash());
     }
 
     export function addAuthMiddleware(app: express.Express) {
@@ -83,7 +85,7 @@ export namespace Setup {
         }));
 
         passport.serializeUser((user: PersonDocument, done) => {
-            done(null, Util.getObjectID(user))
+            done(null, Util.getObjectID(user));
         });
         passport.deserializeUser((userId: string, done) => {
             Person.getById(userId).then((p) => done(null, p));
