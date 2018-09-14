@@ -56,6 +56,6 @@ export interface IExpeditie {
 
 export interface ExpeditieDocument extends IExpeditie, mongoose.Document {}
 
-export const ExpeditieSchema = mongoose.model<ExpeditieDocument>(ExpeditieID, schema);
+export const ExpeditieModel = mongoose.model<ExpeditieDocument>(ExpeditieID, schema);
 
 export type ExpeditieOrID = DocumentOrID<ExpeditieDocument>;

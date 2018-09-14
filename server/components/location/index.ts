@@ -1,18 +1,18 @@
 import { LocationHelper } from '../../helpers/locationHelper';
 import { Route } from '../route';
 import { Util } from '../document/util';
-import { ILocation, LocationDocument, LocationOrID, LocationSchema } from './model';
+import { ILocation, LocationDocument, LocationOrID, LocationModel } from './model';
 import { RouteOrID } from '../route/model';
 import { RouteNodeDocument, RouteNodeOrID } from '../routenode/model';
 import { PersonOrID } from '../person/model';
 
 export namespace Location {
     export function getById(_id: string): Promise<LocationDocument> {
-        return LocationSchema.findById(_id).exec();
+        return LocationModel.findById(_id).exec();
     }
 
     export function getByIds(ids: string[]): Promise<LocationDocument[]> {
-        return LocationSchema.find({ _id: { $in: ids } }).exec();
+        return LocationModel.find({ _id: { $in: ids } }).exec();
     }
 
     export function getDocument(location: LocationOrID): Promise<LocationDocument> {
@@ -34,7 +34,7 @@ export namespace Location {
             sorting = { lon: minMax == 'min' ? 1 : -1 };
         }
 
-        return LocationSchema.find({ node: { $in: nodeIDs } })
+        return LocationModel.find({ node: { $in: nodeIDs } })
             .sort(sorting)
             .limit(1)
             .exec();
@@ -53,7 +53,7 @@ export namespace Location {
             location.visualArea = Number.POSITIVE_INFINITY;
         }
 
-        let locationDoc = await LocationSchema.create(location);
+        let locationDoc = await LocationModel.create(location);
 
         locationDoc = await LocationHelper.setVisualArea(locationDoc);
 
@@ -84,7 +84,7 @@ export namespace Location {
             }
         }
 
-        const locationDocs = await LocationSchema.insertMany(locations);
+        const locationDocs = await LocationModel.insertMany(locations);
 
         const locationsPromise = LocationHelper.setVisualAreas(locationDocs);
 
@@ -100,18 +100,18 @@ export namespace Location {
     }
 
     export function setVisualArea(visualArea: number): (location: LocationOrID) => Promise<LocationDocument> {
-        return location => LocationSchema.findByIdAndUpdate(Util.getObjectID(location), { visualArea: visualArea }, { new: true }).exec();
+        return location => LocationModel.findByIdAndUpdate(Util.getObjectID(location), { visualArea: visualArea }, { new: true }).exec();
     }
 
     export function getInRoute(route: RouteOrID): Promise<LocationDocument[]> {
-        return Route.getNodes(route).then(nodes => LocationSchema.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
+        return Route.getNodes(route).then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
     }
 
     export function getInRouteSortedByArea(skip: number, limit: number): (route: RouteOrID) => Promise<LocationDocument[]> {
         return async route => {
             const nodes = await Route.getNodes(route);
 
-            return LocationSchema.find({ node: { $in: Util.getObjectIDs(nodes) } })
+            return LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } })
                 .sort({ visualArea: 'desc' })
                 .skip(skip)
                 .limit(limit)
@@ -121,7 +121,7 @@ export namespace Location {
     }
 
     export function getInNodeByTimestampDescending(node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> {
-        return LocationSchema.find({ node: Util.getObjectID(node) })
+        return LocationModel.find({ node: Util.getObjectID(node) })
             .sort({ timestamp: 'desc' })
             .skip(skip)
             .limit(limit)

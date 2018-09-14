@@ -2,7 +2,7 @@ import * as turf from '@turf/turf';
 
 import { Location } from '../components/location';
 import { Util } from '../components/document/util';
-import { LocationDocument, LocationSchema } from '../components/location/model';
+import { LocationDocument, LocationModel } from '../components/location/model';
 import { RouteNodeOrID } from '../components/routenode/model';
 
 export namespace LocationHelper {
@@ -41,7 +41,7 @@ export namespace LocationHelper {
             nodeToLocationMap.set(Util.getObjectID(location.node), array);
         }
 
-        const bulk = LocationSchema.collection.initializeUnorderedBulkOp();
+        const bulk = LocationModel.collection.initializeUnorderedBulkOp();
 
         for (let locations of nodeToLocationMap.values()) {
             locations = sortByTimestampDescending(locations);

@@ -58,6 +58,6 @@ export interface ILocation {
 
 export interface LocationDocument extends ILocation, mongoose.Document {}
 
-export const LocationSchema = mongoose.model<LocationDocument>(LocationID, schema);
+export const LocationModel = mongoose.model<LocationDocument>(LocationID, schema);
 
 export type LocationOrID = DocumentOrID<LocationDocument>;

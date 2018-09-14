@@ -4,7 +4,7 @@ import { Location } from '../location';
 import { Person } from '../person';
 import { Route } from '../route';
 import { Util } from '../document/util';
-import { ExpeditieDocument, ExpeditieOrID, ExpeditieSchema, IExpeditie } from './model';
+import { ExpeditieDocument, ExpeditieOrID, ExpeditieModel, IExpeditie } from './model';
 import { PersonDocument, PersonOrID } from '../person/model';
 import { RouteDocument, RouteOrID } from '../route/model';
 import { ILocation, LocationDocument } from '../location/model';
@@ -23,7 +23,7 @@ export namespace Expeditie {
     }
 
     export function getByNameShort(nameShort: string): Promise<ExpeditieDocument> {
-        return ExpeditieSchema.findOne({ nameShort: nameShort }).exec();
+        return ExpeditieModel.findOne({ nameShort: nameShort }).exec();
     }
 
     function onChanged<T>(arg: T): Promise<T> {
@@ -35,13 +35,13 @@ export namespace Expeditie {
     }
 
     export function getAll(): Promise<ExpeditieDocument[]> {
-        return ExpeditieSchema.find({})
+        return ExpeditieModel.find({})
             .sort({ sequenceNumber: -1 })
             .exec();
     }
 
     export function getById(_id: string): Promise<ExpeditieDocument> {
-        return ExpeditieSchema.findById(_id).exec();
+        return ExpeditieModel.findById(_id).exec();
     }
 
     export function getDocument(expeditie: ExpeditieOrID): Promise<ExpeditieDocument> {
@@ -71,7 +71,7 @@ export namespace Expeditie {
                 return expeditie;
             })
             .then(expeditie => {
-                return ExpeditieSchema.create(expeditie);
+                return ExpeditieModel.create(expeditie);
             })
             .then(expeditie => {
                 let promises: Promise<PersonDocument>[] = [];
@@ -90,7 +90,7 @@ export namespace Expeditie {
     export function setFinished(finished: boolean): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
             getDocument(expeditie).then(expeditie =>
-                ExpeditieSchema.findByIdAndUpdate(Util.getObjectID(expeditie), { finished: finished }, { new: true }).exec()
+                ExpeditieModel.findByIdAndUpdate(Util.getObjectID(expeditie), { finished: finished }, { new: true }).exec()
             );
     }
 
@@ -119,7 +119,7 @@ export namespace Expeditie {
             checkFinished('expeditie_action_add_participants')(expeditie)
                 .then(expeditie => Promise.all(participants.map(Person.addExpeditie(expeditie))))
                 .then(() =>
-                    ExpeditieSchema.findByIdAndUpdate(
+                    ExpeditieModel.findByIdAndUpdate(
                         Util.getObjectID(expeditie),
                         {
                             $pushAll: {
@@ -136,7 +136,7 @@ export namespace Expeditie {
             checkFinished('expeditie_action_remove_participants')(expeditie)
                 .then(expeditie => Promise.all(participants.map(Person.removeExpeditie(expeditie))))
                 .then(() =>
-                    ExpeditieSchema.findByIdAndUpdate(
+                    ExpeditieModel.findByIdAndUpdate(
                         Util.getObjectID(expeditie),
                         { $pullAll: { participants: Util.getObjectIDs(participants) } },
                         { new: true }
@@ -147,7 +147,7 @@ export namespace Expeditie {
     export function setRoute(route: RouteOrID): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
             checkFinished('expeditie_action_set_route')(expeditie).then(expeditie =>
-                ExpeditieSchema.findByIdAndUpdate(Util.getObjectID(expeditie), { route: Util.getObjectID(route) }, { new: true }).exec()
+                ExpeditieModel.findByIdAndUpdate(Util.getObjectID(expeditie), { route: Util.getObjectID(route) }, { new: true }).exec()
             );
     }
 

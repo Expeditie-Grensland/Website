@@ -2,19 +2,19 @@ import { ColorHelper } from '../../helpers/colorHelper';
 import { Expeditie } from '../expeditie';
 import { Person } from '../person';
 import { Util } from '../document/util';
-import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeSchema } from '../routenode/model';
-import { IBoundingBox, IRoute, RouteDocument, RouteOrID, RouteSchema } from './model';
+import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeModel } from '../routenode/model';
+import { IBoundingBox, IRoute, RouteDocument, RouteOrID, RouteModel } from './model';
 import { Location } from '../location';
 import { ExpeditieDocument, ExpeditieOrID } from '../expeditie/model';
 import { PersonOrID } from '../person/model';
 
 export namespace Route {
     export function create(route: IRoute): Promise<RouteDocument> {
-        return RouteSchema.create(route);
+        return RouteModel.create(route);
     }
 
     export function getById(_id: string): Promise<RouteDocument> {
-        return RouteSchema.findById(_id).exec();
+        return RouteModel.findById(_id).exec();
     }
 
     export function getDocument(route: RouteOrID): Promise<RouteDocument> {
@@ -22,11 +22,11 @@ export namespace Route {
     }
 
     export function getAll(): Promise<RouteDocument[]> {
-        return RouteSchema.find({}).exec();
+        return RouteModel.find({}).exec();
     }
 
     export function getNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
-        return RouteNodeSchema.find({ route: Util.getObjectID(route) }).exec();
+        return RouteNodeModel.find({ route: Util.getObjectID(route) }).exec();
     }
 
     function createRouteNode(node: IRouteNode): Promise<RouteNodeDocument> {
@@ -34,11 +34,11 @@ export namespace Route {
             node.color = ColorHelper.generateColorForRouteNode(node);
         }
 
-        return RouteNodeSchema.create(node);
+        return RouteNodeModel.create(node);
     }
 
     export function setExpeditie(expeditie: ExpeditieOrID): (route: RouteOrID) => Promise<RouteDocument> {
-        return route => RouteSchema.findByIdAndUpdate(Util.getObjectID(route), { expeditie: Util.getObjectID(expeditie) }).exec();
+        return route => RouteModel.findByIdAndUpdate(Util.getObjectID(route), { expeditie: Util.getObjectID(expeditie) }).exec();
     }
 
     export function populateNodePersons(node: RouteNodeOrID): Promise<RouteNodeDocument> {
@@ -60,7 +60,7 @@ export namespace Route {
     export function getCurrentNodeWithPerson(person: PersonOrID): (route: RouteOrID) => Promise<RouteNodeDocument> {
         return route =>
             getDocument(route).then(route =>
-                RouteNodeSchema.findOne({
+                RouteNodeModel.findOne({
                     _id: { $in: Util.getObjectIDs(route.currentNodes) },
                     route: Util.getObjectID(route),
                     persons: Util.getObjectID(person)
@@ -73,15 +73,15 @@ export namespace Route {
     }
 
     function getRouteNodeById(_id: string): Promise<RouteNodeDocument> {
-        return RouteNodeSchema.findById(_id).exec();
+        return RouteNodeModel.findById(_id).exec();
     }
 
     function getRouteNodesById(ids: string[]): Promise<RouteNodeDocument[]> {
-        return RouteNodeSchema.find({ _id: { $in: ids } }).exec();
+        return RouteNodeModel.find({ _id: { $in: ids } }).exec();
     }
 
     function setNodeEdges(edges: IRouteEdge[]): (node: RouteNodeOrID) => Promise<RouteNodeDocument> {
-        return node => RouteNodeSchema.findByIdAndUpdate(Util.getObjectID(node), { edges: edges }, { new: true }).exec();
+        return node => RouteNodeModel.findByIdAndUpdate(Util.getObjectID(node), { edges: edges }, { new: true }).exec();
     }
 
     function getEdgeTo(edge: IRouteEdge): Promise<RouteNodeDocument> {

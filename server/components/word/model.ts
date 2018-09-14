@@ -28,7 +28,7 @@ export interface IWord {
 
 export interface WordDocument extends IWord, mongoose.Document {}
 
-export const WordSchema = mongoose.model<WordDocument>(WordID, schema);
+export const WordModel = mongoose.model<WordDocument>(WordID, schema);
 
 export type WordOrID = DocumentOrID<WordDocument>;
 

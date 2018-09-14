@@ -41,6 +41,6 @@ export interface IRouteNode {
 
 export interface RouteNodeDocument extends IRouteNode, mongoose.Document {}
 
-export const RouteNodeSchema = mongoose.model<RouteNodeDocument>(RouteNodeID, schema);
+export const RouteNodeModel = mongoose.model<RouteNodeDocument>(RouteNodeID, schema);
 
 export type RouteNodeOrID = DocumentOrID<RouteNodeDocument>;

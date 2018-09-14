@@ -34,6 +34,6 @@ export interface IRoute {
 
 export interface RouteDocument extends IRoute, mongoose.Document {}
 
-export const RouteSchema = mongoose.model<RouteDocument>(RouteID, schema);
+export const RouteModel = mongoose.model<RouteDocument>(RouteID, schema);
 
 export type RouteOrID = DocumentOrID<RouteDocument>;

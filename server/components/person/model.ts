@@ -27,6 +27,6 @@ export interface IPerson {
 
 export interface PersonDocument extends IPerson, mongoose.Document {}
 
-export const PersonSchema = mongoose.model<PersonDocument>(PersonID, schema);
+export const PersonModel = mongoose.model<PersonDocument>(PersonID, schema);
 
 export type PersonOrID = DocumentOrID<PersonDocument>;
