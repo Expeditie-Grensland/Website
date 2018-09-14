@@ -20,19 +20,19 @@ block body
         span.edition Eerste Editie
 
     dl
-        each entry, ind in dictionary
-            dt(id=getSimple(entry))
-                span.word !{entry.word}&#32;
-                if(entry.phonetic)
-                    span.phon [!{entry.phonetic}]
-                    span.word &nbsp;
-                if(entry.audio)
-                    audio(src='/content/dictionary/'+entry.audio type='audio/mpeg' id='player'+ind)
-                    a.audio(href='#' onclick='return playAudio('+ind+')') afspelen
+        each word, ind in dictionary
+            dt(id=getSimple(word))
+                span.word #{word.word}&#32;
+                if(word.phonetic)
+                    span.phon [#{word.phonetic}]
+                    span.word &#32;
+                if(word.audio)
+                    audio(src='/content/dictionary/' + word.audio type='audio/mpeg' id='player' + ind)
+                    a.audio(href='#play' + ind) afspelen
 
             dd
                 ol
-                    each definition, index in getDefinitions(entry)
+                    each definition, index in word.definitions
                         li
-                            span.index #{index+1}.&#32;
-                            span.def !{definition}
+                            span.index #{index + 1}.&#32;
+                            span.def !{marked(definition)}

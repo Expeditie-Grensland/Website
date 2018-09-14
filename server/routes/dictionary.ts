@@ -1,25 +1,23 @@
 import * as express from 'express';
+import * as marked from 'marked';
 
 import { Word } from '../components/word';
-import { WordDocument } from '../components/word/model';
 
 export const router = express.Router();
 
-const getSimple = Word.getSimple;
+const renderer = new marked.Renderer();
 
-const getDefinitions = (word: WordDocument): string[] => {
-    for (let i in word.definitions) {
-        if (!isNaN(<any>i)) {
-            word.definitions[i] = word.definitions[i].replace(/\[\[[^\]]*]]/g, str => {
-                str = str.slice(2, -2);
-                let strSimple = Word.generateSimple(str);
-                return '<a class="pageLink" href="#" onClick="return gotoWord(\'' + strSimple + '\')">' + str + '</a>';
-            });
-        }
+renderer.link = (href, title, text): string => {
+    if (href == 'w') {
+        href = '#' + Word.generateSimple(text);
+    } else if (href.slice(0, 2) == 'w:') {
+        href = '#' + Word.generateSimple(href.slice(2));
     }
-    return word.definitions;
+    return (new marked.Renderer()).link(href, title, text);
 };
 
+const getSimple = Word.getSimple;
+
 router.get('/', async (req, res) => {
-    res.render('dictionary', { dictionary: await Word.getAll(), getSimple, getDefinitions });
+    res.render('dictionary', { dictionary: await Word.getAll(), getSimple, marked: (s) => marked(s, { renderer }) });
 });
