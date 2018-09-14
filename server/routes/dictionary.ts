@@ -5,7 +5,9 @@ import { WordDocument } from '../components/word/model';
 
 export const router = express.Router();
 
-function addLinksToWord(word: WordDocument): WordDocument {
+const getSimple = Word.getSimple;
+
+const getDefinitions = (word: WordDocument): string[] => {
     for (let i in word.definitions) {
         if (!isNaN(<any>i)) {
             word.definitions[i] = word.definitions[i].replace(/\[\[[^\]]*]]/g, str => {
@@ -15,13 +17,9 @@ function addLinksToWord(word: WordDocument): WordDocument {
             });
         }
     }
-    return word;
-}
-
-function addLinksToWords(words: WordDocument[]): WordDocument[] {
-    return words.map(word => addLinksToWord(word));
-}
+    return word.definitions;
+};
 
 router.get('/', async (req, res) => {
-    res.render('dictionary', { dictionary: addLinksToWords(await Word.getAll()) });
+    res.render('dictionary', { dictionary: await Word.getAll(), getSimple, getDefinitions });
 });

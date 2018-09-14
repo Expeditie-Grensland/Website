@@ -17,10 +17,6 @@ const schema = new mongoose.Schema(
     }
 );
 
-schema.virtual('simple').get(function() {
-    return Word.generateSimple(this.word);
-});
-
 schema.index({ word: 1 }, { collation: { locale: 'nl', strength: 1 } });
 
 export interface IWord {
@@ -28,7 +24,6 @@ export interface IWord {
     definitions: string[];
     phonetic?: string;
     audio?: string;
-    readonly simple?: string;
 }
 
 export interface WordDocument extends IWord, mongoose.Document {}

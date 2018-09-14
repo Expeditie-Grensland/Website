@@ -21,7 +21,7 @@ block body
 
     dl
         each entry, ind in dictionary
-            dt(id=entry.simple)
+            dt(id=getSimple(entry))
                 span.word !{entry.word}&#32;
                 if(entry.phonetic)
                     span.phon [!{entry.phonetic}]
@@ -32,7 +32,7 @@ block body
 
             dd
                 ol
-                    each definition, index in entry.definitions
+                    each definition, index in getDefinitions(entry)
                         li
                             span.index #{index+1}.&#32;
                             span.def !{definition}

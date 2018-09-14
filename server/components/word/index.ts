@@ -27,4 +27,8 @@ export namespace Word {
             .replace(/[\u0300-\u036f]/g, '')
             .replace(/[^0-9a-z]+/gi, '-');
     }
+
+    export function getSimple(word: IWord): string {
+        return generateSimple(word.word);
+    }
 }
