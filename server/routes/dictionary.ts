@@ -16,8 +16,10 @@ renderer.link = (href, title, text): string => {
     return (new marked.Renderer()).link(href, title, text);
 };
 
-const getSimple = Word.getSimple;
-
 router.get('/', async (req, res) => {
-    res.render('dictionary', { dictionary: await Word.getAll(), getSimple, marked: (s) => marked(s, { renderer }) });
+    res.render('dictionary', {
+        dictionary: await Word.getAll(),
+        getSimple: Word.getSimple,
+        marked: (s) => marked(s, { renderer })
+    });
 });

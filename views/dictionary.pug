@@ -20,15 +20,16 @@ block body
         span.edition Eerste Editie
 
     dl
-        each word, ind in dictionary
-            dt(id=getSimple(word))
+        each word in dictionary
+            - simple = getSimple(word);
+            dt(id=simple)
                 span.word #{word.word}&#32;
                 if(word.phonetic)
                     span.phon [#{word.phonetic}]
                     span.word &#32;
                 if(word.audio)
-                    audio(src='/content/dictionary/' + word.audio type='audio/mpeg' id='player' + ind)
-                    a.audio(href='#play' + ind) afspelen
+                    audio(src=`/content/dictionary/${word.audio}` type='audio/mpeg' id=`player:${simple}`)
+                    a.audio(href=`#play:${simple}`) afspelen
 
             dd
                 ol
