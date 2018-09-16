@@ -1,4 +1,3 @@
-import { ObjectId } from 'bson';
 import * as mongoose from 'mongoose';
 
 export type DocumentOrID<T extends mongoose.Document> = T | string;
@@ -23,9 +22,8 @@ export namespace Util {
         return unwrapDocumentId(document._id);
     }
 
-    function unwrapDocumentId(id: string | ObjectId): string {
-        if ((<any>id).toHexString !== undefined) return (<ObjectId>id).toHexString();
-        else return <string>id;
+    function unwrapDocumentId(id: string | mongoose.Types.ObjectId): string {
+        return new mongoose.Types.ObjectId(id).toHexString();
     }
 
     export function getObjectIDs<T extends mongoose.Document>(documents: DocumentOrID<T>[]): string[] {
