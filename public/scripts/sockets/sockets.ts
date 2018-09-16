@@ -3,31 +3,23 @@
 /// <reference path="socketHandler.ts" />
 
 namespace Sockets {
-    export function getRoute(expeditieNameShort: string, route: Tables.Route) {
-        LoadingBar.setLoadingText('Received route.');
-
-        MapHandler.setRoute(route);
-
-        SocketHandler.requestBoundingBox(expeditieNameShort);
-    }
-
-    export function getBoundingBox(expeditieNameShort: string, boundingBox: Tables.RouteBoundingBox) {
-        LoadingBar.setLoadingText('Received bounding box.');
-
-        MapHandler.setBoundingBox(boundingBox);
-
-        SocketHandler.requestNodes(expeditieNameShort);
-    }
-
-    export function getNodes(expeditieNameShort: string, nodes: Tables.RouteNode[]) {
+    export function getNodes(nodes: Tables.RouteNode[]) {
         LoadingBar.setLoadingText('Received nodes.');
 
         MapHandler.addNodes(nodes);
 
-        SocketHandler.requestLocations(expeditieNameShort);
+        SocketHandler.requestBoundingBox();
     }
 
-    export function getLocations(expeditieNameShort: string, batchNumber: number, locations: Tables.Location[]) {
+    export function getBoundingBox(boundingBox: Tables.RouteBoundingBox) {
+        LoadingBar.setLoadingText('Received bounding box.');
+
+        MapHandler.setBoundingBox(boundingBox);
+
+        SocketHandler.requestLocations();
+    }
+
+    export function getLocations(batchNumber: number, locations: Tables.Location[]) {
         LoadingBar.setLoadingText(
             'Received location batch ' + batchNumber + ' with ' + locations.length + ' locations.'
         );
@@ -35,7 +27,7 @@ namespace Sockets {
         MapHandler.addLocations(locations);
     }
 
-    export function locationsDone(expeditieNameShort: string) {
+    export function locationsDone() {
         LoadingBar.setLoadingDone(true);
     }
 }

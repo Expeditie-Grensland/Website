@@ -2,44 +2,44 @@
 
 declare const io;
 
-namespace SocketIDs {
-    export const GET_ROUTE = 'GetRoute';
-    export const GET_BOUNDINGBOX = 'GetBoundingBox';
-    export const GET_NODES = 'GetNodes';
-    export const GET_LOCATIONS = 'GetLocations';
-    export const LOCATIONS_DONE = 'LocationsDone';
+const enum SocketIDs {
+    GET_NODES = 'GetNodes',
+    GET_BOUNDINGBOX = 'GetBoundingBox',
+    GET_LOCATIONS = 'GetLocations',
+    LOCATIONS_DONE = 'LocationsDone'
 }
 
 namespace SocketHandler {
     export let socket;
+    let _expeditieNameShort;
 
     export function init() {
         socket = io();
 
-        socket.on(SocketIDs.GET_ROUTE, Sockets.getRoute);
-        socket.on(SocketIDs.GET_BOUNDINGBOX, Sockets.getBoundingBox);
-        socket.on(SocketIDs.GET_NODES, Sockets.getNodes);
-        socket.on(SocketIDs.GET_LOCATIONS, Sockets.getLocations);
-        socket.on(SocketIDs.LOCATIONS_DONE, Sockets.locationsDone);
+        socket
+            .on(SocketIDs.GET_NODES, Sockets.getNodes)
+            .on(SocketIDs.GET_BOUNDINGBOX, Sockets.getBoundingBox)
+            .on(SocketIDs.GET_LOCATIONS, Sockets.getLocations)
+            .on(SocketIDs.LOCATIONS_DONE, Sockets.locationsDone);
     }
 
-    export function requestRoute(expeditieNameShort: string) {
-        LoadingBar.setLoadingText('Loading route...');
-        socket.emit(SocketIDs.GET_ROUTE, expeditieNameShort);
+    export function request(expeditienameShort: string) {
+        _expeditieNameShort = expeditienameShort;
+        requestNodes();
     }
 
-    export function requestBoundingBox(expeditieNameShort: string) {
-        LoadingBar.setLoadingText('Loading bounding box...');
-        socket.emit(SocketIDs.GET_BOUNDINGBOX, expeditieNameShort);
-    }
-
-    export function requestNodes(expeditieNameShort: string) {
+    export function requestNodes() {
         LoadingBar.setLoadingText('Loading route nodes...');
-        socket.emit(SocketIDs.GET_NODES, expeditieNameShort);
+        socket.emit(SocketIDs.GET_NODES, _expeditieNameShort);
     }
 
-    export function requestLocations(expeditieNameShort: string) {
+    export function requestBoundingBox() {
+        LoadingBar.setLoadingText('Loading bounding box...');
+        socket.emit(SocketIDs.GET_BOUNDINGBOX, _expeditieNameShort);
+    }
+
+    export function requestLocations() {
         LoadingBar.setLoadingText('Loading locations...');
-        socket.emit(SocketIDs.GET_LOCATIONS, expeditieNameShort);
+        socket.emit(SocketIDs.GET_LOCATIONS, _expeditieNameShort);
     }
 }

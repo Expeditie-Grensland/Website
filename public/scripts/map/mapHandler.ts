@@ -1,11 +1,11 @@
-/// <reference path="../database/Tables.ts" />
+/// <reference path="../database/tables.ts" />
+/// <reference path="../sockets/socketHandler.ts" />
 
 namespace MapHandler {
     const LOCATION_SOURCE = 'locations';
 
     export let map: mapboxgl.Map = null;
 
-    let route: Tables.Route = null;
     let boundingBox: Tables.RouteBoundingBox = null;
     const nodeMap: { [key:string]: Tables.RouteNode } = {};
     const locationMap: { [key:string]: Tables.Location } = {};
@@ -18,11 +18,7 @@ namespace MapHandler {
 
         map.on('style.load', onMapStyleLoad);
 
-        SocketHandler.requestRoute(expeditieNameShort);
-    }
-
-    export function setRoute(r: Tables.Route) {
-        route = r;
+        SocketHandler.request(expeditieNameShort);
     }
 
     export function setBoundingBox(b: Tables.RouteBoundingBox) {
@@ -125,10 +121,6 @@ namespace MapHandler {
         map.addSource(LOCATION_SOURCE, { type: 'geojson', data: null });
 
         updateMap();
-    }
-
-    export function getRoute() {
-        return route;
     }
 
     export function getNode(_id: string) {
