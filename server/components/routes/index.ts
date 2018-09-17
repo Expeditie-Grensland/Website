@@ -4,7 +4,7 @@ import { People } from '../people';
 import { Util } from '../documents/util';
 import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeModel } from '../routenodes/model';
 import { BoundingBox, Route, RouteDocument, RouteOrID, RouteModel } from './model';
-import { Location } from '../locations';
+import { Locations } from '../locations';
 import { ExpeditieDocument, ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
 
@@ -169,10 +169,10 @@ export namespace Routes {
     export async function getBoundingBox(route: RouteOrID): Promise<BoundingBox> {
         const nodes = await getNodes(route);
 
-        const minLat = Location.getMinMaxLatLonLocation(nodes, 'min', 'lat');
-        const maxLat = Location.getMinMaxLatLonLocation(nodes, 'max', 'lat');
-        const minLon = Location.getMinMaxLatLonLocation(nodes, 'min', 'lon');
-        const maxLon = Location.getMinMaxLatLonLocation(nodes, 'max', 'lon');
+        const minLat = Locations.getMinMaxLatLonLocation(nodes, 'min', 'lat');
+        const maxLat = Locations.getMinMaxLatLonLocation(nodes, 'max', 'lat');
+        const minLon = Locations.getMinMaxLatLonLocation(nodes, 'min', 'lon');
+        const maxLon = Locations.getMinMaxLatLonLocation(nodes, 'max', 'lon');
 
         return Promise.all([minLat, maxLat, minLon, maxLon]).then(([minLat, maxLat, minLon, maxLon]) => {
             return {

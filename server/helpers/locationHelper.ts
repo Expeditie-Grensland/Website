@@ -1,6 +1,6 @@
 import * as turf from '@turf/turf';
 
-import { Location } from '../components/locations';
+import { Locations } from '../components/locations';
 import { Util } from '../components/documents/util';
 import { LocationDocument, LocationModel } from '../components/locations/model';
 import { RouteNodeOrID } from '../components/routenodes/model';
@@ -20,7 +20,7 @@ export namespace LocationHelper {
         const area = await calculateVisualArea(location);
         const lastLocations = await getLastLocationsCached(location.node);
 
-        await Location.setVisualArea(area)(lastLocations[1]);
+        await Locations.setVisualArea(area)(lastLocations[1]);
         await addLocation(location);
 
         return location;
@@ -106,7 +106,7 @@ export namespace LocationHelper {
         let lastLocations = lastLocationsMap.get(Util.getObjectID(node));
 
         if (lastLocations === undefined) {
-            lastLocations = Location.getInNodeByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
+            lastLocations = Locations.getInNodeByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
 
             lastLocationsMap.set(Util.getObjectID(node), lastLocations);
         }

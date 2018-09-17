@@ -6,7 +6,7 @@ import { RouteOrID } from '../routes/model';
 import { RouteNodeDocument, RouteNodeOrID } from '../routenodes/model';
 import { PersonOrID } from '../people/model';
 
-export namespace Location {
+export namespace Locations {
     export function getById(_id: string): Promise<LocationDocument> {
         return LocationModel.findById(_id).exec();
     }

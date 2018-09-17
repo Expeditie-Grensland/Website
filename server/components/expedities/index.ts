@@ -1,6 +1,6 @@
 import * as i18next from 'i18next';
 
-import { Location } from '../locations';
+import { Locations } from '../locations';
 import { People } from '../people';
 import { Routes } from '../routes';
 import { Util } from '../documents/util';
@@ -181,22 +181,22 @@ export namespace Expedities {
     export function addLocation(location: Location): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
             checkFinished('expeditie_action_add_location')(expeditie).then(expeditie => {
-                return Location.create(location, expeditie.route).then(location => expeditie);
+                return Locations.create(location, expeditie.route).then(location => expeditie);
             });
     }
 
     export function addLocations(locations: Location[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
             checkFinished('expeditie_action_add_locations')(expeditie).then(expeditie => {
-                return Location.createMany(locations, expeditie.route).then(() => expeditie);
+                return Locations.createMany(locations, expeditie.route).then(() => expeditie);
             });
     }
 
     export function getLocations(expeditie: ExpeditieOrID): Promise<LocationDocument[]> {
-        return getRoute(expeditie).then(Location.getInRoute);
+        return getRoute(expeditie).then(Locations.getInRoute);
     }
 
     export function getLocationsSortedByVisualArea(expeditie: ExpeditieOrID, skip, limit): Promise<LocationDocument[]> {
-        return getRoute(expeditie).then(Location.getInRouteSortedByArea(skip, limit));
+        return getRoute(expeditie).then(Locations.getInRouteSortedByArea(skip, limit));
     }
 }
