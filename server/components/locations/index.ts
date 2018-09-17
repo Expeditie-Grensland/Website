@@ -1,7 +1,7 @@
 import { LocationHelper } from '../../helpers/locationHelper';
 import { Routes } from '../routes';
 import { Util } from '../documents/util';
-import { Location, LocationDocument, LocationOrID, LocationModel } from './model';
+import { Location, LocationDocument, LocationModel, LocationOrID } from './model';
 import { RouteOrID } from '../routes/model';
 import { RouteNodeDocument, RouteNodeOrID } from '../routenodes/model';
 import { PersonOrID } from '../people/model';
@@ -15,13 +15,8 @@ export namespace Locations {
         return LocationModel.find({ _id: { $in: ids } }).exec();
     }
 
-    export function getDocument(location: LocationOrID): Promise<LocationDocument> {
-        return Util.getDocument(location, getById);
-    }
-
-    export function getDocuments(locations: LocationOrID[]): Promise<LocationDocument[]> {
-        return Util.getDocuments(locations, getByIds);
-    }
+    export const getDocument: ((location: LocationOrID) => Promise<LocationDocument>) =
+        Util.getDocument(getById);
 
     export function getMinMaxLatLonLocation(nodes: RouteNodeOrID[], minMax: 'min' | 'max', latLon: 'lat' | 'lon'): Promise<LocationDocument[]> {
         const nodeIDs = Util.getObjectIDs(nodes);

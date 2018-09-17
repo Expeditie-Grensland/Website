@@ -1,5 +1,6 @@
 import { ObjectId } from 'bson';
 import * as mongoose from 'mongoose';
+import { aPipe } from '../../helpers/functionalHelper';
 
 export type DocumentOrID<T extends mongoose.Document> = T | string;
 
@@ -36,33 +37,33 @@ export namespace Util {
         return documents.map(doc => getObjectID(doc));
     }
 
-    export function getDocument<T extends mongoose.Document>(document: DocumentOrID<T>, findByID: (_id: string) => Promise<T>): Promise<T> {
-        if (isDocument(document)) return Promise.resolve(document);
+    export const getDocument = <T extends mongoose.Document>(findById: (id: string) => Promise<T>) =>
+        (doc: DocumentOrID<T>): Promise<T> => {
+            if (isDocument(doc))
+                return Promise.resolve(doc);
 
-        return findByID(getObjectID(document));
-    }
+            return findById(getObjectID(doc));
+        };
 
-    export function getDocuments<T extends mongoose.Document>(
-        documents: DocumentOrID<T>[],
-        findByIDs: (id: string[]) => Promise<T[]>
-    ): Promise<T[]> {
-        if (documents.length < 1) {
-            return Promise.resolve([]);
-        }
+    export const getDocuments = <T extends mongoose.Document>(findByIds: (id: string[]) => Promise<T[]>) =>
+        (docs: DocumentOrID<T>[]): Promise<T[]> => {
+            if (docs.length < 1)
+                return Promise.resolve([]);
 
-        let ids: string[] = [];
-        let docs: T[] = [];
+            let docPart: T[] = [];
+            // TODO: change string to ObjectID when changing
+            let idPart: string[] = [];
 
-        for (let document of documents) {
-            if (isDocument(document)) {
-                docs.push(document);
-            } else if (isObjectID(document)) {
-                ids.push(document);
+            for (let doc of docs) {
+                if (isDocument(doc))
+                    docPart.push(doc);
+                else if (isObjectID(doc))
+                    idPart.push(doc)
             }
-        }
 
-        return findByIDs(ids).then(ds => {
-            return ds.concat(docs);
-        });
-    }
+            return aPipe(
+                findByIds,
+                docPart.concat
+            )(idPart);
+        };
 }

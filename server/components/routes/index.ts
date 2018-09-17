@@ -4,7 +4,7 @@ import { People } from '../people';
 import { Util } from '../documents/util';
 import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routenodes/model';
 import { BoundingBox, Route, RouteDocument, RouteModel, RouteOrID } from './model';
-import { Locations } from '../locations';
+import { getById, Locations } from '../locations';
 import { ExpeditieDocument, ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
 
@@ -17,9 +17,8 @@ export namespace Routes {
         return RouteModel.findById(_id).exec();
     }
 
-    export function getDocument(route: RouteOrID): Promise<RouteDocument> {
-        return Util.getDocument(route, getById);
-    }
+    export const getDocument: ((route: RouteOrID) => Promise<RouteDocument>) =
+        Util.getDocument(getById);
 
     export function getAll(): Promise<RouteDocument[]> {
         return RouteModel.find({}).exec();
@@ -42,12 +41,11 @@ export namespace Routes {
     }
 
     export function populateNodePersons(node: RouteNodeOrID): Promise<RouteNodeDocument> {
-        return Util.getDocument(node, getRouteNodeById).then(node => node.populate('persons').execPopulate());
+        return Util.getDocument(getRouteNodeById)(node).then(node => node.populate('persons').execPopulate());
     }
 
-    export function getRouteNode(node: RouteNodeOrID): Promise<RouteNodeDocument> {
-        return Util.getDocument(node, getRouteNodeById);
-    }
+    export const getRouteNode: ((routenode: RouteNodeOrID) => Promise<RouteNodeDocument>) =
+        Util.getDocument(getRouteNodeById);
 
     export function getCurrentNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
         return getDocument(route).then(route => getRouteNodes(route.currentNodes));
@@ -69,7 +67,7 @@ export namespace Routes {
     }
 
     function getRouteNodes(nodes: RouteNodeOrID[]): Promise<RouteNodeDocument[]> {
-        return Util.getDocuments(nodes, getRouteNodesById);
+        return Util.getDocuments(getRouteNodesById)(nodes);
     }
 
     function getRouteNodeById(_id: string): Promise<RouteNodeDocument> {
@@ -95,7 +93,7 @@ export namespace Routes {
     export function setGroups(expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<RouteDocument> {
         const groupsIds: string[][] = groups.map(group => Util.getObjectIDs(group));
 
-        const pExpeditie = Util.getDocument(expeditie, Expedities.getById);
+        const pExpeditie = Util.getDocument(Expedities.getById)(expeditie);
         const pRoute = pExpeditie.then(Expedities.getRoute);
         const pCurrentNodes = pRoute.then(Routes.getCurrentNodes);
         const pStartingNodes = pRoute.then(Routes.getStartingNodes);
@@ -169,6 +167,9 @@ export namespace Routes {
     export async function getBoundingBox(route: RouteOrID): Promise<BoundingBox> {
         const nodes = await getNodes(route);
 
+        console.log(route);
+        console.log(nodes);
+
         const minLat = Locations.getMinMaxLatLonLocation(nodes, 'min', 'lat');
         const maxLat = Locations.getMinMaxLatLonLocation(nodes, 'max', 'lat');
         const minLon = Locations.getMinMaxLatLonLocation(nodes, 'min', 'lon');
@@ -191,7 +192,7 @@ export namespace Routes {
         const aIds = Util.getObjectIDs(arrayA).sort();
         const bIds = Util.getObjectIDs(arrayB).sort();
 
-        for (let i=0; i<aIds.length; i++) {
+        for (let i = 0; i < aIds.length; i++) {
             // TODO: Fix when changing from strings to Objectids
             if (aIds[i] !== bIds[i])
                 return false;

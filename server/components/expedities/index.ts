@@ -4,7 +4,7 @@ import { Locations } from '../locations';
 import { People } from '../people';
 import { Routes } from '../routes';
 import { Util } from '../documents/util';
-import { ExpeditieDocument, ExpeditieOrID, ExpeditieModel, Expeditie } from './model';
+import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonDocument, PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
 import { Location, LocationDocument } from '../locations/model';
@@ -44,9 +44,8 @@ export namespace Expedities {
         return ExpeditieModel.findById(_id).exec();
     }
 
-    export function getDocument(expeditie: ExpeditieOrID): Promise<ExpeditieDocument> {
-        return Util.getDocument(expeditie, getById);
-    }
+    export const getDocument: ((location: ExpeditieOrID) => Promise<ExpeditieDocument>) =
+        Util.getDocument(getById);
 
     export function create(expeditie: Expeditie): Promise<ExpeditieDocument> {
         return Promise.resolve()
@@ -152,13 +151,13 @@ export namespace Expedities {
     }
 
     export function getRoute(expeditie: ExpeditieOrID): Promise<RouteDocument> {
-        return Util.getDocument(expeditie, getById).then(expeditie => Util.getDocument(expeditie.route, Routes.getById));
+        return Util.getDocument(getById)(expeditie).then(expeditie => Util.getDocument(Routes.getById)(expeditie.route));
     }
 
     export function setGroups(groups: PersonOrID[][]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return (expeditie: ExpeditieOrID) =>
             checkFinished('expeditie_action_set_groups')(expeditie).then(expeditie => {
-                const pExpeditie = Util.getDocument(expeditie, getById);
+                const pExpeditie = Util.getDocument(getById)(expeditie);
                 const pRoute = pExpeditie
                     .then(expeditie => {
                         if (expeditie.route === undefined) {
