@@ -9,7 +9,7 @@ export const RouteID = 'Routes';
  * defining coordinates of this rectangle.
  */
 
-export interface IBoundingBox {
+export interface BoundingBox {
     minLat: number;
     maxLat: number;
     minLon: number;
@@ -27,12 +27,12 @@ const schema = new mongoose.Schema({
     currentNodes: [reference(RouteNodeID)]
 });
 
-export interface IRoute {
+export interface Route {
     startingNodes?: RouteNodeOrID[];
     currentNodes?: RouteNodeOrID[];
 }
 
-export interface RouteDocument extends IRoute, mongoose.Document {}
+export interface RouteDocument extends Route, mongoose.Document {}
 
 export const RouteModel = mongoose.model<RouteDocument>(RouteID, schema);
 

@@ -2,7 +2,7 @@ import i18next = require('i18next');
 
 import { Routes } from '../components/routes';
 import { Util } from '../components/documents/util';
-import { IRouteNode } from '../components/routenodes/model';
+import { RouteNode } from '../components/routenodes/model';
 import { RouteOrID } from '../components/routes/model';
 
 const sprintf = require('sprintf-js').sprintf;
@@ -21,7 +21,7 @@ export namespace ColorHelper {
         Grey = '#808080'
     }
 
-    let nodesCached: Map<string, IRouteNode[]> = new Map();
+    let nodesCached: Map<string, RouteNode[]> = new Map();
 
     export async function init() {
         const routes = await Routes.getAll();
@@ -43,11 +43,11 @@ export namespace ColorHelper {
      * obviously only happen if the node is going to be saved to the models, so if a node will not be saved to the
      * models, set the `cache` parameter to false.
      *
-     * @param {IRouteNode} node The IRouteNode to get the color for.
+     * @param {RouteNode} node The RouteNode to get the color for.
      * @param {boolean} cache Whether to save `node` in the internal cache of ColorHelper.
      * @returns {string} A hex color string.
      */
-    export function generateColorForRouteNode(node: IRouteNode, cache: boolean = true): string {
+    export function generateColorForRouteNode(node: RouteNode, cache: boolean = true): string {
         const existingNodes = getCachedRouteNodes(node.route);
 
         const similarNode = existingNodes.find(n => Routes.personArraysEqual(n.persons, node.persons));
@@ -62,7 +62,7 @@ export namespace ColorHelper {
         return getColorByIndex(existingNodes.length);
     }
 
-    function addCachedNode(node: IRouteNode) {
+    function addCachedNode(node: RouteNode) {
         let nodes = [];
 
         if (nodesCached.has(Util.getObjectID(node.route))) {
@@ -74,7 +74,7 @@ export namespace ColorHelper {
         nodesCached.set(Util.getObjectID(node.route), nodes);
     }
 
-    function getCachedRouteNodes(route: RouteOrID): IRouteNode[] {
+    function getCachedRouteNodes(route: RouteOrID): RouteNode[] {
         const nodes = nodesCached.get(Util.getObjectID(route));
 
         return nodes === undefined ? [] : nodes;

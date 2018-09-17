@@ -2,14 +2,14 @@ import { ColorHelper } from '../../helpers/colorHelper';
 import { Expedities } from '../expedities';
 import { People } from '../people';
 import { Util } from '../documents/util';
-import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeModel } from '../routenodes/model';
-import { IBoundingBox, IRoute, RouteDocument, RouteOrID, RouteModel } from './model';
+import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeModel } from '../routenodes/model';
+import { BoundingBox, Route, RouteDocument, RouteOrID, RouteModel } from './model';
 import { Location } from '../locations';
 import { ExpeditieDocument, ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
 
 export namespace Routes {
-    export function create(route: IRoute): Promise<RouteDocument> {
+    export function create(route: Route): Promise<RouteDocument> {
         return RouteModel.create(route);
     }
 
@@ -29,7 +29,7 @@ export namespace Routes {
         return RouteNodeModel.find({ route: Util.getObjectID(route) }).exec();
     }
 
-    function createRouteNode(node: IRouteNode): Promise<RouteNodeDocument> {
+    function createRouteNode(node: RouteNode): Promise<RouteNodeDocument> {
         if (node.color === undefined) {
             node.color = ColorHelper.generateColorForRouteNode(node);
         }
@@ -80,15 +80,15 @@ export namespace Routes {
         return RouteNodeModel.find({ _id: { $in: ids } }).exec();
     }
 
-    function setNodeEdges(edges: IRouteEdge[]): (node: RouteNodeOrID) => Promise<RouteNodeDocument> {
+    function setNodeEdges(edges: RouteEdge[]): (node: RouteNodeOrID) => Promise<RouteNodeDocument> {
         return node => RouteNodeModel.findByIdAndUpdate(Util.getObjectID(node), { edges: edges }, { new: true }).exec();
     }
 
-    function getEdgeTo(edge: IRouteEdge): Promise<RouteNodeDocument> {
+    function getEdgeTo(edge: RouteEdge): Promise<RouteNodeDocument> {
         return getRouteNode(edge.to);
     }
 
-    function getNodeEdges(node: RouteNodeOrID): Promise<IRouteEdge[]> {
+    function getNodeEdges(node: RouteNodeOrID): Promise<RouteEdge[]> {
         return getRouteNode(node).then(node => node.edges);
     }
 
@@ -115,7 +115,7 @@ export namespace Routes {
                     let newNodesWithToEdge: string[] = [];
 
                     for (let oldCurrentNode of oldCurrentNodes) {
-                        const edges: IRouteEdge[] = [];
+                        const edges: RouteEdge[] = [];
 
                         for (let newCurrentNode of newCurrentNodes) {
                             if (Util.getObjectID(oldCurrentNode) === Util.getObjectID(newCurrentNode)) {
@@ -125,7 +125,7 @@ export namespace Routes {
                             for (let oldPersonId of Util.getObjectIDs(oldCurrentNode.persons)) {
                                 for (let newPersonId of Util.getObjectIDs(newCurrentNode.persons)) {
                                     if (oldPersonId === newPersonId) {
-                                        let existingEdge: IRouteEdge = null;
+                                        let existingEdge: RouteEdge = null;
 
                                         for (let edge of edges) {
                                             if (Util.getObjectID(edge.to) === Util.getObjectID(newCurrentNode)) {
@@ -166,7 +166,7 @@ export namespace Routes {
         );
     }
 
-    export async function getBoundingBox(route: RouteOrID): Promise<IBoundingBox> {
+    export async function getBoundingBox(route: RouteOrID): Promise<BoundingBox> {
         const nodes = await getNodes(route);
 
         const minLat = Location.getMinMaxLatLonLocation(nodes, 'min', 'lat');

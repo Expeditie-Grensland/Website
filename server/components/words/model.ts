@@ -19,14 +19,14 @@ const schema = new mongoose.Schema(
 
 schema.index({ word: 1 }, { collation: { locale: 'nl', strength: 1 } });
 
-export interface IWord {
+export interface Word {
     word: string;
     definitions: string[];
     phonetic?: string;
     audio?: string;
 }
 
-export interface WordDocument extends IWord, mongoose.Document {}
+export interface WordDocument extends Word, mongoose.Document {}
 
 export const WordModel = mongoose.model<WordDocument>(WordID, schema);
 

@@ -4,10 +4,10 @@ import { Location } from '../locations';
 import { People } from '../people';
 import { Routes } from '../routes';
 import { Util } from '../documents/util';
-import { ExpeditieDocument, ExpeditieOrID, ExpeditieModel, IExpeditie } from './model';
+import { ExpeditieDocument, ExpeditieOrID, ExpeditieModel, Expeditie } from './model';
 import { PersonDocument, PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
-import { ILocation, LocationDocument } from '../locations/model';
+import { Location, LocationDocument } from '../locations/model';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -48,7 +48,7 @@ export namespace Expedities {
         return Util.getDocument(expeditie, getById);
     }
 
-    export function create(expeditie: IExpeditie): Promise<ExpeditieDocument> {
+    export function create(expeditie: Expeditie): Promise<ExpeditieDocument> {
         return Promise.resolve()
             .then(() => {
                 if (expeditie.finished === undefined) {
@@ -178,14 +178,14 @@ export namespace Expedities {
             });
     }
 
-    export function addLocation(location: ILocation): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+    export function addLocation(location: Location): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
             checkFinished('expeditie_action_add_location')(expeditie).then(expeditie => {
                 return Location.create(location, expeditie.route).then(location => expeditie);
             });
     }
 
-    export function addLocations(locations: ILocation[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+    export function addLocations(locations: Location[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
             checkFinished('expeditie_action_add_locations')(expeditie).then(expeditie => {
                 return Location.createMany(locations, expeditie.route).then(() => expeditie);

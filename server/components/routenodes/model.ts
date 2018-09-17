@@ -14,7 +14,7 @@ const routeEdgeSchema = new mongoose.Schema({
     people: [reference(PersonID)]
 });
 
-export interface IRouteEdge {
+export interface RouteEdge {
     to: RouteNodeOrID;
     people: PersonOrID[];
 }
@@ -32,14 +32,14 @@ const schema = new mongoose.Schema({
     edges: [routeEdgeSchema]
 });
 
-export interface IRouteNode {
+export interface RouteNode {
     route: RouteOrID;
     color?: string;
     persons: PersonOrID[];
-    edges: IRouteEdge[];
+    edges: RouteEdge[];
 }
 
-export interface RouteNodeDocument extends IRouteNode, mongoose.Document {}
+export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
 
 export const RouteNodeModel = mongoose.model<RouteNodeDocument>(RouteNodeID, schema);
 

@@ -12,7 +12,7 @@ export const LocationID = 'Location';
  * square meter. A bigger area indicates a bigger contribution to the visual 'shape' of a route line. This value is
  * used to determine the order of points sent to a client. Locations with higher visual areas get sent before those
  * with low visual area.
- * A Location belongs to one, and only one, IRouteNode.
+ * A Location belongs to one, and only one, RouteNode.
  */
 
 const schema = new mongoose.Schema({
@@ -39,7 +39,7 @@ schema.index({ node: 1, timestamp: -1 });
 schema.index({ node: 1, lat: 1 });
 schema.index({ node: 1, lon: 1 });
 
-export interface ILocation {
+export interface Location {
     visualArea?: number;
     person: PersonOrID;
     node?: RouteNodeOrID;
@@ -56,7 +56,7 @@ export interface ILocation {
     speedAccuracy?: number;
 }
 
-export interface LocationDocument extends ILocation, mongoose.Document {}
+export interface LocationDocument extends Location, mongoose.Document {}
 
 export const LocationModel = mongoose.model<LocationDocument>(LocationID, schema);
 

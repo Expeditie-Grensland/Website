@@ -1,7 +1,7 @@
-import { IWord, WordDocument, WordModel } from './model';
+import { Word, WordDocument, WordModel } from './model';
 
 export namespace Words {
-    export function create(word: IWord): Promise<WordDocument> {
+    export function create(word: Word): Promise<WordDocument> {
         return WordModel.create(word);
     }
 
@@ -28,7 +28,7 @@ export namespace Words {
             .replace(/[^0-9a-z]+/gi, '-');
     }
 
-    export function getSimple(word: IWord): string {
+    export function getSimple(word: Word): string {
         return generateSimple(word.word);
     }
 }

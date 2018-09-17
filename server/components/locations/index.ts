@@ -1,7 +1,7 @@
 import { LocationHelper } from '../../helpers/locationHelper';
 import { Routes } from '../routes';
 import { Util } from '../documents/util';
-import { ILocation, LocationDocument, LocationOrID, LocationModel } from './model';
+import { Location, LocationDocument, LocationOrID, LocationModel } from './model';
 import { RouteOrID } from '../routes/model';
 import { RouteNodeDocument, RouteNodeOrID } from '../routenodes/model';
 import { PersonOrID } from '../people/model';
@@ -40,7 +40,7 @@ export namespace Location {
             .exec();
     }
 
-    export async function create(location: ILocation, route: RouteOrID): Promise<LocationDocument> {
+    export async function create(location: Location, route: RouteOrID): Promise<LocationDocument> {
         const routeDoc = await Routes.getDocument(route);
 
         if (location.node === undefined) {
@@ -60,7 +60,7 @@ export namespace Location {
         return locationDoc;
     }
 
-    export async function createMany(locations: ILocation[], route: RouteOrID): Promise<LocationDocument[]> {
+    export async function createMany(locations: Location[], route: RouteOrID): Promise<LocationDocument[]> {
         const routeDoc = await Routes.getDocument(route);
 
         let currentNodeWithPerson: Map<string, Promise<RouteNodeDocument>> = new Map();

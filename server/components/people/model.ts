@@ -17,7 +17,7 @@ const schema = new mongoose.Schema({
     ldapId: String
 });
 
-export interface IPerson {
+export interface Person {
     email?: string;
     name: string;
     expedities?: ExpeditieOrID[];
@@ -25,7 +25,7 @@ export interface IPerson {
     ldapId?: string;
 }
 
-export interface PersonDocument extends IPerson, mongoose.Document {}
+export interface PersonDocument extends Person, mongoose.Document {}
 
 export const PersonModel = mongoose.model<PersonDocument>(PersonID, schema);
 

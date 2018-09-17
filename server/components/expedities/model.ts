@@ -32,7 +32,7 @@ const schema = new mongoose.Schema({
     countries: [String]
 });
 
-export interface IExpeditie {
+export interface Expeditie {
     sequenceNumber: number;
     name: string;
     nameShort: string;
@@ -54,7 +54,7 @@ export interface IExpeditie {
     countries: string[];
 }
 
-export interface ExpeditieDocument extends IExpeditie, mongoose.Document {}
+export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
 
 export const ExpeditieModel = mongoose.model<ExpeditieDocument>(ExpeditieID, schema);
 

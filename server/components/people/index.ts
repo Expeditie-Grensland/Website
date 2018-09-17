@@ -1,9 +1,9 @@
 import { Util } from '../documents/util';
-import { IPerson, PersonDocument, PersonOrID, PersonModel } from './model';
+import { Person, PersonDocument, PersonOrID, PersonModel } from './model';
 import { ExpeditieOrID } from '../expedities/model';
 
 export namespace People {
-    export function create(person: IPerson): Promise<PersonDocument> {
+    export function create(person: Person): Promise<PersonDocument> {
         return PersonModel.create(person);
     }
 
