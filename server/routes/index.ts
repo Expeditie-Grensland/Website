@@ -16,7 +16,7 @@ export function Router(dev: boolean): express.Router {
     if (dev) router.use('/debug', debugRouter);
 
     router.use('/', homeRouter);
-    router.use('/:expedities', expeditieRouter);
+    router.use('/:expeditie', expeditieRouter);
 
     return router;
 }
