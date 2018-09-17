@@ -7,11 +7,18 @@ export const router = express.Router();
 
 const renderer = new marked.Renderer();
 
+const generateSimple = (word: string): string =>
+    word
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^0-9a-z]+/gi, '-');
+
 renderer.link = (href, title, text): string => {
     if (href == 'w') {
-        href = '#' + Words.generateSimple(text);
+        href = `#${generateSimple(text)}`;
     } else if (href.slice(0, 2) == 'w:') {
-        href = '#' + Words.generateSimple(href.slice(2));
+        href = `#${generateSimple(href.slice(2))}`;
     }
     return (new marked.Renderer()).link(href, title, text);
 };
@@ -19,7 +26,7 @@ renderer.link = (href, title, text): string => {
 router.get('/', async (req, res) => {
     res.render('dictionary', {
         dictionary: await Words.getAll(),
-        getSimple: Words.getSimple,
+        generateSimple,
         marked: (s) => marked(s, { renderer })
     });
 });
