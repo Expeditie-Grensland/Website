@@ -105,7 +105,9 @@ process.on('exit', () => {
 
 const build = gulp.parallel(clientBuild, faviconBuild, serverBuild, styleBuild);
 
-const clean = gulp.parallel(clientClean, faviconClean, serverClean, styleBuild);
+const clean = gulp.parallel(clientClean, faviconClean, serverClean, styleClean);
+
+const cleanBuild = gulp.series(clean, build);
 
 const once = gulp.series(build, server);
 
@@ -129,6 +131,7 @@ module.exports = {
     server,
     build,
     clean,
+    cleanBuild,
     once,
     watch,
     default: watch

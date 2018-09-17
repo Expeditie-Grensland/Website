@@ -17,11 +17,7 @@ const schema = new mongoose.Schema({
     subtitle: String,
     color: String,
     background: {
-        imageUrl: String,
-        position: {
-            x: Number,
-            y: Number
-        }
+        imageUrl: String
     },
     showMap: Boolean,
     movieUrl: String,

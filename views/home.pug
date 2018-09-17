@@ -59,7 +59,7 @@ block body
     #columns
         each expeditie in expedities
             .column
-                .background(style="background-color: " + expeditie.color + "; background-image: url(" + expeditie.background.imageUrl + "); background-position: " + expeditie.background.position.x + "% " + expeditie.background.position.y + "%")
+                .background(style=`background-color:${expeditie.color};background-image:url(${expeditie.background.imageUrl})`)
                 .expeditie(id=expeditie.nameShort)
                     h1= expeditie.name
                     h2= expeditie.subtitle
