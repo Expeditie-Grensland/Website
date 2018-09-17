@@ -2,8 +2,8 @@ import { ColorHelper } from '../../helpers/colorHelper';
 import { Expedities } from '../expedities';
 import { People } from '../people';
 import { Util } from '../documents/util';
-import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeModel } from '../routenodes/model';
-import { BoundingBox, Route, RouteDocument, RouteOrID, RouteModel } from './model';
+import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routenodes/model';
+import { BoundingBox, Route, RouteDocument, RouteModel, RouteOrID } from './model';
 import { Locations } from '../locations';
 import { ExpeditieDocument, ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
@@ -180,21 +180,25 @@ export namespace Routes {
                 maxLat: maxLat[0].lat,
                 minLon: minLon[0].lon,
                 maxLon: maxLon[0].lon
-            }
+            };
         });
     }
 
-    export function personArraysEqual(array1: PersonOrID[], array2: PersonOrID[]): boolean {
-        const a1 = Util.getObjectIDs(array1).sort();
-        const a2 = Util.getObjectIDs(array2).sort();
+    export const personArraysEqual = (arrayA: PersonOrID[], arrayB: PersonOrID[]): boolean => {
+        if (arrayA.length !== arrayB.length)
+            return false;
 
-        for (let person1 of a1) {
-            for (let person2 of a2) {
-                if (person1 != person2) return false;
-            }
+        const aIds = Util.getObjectIDs(arrayA).sort();
+        const bIds = Util.getObjectIDs(arrayB).sort();
+
+        for (let i=0; i<aIds.length; i++) {
+            // TODO: Fix when changing from strings to Objectids
+            if (aIds[i] !== bIds[i])
+                return false;
         }
+
         return true;
-    }
+    };
 
     function checkGroups(groups: string[][], currentNodes: RouteNodeDocument[]): Promise<string[][]> {
         const oldGroups: string[][] = currentNodes.map(node => Util.getObjectIDs(node.persons));
@@ -206,9 +210,9 @@ export namespace Routes {
                 if (newGroupsPersonIds.indexOf(personId) < 0) {
                     return People.getById(personId).then(person =>
                         Promise.reject(
-                            "The new groups should at least contain all people from the old groups! Person '" +
-                                person.name +
-                                "' is not specified in the new groups!"
+                            'The new groups should at least contain all people from the old groups! Person \'' +
+                            person.name +
+                            '\' is not specified in the new groups!'
                         )
                     );
                 }
@@ -228,7 +232,7 @@ export namespace Routes {
             return People.getByIds(duplicatePeople).then(persons => {
                 const str = persons.map(person => person.name + ' ');
 
-                return Promise.reject("People can't exist in multiple groups at the same time! Duplicates: [" + str + ']');
+                return Promise.reject('People can\'t exist in multiple groups at the same time! Duplicates: [' + str + ']');
             });
         }
 
