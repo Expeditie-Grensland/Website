@@ -13,9 +13,9 @@ import * as passport from 'passport';
 import * as ldapauth from 'passport-ldapauth';
 
 import { config } from './helpers/configHelper';
-import { Person } from './components/person';
-import { Util } from './components/document/util';
-import { PersonDocument } from './components/person/model';
+import { People } from './components/people';
+import { Util } from './components/documents/util';
+import { PersonDocument } from './components/people/model';
 import { router as apiRouter } from './api';
 import flash = require('connect-flash');
 
@@ -74,14 +74,14 @@ export namespace Setup {
 
     export function addAuthMiddleware(app: express.Express) {
         passport.use(new ldapauth({ server: config.ldap }, (user, done) =>
-            Person.getByLdapId(user.ipaUniqueID)
+            People.getByLdapId(user.ipaUniqueID)
                 .then(p => done(null, p))));
 
         passport.serializeUser((user: PersonDocument, done) =>
             done(null, Util.getObjectID(user)));
 
         passport.deserializeUser((userId: string, done) =>
-            Person.getById(userId)
+            People.getById(userId)
                 .then(p => done(null, p))
                 .catch(e => done(e, null)));
 

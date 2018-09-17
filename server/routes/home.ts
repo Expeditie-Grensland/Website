@@ -1,11 +1,11 @@
 import * as express from 'express';
 
-import { Expeditie } from '../components/expeditie';
+import { Expedities } from '../components/expedities';
 
 export const router = express.Router();
 
 router.get('/', (req, res) => {
-    Expeditie.getCached().then(expedities => {
+    Expedities.getCached().then(expedities => {
         res.render('home', {
             expedities: expedities,
             t: (<any>req).t,

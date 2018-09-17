@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
-import { DocumentOrID } from '../document/util';
-import { Word } from '.';
+import { DocumentOrID } from '../documents/util';
+import { Words } from '.';
 
-export const WordID = 'Word';
+export const WordID = 'Words';
 
 /**
  * FIXME: Add description

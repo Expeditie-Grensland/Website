@@ -1,26 +1,26 @@
 import * as socketio from 'socket.io';
 
-import { Expeditie } from '../components/expeditie';
-import { Route } from '../components/route';
+import { Expedities } from '../components/expedities';
+import { Routes } from '../components/routes';
 import { SocketIDs } from './socketHandler';
 import { aPipe } from '../helpers/functionalHelper';
-import { ExpeditieDocument } from '../components/expeditie/model';
+import { ExpeditieDocument } from '../components/expedities/model';
 
 export namespace Sockets {
     const _emit = (io: socketio.Socket, id: string): ((...args) => void) =>
         (...args) => io.emit(id, ...args);
 
     export const getNodes = (io: socketio.Socket): ((expeditieName: string) => Promise<void>) => aPipe(
-        Expeditie.getByNameShort,
-        Expeditie.getRoute,
-        Route.getNodes,
+        Expedities.getByNameShort,
+        Expedities.getRoute,
+        Routes.getNodes,
         _emit(io, SocketIDs.GET_NODES)
     );
 
     export const getBoundingBox = (io: socketio.Socket): ((expeditieName: string) => Promise<void>) => aPipe(
-        Expeditie.getByNameShort,
-        Expeditie.getRoute,
-        Route.getBoundingBox,
+        Expedities.getByNameShort,
+        Expedities.getRoute,
+        Routes.getBoundingBox,
         _emit(io, SocketIDs.GET_BOUNDINGBOX)
     );
 
@@ -31,7 +31,7 @@ export namespace Sockets {
             let skip = 100 * (2 ** batchN - 1);
             let count = 100 * 2 ** batchN;
 
-            return Expeditie.getLocationsSortedByVisualArea(expeditie, skip, count)
+            return Expedities.getLocationsSortedByVisualArea(expeditie, skip, count)
                 .then(batch => {
                     io.emit(SocketIDs.GET_LOCATIONS, ++batchN, batch);
                     if (batch.length == count)
@@ -44,7 +44,7 @@ export namespace Sockets {
     };
 
     export const getLocations = (io: socketio.Socket): ((expeditieName: string) => void) => aPipe(
-        Expeditie.getByNameShort,
+        Expedities.getByNameShort,
         _sendBatches(io),
         _emit(io, SocketIDs.LOCATIONS_DONE)
     );

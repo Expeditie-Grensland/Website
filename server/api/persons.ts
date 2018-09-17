@@ -1,11 +1,11 @@
 import * as express from 'express';
-import { Person } from '../components/person';
+import { People } from '../components/people';
 
 export const router = express.Router();
 
 router.route('/')
     .get((req, res, next) => {
-        Person.getAll()
+        People.getAll()
             .then(persons => {
                 if (persons)
                     res.status(200).json(persons);
@@ -21,7 +21,7 @@ router.route('/me')
 
 router.route('/:id([a-f\\d]{24})')
     .get((req, res, next) => {
-        Person.getById(req.params.id)
+        People.getById(req.params.id)
             .then(person => {
                 if (person)
                     res.status(200).json(person);

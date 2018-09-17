@@ -1,10 +1,10 @@
 import { LocationHelper } from '../../helpers/locationHelper';
-import { Route } from '../route';
-import { Util } from '../document/util';
+import { Routes } from '../routes';
+import { Util } from '../documents/util';
 import { ILocation, LocationDocument, LocationOrID, LocationModel } from './model';
-import { RouteOrID } from '../route/model';
-import { RouteNodeDocument, RouteNodeOrID } from '../routenode/model';
-import { PersonOrID } from '../person/model';
+import { RouteOrID } from '../routes/model';
+import { RouteNodeDocument, RouteNodeOrID } from '../routenodes/model';
+import { PersonOrID } from '../people/model';
 
 export namespace Location {
     export function getById(_id: string): Promise<LocationDocument> {
@@ -41,10 +41,10 @@ export namespace Location {
     }
 
     export async function create(location: ILocation, route: RouteOrID): Promise<LocationDocument> {
-        const routeDoc = await Route.getDocument(route);
+        const routeDoc = await Routes.getDocument(route);
 
         if (location.node === undefined) {
-            const node = await Route.getCurrentNodeWithPerson(location.person)(routeDoc);
+            const node = await Routes.getCurrentNodeWithPerson(location.person)(routeDoc);
             location.node = Util.getObjectID(node);
         }
 
@@ -61,13 +61,13 @@ export namespace Location {
     }
 
     export async function createMany(locations: ILocation[], route: RouteOrID): Promise<LocationDocument[]> {
-        const routeDoc = await Route.getDocument(route);
+        const routeDoc = await Routes.getDocument(route);
 
         let currentNodeWithPerson: Map<string, Promise<RouteNodeDocument>> = new Map();
 
         function currentNodeWithPersonCached(person: PersonOrID): Promise<RouteNodeDocument> {
             if (!currentNodeWithPerson.has(Util.getObjectID(person))) {
-                currentNodeWithPerson.set(Util.getObjectID(person), Route.getCurrentNodeWithPerson(person)(routeDoc));
+                currentNodeWithPerson.set(Util.getObjectID(person), Routes.getCurrentNodeWithPerson(person)(routeDoc));
             }
             return currentNodeWithPerson.get(Util.getObjectID(person));
         }
@@ -104,12 +104,12 @@ export namespace Location {
     }
 
     export function getInRoute(route: RouteOrID): Promise<LocationDocument[]> {
-        return Route.getNodes(route).then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
+        return Routes.getNodes(route).then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
     }
 
     export function getInRouteSortedByArea(skip: number, limit: number): (route: RouteOrID) => Promise<LocationDocument[]> {
         return async route => {
-            const nodes = await Route.getNodes(route);
+            const nodes = await Routes.getNodes(route);
 
             return LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } })
                 .sort({ visualArea: 'desc' })

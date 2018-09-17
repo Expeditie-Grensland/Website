@@ -1,17 +1,17 @@
 import * as i18next from 'i18next';
 
-import { Location } from '../location';
-import { Person } from '../person';
-import { Route } from '../route';
-import { Util } from '../document/util';
+import { Location } from '../locations';
+import { People } from '../people';
+import { Routes } from '../routes';
+import { Util } from '../documents/util';
 import { ExpeditieDocument, ExpeditieOrID, ExpeditieModel, IExpeditie } from './model';
-import { PersonDocument, PersonOrID } from '../person/model';
-import { RouteDocument, RouteOrID } from '../route/model';
-import { ILocation, LocationDocument } from '../location/model';
+import { PersonDocument, PersonOrID } from '../people/model';
+import { RouteDocument, RouteOrID } from '../routes/model';
+import { ILocation, LocationDocument } from '../locations/model';
 
 const sprintf = require('sprintf-js').sprintf;
 
-export namespace Expeditie {
+export namespace Expedities {
     let expeditiesCached = null;
 
     export function getCached(): Promise<ExpeditieDocument[]> {
@@ -56,7 +56,7 @@ export namespace Expeditie {
                 }
 
                 if (expeditie.route == undefined) {
-                    return Route.create({})
+                    return Routes.create({})
                         .then(route => {
                             expeditie.route = Util.getObjectID(route);
 
@@ -77,7 +77,7 @@ export namespace Expeditie {
                 let promises: Promise<PersonDocument>[] = [];
 
                 for (let person of expeditie.participants) {
-                    promises.push(Person.addExpeditie(expeditie)(person));
+                    promises.push(People.addExpeditie(expeditie)(person));
                 }
 
                 return Promise.all(promises).then(() => {
@@ -117,7 +117,7 @@ export namespace Expeditie {
     export function addParticipants(participants: PersonOrID[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
             checkFinished('expeditie_action_add_participants')(expeditie)
-                .then(expeditie => Promise.all(participants.map(Person.addExpeditie(expeditie))))
+                .then(expeditie => Promise.all(participants.map(People.addExpeditie(expeditie))))
                 .then(() =>
                     ExpeditieModel.findByIdAndUpdate(
                         Util.getObjectID(expeditie),
@@ -134,7 +134,7 @@ export namespace Expeditie {
     export function removeParticipants(participants: PersonOrID[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
             checkFinished('expeditie_action_remove_participants')(expeditie)
-                .then(expeditie => Promise.all(participants.map(Person.removeExpeditie(expeditie))))
+                .then(expeditie => Promise.all(participants.map(People.removeExpeditie(expeditie))))
                 .then(() =>
                     ExpeditieModel.findByIdAndUpdate(
                         Util.getObjectID(expeditie),
@@ -152,7 +152,7 @@ export namespace Expeditie {
     }
 
     export function getRoute(expeditie: ExpeditieOrID): Promise<RouteDocument> {
-        return Util.getDocument(expeditie, getById).then(expeditie => Util.getDocument(expeditie.route, Route.getById));
+        return Util.getDocument(expeditie, getById).then(expeditie => Util.getDocument(expeditie.route, Routes.getById));
     }
 
     export function setGroups(groups: PersonOrID[][]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
@@ -162,15 +162,15 @@ export namespace Expeditie {
                 const pRoute = pExpeditie
                     .then(expeditie => {
                         if (expeditie.route === undefined) {
-                            return Route.create({}).then(route => {
+                            return Routes.create({}).then(route => {
                                 setRoute(route)(expeditie);
                                 return route;
                             });
                         }
 
-                        return Route.getDocument(expeditie.route);
+                        return Routes.getDocument(expeditie.route);
                     })
-                    .then(route => Route.setGroups(expeditie, groups));
+                    .then(route => Routes.setGroups(expeditie, groups));
 
                 return Promise.all([pExpeditie, pRoute]).then(([expeditie, route]) => {
                     return expeditie;

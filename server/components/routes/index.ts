@@ -1,14 +1,14 @@
 import { ColorHelper } from '../../helpers/colorHelper';
-import { Expeditie } from '../expeditie';
-import { Person } from '../person';
-import { Util } from '../document/util';
-import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeModel } from '../routenode/model';
+import { Expedities } from '../expedities';
+import { People } from '../people';
+import { Util } from '../documents/util';
+import { IRouteEdge, IRouteNode, RouteNodeDocument, RouteNodeOrID, RouteNodeModel } from '../routenodes/model';
 import { IBoundingBox, IRoute, RouteDocument, RouteOrID, RouteModel } from './model';
-import { Location } from '../location';
-import { ExpeditieDocument, ExpeditieOrID } from '../expeditie/model';
-import { PersonOrID } from '../person/model';
+import { Location } from '../locations';
+import { ExpeditieDocument, ExpeditieOrID } from '../expedities/model';
+import { PersonOrID } from '../people/model';
 
-export namespace Route {
+export namespace Routes {
     export function create(route: IRoute): Promise<RouteDocument> {
         return RouteModel.create(route);
     }
@@ -95,10 +95,10 @@ export namespace Route {
     export function setGroups(expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<RouteDocument> {
         const groupsIds: string[][] = groups.map(group => Util.getObjectIDs(group));
 
-        const pExpeditie = Util.getDocument(expeditie, Expeditie.getById);
-        const pRoute = pExpeditie.then(Expeditie.getRoute);
-        const pCurrentNodes = pRoute.then(Route.getCurrentNodes);
-        const pStartingNodes = pRoute.then(Route.getStartingNodes);
+        const pExpeditie = Util.getDocument(expeditie, Expedities.getById);
+        const pRoute = pExpeditie.then(Expedities.getRoute);
+        const pCurrentNodes = pRoute.then(Routes.getCurrentNodes);
+        const pStartingNodes = pRoute.then(Routes.getStartingNodes);
         const pCheckGroups = pCurrentNodes.then(currentNodes => checkGroups(groupsIds, currentNodes));
         const pNewCurrentNodes = Promise.all([pExpeditie, pRoute, pCurrentNodes, pCheckGroups]).then(
             ([expeditie, route, currentNodes, checkedGroups]) => createGroups(expeditie, route, currentNodes, checkedGroups)
@@ -204,7 +204,7 @@ export namespace Route {
         for (let group of oldGroups) {
             for (let personId of group) {
                 if (newGroupsPersonIds.indexOf(personId) < 0) {
-                    return Person.getById(personId).then(person =>
+                    return People.getById(personId).then(person =>
                         Promise.reject(
                             "The new groups should at least contain all people from the old groups! Person '" +
                                 person.name +
@@ -225,7 +225,7 @@ export namespace Route {
                 return value;
             });
 
-            return Person.getByIds(duplicatePeople).then(persons => {
+            return People.getByIds(duplicatePeople).then(persons => {
                 const str = persons.map(person => person.name + ' ');
 
                 return Promise.reject("People can't exist in multiple groups at the same time! Duplicates: [" + str + ']');
@@ -249,7 +249,7 @@ export namespace Route {
 
                 if (peopleNotInExpeditie.length > 0) {
                     console.info('Adding as participants: ' + peopleNotInExpeditie);
-                    return Expeditie.addParticipants(peopleNotInExpeditie)(expeditie);
+                    return Expedities.addParticipants(peopleNotInExpeditie)(expeditie);
                 } else {
                     return expeditie;
                 }

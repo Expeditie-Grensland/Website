@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
-import { DocumentOrID, reference } from '../document/util';
-import { ExpeditieID, ExpeditieOrID } from "../expeditie/model";
+import { DocumentOrID, reference } from '../documents/util';
+import { ExpeditieID, ExpeditieOrID } from "../expedities/model";
 
 export const PersonID = 'Person';
 

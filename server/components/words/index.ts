@@ -1,6 +1,6 @@
 import { IWord, WordDocument, WordModel } from './model';
 
-export namespace Word {
+export namespace Words {
     export function create(word: IWord): Promise<WordDocument> {
         return WordModel.create(word);
     }

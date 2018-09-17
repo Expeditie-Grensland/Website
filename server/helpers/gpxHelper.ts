@@ -1,8 +1,8 @@
 import * as gpxparse from 'gpx-parse';
 
-import { PersonOrID } from '../components/person/model';
-import { ILocation } from '../components/location/model';
-import { Util } from '../components/document/util';
+import { PersonOrID } from '../components/people/model';
+import { ILocation } from '../components/locations/model';
+import { Util } from '../components/documents/util';
 
 export namespace GpxHelper {
     export function generateLocations(gpx, person: PersonOrID): Promise<ILocation[]> {

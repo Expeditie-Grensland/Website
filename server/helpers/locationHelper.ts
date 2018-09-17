@@ -1,9 +1,9 @@
 import * as turf from '@turf/turf';
 
-import { Location } from '../components/location';
-import { Util } from '../components/document/util';
-import { LocationDocument, LocationModel } from '../components/location/model';
-import { RouteNodeOrID } from '../components/routenode/model';
+import { Location } from '../components/locations';
+import { Util } from '../components/documents/util';
+import { LocationDocument, LocationModel } from '../components/locations/model';
+import { RouteNodeOrID } from '../components/routenodes/model';
 
 export namespace LocationHelper {
     const lastLocationsMap: Map<string, Promise<[LocationDocument, LocationDocument]>> = new Map();

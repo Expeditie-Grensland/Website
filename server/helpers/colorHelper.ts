@@ -1,9 +1,9 @@
 import i18next = require('i18next');
 
-import { Route } from '../components/route';
-import { Util } from '../components/document/util';
-import { IRouteNode } from '../components/routenode/model';
-import { RouteOrID } from '../components/route/model';
+import { Routes } from '../components/routes';
+import { Util } from '../components/documents/util';
+import { IRouteNode } from '../components/routenodes/model';
+import { RouteOrID } from '../components/routes/model';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -24,10 +24,10 @@ export namespace ColorHelper {
     let nodesCached: Map<string, IRouteNode[]> = new Map();
 
     export async function init() {
-        const routes = await Route.getAll();
+        const routes = await Routes.getAll();
 
         for (let route of routes) {
-            nodesCached.set(route._id, await Route.getNodes(route));
+            nodesCached.set(route._id, await Routes.getNodes(route));
         }
     }
 
@@ -50,7 +50,7 @@ export namespace ColorHelper {
     export function generateColorForRouteNode(node: IRouteNode, cache: boolean = true): string {
         const existingNodes = getCachedRouteNodes(node.route);
 
-        const similarNode = existingNodes.find(n => Route.personArraysEqual(n.persons, node.persons));
+        const similarNode = existingNodes.find(n => Routes.personArraysEqual(n.persons, node.persons));
 
         if (similarNode !== undefined) {
             return similarNode.color;

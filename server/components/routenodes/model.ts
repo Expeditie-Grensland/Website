@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
-import { DocumentOrID, reference } from '../document/util';
-import { PersonID, PersonOrID } from '../person/model';
-import { RouteID, RouteOrID } from '../route/model';
+import { DocumentOrID, reference } from '../documents/util';
+import { PersonID, PersonOrID } from '../people/model';
+import { RouteID, RouteOrID } from '../routes/model';
 
 export const RouteNodeID = 'RouteNode';
 

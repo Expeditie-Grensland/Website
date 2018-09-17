@@ -1,11 +1,11 @@
 import * as express from 'express';
 
-import { Expeditie } from '../components/expeditie';
+import { Expedities } from '../components/expedities';
 
 export const router = express.Router({ mergeParams: true });
 
 router.get('/', async (req, res, next) => {
-    const expedities = await Expeditie.getCached();
+    const expedities = await Expedities.getCached();
     const expeditie = expedities.find(e => e.showMap && e.nameShort === req.params.expeditie);
 
     if (expeditie !== undefined) {
