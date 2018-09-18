@@ -8,40 +8,26 @@ export function reference(to: string): {} {
 }
 
 export namespace Util {
-    export function isDocument<T extends mongoose.Document>(document: DocumentOrID<T>): document is T {
-        return (<T>document).save !== undefined;
-    }
+    export const isDocument = <T extends mongoose.Document>(doc: DocumentOrID<T>): doc is T =>
+        (<T>doc).save !== undefined;
 
-    export function isObjectID<T extends mongoose.Document>(document: DocumentOrID<T>): document is string {
-        return (<string>document).charAt !== undefined;
-    }
+    // TODO: Change when changing to ObjectIds
+    export const isObjectID = <T extends mongoose.Document>(doc: DocumentOrID<T>): doc is string =>
+        (<string>doc).charAt !== undefined;
 
-    export function getObjectID<T extends mongoose.Document>(document: DocumentOrID<T>): string {
-        if (isObjectID(document)) {
-            return document;
-        }
-        return unwrapDocumentId(document._id);
-    }
+    // TODO: Change when changing to ObjectIds
+    const _unwrapDocumentId = (id: string | mongoose.Types.ObjectId): string =>
+        new mongoose.Types.ObjectId(id).toHexString();
 
-    function unwrapDocumentId(id: string | mongoose.Types.ObjectId): string {
-        return new mongoose.Types.ObjectId(id).toHexString();
-    }
+    export const getObjectID = <T extends mongoose.Document>(doc: DocumentOrID<T>): string =>
+        isObjectID(doc) ? doc : _unwrapDocumentId(doc._id);
 
-    export function getObjectIDs<T extends mongoose.Document>(documents: DocumentOrID<T>[]): string[] {
-        if (documents.length < 1) {
-            return [];
-        }
-
-        return documents.map(doc => getObjectID(doc));
-    }
+    export const getObjectIDs = <T extends mongoose.Document>(docs: DocumentOrID<T>[]): string[] =>
+        docs.length < 1 ? [] : docs.map(getObjectID);
 
     export const getDocument = <T extends mongoose.Document>(findById: (id: string) => Promise<T>) =>
-        (doc: DocumentOrID<T>): Promise<T> => {
-            if (isDocument(doc))
-                return Promise.resolve(doc);
-
-            return findById(getObjectID(doc));
-        };
+        (doc: DocumentOrID<T>): Promise<T> =>
+            isDocument(doc) ? Promise.resolve(doc) : findById(getObjectID(doc));
 
     export const getDocuments = <T extends mongoose.Document>(findByIds: (id: string[]) => Promise<T[]>) =>
         (docs: DocumentOrID<T>[]): Promise<T[]> => {
@@ -49,15 +35,11 @@ export namespace Util {
                 return Promise.resolve([]);
 
             let docPart: T[] = [];
-            // TODO: change string to ObjectID when changing
+            // TODO: change string to ObjectId when changing
             let idPart: string[] = [];
 
-            for (let doc of docs) {
-                if (isDocument(doc))
-                    docPart.push(doc);
-                else if (isObjectID(doc))
-                    idPart.push(doc)
-            }
+            for (let doc of docs)
+                isObjectID(doc) ? idPart.push(doc) : docPart.push(doc);
 
             return aPipe(
                 findByIds,
