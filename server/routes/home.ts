@@ -5,9 +5,9 @@ import { Expedities } from '../components/expedities';
 export const router = express.Router();
 
 router.get('/', (req, res) => {
-    Expedities.getCached().then(expedities => {
+    Expedities.getAll().then(expedities => {
         res.render('home', {
-            expedities: expedities,
+            expedities,
             t: (<any>req).t,
             t_ucf: ucFirstWrapper((<any>req).t),
             ucf: ucFirst

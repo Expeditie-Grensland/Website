@@ -4,7 +4,7 @@ import { People } from '../people';
 import { Util } from '../documents/util';
 import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routenodes/model';
 import { BoundingBox, Route, RouteDocument, RouteModel, RouteOrID } from './model';
-import { getById, Locations } from '../locations';
+import { Locations } from '../locations';
 import { ExpeditieDocument, ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
 

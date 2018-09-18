@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import { aPipe } from '../../helpers/functionalHelper';
+import { Expedities } from '../expedities';
 
 export type DocumentOrID<T extends mongoose.Document> = T | string;
 
@@ -40,6 +41,7 @@ export namespace Util {
 
             for (let doc of docs)
                 isObjectID(doc) ? idPart.push(doc) : docPart.push(doc);
+
 
             return aPipe(
                 findByIds,

@@ -22,11 +22,14 @@ const schema = new mongoose.Schema({
     showMap: Boolean,
     movieUrl: String,
     movieCoverUrl: String,
-    finished: Boolean,
+    finished: {type: Boolean, default: false},
     participants: [reference(PersonID)],
     route: reference(RouteID),
     countries: [String]
 });
+
+schema.index({ nameShort: 1 });
+schema.index({ sequenceNumber: -1 });
 
 export interface Expeditie {
     sequenceNumber: number;

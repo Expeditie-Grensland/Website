@@ -1,121 +1,74 @@
-import * as i18next from 'i18next';
-
 import { Locations } from '../locations';
 import { People } from '../people';
 import { Routes } from '../routes';
 import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
-import { PersonDocument, PersonOrID } from '../people/model';
+import { PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
 import { Location, LocationDocument } from '../locations/model';
+import { aPipe } from '../../helpers/functionalHelper';
+import * as i18next from 'i18next';
 
 const sprintf = require('sprintf-js').sprintf;
 
 export namespace Expedities {
-    let expeditiesCached = null;
+    export const getByNameShort = (nameShort: string): Promise<ExpeditieDocument> =>
+        ExpeditieModel.findOne({ nameShort }).exec();
 
-    export function getCached(): Promise<ExpeditieDocument[]> {
-        if (expeditiesCached === null) {
-            expeditiesCached = getAll();
-        }
-
-        return expeditiesCached;
-    }
-
-    export function getByNameShort(nameShort: string): Promise<ExpeditieDocument> {
-        return ExpeditieModel.findOne({ nameShort: nameShort }).exec();
-    }
-
-    function onChanged<T>(arg: T): Promise<T> {
-        expeditiesCached = getAll();
-
-        console.info('Invalidating Expeditie cache.');
-
-        return Promise.resolve(arg);
-    }
-
-    export function getAll(): Promise<ExpeditieDocument[]> {
-        return ExpeditieModel.find({})
+    export const getAll = (): Promise<ExpeditieDocument[]> =>
+        ExpeditieModel
+            .find({})
             .sort({ sequenceNumber: -1 })
             .exec();
-    }
 
-    export function getById(_id: string): Promise<ExpeditieDocument> {
-        return ExpeditieModel.findById(_id).exec();
-    }
+    export const getById = (id: string): Promise<ExpeditieDocument> =>
+        ExpeditieModel.findById(id).exec();
 
     export const getDocument: ((location: ExpeditieOrID) => Promise<ExpeditieDocument>) =
         Util.getDocument(getById);
 
-    export function create(expeditie: Expeditie): Promise<ExpeditieDocument> {
-        return Promise.resolve()
-            .then(() => {
-                if (expeditie.finished === undefined) {
-                    expeditie.finished = false;
-                }
+    const _createNewRouteIfUndefined = (expeditie: Expeditie): Promise<Expeditie> => {
+        if (expeditie.route !== undefined)
+            return Promise.resolve(expeditie);
 
-                if (expeditie.route == undefined) {
-                    return Routes.create({})
-                        .then(route => {
-                            expeditie.route = Util.getObjectID(route);
+        return Routes.create({})
+            .then(route => expeditie.route = Util.getObjectID(route))
+            .catch(err => console.error('Creating route failed!', err))
+            .then(() => expeditie);
+    };
 
-                            return expeditie;
-                        })
-                        .catch(err => {
-                            console.warn('Creating route failed!', err);
-                            return expeditie;
-                        });
-                }
+    const _addExpeditieToParticipants = (expeditie: ExpeditieDocument): Promise<ExpeditieDocument> =>
+        Promise.all(expeditie.participants.map(People.addExpeditie(expeditie)))
+            .then(() => expeditie);
 
-                return expeditie;
-            })
-            .then(expeditie => {
-                return ExpeditieModel.create(expeditie);
-            })
-            .then(expeditie => {
-                let promises: Promise<PersonDocument>[] = [];
+    export const create: ((expeditie: Expeditie) => Promise<ExpeditieDocument>) = aPipe(
+        _createNewRouteIfUndefined,
+        ExpeditieModel.create,
+        _addExpeditieToParticipants
+    );
 
-                for (let person of expeditie.participants) {
-                    promises.push(People.addExpeditie(expeditie)(person));
-                }
+    export const setFinished = (finished: boolean) =>
+        (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+            getDocument(expeditie).then(expeditie => expeditie.set({ finished }).save());
 
-                return Promise.all(promises).then(() => {
-                    return expeditie;
-                });
-            })
-            .then(onChanged);
-    }
+    export const checkFinished = (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        getDocument(expeditie).then(expeditie => {
+            if (expeditie.finished)
+                throw sprintf(i18next.t('expeditie_finished_generic_error'), expeditie.name);
+            return expeditie;
+        });
 
-    export function setFinished(finished: boolean): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie =>
-            getDocument(expeditie).then(expeditie =>
-                ExpeditieModel.findByIdAndUpdate(Util.getObjectID(expeditie), { finished: finished }, { new: true }).exec()
-            );
-    }
+    export const remove: ((expeditie: ExpeditieOrID) => Promise<void>) = aPipe(
+        getDocument,
+        expeditie => removeParticipants(expeditie.participants)(expeditie),
+        expeditie => expeditie.remove(),
+        () => undefined
+    );
 
-    export function checkFinished(actionVerb: string): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie =>
-            new Promise((resolve, reject) => {
-                return getDocument(expeditie).then(expeditie => {
-                    if (expeditie.finished) {
-                        reject(sprintf(i18next.t('expeditie_finished_generic_error'), actionVerb, expeditie.name));
-                    }
-                    resolve(expeditie);
-                });
-            });
-    }
-
-    export function remove(expeditie: ExpeditieOrID): Promise<void> {
-        return getDocument(expeditie)
-            .then(expeditie => removeParticipants(expeditie.participants)(expeditie))
-            .then(expeditie => expeditie.remove())
-            .then(onChanged)
-            .then(() => undefined);
-    }
-
+    // FIXME: $pushAll is deprecated (?)
     export function addParticipants(participants: PersonOrID[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
-            checkFinished('expeditie_action_add_participants')(expeditie)
+            checkFinished(expeditie)
                 .then(expeditie => Promise.all(participants.map(People.addExpeditie(expeditie))))
                 .then(() =>
                     ExpeditieModel.findByIdAndUpdate(
@@ -130,9 +83,9 @@ export namespace Expedities {
                 );
     }
 
-    export function removeParticipants(participants: PersonOrID[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+    export function removeParticipants(participants: PersonOrID[]): ((expeditie: ExpeditieOrID) => Promise<ExpeditieDocument>) {
         return expeditie =>
-            checkFinished('expeditie_action_remove_participants')(expeditie)
+            checkFinished(expeditie)
                 .then(expeditie => Promise.all(participants.map(People.removeExpeditie(expeditie))))
                 .then(() =>
                     ExpeditieModel.findByIdAndUpdate(
@@ -143,9 +96,9 @@ export namespace Expedities {
                 );
     }
 
-    export function setRoute(route: RouteOrID): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
+    export function setRoute(route: RouteOrID): ((expeditie: ExpeditieOrID) => Promise<ExpeditieDocument>) {
         return expeditie =>
-            checkFinished('expeditie_action_set_route')(expeditie).then(expeditie =>
+            checkFinished(expeditie).then(expeditie =>
                 ExpeditieModel.findByIdAndUpdate(Util.getObjectID(expeditie), { route: Util.getObjectID(route) }, { new: true }).exec()
             );
     }
@@ -156,7 +109,7 @@ export namespace Expedities {
 
     export function setGroups(groups: PersonOrID[][]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return (expeditie: ExpeditieOrID) =>
-            checkFinished('expeditie_action_set_groups')(expeditie).then(expeditie => {
+            checkFinished(expeditie).then(expeditie => {
                 const pExpeditie = Util.getDocument(getById)(expeditie);
                 const pRoute = pExpeditie
                     .then(expeditie => {
@@ -179,23 +132,24 @@ export namespace Expedities {
 
     export function addLocation(location: Location): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
-            checkFinished('expeditie_action_add_location')(expeditie).then(expeditie => {
+            checkFinished(expeditie).then(expeditie => {
                 return Locations.create(location, expeditie.route).then(location => expeditie);
             });
     }
 
     export function addLocations(locations: Location[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
         return expeditie =>
-            checkFinished('expeditie_action_add_locations')(expeditie).then(expeditie => {
+            checkFinished(expeditie).then(expeditie => {
                 return Locations.createMany(locations, expeditie.route).then(() => expeditie);
             });
     }
 
-    export function getLocations(expeditie: ExpeditieOrID): Promise<LocationDocument[]> {
-        return getRoute(expeditie).then(Locations.getInRoute);
-    }
+    export const getLocations: ((expeditie: ExpeditieOrID) => Promise<LocationDocument[]>) = aPipe(
+        getRoute,
+        Locations.getInRoute
+    );
 
-    export function getLocationsSortedByVisualArea(expeditie: ExpeditieOrID, skip, limit): Promise<LocationDocument[]> {
-        return getRoute(expeditie).then(Locations.getInRouteSortedByArea(skip, limit));
-    }
+    export const getLocationsSortedByVisualArea = (expeditie: ExpeditieOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
+        getRoute(expeditie)
+            .then(Locations.getInRouteSortedByArea(skip, limit));
 }

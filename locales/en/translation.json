@@ -3,12 +3,6 @@
   "map": "map",
   "movie": "movie",
   "movie_additive": "The Movie",
-  "expeditie_finished_generic_error": "Cannot %s expeditie %s because it is marked as finished.",
-  "expeditie_action_add_participants": "add participants to",
-  "expeditie_action_remove_participants": "remove participants from",
-  "expeditie_action_set_route": "set route",
-  "expeditie_action_set_groups": "change groups",
-  "expeditie_action_add_location": "add location",
-  "expeditie_action_add_locations": "add locations",
-  "colorhelper_error_not_enough_colors": "The amount of available colors (%d) is too small for the current amount of groups (%d)"
+  "expeditie_finished_generic_error": "Sorry, expeditie %s is marked as finished.",
+  "colorhelper_error_not_enough_colors": "The amount of available colors (%d) is too small for the current amount of groups (%d)."
 }
