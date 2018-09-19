@@ -5,8 +5,7 @@ import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
-import { Location, LocationDocument } from '../locations/model';
-import { aPipe } from '../../helpers/functionalHelper';
+import { Location, LocationDocument, LocationModel } from '../locations/model';
 import * as i18next from 'i18next';
 
 const sprintf = require('sprintf-js').sprintf;
@@ -37,119 +36,116 @@ export namespace Expedities {
             .then(() => expeditie);
     };
 
-    const _addExpeditieToParticipants = (expeditie: ExpeditieDocument): Promise<ExpeditieDocument> =>
-        Promise.all(expeditie.participants.map(People.addExpeditie(expeditie)))
-            .then(() => expeditie);
+    const _addExpeditieToPersons = (persons: PersonOrID[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        Promise.all(persons.map(People.addExpeditie(expeditie)))
+            .then(() => getDocument(expeditie));
 
-    export const create: ((expeditie: Expeditie) => Promise<ExpeditieDocument>) = aPipe(
-        _createNewRouteIfUndefined,
-        ExpeditieModel.create,
-        _addExpeditieToParticipants
-    );
+    export const create = (expeditie: Expeditie): Promise<ExpeditieDocument> =>
+        Promise.resolve(expeditie)
+            .then(_createNewRouteIfUndefined)
+            .then(ExpeditieModel.create)
+            .then(_addExpeditieToPersons(expeditie.participants));
 
-    export const setFinished = (finished: boolean) =>
-        (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
-            getDocument(expeditie).then(expeditie => expeditie.set({ finished }).save());
+    export const setFinished = (finished: boolean) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        ExpeditieModel.findByIdAndUpdate(
+            Util.getObjectID(expeditie),
+            { finished: finished },
+            { new: true }
+        ).exec();
 
-    export const checkFinished = (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
-        getDocument(expeditie).then(expeditie => {
-            if (expeditie.finished)
-                throw sprintf(i18next.t('expeditie_finished_generic_error'), expeditie.name);
-            return expeditie;
-        });
+    const _checkFinished = (expeditie: ExpeditieDocument): Promise<ExpeditieDocument> => {
+        if (expeditie.finished)
+            throw sprintf(i18next.t('expeditie_finished_generic_error'), expeditie.name);
+        return Promise.resolve(expeditie);
+    };
 
-    export const remove: ((expeditie: ExpeditieOrID) => Promise<void>) = aPipe(
-        getDocument,
-        expeditie => removeParticipants(expeditie.participants)(expeditie),
-        expeditie => expeditie.remove(),
-        () => undefined
-    );
+    export const remove = (expeditie: ExpeditieOrID): Promise<void> =>
+        getDocument(expeditie)
+            .then(expeditie => removeParticipants(expeditie.participants)(expeditie))
+            .then(expeditie => expeditie.remove())
+            .then(() => undefined);
 
-    // FIXME: $pushAll is deprecated (?)
-    export function addParticipants(participants: PersonOrID[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie =>
-            checkFinished(expeditie)
-                .then(expeditie => Promise.all(participants.map(People.addExpeditie(expeditie))))
-                .then(() =>
-                    ExpeditieModel.findByIdAndUpdate(
-                        Util.getObjectID(expeditie),
-                        {
-                            $pushAll: {
-                                participants: Util.getObjectIDs(participants)
-                            }
-                        },
-                        { new: true }
-                    )
-                );
-    }
+    export const addParticipants = (participants: PersonOrID[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        getDocument(expeditie)
+            .then(_checkFinished)
+            .then(_addExpeditieToPersons(participants))
+            .then(expeditie => ExpeditieModel.findByIdAndUpdate(
+                Util.getObjectID(expeditie),
+                {
+                    $addToSet: {
+                        participants: { $each: Util.getObjectIDs(participants) }
+                    }
+                },
+                { new: true }
+            ).exec());
 
-    export function removeParticipants(participants: PersonOrID[]): ((expeditie: ExpeditieOrID) => Promise<ExpeditieDocument>) {
-        return expeditie =>
-            checkFinished(expeditie)
-                .then(expeditie => Promise.all(participants.map(People.removeExpeditie(expeditie))))
-                .then(() =>
-                    ExpeditieModel.findByIdAndUpdate(
-                        Util.getObjectID(expeditie),
-                        { $pullAll: { participants: Util.getObjectIDs(participants) } },
-                        { new: true }
-                    ).exec()
-                );
-    }
+    const _removeExpeditieFromPersons = (persons: PersonOrID[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        Promise.all(persons.map(People.removeExpeditie(expeditie)))
+            .then(() => getDocument(expeditie));
 
-    export function setRoute(route: RouteOrID): ((expeditie: ExpeditieOrID) => Promise<ExpeditieDocument>) {
-        return expeditie =>
-            checkFinished(expeditie).then(expeditie =>
-                ExpeditieModel.findByIdAndUpdate(Util.getObjectID(expeditie), { route: Util.getObjectID(route) }, { new: true }).exec()
-            );
-    }
+    export const removeParticipants = (participants: PersonOrID[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        getDocument(expeditie)
+            .then(_checkFinished)
+            .then(_removeExpeditieFromPersons(participants))
+            .then(expeditie => ExpeditieModel.findByIdAndUpdate(
+                Util.getObjectID(expeditie),
+                {
+                    $pullAll: {
+                        participants: Util.getObjectIDs(participants)
+                    }
+                },
+                { new: true }
+            ).exec());
 
-    export function getRoute(expeditie: ExpeditieOrID): Promise<RouteDocument> {
-        return Util.getDocument(getById)(expeditie).then(expeditie => Util.getDocument(Routes.getById)(expeditie.route));
-    }
+    export const setRoute = (route: RouteOrID) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        getDocument(expeditie)
+            .then(_checkFinished)
+            .then(expeditie => ExpeditieModel.findByIdAndUpdate(
+                Util.getObjectID(expeditie),
+                { route: Util.getObjectID(route) },
+                { new: true }
+            ).exec());
 
-    export function setGroups(groups: PersonOrID[][]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return (expeditie: ExpeditieOrID) =>
-            checkFinished(expeditie).then(expeditie => {
-                const pExpeditie = Util.getDocument(getById)(expeditie);
-                const pRoute = pExpeditie
-                    .then(expeditie => {
-                        if (expeditie.route === undefined) {
-                            return Routes.create({}).then(route => {
-                                setRoute(route)(expeditie);
-                                return route;
-                            });
-                        }
+    export const getRoute = (expeditie: ExpeditieOrID): Promise<RouteDocument> =>
+        getDocument(expeditie)
+            .then(expeditie => Routes.getDocument(expeditie.route));
 
-                        return Routes.getDocument(expeditie.route);
-                    })
-                    .then(route => Routes.setGroups(expeditie, groups));
+    export const setGroups = (groups: PersonOrID[][]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        getDocument(expeditie)
+            .then(_checkFinished)
+            .then(expeditie => {
+                if (expeditie.route === undefined) {
+                    return Routes.create({})
+                        .then(route => Promise.all([setRoute(route)(expeditie), route]));
+                }
 
-                return Promise.all([pExpeditie, pRoute]).then(([expeditie, route]) => {
-                    return expeditie;
-                });
-            });
-    }
+                return Promise.all([expeditie, Routes.getDocument(expeditie.route)]);
+            })
+            .then(([expeditie]) => expeditie);
 
-    export function addLocation(location: Location): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie =>
-            checkFinished(expeditie).then(expeditie => {
-                return Locations.create(location, expeditie.route).then(location => expeditie);
-            });
-    }
+    export const addLocation = (location: Location) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        getDocument(expeditie)
+            .then(_checkFinished)
+            .then(expeditie => Promise.all([expeditie, Locations.create(location, expeditie.route)]))
+            .then(([expeditie]) => expeditie);
 
-    export function addLocations(locations: Location[]): (expeditie: ExpeditieOrID) => Promise<ExpeditieDocument> {
-        return expeditie =>
-            checkFinished(expeditie).then(expeditie => {
-                return Locations.createMany(locations, expeditie.route).then(() => expeditie);
-            });
-    }
+    export const addLocations = (locations: Location[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        getDocument(expeditie)
+            .then(_checkFinished)
+            .then(expeditie => Promise.all([expeditie, Locations.createMany(locations, expeditie.route)]))
+            .then(([expeditie]) => expeditie);
 
-    export const getLocations: ((expeditie: ExpeditieOrID) => Promise<LocationDocument[]>) = aPipe(
-        getRoute,
-        Locations.getInRoute
-    );
+    export const getLocations = (expeditie: ExpeditieOrID): Promise<LocationDocument[]> =>
+        getRoute(expeditie)
+            .then(Locations.getInRoute);
 
     export const getLocationsSortedByVisualArea = (expeditie: ExpeditieOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
         getRoute(expeditie)
-            .then(Locations.getInRouteSortedByArea(skip, limit));
+            .then(Routes.getNodes)
+            .then(nodes => LocationModel.find({
+                node: { $in: Util.getObjectIDs(nodes) } })
+                .sort({visualArea: 'desc'})
+                .skip(skip)
+                .limit(limit)
+                .exec())
 }
