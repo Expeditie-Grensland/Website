@@ -43,4 +43,20 @@ export namespace Util {
             return findByIds(idPart)
                 .then(docPart.concat);
         };
+
+    export const documentArraysEqual = <T extends mongoose.Document>(arrayA: DocumentOrID<T>[], arrayB: DocumentOrID<T>[]): boolean => {
+        if (arrayA.length !== arrayB.length)
+            return false;
+
+        const aIds = Util.getObjectIDs(arrayA).sort();
+        const bIds = Util.getObjectIDs(arrayB).sort();
+
+        for (let i = 0; i < aIds.length; i++) {
+            // TODO: Fix when changing from strings to Objectids
+            if (aIds[i] !== bIds[i])
+                return false;
+        }
+
+        return true;
+    };
 }

@@ -4,29 +4,25 @@ import { People } from '../people';
 import { Util } from '../documents/util';
 import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routenodes/model';
 import { BoundingBox, Route, RouteDocument, RouteModel, RouteOrID } from './model';
-import { Locations } from '../locations';
 import { ExpeditieDocument, ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
+import { LocationModel } from '../locations/model';
 
 export namespace Routes {
-    export function create(route: Route): Promise<RouteDocument> {
-        return RouteModel.create(route);
-    }
+    export const create = (route: Route): Promise<RouteDocument> =>
+        RouteModel.create(route);
 
-    export function getById(_id: string): Promise<RouteDocument> {
-        return RouteModel.findById(_id).exec();
-    }
+    export const getById = (_id: string): Promise<RouteDocument> =>
+        RouteModel.findById(_id).exec();
 
-    export const getDocument: ((route: RouteOrID) => Promise<RouteDocument>) =
-        Util.getDocument(getById);
+    export const getDocument = (route: RouteOrID): Promise<RouteDocument> =>
+        Util.getDocument(getById)(route);
 
-    export function getAll(): Promise<RouteDocument[]> {
-        return RouteModel.find({}).exec();
-    }
+    export const getAll = (): Promise<RouteDocument[]> =>
+        RouteModel.find({}).exec();
 
-    export function getNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
-        return RouteNodeModel.find({ route: Util.getObjectID(route) }).exec();
-    }
+    export const getNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
+        RouteNodeModel.find({ route: Util.getObjectID(route) }).exec();
 
     function createRouteNode(node: RouteNode): Promise<RouteNodeDocument> {
         if (node.color === undefined) {
@@ -164,42 +160,27 @@ export namespace Routes {
         );
     }
 
-    export async function getBoundingBox(route: RouteOrID): Promise<BoundingBox> {
-        const nodes = await getNodes(route);
+    const _getMinMaxLatLon = (nodes: RouteNodeOrID[], latLon: 'lat' | 'lon', minMax: 1 | -1): Promise<number> => {
+        const nodeIDs = Util.getObjectIDs(nodes);
 
-        console.log(route);
-        console.log(nodes);
-
-        const minLat = Locations.getMinMaxLatLonLocation(nodes, 'min', 'lat');
-        const maxLat = Locations.getMinMaxLatLonLocation(nodes, 'max', 'lat');
-        const minLon = Locations.getMinMaxLatLonLocation(nodes, 'min', 'lon');
-        const maxLon = Locations.getMinMaxLatLonLocation(nodes, 'max', 'lon');
-
-        return Promise.all([minLat, maxLat, minLon, maxLon]).then(([minLat, maxLat, minLon, maxLon]) => {
-            return {
-                minLat: minLat[0].lat,
-                maxLat: maxLat[0].lat,
-                minLon: minLon[0].lon,
-                maxLon: maxLon[0].lon
-            };
-        });
-    }
-
-    export const personArraysEqual = (arrayA: PersonOrID[], arrayB: PersonOrID[]): boolean => {
-        if (arrayA.length !== arrayB.length)
-            return false;
-
-        const aIds = Util.getObjectIDs(arrayA).sort();
-        const bIds = Util.getObjectIDs(arrayB).sort();
-
-        for (let i = 0; i < aIds.length; i++) {
-            // TODO: Fix when changing from strings to Objectids
-            if (aIds[i] !== bIds[i])
-                return false;
-        }
-
-        return true;
+        return LocationModel.find({ node: { $in: nodeIDs } })
+            .sort({ [latLon]: minMax })
+            .limit(1)
+            .exec()
+            .then(locations => locations[0][latLon]);
     };
+
+    export const getBoundingBox = (route: RouteOrID): Promise<BoundingBox> =>
+        getNodes(route)
+            .then(nodes => Promise.all([
+                _getMinMaxLatLon(nodes, 'lat', 1), // Minimum latitude
+                _getMinMaxLatLon(nodes, 'lat', -1), // Maximum latitude
+                _getMinMaxLatLon(nodes, 'lon', 1), // Minimum longitude
+                _getMinMaxLatLon(nodes, 'lon', -1) // Maximum longitude
+            ]))
+            .then(([minLat, maxLat, minLon, maxLon]) => {
+                return { minLat, maxLat, minLon, maxLon };
+            });
 
     function checkGroups(groups: string[][], currentNodes: RouteNodeDocument[]): Promise<string[][]> {
         const oldGroups: string[][] = currentNodes.map(node => Util.getObjectIDs(node.persons));
@@ -268,7 +249,7 @@ export namespace Routes {
                     let nonNewNode = null;
 
                     for (let node of currentNodes) {
-                        if (personArraysEqual(node.persons, group)) {
+                        if (Util.documentArraysEqual(node.persons, group)) {
                             groupNeedsNewNode = false;
                             nonNewNode = node;
                             break;

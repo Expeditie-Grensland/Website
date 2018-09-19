@@ -138,14 +138,4 @@ export namespace Expedities {
     export const getLocations = (expeditie: ExpeditieOrID): Promise<LocationDocument[]> =>
         getRoute(expeditie)
             .then(Locations.getInRoute);
-
-    export const getLocationsSortedByVisualArea = (expeditie: ExpeditieOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
-        getRoute(expeditie)
-            .then(Routes.getNodes)
-            .then(nodes => LocationModel.find({
-                node: { $in: Util.getObjectIDs(nodes) } })
-                .sort({visualArea: 'desc'})
-                .skip(skip)
-                .limit(limit)
-                .exec())
 }

@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
 import { PersonID, PersonOrID } from '../people/model';
-import { RouteNodeID, RouteNodeOrID } from '../routenodes/model'
+import { RouteNodeID, RouteNodeOrID } from '../routenodes/model';
 
 export const LocationID = 'Location';
 
@@ -16,7 +16,7 @@ export const LocationID = 'Location';
  */
 
 const schema = new mongoose.Schema({
-    visualArea: Number,
+    visualArea: { type: Number, default: Number.POSITIVE_INFINITY },
     person: reference(PersonID),
     node: reference(RouteNodeID),
     timestamp: Number,
@@ -56,7 +56,8 @@ export interface Location {
     speedAccuracy?: number;
 }
 
-export interface LocationDocument extends Location, mongoose.Document {}
+export interface LocationDocument extends Location, mongoose.Document {
+}
 
 export const LocationModel = mongoose.model<LocationDocument>(LocationID, schema);
 

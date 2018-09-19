@@ -4,6 +4,7 @@ import { Expedities } from '../components/expedities';
 import { Routes } from '../components/routes';
 import { SocketIDs } from './socketHandler';
 import { ExpeditieDocument } from '../components/expedities/model';
+import { Locations } from '../components/locations';
 
 export namespace Sockets {
     const _emit = (io: socketio.Socket, id: string): ((...args) => void) =>
@@ -28,7 +29,7 @@ export namespace Sockets {
             let skip = 100 * (2 ** batchN - 1);
             let count = 100 * 2 ** batchN;
 
-            return Expedities.getLocationsSortedByVisualArea(expeditie, skip, count)
+            return Locations.getInExpeditieSortedByVisualArea(expeditie, skip, count)
                 .then(batch => {
                     io.emit(SocketIDs.GET_LOCATIONS, ++batchN, batch);
                     if (batch.length == count)
