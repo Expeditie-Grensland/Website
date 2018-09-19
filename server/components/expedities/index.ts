@@ -23,8 +23,8 @@ export namespace Expedities {
     export const getById = (id: string): Promise<ExpeditieDocument> =>
         ExpeditieModel.findById(id).exec();
 
-    export const getDocument: ((location: ExpeditieOrID) => Promise<ExpeditieDocument>) =
-        Util.getDocument(getById);
+    export const getDocument = (location: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        Util.getDocument(getById)(location);
 
     const _createNewRouteIfUndefined = (expeditie: Expeditie): Promise<Expeditie> => {
         if (expeditie.route !== undefined)
