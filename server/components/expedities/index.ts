@@ -5,7 +5,7 @@ import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
-import { Location, LocationDocument, LocationModel } from '../locations/model';
+import { Location, LocationDocument } from '../locations/model';
 import * as i18next from 'i18next';
 
 const sprintf = require('sprintf-js').sprintf;

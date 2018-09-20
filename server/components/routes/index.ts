@@ -24,11 +24,6 @@ export namespace Routes {
     export const getNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
         RouteNodeModel.find({ route: Util.getObjectID(route) }).exec();
 
-    export const setExpeditie = (expeditie: ExpeditieOrID) => (route: RouteOrID): Promise<RouteDocument> =>
-        RouteModel.findByIdAndUpdate(
-            Util.getObjectID(route),
-            { expeditie: Util.getObjectID(expeditie) }).exec();
-
     export const getCurrentNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
         getDocument(route).then(route => RouteNodes.getDocuments(route.currentNodes));
 
