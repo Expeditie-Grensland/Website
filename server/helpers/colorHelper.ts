@@ -4,6 +4,7 @@ import { Routes } from '../components/routes';
 import { Util } from '../components/documents/util';
 import { RouteNode } from '../components/routenodes/model';
 import { RouteOrID } from '../components/routes/model';
+import { PersonOrID } from '../components/people/model';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -35,6 +36,22 @@ export namespace ColorHelper {
         nodesCached = new Map();
     }
 
+    const personArraysEqual = (arrayA: PersonOrID[], arrayB: PersonOrID[]): boolean => {
+        if (arrayA.length !== arrayB.length)
+            return false;
+
+        const aIds = Util.getObjectIDs(arrayA).sort();
+        const bIds = Util.getObjectIDs(arrayB).sort();
+
+        for (let i = 0; i < aIds.length; i++) {
+            // TODO: Fix when changing from strings to Objectids
+            if (aIds[i] !== bIds[i])
+                return false;
+        }
+
+        return true;
+    };
+
     /**
      * Selects a non-used color for the specified routenode. If this node has the same
      * people as an existing node, the color will be the same.
@@ -50,7 +67,7 @@ export namespace ColorHelper {
     export function generateColorForRouteNode(node: RouteNode, cache: boolean = true): string {
         const existingNodes = getCachedRouteNodes(node.route);
 
-        const similarNode = existingNodes.find(n => Routes.personArraysEqual(n.persons, node.persons));
+        const similarNode = existingNodes.find(n => personArraysEqual(n.persons, node.persons));
 
         if (similarNode !== undefined) {
             return similarNode.color;
