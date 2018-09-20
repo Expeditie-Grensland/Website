@@ -1,12 +1,12 @@
-import { ColorHelper } from '../../helpers/colorHelper';
 import { Expedities } from '../expedities';
 import { People } from '../people';
 import { Util } from '../documents/util';
-import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routenodes/model';
+import { RouteEdge, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routenodes/model';
 import { BoundingBox, Route, RouteDocument, RouteModel, RouteOrID } from './model';
-import { ExpeditieDocument, ExpeditieOrID } from '../expedities/model';
+import { ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
 import { LocationModel } from '../locations/model';
+import { RouteNodes } from '../routenodes';
 
 export namespace Routes {
     export const create = (route: Route): Promise<RouteDocument> =>
@@ -24,69 +24,27 @@ export namespace Routes {
     export const getNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
         RouteNodeModel.find({ route: Util.getObjectID(route) }).exec();
 
-    function createRouteNode(node: RouteNode): Promise<RouteNodeDocument> {
-        if (node.color === undefined) {
-            node.color = ColorHelper.generateColorForRouteNode(node);
-        }
+    export const setExpeditie = (expeditie: ExpeditieOrID) => (route: RouteOrID): Promise<RouteDocument> =>
+        RouteModel.findByIdAndUpdate(
+            Util.getObjectID(route),
+            { expeditie: Util.getObjectID(expeditie) }).exec();
 
-        return RouteNodeModel.create(node);
-    }
+    export const getCurrentNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
+        getDocument(route).then(route => RouteNodes.getDocuments(route.currentNodes));
 
-    export function setExpeditie(expeditie: ExpeditieOrID): (route: RouteOrID) => Promise<RouteDocument> {
-        return route => RouteModel.findByIdAndUpdate(Util.getObjectID(route), { expeditie: Util.getObjectID(expeditie) }).exec();
-    }
+    export const getStartingNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
+        getDocument(route).then(route => RouteNodes.getDocuments(route.startingNodes));
 
-    export function populateNodePersons(node: RouteNodeOrID): Promise<RouteNodeDocument> {
-        return Util.getDocument(getRouteNodeById)(node).then(node => node.populate('persons').execPopulate());
-    }
+    export const getCurrentNodeWithPerson = (person: PersonOrID) => (route: RouteOrID): Promise<RouteNodeDocument> =>
+        getDocument(route).then(route =>
+            RouteNodeModel.findOne({
+                _id: { $in: Util.getObjectIDs(route.currentNodes) },
+                route: Util.getObjectID(route),
+                persons: Util.getObjectID(person)
+            }).exec());
 
-    export const getRouteNode: ((routenode: RouteNodeOrID) => Promise<RouteNodeDocument>) =
-        Util.getDocument(getRouteNodeById);
-
-    export function getCurrentNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
-        return getDocument(route).then(route => getRouteNodes(route.currentNodes));
-    }
-
-    export function getStartingNodes(route: RouteOrID): Promise<RouteNodeDocument[]> {
-        return getDocument(route).then(route => getRouteNodes(route.startingNodes));
-    }
-
-    export function getCurrentNodeWithPerson(person: PersonOrID): (route: RouteOrID) => Promise<RouteNodeDocument> {
-        return route =>
-            getDocument(route).then(route =>
-                RouteNodeModel.findOne({
-                    _id: { $in: Util.getObjectIDs(route.currentNodes) },
-                    route: Util.getObjectID(route),
-                    persons: Util.getObjectID(person)
-                }).exec()
-            );
-    }
-
-    function getRouteNodes(nodes: RouteNodeOrID[]): Promise<RouteNodeDocument[]> {
-        return Util.getDocuments(getRouteNodesById)(nodes);
-    }
-
-    function getRouteNodeById(_id: string): Promise<RouteNodeDocument> {
-        return RouteNodeModel.findById(_id).exec();
-    }
-
-    function getRouteNodesById(ids: string[]): Promise<RouteNodeDocument[]> {
-        return RouteNodeModel.find({ _id: { $in: ids } }).exec();
-    }
-
-    function setNodeEdges(edges: RouteEdge[]): (node: RouteNodeOrID) => Promise<RouteNodeDocument> {
-        return node => RouteNodeModel.findByIdAndUpdate(Util.getObjectID(node), { edges: edges }, { new: true }).exec();
-    }
-
-    function getEdgeTo(edge: RouteEdge): Promise<RouteNodeDocument> {
-        return getRouteNode(edge.to);
-    }
-
-    function getNodeEdges(node: RouteNodeOrID): Promise<RouteEdge[]> {
-        return getRouteNode(node).then(node => node.edges);
-    }
-
-    export function setGroups(expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<RouteDocument> {
+    // TOOD
+    export const setGroups = (expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<RouteDocument> => {
         const groupsIds: string[][] = groups.map(group => Util.getObjectIDs(group));
 
         const pExpeditie = Util.getDocument(Expedities.getById)(expeditie);
@@ -143,7 +101,7 @@ export namespace Routes {
                             }
                         }
 
-                        if (edges.length > 0) setEdgePromises.push(setNodeEdges(edges)(oldCurrentNode));
+                        if (edges.length > 0) setEdgePromises.push(RouteNodes.setEdges(edges)(oldCurrentNode));
                     }
 
                     const newNodesWithoutToEdge = newCurrentNodes.filter(node => !newNodesWithToEdge.includes(Util.getObjectID(node)));
@@ -158,7 +116,7 @@ export namespace Routes {
                 return route.save();
             }
         );
-    }
+    };
 
     const _getMinMaxLatLon = (nodes: RouteNodeOrID[], latLon: 'lat' | 'lon', minMax: 1 | -1): Promise<number> => {
         const nodeIDs = Util.getObjectIDs(nodes);
@@ -182,7 +140,8 @@ export namespace Routes {
                 return { minLat, maxLat, minLon, maxLon };
             });
 
-    function checkGroups(groups: string[][], currentNodes: RouteNodeDocument[]): Promise<string[][]> {
+    // TODO
+    const checkGroups = (groups: string[][], currentNodes: RouteNodeDocument[]): Promise<string[][]> => {
         const oldGroups: string[][] = currentNodes.map(node => Util.getObjectIDs(node.persons));
 
         const newGroupsPersonIds: string[] = [].concat(...groups);
@@ -219,28 +178,15 @@ export namespace Routes {
         }
 
         return Promise.resolve(groups);
-    }
+    };
 
-    function createGroups(
-        expeditie: ExpeditieDocument,
-        route: RouteDocument,
-        currentNodes: RouteNodeDocument[],
-        groups: string[][]
-    ): Promise<RouteNodeDocument[]> {
-        return Promise.resolve()
-            .then(() => {
-                const personIds: string[] = [].concat(...groups.map(group => Util.getObjectIDs(group)));
 
-                const peopleNotInExpeditie = personIds.filter(p => !Util.getObjectIDs(expeditie.participants).includes(p));
-
-                if (peopleNotInExpeditie.length > 0) {
-                    console.info('Adding as participants: ' + peopleNotInExpeditie);
-                    return Expedities.addParticipants(peopleNotInExpeditie)(expeditie);
-                } else {
-                    return expeditie;
-                }
-            })
-            .then(expeditie => {
+    // TODO
+    const createGroups = (expeditie: ExpeditieOrID, route: RouteOrID, currentNodes: RouteNodeOrID[], groups: string[][]): Promise<RouteNodeDocument[]> => {
+        return Promise.resolve(expeditie)
+            .then(Expedities.addParticipants(Util.getObjectIDs([].concat(...groups))))
+            .then(() => RouteNodes.getDocuments(currentNodes))
+            .then(currentNodes => {
                 const newRouteNodes: string[][] = [];
                 const pRouteNodes: Promise<RouteNodeDocument>[] = [];
 
@@ -259,13 +205,13 @@ export namespace Routes {
                     if (groupNeedsNewNode) {
                         newRouteNodes.push(Util.getObjectIDs(group));
                     } else {
-                        pRouteNodes.push(getRouteNode(nonNewNode));
+                        pRouteNodes.push(RouteNodes.getDocument(nonNewNode));
                     }
                 }
 
                 pRouteNodes.push(
                     ...newRouteNodes.map(groupIds => {
-                        return createRouteNode({
+                        return RouteNodes.create({
                             route: Util.getObjectID(route),
                             persons: groupIds,
                             edges: []
@@ -275,5 +221,5 @@ export namespace Routes {
 
                 return Promise.all(pRouteNodes);
             });
-    }
+    };
 }
