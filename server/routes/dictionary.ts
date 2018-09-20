@@ -1,25 +1,32 @@
 import * as express from 'express';
 import * as marked from 'marked';
 
-import { Word } from '../components/word';
+import { Words } from '../components/words';
 
 export const router = express.Router();
 
 const renderer = new marked.Renderer();
 
+const generateSimple = (word: string): string =>
+    word
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^0-9a-z]+/gi, '-');
+
 renderer.link = (href, title, text): string => {
     if (href == 'w') {
-        href = '#' + Word.generateSimple(text);
+        href = `#${generateSimple(text)}`;
     } else if (href.slice(0, 2) == 'w:') {
-        href = '#' + Word.generateSimple(href.slice(2));
+        href = `#${generateSimple(href.slice(2))}`;
     }
     return (new marked.Renderer()).link(href, title, text);
 };
 
 router.get('/', async (req, res) => {
     res.render('dictionary', {
-        dictionary: await Word.getAll(),
-        getSimple: Word.getSimple,
+        dictionary: await Words.getAll(),
+        generateSimple,
         marked: (s) => marked(s, { renderer })
     });
 });

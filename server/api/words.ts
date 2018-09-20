@@ -1,11 +1,11 @@
 import * as express from 'express';
-import { Word } from '../components/word';
+import { Words } from '../components/words';
 
 export const router = express.Router();
 
 router.route('/')
     .get((req, res, next) => {
-        Word.getAll()
+        Words.getAll()
             .then(words => {
                 if (words)
                     res.status(200).json(words);
@@ -17,7 +17,7 @@ router.route('/')
 
 router.route('/:id([a-f\\d]{24})')
     .get((req, res, next) => {
-        Word.getById(req.params.id)
+        Words.getById(req.params.id)
             .then(word => {
                 if (word)
                     res.status(200).json(word);

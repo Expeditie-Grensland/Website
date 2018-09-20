@@ -21,7 +21,7 @@ block body
 
     dl
         each word in dictionary
-            - simple = getSimple(word);
+            - simple = generateSimple(word.word);
             dt(id=simple)
                 span.word #{word.word}&#32;
                 if(word.phonetic)

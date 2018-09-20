@@ -1,11 +1,11 @@
 import * as gpxparse from 'gpx-parse';
 
-import { PersonOrID } from '../components/person/model';
-import { ILocation } from '../components/location/model';
-import { Util } from '../components/document/util';
+import { PersonOrID } from '../components/people/model';
+import { Location } from '../components/locations/model';
+import { Util } from '../components/documents/util';
 
 export namespace GpxHelper {
-    export function generateLocations(gpx, person: PersonOrID): Promise<ILocation[]> {
+    export function generateLocations(gpx, person: PersonOrID): Promise<Location[]> {
         return new Promise(resolve =>
             gpxparse.parseGpx(gpx, (error, data) => {
                 if (error) return console.error(error);
@@ -15,7 +15,7 @@ export namespace GpxHelper {
 
                 console.info('Track length: ' + track.length());
 
-                const locations: ILocation[] = [];
+                const locations: Location[] = [];
 
                 for (let seg of track.segments) {
                     for (let waypoint of seg) {

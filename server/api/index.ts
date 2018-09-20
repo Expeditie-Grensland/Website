@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as passport from 'passport';
 
 import { AuthHelper } from '../helpers/authHelper';
-import { Person } from '../components/person';
+import { People } from '../components/people';
 import { router as expeditiesRouter } from './expedities';
 import { router as personsRouter } from './persons';
 import { router as routesRouter } from './routes';
@@ -36,7 +36,7 @@ router.use((req, res, next) => {
             if (err)
                 next([401, err.message]);
             else {
-                Person.getById(decoded.id)
+                People.getById(decoded.id)
                     .then(person => {
                         req.user = person;
                         next();

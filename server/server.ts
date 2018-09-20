@@ -23,7 +23,7 @@ Setup.setupSession(app, io);
 Setup.addAuthMiddleware(app);
 Setup.setupDatabase(app, dev);
 
-SocketHandler.bindHandlers(app, io);
+SocketHandler.bindHandlers(io);
 
 app.use('/', Router(dev));
 ColorHelper.init();
