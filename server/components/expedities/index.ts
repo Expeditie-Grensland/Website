@@ -2,11 +2,14 @@ import { Locations } from '../locations';
 import { People } from '../people';
 import { Routes } from '../routes';
 import { Util } from '../documents/util';
-import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
+import { Expeditie, ExpeditieDocument, ExpeditieID, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
 import { Location, LocationDocument } from '../locations/model';
 import * as i18next from 'i18next';
+import { MediaFileOrId, MediaFiles } from '../mediaFiles';
+import { MediaFileUse } from '../mediaFiles/model';
+import * as mongoose from 'mongoose';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -138,4 +141,40 @@ export namespace Expedities {
     export const getLocations = (expeditie: ExpeditieOrID): Promise<LocationDocument[]> =>
         getRoute(expeditie)
             .then(Locations.getInRoute);
+
+    export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
+        const usage: MediaFileUse = {
+            model: ExpeditieID,
+            id: mongoose.Types.ObjectId(Util.getObjectID(expeditie)),
+            field: 'backgroundFile'
+        };
+
+        return getDocument(expeditie)
+            .then(expeditie => MediaFiles.removeUse(expeditie.backgroundFile, usage))
+            .then(() => MediaFiles.addUse(file, usage))
+            .then(MediaFiles.getEmbed)
+            .then(embed => ExpeditieModel.findByIdAndUpdate(
+                Util.getObjectID(expeditie),
+                { backgroundFile: embed },
+                { new: true })
+                .exec());
+    };
+
+    export const setMovieCoverFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
+        const usage: MediaFileUse = {
+            model: ExpeditieID,
+            id: mongoose.Types.ObjectId(Util.getObjectID(expeditie)),
+            field: 'movieCoverFile'
+        };
+
+        return getDocument(expeditie)
+            .then(expeditie => MediaFiles.removeUse(expeditie.movieCoverFile, usage))
+            .then(() => MediaFiles.addUse(file, usage))
+            .then(MediaFiles.getEmbed)
+            .then(embed => ExpeditieModel.findByIdAndUpdate(
+                Util.getObjectID(expeditie),
+                { backgroundFile: embed },
+                { new: true })
+                .exec());
+    };
 }
