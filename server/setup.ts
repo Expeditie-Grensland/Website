@@ -17,6 +17,7 @@ import { People } from './components/people';
 import { Util } from './components/documents/util';
 import { PersonDocument } from './components/people/model';
 import { router as apiRouter } from './api';
+import { MediaFileHelper } from './components/mediaFiles';
 import flash = require('connect-flash');
 
 export namespace Setup {
@@ -35,6 +36,17 @@ export namespace Setup {
         app.use(bodyParser.urlencoded({ extended: true }));
 
         app.use('/api', apiRouter);
+        app.use('/media', express.static(
+            MediaFileHelper.getFilesFolder(),
+            {
+                cacheControl: true,
+                etag: false,
+                fallthrough: false,
+                immutable: true,
+                lastModified: false,
+                maxAge: '1y'
+            }
+        ));
 
         i18next
             .use(FileSystemBackend)

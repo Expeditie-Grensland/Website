@@ -3,36 +3,57 @@ import * as mime2 from 'mime/lite';
 import { config } from '../../helpers/configHelper';
 import * as multer from 'multer';
 import * as mongoose from 'mongoose';
+import * as fs from 'fs';
+import { MediaFile, MediaFileDocument } from '.';
 
-export namespace MediaFilesHelper {
-    export const getFilesFolder = (): string => {
-        if (path.isAbsolute(config.filesFolder))
-            return path.normalize(config.filesFolder);
-        return path.join(__dirname, '../..', config.filesFolder);
-    };
+export namespace MediaFileHelper {
+    export const getFilesFolder = (): string =>
+        path.isAbsolute(config.filesFolder) ?
+            path.normalize(config.filesFolder) : path.join(__dirname, '../..', config.filesFolder);
+
+    export const getFileLocation = (file: MediaFile | MediaFileDocument) =>
+        path.join(getFilesFolder(), `${file._id}.${file.ext}`);
 
     const _allowedTypes: string[] = [
         'image/jpeg'
     ];
 
-    const _checkAllowed = (req, file: Express.Multer.File, cb: ((error: Error | null, acceptFile: boolean) => void)) => {
-        let mime = mime2.getType(file.originalname);
-        if (_allowedTypes.includes(mime))
-            return cb(null, true);
-        return cb(null, false);
-    };
+    export const ensureFileExists = (file: MediaFile): Promise<MediaFile> =>
+        new Promise((resolve, reject) => {
+            fs.access(getFileLocation(file), (err) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(file);
+            });
+        });
 
-    const _getFileName = (req, file: Express.Multer.File, cb: ((error: Error | null, filename: string) => void)) => {
-        let id = mongoose.Types.ObjectId();
-        let ext = mime2.getExtension(mime2.getType(file.originalname));
-        cb(null, `${id}.${ext}`);
-    };
+    export const deleteFile = (file: MediaFileDocument): Promise<MediaFileDocument> =>
+        new Promise((resolve, reject) => {
+            fs.unlink(getFileLocation(file), (err) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(file);
+            });
+        });
 
-    export const multerSettings = {
-        storage: multer.diskStorage({
-            destination: getFilesFolder(),
-            filename: _getFileName
-        }),
-        fileFilter: _checkAllowed
-    };
+    export namespace Multer {
+        const destination: string = getFilesFolder();
+
+        const filename = (req, file: Express.Multer.File, cb: ((error: Error | null, filename: string) => void)) => {
+            let id = mongoose.Types.ObjectId();
+            let ext = mime2.getExtension(mime2.getType(file.originalname));
+            cb(null, `${id}.${ext}`);
+        };
+
+        const fileFilter = (req, file: Express.Multer.File, cb: ((error: Error | null, acceptFile: boolean) => void)) => {
+            let mime = mime2.getType(file.originalname);
+            if (_allowedTypes.includes(mime))
+                return cb(null, true);
+            return cb(null, false);
+        };
+
+        export const settings = { storage: multer.diskStorage({ destination, filename }), fileFilter };
+    }
 }

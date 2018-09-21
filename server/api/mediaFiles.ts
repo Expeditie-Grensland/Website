@@ -1,30 +1,23 @@
 import * as express from 'express';
 import * as multer from 'multer';
-import { MediaFilesHelper } from '../components/mediaFiles/helper';
+import { MediaFile, MediaFileHelper, MediaFiles } from '../components/mediaFiles';
 import * as mongoose from 'mongoose';
 import * as mime2 from 'mime/lite';
-import { MediaFiles } from '../components/mediaFiles';
-import { MediaFile } from '../components/mediaFiles/model';
 
-const upload = multer(MediaFilesHelper.multerSettings);
+const upload = multer(MediaFileHelper.Multer.settings);
 
 export const router = express.Router();
 
-router.route('/upload')
-    .post(upload.single('file'), (req, res, next) => {
-        if (!req.file)
-            return next(new Error('File did not upload properly.'));
-
-        let _id = mongoose.Types.ObjectId(req.file.filename.split('.')[0]);
-        let ext = req.file.filename.split('.')[1];
-        let mime = mime2.getType(ext);
-
-        MediaFiles.create({ _id, ext, mime })
-            .then(file => res.status(200).json(file))
+router.route('/')
+    .get((req, res, next) => {
+        MediaFiles.getAll()
+            .then(files => {
+                if (files !== undefined)
+                    return res.status(200).json(files);
+                next();
+            })
             .catch(next);
-    });
-
-router.route('/upload-multiple')
+    })
     .post(upload.array('files'), (req, res, next) => {
         if (!req.files)
             return next(new Error('Files did not upload properly.'));
@@ -44,5 +37,37 @@ router.route('/upload-multiple')
 
         MediaFiles.createMany(files)
             .then(files => res.status(200).json(files))
+            .catch(next);
+    });
+
+router.route('/:id([a-f\\d]{24})')
+    .get((req, res, next) =>
+        MediaFiles.getById(req.params.id)
+            .then(file => {
+                if (file)
+                    return res.status(200).json(file);
+                next();
+            })
+            .catch(next))
+    .delete((req, res, next) =>
+        MediaFiles.getById(req.params.id)
+            .then(file => {
+                if (file) {
+                    return MediaFiles.remove(file)
+                        .then(file => res.status(200).json(file));
+                }
+                next();
+            })
+            .catch(next)
+    );
+
+router.route('/:id([a-f\\d]{24})/redirect')
+    .get((req, res, next) => {
+        MediaFiles.getById(req.params.id)
+            .then(file => {
+                if (file)
+                    return res.redirect(`/media/${file._id}.${file.ext}`);
+                next();
+            })
             .catch(next);
     });

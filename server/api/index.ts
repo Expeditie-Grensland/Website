@@ -59,6 +59,10 @@ router.use((req, res) =>
     res.status(404).json({ message: 'Not found' }));
 
 router.use((err, req, res, next) => {
+    if (res.headersSent) {
+        return next(err)
+    }
+
     let status = 500;
 
     if (Array.isArray(err))
