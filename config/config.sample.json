@@ -1,6 +1,8 @@
 {
   "port": 3000,
 
+  "filesFolder": "..\\..\\Files",
+
   "mongo": {
     "url": "mongodb://localhost:27017/expeditie-grensland",
     "user": "expeditie-grensland",
