@@ -12,6 +12,7 @@ export namespace MediaFiles {
 
     export const remove = (file: MediaFileOrId): Promise<MediaFileDocument> =>
         getDocument(file)
+            .then(MediaFileHelper.ensureFileNotInUse)
             .then(MediaFileHelper.deleteFile)
             .then(file => file.remove());
 

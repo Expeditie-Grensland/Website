@@ -28,6 +28,13 @@ export namespace MediaFileHelper {
             });
         });
 
+    export const ensureFileNotInUse = (file: MediaFile): Promise<MediaFile> =>
+        new Promise((resolve, reject) => {
+            if (file.uses === undefined || file.uses === null || file.uses.length < 1)
+                return resolve(file);
+            return reject(new Error('File is still in use'));
+        });
+
     export const deleteFile = (file: MediaFileDocument): Promise<MediaFileDocument> =>
         new Promise((resolve, reject) => {
             fs.unlink(getFileLocation(file), (err) => {
