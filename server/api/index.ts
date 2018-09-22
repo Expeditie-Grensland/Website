@@ -4,6 +4,7 @@ import * as passport from 'passport';
 import { AuthHelper } from '../helpers/authHelper';
 import { People } from '../components/people';
 import { router as expeditiesRouter } from './expedities';
+import { router as mediaFilesRouter } from './mediaFiles';
 import { router as personsRouter } from './persons';
 import { router as routesRouter } from './routes';
 import { router as wordsRouter } from './words';
@@ -49,14 +50,19 @@ router.use((req, res, next) => {
 });
 
 router.use('/expedities', expeditiesRouter);
+router.use('/media-files', mediaFilesRouter);
 router.use('/persons', personsRouter);
 router.use('/routes', routesRouter);
 router.use('/words', wordsRouter);
 
-router.use((req, res, next) =>
+router.use((req, res) =>
     res.status(404).json({ message: 'Not found' }));
 
 router.use((err, req, res, next) => {
+    if (res.headersSent) {
+        return next(err)
+    }
+
     let status = 500;
 
     if (Array.isArray(err))

@@ -11,6 +11,7 @@ if (config.ldap.searchAttributes == undefined) {
 
 export type Config = {
     port: number;
+    filesFolder: string;
     mongo: {
         url: string;
         user: string;

@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
 import { RouteID, RouteOrID } from '../routes/model';
 import { PersonID, PersonOrID } from '../people/model';
+import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
 
 export const ExpeditieID = 'Expeditie';
 
@@ -22,10 +23,12 @@ const schema = new mongoose.Schema({
     showMap: Boolean,
     movieUrl: String,
     movieCoverUrl: String,
-    finished: {type: Boolean, default: false},
+    finished: { type: Boolean, default: false },
     participants: [reference(PersonID)],
     route: reference(RouteID),
-    countries: [String]
+    countries: [String],
+    backgroundFile: mediaFileEmbeddedSchema,
+    movieCoverFile: mediaFileEmbeddedSchema
 });
 
 schema.index({ nameShort: 1 });
@@ -39,10 +42,6 @@ export interface Expeditie {
     color: string;
     background: {
         imageUrl: string;
-        position: {
-            x: number;
-            y: number;
-        };
     };
     showMap: boolean;
     movieUrl: string;
@@ -51,9 +50,12 @@ export interface Expeditie {
     participants: PersonOrID[];
     route?: RouteOrID;
     countries: string[];
+    backgroundFile: MediaFileEmbedded;
+    movieCoverFile: MediaFileEmbedded;
 }
 
-export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
+export interface ExpeditieDocument extends Expeditie, mongoose.Document {
+}
 
 export const ExpeditieModel = mongoose.model<ExpeditieDocument>(ExpeditieID, schema);
 
