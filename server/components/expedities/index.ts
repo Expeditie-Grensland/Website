@@ -173,7 +173,7 @@ export namespace Expedities {
             .then(MediaFiles.getEmbed)
             .then(embed => ExpeditieModel.findByIdAndUpdate(
                 Util.getObjectID(expeditie),
-                { backgroundFile: embed },
+                { movieCoverFile: embed },
                 { new: true })
                 .exec());
     };
