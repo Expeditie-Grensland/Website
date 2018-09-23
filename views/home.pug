@@ -59,7 +59,7 @@ block body
     #columns
         each expeditie in expedities
             .column
-                .background(style=`background-color:${expeditie.color};background-image:url(${expeditie.background.imageUrl})`)
+                .background(style=`background-color:${expeditie.color};background-image:url(${getFileUrl(expeditie.backgroundFile)})`)
                 .expeditie(id=expeditie.nameShort)
                     h1= expeditie.name
                     h2= expeditie.subtitle
@@ -78,6 +78,6 @@ block body
             if expeditie.movieUrl !== null
                 +modal('videoModal movieModal' + expeditie.nameShort, expeditie.name + ": " + t('movie_additive'))(class="modal-lg")
                     .embed-responsive.embed-responsive-16by9
-                        video.embed-responsive-item(controls poster=expeditie.movieCoverUrl preload='auto')
+                        video.embed-responsive-item(controls poster=getFileUrl(expeditie.movieCoverFile) preload='auto')
                             source(src=expeditie.movieUrl type='video/mp4' preload='metadata')
                             p Sorry, your browser doesn't support viewing this video.

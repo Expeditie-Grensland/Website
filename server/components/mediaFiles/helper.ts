@@ -18,16 +18,6 @@ export namespace MediaFileHelper {
         'image/jpeg'
     ];
 
-    export const ensureFileExists = (file: MediaFile): Promise<MediaFile> =>
-        new Promise((resolve, reject) => {
-            fs.access(getFileLocation(file), (err) => {
-                if (err)
-                    reject(err);
-                else
-                    resolve(file);
-            });
-        });
-
     export const ensureFileNotInUse = (file: MediaFile): Promise<MediaFile> =>
         new Promise((resolve, reject) => {
             if (file.uses === undefined || file.uses === null || file.uses.length < 1)

@@ -6,9 +6,7 @@ import { Documents } from '../documents/new';
 
 export namespace MediaFiles {
     export const create = (file: MediaFile): Promise<MediaFileDocument> =>
-        Promise.resolve(file)
-            .then(MediaFileHelper.ensureFileExists)
-            .then(mediaFileModel.create);
+        mediaFileModel.create(file);
 
     export const remove = (file: MediaFileOrId): Promise<MediaFileDocument> =>
         getDocument(file)
@@ -55,6 +53,9 @@ export namespace MediaFiles {
             .exec()
             .then(() => undefined);
     };
+
+    export const getUrl = (file: MediaFileEmbedded): string =>
+        file !== undefined ? `/media/${file.id}.${file.ext}`: '';
 }
 
 export { MediaFile, MediaFileDocument, MediaFileId, MediaFileOrId, mediaFileModel } from './model';
