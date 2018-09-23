@@ -1,10 +1,10 @@
 import * as path from 'path';
-import * as mime2 from 'mime/lite';
 import { config } from '../../helpers/configHelper';
 import * as multer from 'multer';
 import * as mongoose from 'mongoose';
 import * as fs from 'fs';
 import { MediaFile, MediaFileDocument } from '.';
+const Mime = require('mime/Mime');
 
 export namespace MediaFileHelper {
     export const getFilesFolder = (): string =>
@@ -13,10 +13,6 @@ export namespace MediaFileHelper {
 
     export const getFileLocation = (file: MediaFile | MediaFileDocument) =>
         path.join(getFilesFolder(), `${file._id}.${file.ext}`);
-
-    const _allowedTypes: string[] = [
-        'image/jpeg'
-    ];
 
     export const ensureFileNotInUse = (file: MediaFile): Promise<MediaFile> =>
         new Promise((resolve, reject) => {
@@ -35,6 +31,14 @@ export namespace MediaFileHelper {
             });
         });
 
+
+    const _mimeMap = {
+        'image/jpeg': ['jpg', 'jpeg'],
+        'audio/mpeg': ['mp3', 'mpga', 'm3a']
+    };
+
+    export const mime2 = new Mime(_mimeMap);
+
     export namespace Multer {
         const destination: string = getFilesFolder();
 
@@ -44,12 +48,8 @@ export namespace MediaFileHelper {
             cb(null, `${id}.${ext}`);
         };
 
-        const fileFilter = (req, file: Express.Multer.File, cb: ((error: Error | null, acceptFile: boolean) => void)) => {
-            let mime = mime2.getType(file.originalname);
-            if (_allowedTypes.includes(mime))
-                return cb(null, true);
-            return cb(null, false);
-        };
+        const fileFilter = (req, file: Express.Multer.File, cb: ((error: Error | null, acceptFile: boolean) => void)) =>
+            cb(null, mime2.getType(file.originalname) != null);
 
         export const settings = { storage: multer.diskStorage({ destination, filename }), fileFilter };
     }

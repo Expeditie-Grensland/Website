@@ -56,6 +56,14 @@ export namespace MediaFiles {
 
     export const getUrl = (file: MediaFileEmbedded): string =>
         file !== undefined ? `/media/${file.id}.${file.ext}`: '';
+
+    export const ensureMime = (file: MediaFileOrId, mime: string[]): Promise<MediaFileDocument> =>
+        getDocument(file)
+            .then(file => {
+                if (!mime.includes(file.mime))
+                    throw new Error('File type is not allowed');
+                return file;
+            })
 }
 
 export { MediaFile, MediaFileDocument, MediaFileId, MediaFileOrId, mediaFileModel } from './model';

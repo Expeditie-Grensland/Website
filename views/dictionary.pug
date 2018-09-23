@@ -27,8 +27,8 @@ block body
                 if(word.phonetic)
                     span.phon [#{word.phonetic}]
                     span.word &#32;
-                if(word.audio)
-                    audio(src=`/content/dictionary/${word.audio}` type='audio/mpeg' id=`player:${simple}`)
+                if(word.audioFile)
+                    audio(src=getFileUrl(word.audioFile) type='audio/mpeg' id=`player:${simple}`)
                     a.audio(href=`#play:${simple}`) afspelen
 
             dd
