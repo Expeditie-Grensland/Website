@@ -25,7 +25,7 @@ export namespace Setup {
         server.listen(port);
     }
 
-    export function setupExpress(app: express.Express, root: string) {
+    export function setupExpress(app: express.Express, root: string, dev: boolean) {
         const viewsDir = path.join(root, 'views');
         const publicDir = path.join(root, 'public');
 
@@ -36,17 +36,17 @@ export namespace Setup {
         app.use(bodyParser.urlencoded({ extended: true }));
 
         app.use('/api', apiRouter);
-        app.use('/media', express.static(
-            MediaFileHelper.getFilesFolder(),
-            {
-                cacheControl: true,
-                etag: false,
-                fallthrough: false,
-                immutable: true,
-                lastModified: false,
-                maxAge: '1y'
-            }
-        ));
+
+        if (dev)
+            app.use('/media', express.static(
+                MediaFileHelper.getFilesFolder(),
+                {
+                    cacheControl: true,
+                    fallthrough: false,
+                    immutable: true,
+                    maxAge: '1y'
+                }
+            ));
 
         i18next
             .use(FileSystemBackend)

@@ -18,7 +18,7 @@ const io = socketio(server);
 const dev = (app.get('env') == 'development');
 
 // FIXME: if mongo can't reach models, server crashes
-Setup.setupExpress(app, __dirname + '/../');
+Setup.setupExpress(app, __dirname + '/../', dev);
 Setup.setupSession(app, io);
 Setup.addAuthMiddleware(app);
 Setup.setupDatabase(app, dev);
