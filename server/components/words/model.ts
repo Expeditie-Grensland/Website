@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID } from '../documents/util';
 import { Words } from '.';
+import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
 
 export const WordID = 'Words';
 
@@ -13,7 +14,8 @@ const schema = new mongoose.Schema(
         word: String,
         definitions: [String],
         phonetic: String,
-        audio: String
+        audio: String,
+        audioFile: mediaFileEmbeddedSchema
     }
 );
 
@@ -24,9 +26,11 @@ export interface Word {
     definitions: string[];
     phonetic?: string;
     audio?: string;
+    audioFile?: MediaFileEmbedded;
 }
 
-export interface WordDocument extends Word, mongoose.Document {}
+export interface WordDocument extends Word, mongoose.Document {
+}
 
 export const WordModel = mongoose.model<WordDocument>(WordID, schema);
 

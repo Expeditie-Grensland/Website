@@ -27,13 +27,13 @@ router.route('/')
         for (let file of Object.values(req.files)) {
             let _id = mongoose.Types.ObjectId(file.filename.split('.')[0]);
             let ext = file.filename.split('.')[1];
-            let mime = mime2.getType(ext);
+            let mime = MediaFileHelper.mime2.getType(ext);
 
             files.push({ _id, ext, mime });
         }
 
         if (files.length === 0)
-            return next(new Error('No files were uploaded.'));
+            return next(new Error('No valid files were uploaded.'));
 
         MediaFiles.createMany(files)
             .then(files => res.status(200).json(files))

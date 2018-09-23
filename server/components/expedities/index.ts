@@ -149,10 +149,12 @@ export namespace Expedities {
             field: 'backgroundFile'
         };
 
-        return getDocument(expeditie)
-            .then(expeditie => MediaFiles.removeUse(expeditie.backgroundFile, usage))
-            .then(() => MediaFiles.addUse(file, usage))
+        return MediaFiles.ensureMime(file, ['image/jpeg'])
+            .then(file => MediaFiles.addUse(file, usage))
             .then(MediaFiles.getEmbed)
+            .then(embed => getDocument(expeditie)
+                .then(expeditie => MediaFiles.removeUse(expeditie.backgroundFile, usage))
+                .then(() => embed))
             .then(embed => ExpeditieModel.findByIdAndUpdate(
                 Util.getObjectID(expeditie),
                 { backgroundFile: embed },
@@ -167,13 +169,15 @@ export namespace Expedities {
             field: 'movieCoverFile'
         };
 
-        return getDocument(expeditie)
-            .then(expeditie => MediaFiles.removeUse(expeditie.movieCoverFile, usage))
-            .then(() => MediaFiles.addUse(file, usage))
+        return MediaFiles.ensureMime(file, ['image/jpeg'])
+            .then(file => MediaFiles.addUse(file, usage))
             .then(MediaFiles.getEmbed)
+            .then(embed => getDocument(expeditie)
+                .then(expeditie => MediaFiles.removeUse(expeditie.movieCoverFile, usage))
+                .then(() => embed))
             .then(embed => ExpeditieModel.findByIdAndUpdate(
                 Util.getObjectID(expeditie),
-                { backgroundFile: embed },
+                { movieCoverFile: embed },
                 { new: true })
                 .exec());
     };

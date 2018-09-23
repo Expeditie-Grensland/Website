@@ -1,6 +1,7 @@
 import * as express from 'express';
 
 import { Expedities } from '../components/expedities';
+import { MediaFiles } from '../components/mediaFiles';
 
 export const router = express.Router();
 
@@ -10,7 +11,8 @@ router.get('/', (req, res) => {
             expedities,
             t: (<any>req).t,
             t_ucf: ucFirstWrapper((<any>req).t),
-            ucf: ucFirst
+            ucf: ucFirst,
+            getFileUrl: MediaFiles.getUrl
         });
     });
 });

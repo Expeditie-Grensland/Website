@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as marked from 'marked';
 
 import { Words } from '../components/words';
+import { MediaFiles } from '../components/mediaFiles';
 
 export const router = express.Router();
 
@@ -26,6 +27,7 @@ renderer.link = (href, title, text): string => {
 router.get('/', async (req, res) => {
     res.render('dictionary', {
         dictionary: await Words.getAll(),
+        getFileUrl: MediaFiles.getUrl,
         generateSimple,
         marked: (s) => marked(s, { renderer })
     });
