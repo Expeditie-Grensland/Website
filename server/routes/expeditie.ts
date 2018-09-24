@@ -7,7 +7,7 @@ export const router = express.Router({ mergeParams: true });
 router.get('/', async (req, res, next) => {
     const expeditie = await Expedities.getByNameShort(req.params.expeditie);
 
-    if (expeditie !== undefined && expeditie.showMap) {
+    if (expeditie != null && expeditie.showMap) {
         res.render('expeditie', {
             expeditie: expeditie,
         });
