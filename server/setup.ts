@@ -37,16 +37,11 @@ export namespace Setup {
 
         app.use('/api', apiRouter);
 
-        if (dev)
-            app.use('/media', express.static(
-                MediaFileHelper.getFilesFolder(),
-                {
-                    cacheControl: true,
-                    fallthrough: false,
-                    immutable: true,
-                    maxAge: '1y'
-                }
-            ));
+        if (dev) {
+            app.use('/media', express.static(MediaFileHelper.getFilesFolder(), { fallthrough: false }));
+            app.use('/static', express.static(publicDir, { fallthrough: false }));
+        }
+
 
         i18next
             .use(FileSystemBackend)
@@ -63,8 +58,6 @@ export namespace Setup {
                 }
             });
         app.use(i18nextMiddleware.handle(i18next));
-
-        app.use(express.static(publicDir));
     }
 
     export function setupSession(app: express.Express, io: socketio.Server) {

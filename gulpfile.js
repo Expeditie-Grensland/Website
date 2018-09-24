@@ -34,7 +34,7 @@ const faviconBuild = () =>
         .pipe(favicons({
             appName: 'Expeditie Grensland',
             developerName: 'Expeditie Admins',
-            path: '/favicon/',
+            path: '/static/favicon/',
             url: 'https://expeditiegrensland.nl/',
             display: 'standalone',
             start_url: '/',
