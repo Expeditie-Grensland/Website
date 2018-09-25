@@ -2,10 +2,7 @@
   "name": "expeditiegrensland-website",
   "version": "0.0.1",
   "description": "The Expeditie Grensland website.",
-  "main": "server-dist/server.js",
-  "scripts": {
-    "start": "node server-dist/server.js"
-  },
+  "private": true,
   "author": "Expeditie Admins",
   "contributors": [
     "Maurice Meedendorp <mauricemeedendorp@gmail.com>",

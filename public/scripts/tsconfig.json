@@ -1,8 +1,8 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
     "target": "es5",
-    "sourceMap": true,
-    "outDir": "../scripts-dist",
+    "outDir": "../../dist/public/scripts",
     "lib": [
       "es5",
       "dom"

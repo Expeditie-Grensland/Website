@@ -5,7 +5,7 @@ block title
 
 append styles
     link(rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css")
-    link(rel="stylesheet" href="/static/styles-dist/expeditie.css")
+    link(rel="stylesheet" href="/static/styles/expeditie.css")
 
     meta(name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no')
 
@@ -16,12 +16,12 @@ append scripts
     script.
         var expeditieNameShort = "!{expeditie.nameShort}"
 
-    script(src='/static/scripts-dist/map/loadingBar.js')
-    script(src='/static/scripts-dist/map/mapHandler.js')
-    script(src='/static/scripts-dist/sockets/sockets.js')
-    script(src='/static/scripts-dist/sockets/socketHandler.js')
-    script(src='/static/scripts-dist/database/tables.js')
-    script(src="/static/scripts-dist/expeditie.js")
+    script(src='/static/scripts/map/loadingBar.js')
+    script(src='/static/scripts/map/mapHandler.js')
+    script(src='/static/scripts/sockets/sockets.js')
+    script(src='/static/scripts/sockets/socketHandler.js')
+    script(src='/static/scripts/database/tables.js')
+    script(src="/static/scripts/expeditie.js")
 
 block body
     #map
