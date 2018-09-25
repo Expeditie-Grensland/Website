@@ -1,5 +1,5 @@
 module.exports = (gulp, plugins) => {
-    const project = plugins.typescript.createProject('server/tsconfig.json');
+    const project = plugins.typescript.createProject('src/server/tsconfig.json');
 
     return () =>
         project.src()

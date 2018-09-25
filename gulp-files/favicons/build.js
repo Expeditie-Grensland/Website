@@ -1,5 +1,5 @@
 module.exports = (gulp, plugins) => () =>
-    gulp.src('public/favicon/source-icon.png')
+    gulp.src('src/public/favicon.png')
         .pipe(plugins.newer('dist/public/favicons/favicon.ico'))
         .pipe(plugins.favicons.stream({
             appName: 'Expeditie Grensland',
