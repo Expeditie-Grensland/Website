@@ -42,7 +42,6 @@ export namespace Setup {
             app.use('/static', express.static(publicDir, { fallthrough: false }));
         }
 
-
         i18next
             .use(FileSystemBackend)
             .use(i18nextMiddleware.LanguageDetector)
