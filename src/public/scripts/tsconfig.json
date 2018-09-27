@@ -1,0 +1,11 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "es5",
+    "outDir": "../../dist/public/scripts",
+    "lib": [
+      "es5",
+      "dom"
+    ]
+  }
+}
