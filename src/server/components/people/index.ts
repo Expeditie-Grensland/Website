@@ -9,16 +9,16 @@ export namespace People {
     export const getAll = (): Promise<PersonDocument[]> =>
         PersonModel.find({}).exec();
 
-    export const getById = (id: string): Promise<PersonDocument> =>
+    export const getById = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findById(id).exec();
 
     export const getByIds = (ids: string[]): Promise<PersonDocument[]> =>
         PersonModel.find({ _id: { $in: ids } }).exec();
 
-    export const getByLdapId = (id: string): Promise<PersonDocument> =>
+    export const getByLdapId = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findOne({ ldapId: id }).exec();
 
-    export const addExpeditie = (expeditie: ExpeditieOrID) => (person: PersonOrID): Promise<PersonDocument> =>
+    export const addExpeditie = (expeditie: ExpeditieOrID) => (person: PersonOrID): Promise<PersonDocument | null> =>
         PersonModel.findByIdAndUpdate(
             Util.getObjectID(person),
             {
@@ -29,7 +29,7 @@ export namespace People {
             { new: true }
         ).exec();
 
-    export const removeExpeditie = (expeditie: ExpeditieOrID) => (person: PersonOrID): Promise<PersonDocument> =>
+    export const removeExpeditie = (expeditie: ExpeditieOrID) => (person: PersonOrID): Promise<PersonDocument | null> =>
         PersonModel.findByIdAndUpdate(
             Util.getObjectID(person),
             {

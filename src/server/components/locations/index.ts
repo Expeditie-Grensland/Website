@@ -7,20 +7,23 @@ import { RouteNodeDocument, RouteNodeOrID } from '../routenodes/model';
 import { PersonOrID } from '../people/model';
 import { ExpeditieOrID } from '../expedities/model';
 import { Expedities } from '../expedities';
+import { Documents } from '../documents/new';
 
 export namespace Locations {
-    export const getById = (id: string): Promise<LocationDocument> =>
+    export const getById = (id: string): Promise<LocationDocument | null> =>
         LocationModel.findById(id).exec();
 
-    export const getDocument = (location: LocationOrID): Promise<LocationDocument> =>
+    export const getDocument = (location: LocationOrID): Promise<LocationDocument | null> =>
         Util.getDocument(getById)(location);
 
     const _setCurrentNodeIfUndefined = (route: RouteOrID) => (location: Location): Promise<Location> => {
         if (location.node !== undefined)
             return Promise.resolve(location);
 
-        Routes.getDocument(route)
+        return Routes.getDocument(route)
+            .then(Documents.ensureNotNull)
             .then(Routes.getCurrentNodeWithPerson(location.person))
+            .then(Documents.ensureNotNull)
             .then(node => location.node = Util.getObjectID(node))
             .then(() => location);
     };
@@ -32,27 +35,36 @@ export namespace Locations {
             .then(LocationHelper.setVisualArea);
 
     const _setCurrentNodeIfUndefinedMany = (route: RouteOrID) => (locations: Location[]): Promise<Location[]> =>
-        Routes.getDocument(route).then(route => {
-            // TODO: change when changing to ObjectIds
-            let personIdToRouteNodeMap: Map<string, Promise<RouteNodeDocument>> = new Map();
+        Routes.getDocument(route)
+            .then(Documents.ensureNotNull)
+            .then(route => {
+                // TODO: change when changing to ObjectIds
+                // FIXME:
+                let personIdToRouteNodeMap: Map<string, Promise<RouteNodeDocument>> = new Map();
 
-            const _getCurrentNodeWithPersonCached = (person: PersonOrID): Promise<RouteNodeDocument> => {
-                if (!personIdToRouteNodeMap.has(Util.getObjectID(person)))
-                    personIdToRouteNodeMap.set(Util.getObjectID(person), Routes.getCurrentNodeWithPerson(person)(route));
-                return personIdToRouteNodeMap.get(Util.getObjectID(person));
-            };
+                const _getCurrentNodeWithPersonCached = (person: PersonOrID): Promise<RouteNodeDocument> => {
+                    let routeNode: Promise<RouteNodeDocument> | undefined = personIdToRouteNodeMap.get(Util.getObjectID(person));
 
-            const _setCurrentNodeIfUndefinedCached = (location: Location): Promise<Location> => {
-                if (location.node !== undefined)
-                    return Promise.resolve(location);
+                    if (!routeNode) {
+                        routeNode = Routes.getCurrentNodeWithPerson(person)(route).then(Documents.ensureNotNull);
+                        personIdToRouteNodeMap.set(Util.getObjectID(person), routeNode);
+                    }
 
-                _getCurrentNodeWithPersonCached(location.person)
-                    .then(node => location.node = Util.getObjectID(node))
-                    .then(() => location);
-            };
+                    return routeNode;
+                };
 
-            return Promise.all(locations.map(_setCurrentNodeIfUndefinedCached))
-        });
+                const _setCurrentNodeIfUndefinedCached = (location: Location): Promise<Location> => {
+                    if (location.node !== undefined)
+                        return Promise.resolve(location);
+
+                    return _getCurrentNodeWithPersonCached(location.person)
+                        .then(Documents.ensureNotNull)
+                        .then(node => location.node = Util.getObjectID(node))
+                        .then(() => location);
+                };
+
+                return Promise.all(locations.map(_setCurrentNodeIfUndefinedCached));
+            });
 
     export const createMany = (locations: Location[], route: RouteOrID): Promise<LocationDocument[]> =>
         Promise.resolve(locations)
@@ -62,10 +74,11 @@ export namespace Locations {
 
     export const remove = (location: LocationOrID): Promise<void> =>
         getDocument(location)
+            .then(Documents.ensureNotNull)
             .then(location => location.remove())
             .then(() => undefined);
 
-    export const setVisualArea = (visualArea: number) => (location: LocationOrID): Promise<LocationDocument> =>
+    export const setVisualArea = (visualArea: number) => (location: LocationOrID): Promise<LocationDocument | null> =>
         LocationModel.findByIdAndUpdate(
             Util.getObjectID(location),
             { visualArea: visualArea },

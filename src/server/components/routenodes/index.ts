@@ -1,6 +1,7 @@
 import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from './model';
 import { ColorHelper } from '../../helpers/colorHelper';
 import { Util } from '../documents/util';
+import { Documents } from '../documents/new';
 
 export namespace RouteNodes {
     export const create = (node: RouteNode): Promise<RouteNodeDocument> => {
@@ -10,22 +11,25 @@ export namespace RouteNodes {
         return RouteNodeModel.create(node);
     };
 
-    export const getDocument = (routenode: RouteNodeOrID): Promise<RouteNodeDocument> =>
+    export const getDocument = (routenode: RouteNodeOrID): Promise<RouteNodeDocument | null> =>
         Util.getDocument(getById)(routenode);
 
     export const getDocuments = (nodes: RouteNodeOrID[]): Promise<RouteNodeDocument[]> =>
         Util.getDocuments(getByIds)(nodes);
 
-    export const getById = (id: string): Promise<RouteNodeDocument> =>
+    export const getById = (id: string): Promise<RouteNodeDocument | null> =>
         RouteNodeModel.findById(id).exec();
 
     export const getByIds = (ids: string[]): Promise<RouteNodeDocument[]> =>
         RouteNodeModel.find({ _id: { $in: ids } }).exec();
 
+    // TODO: Ensure not null
     export const populatePersons = (node: RouteNodeOrID): Promise<RouteNodeDocument> =>
-        getDocument(node).then(node => node.populate('persons').execPopulate());
+        getDocument(node)
+            .then(Documents.ensureNotNull)
+            .then(node => node.populate('persons').execPopulate());
 
-    export const setEdges = (edges: RouteEdge[]) => (node: RouteNodeOrID): Promise<RouteNodeDocument> =>
+    export const setEdges = (edges: RouteEdge[]) => (node: RouteNodeOrID): Promise<RouteNodeDocument | null> =>
         RouteNodeModel.findByIdAndUpdate(
             Util.getObjectID(node),
             { edges: edges },

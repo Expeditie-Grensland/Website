@@ -3,6 +3,7 @@ import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { MediaFileUse } from '../mediaFiles/model';
 import * as mongoose from 'mongoose';
 import { Util } from '../documents/util';
+import { Documents } from '../documents/new';
 
 export namespace Words {
     export const create = (word: Word): Promise<WordDocument> =>
@@ -15,7 +16,7 @@ export namespace Words {
             .sort({ word: 1 })
             .exec();
 
-    export const getById = (id: string): Promise<WordDocument> =>
+    export const getById = (id: string): Promise<WordDocument | null> =>
         WordModel
             .findById(id)
             .exec();
@@ -25,10 +26,10 @@ export namespace Words {
             .find({ _id: { $in: ids } })
             .exec();
 
-    export const getDocument = (word: WordOrID): Promise<WordDocument> =>
+    export const getDocument = (word: WordOrID): Promise<WordDocument | null> =>
         Util.getDocument(getById)(word);
 
-    export const setAudioFile = (word: WordOrID, file: MediaFileOrId): Promise<WordDocument> => {
+    export const setAudioFile = (word: WordOrID, file: MediaFileOrId): Promise<WordDocument | null> => {
         const usage: MediaFileUse = {
             model: WordID,
             id: mongoose.Types.ObjectId(Util.getObjectID(word)),
@@ -37,9 +38,12 @@ export namespace Words {
 
         return MediaFiles.ensureMime(file, ['audio/mpeg'])
             .then(file => MediaFiles.addUse(file, usage))
+            // TODO: MA. - Find solution for all those ensureNotNulls everywhere.
+            .then(Documents.ensureNotNull)
             .then(MediaFiles.getEmbed)
             .then(embed => getDocument(word)
-                .then(word => MediaFiles.removeUse(word.audioFile, usage))
+                .then(Documents.ensureNotNull)
+                .then(word => word.audioFile ? MediaFiles.removeUse(word.audioFile, usage) : undefined)
                 .then(() => embed))
             .then(embed => WordModel.findByIdAndUpdate(
                 Util.getObjectID(word),

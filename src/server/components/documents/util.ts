@@ -24,8 +24,8 @@ export namespace Util {
     export const getObjectIDs = <T extends mongoose.Document>(docs: DocumentOrID<T>[]): string[] =>
         docs.length < 1 ? [] : docs.map(getObjectID);
 
-    export const getDocument = <T extends mongoose.Document>(findById: (id: string) => Promise<T>) =>
-        (doc: DocumentOrID<T>): Promise<T> =>
+    export const getDocument = <T extends mongoose.Document>(findById: (id: string) => Promise<T | null>) =>
+        (doc: DocumentOrID<T>): Promise<T | null> =>
             isDocument(doc) ? Promise.resolve(doc) : findById(getObjectID(doc));
 
     export const getDocuments = <T extends mongoose.Document>(findByIds: (id: string[]) => Promise<T[]>) =>

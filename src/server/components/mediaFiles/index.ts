@@ -10,9 +10,10 @@ export namespace MediaFiles {
 
     export const remove = (file: MediaFileOrId): Promise<MediaFileDocument> =>
         getDocument(file)
+            .then(Documents.ensureNotNull)
             .then(MediaFileHelper.ensureFileNotInUse)
             .then(MediaFileHelper.deleteFile)
-            .then(file => file.remove());
+            .then((file: MediaFileDocument) => file.remove());
 
     export const createMany = (files: MediaFile[]): Promise<MediaFileDocument[]> =>
         mediaFileModel.insertMany(files);
@@ -20,19 +21,20 @@ export namespace MediaFiles {
     export const getAll = (): Promise<MediaFileDocument[]> =>
         mediaFileModel.find({}).exec();
 
-    export const getById = (id: mongoose.Types.ObjectId): Promise<MediaFileDocument> =>
+    export const getById = (id: mongoose.Types.ObjectId): Promise<MediaFileDocument | null> =>
         mediaFileModel.findById(id).exec();
 
-    export const getDocument = (file: MediaFileOrId): Promise<MediaFileDocument> =>
+    export const getDocument = (file: MediaFileOrId): Promise<MediaFileDocument | null> =>
         Documents.getDocument(getById)(file);
 
     export const getEmbed = (file: MediaFileOrId): Promise<MediaFileEmbedded> =>
         getDocument(file)
+            .then(Documents.ensureNotNull)
             .then(file => {
                 return { id: file._id, ext: file.ext, mime: file.mime };
             });
 
-    export const addUse = (file: MediaFileOrId, usage: MediaFileUse): Promise<MediaFileDocument> =>
+    export const addUse = (file: MediaFileOrId, usage: MediaFileUse): Promise<MediaFileDocument | null> =>
         mediaFileModel
             .findByIdAndUpdate(
                 Documents.getObjectId(file),
@@ -43,7 +45,7 @@ export namespace MediaFiles {
 
     export const removeUse = (file: MediaFileEmbedded, usage: MediaFileUse): Promise<void> => {
         if (file === undefined || file === null || file.id === undefined || file.id === null)
-            return;
+            return Promise.resolve();
 
         return mediaFileModel
             .findByIdAndUpdate(
@@ -59,6 +61,7 @@ export namespace MediaFiles {
 
     export const ensureMime = (file: MediaFileOrId, mime: string[]): Promise<MediaFileDocument> =>
         getDocument(file)
+            .then(Documents.ensureNotNull)
             .then(file => {
                 if (!mime.includes(file.mime))
                     throw new Error('File type is not allowed');

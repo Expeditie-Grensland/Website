@@ -2,7 +2,6 @@ import * as express from 'express';
 import * as multer from 'multer';
 import { MediaFile, MediaFileHelper, MediaFiles } from '../components/mediaFiles';
 import * as mongoose from 'mongoose';
-import * as mime2 from 'mime/lite';
 
 const upload = multer(MediaFileHelper.Multer.settings);
 
@@ -50,16 +49,14 @@ router.route('/:id([a-f\\d]{24})')
             })
             .catch(next))
     .delete((req, res, next) =>
-        MediaFiles.getById(req.params.id)
+        // TODO: MA. - wrapId fn.
+        MediaFiles.remove(mongoose.Types.ObjectId(req.params.id))
             .then(file => {
-                if (file) {
-                    return MediaFiles.remove(file)
-                        .then(file => res.status(200).json(file));
-                }
+                if (file)
+                    return res.status(200).json(file);
                 next();
             })
-            .catch(next)
-    );
+            .catch(next));
 
 router.route('/:id([a-f\\d]{24})/redirect')
     .get((req, res, next) => {

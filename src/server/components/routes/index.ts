@@ -12,10 +12,10 @@ export namespace Routes {
     export const create = (route: Route): Promise<RouteDocument> =>
         RouteModel.create(route);
 
-    export const getById = (_id: string): Promise<RouteDocument> =>
+    export const getById = (_id: string): Promise<RouteDocument | null> =>
         RouteModel.findById(_id).exec();
 
-    export const getDocument = (route: RouteOrID): Promise<RouteDocument> =>
+    export const getDocument = (route: RouteOrID): Promise<RouteDocument | null> =>
         Util.getDocument(getById)(route);
 
     export const getAll = (): Promise<RouteDocument[]> =>
@@ -25,29 +25,44 @@ export namespace Routes {
         RouteNodeModel.find({ route: Util.getObjectID(route) }).exec();
 
     export const getCurrentNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
-        getDocument(route).then(route => RouteNodes.getDocuments(route.currentNodes));
+        getDocument(route).then(route => {
+            if (route && route.currentNodes)
+                return RouteNodes.getDocuments(route.currentNodes);
+            return [];
+        });
 
     export const getStartingNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
-        getDocument(route).then(route => RouteNodes.getDocuments(route.startingNodes));
+        getDocument(route).then(route => {
+            if (route && route.startingNodes)
+                return RouteNodes.getDocuments(route.startingNodes);
+            return [];
+        });
 
-    export const getCurrentNodeWithPerson = (person: PersonOrID) => (route: RouteOrID): Promise<RouteNodeDocument> =>
-        getDocument(route).then(route =>
-            RouteNodeModel.findOne({
+    export const getCurrentNodeWithPerson = (person: PersonOrID) => (route: RouteOrID): Promise<RouteNodeDocument | null> =>
+        getDocument(route).then(route => {
+            if (!route || !route.currentNodes)
+                throw new Error('Route not found!');
+
+            return RouteNodeModel.findOne({
                 _id: { $in: Util.getObjectIDs(route.currentNodes) },
                 route: Util.getObjectID(route),
                 persons: Util.getObjectID(person)
-            }).exec());
+            }).exec();
+        });
 
-    // TOOD
+    // TODO - MA. - strict errors ignored - make function better
     export const setGroups = (expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<RouteDocument> => {
         const groupsIds: string[][] = groups.map(group => Util.getObjectIDs(group));
 
         const pExpeditie = Util.getDocument(Expedities.getById)(expeditie);
+        // @ts-ignore
         const pRoute = pExpeditie.then(Expedities.getRoute);
         const pCurrentNodes = pRoute.then(Routes.getCurrentNodes);
         const pStartingNodes = pRoute.then(Routes.getStartingNodes);
+        // @ts-ignore
         const pCheckGroups = pCurrentNodes.then(currentNodes => checkGroups(groupsIds, currentNodes));
         const pNewCurrentNodes = Promise.all([pExpeditie, pRoute, pCurrentNodes, pCheckGroups]).then(
+            // @ts-ignore
             ([expeditie, route, currentNodes, checkedGroups]) => createGroups(expeditie, route, currentNodes, checkedGroups)
         );
 
@@ -58,7 +73,7 @@ export namespace Routes {
                 if (oldCurrentNodes.length == 0 && startingNodes.length == 0) {
                     route.startingNodes = Util.getObjectIDs(newCurrentNodes);
                 } else {
-                    let setEdgePromises: Promise<RouteNodeDocument>[] = [];
+                    let setEdgePromises: Promise<RouteNodeDocument | null>[] = [];
                     let newNodesWithToEdge: string[] = [];
 
                     for (let oldCurrentNode of oldCurrentNodes) {
@@ -72,7 +87,7 @@ export namespace Routes {
                             for (let oldPersonId of Util.getObjectIDs(oldCurrentNode.persons)) {
                                 for (let newPersonId of Util.getObjectIDs(newCurrentNode.persons)) {
                                     if (oldPersonId === newPersonId) {
-                                        let existingEdge: RouteEdge = null;
+                                        let existingEdge: RouteEdge | null = null;
 
                                         for (let edge of edges) {
                                             if (Util.getObjectID(edge.to) === Util.getObjectID(newCurrentNode)) {
@@ -99,10 +114,13 @@ export namespace Routes {
                         if (edges.length > 0) setEdgePromises.push(RouteNodes.setEdges(edges)(oldCurrentNode));
                     }
 
-                    const newNodesWithoutToEdge = newCurrentNodes.filter(node => !newNodesWithToEdge.includes(Util.getObjectID(node)));
+                    const newNodesWithoutToEdge = newCurrentNodes.filter((node: RouteNodeOrID) => !newNodesWithToEdge.includes(Util.getObjectID(node)));
+
+                    if (!route.startingNodes)
+                        route.startingNodes = [];
 
                     if (newNodesWithoutToEdge.length > 0) {
-                        route.startingNodes.push(...newNodesWithoutToEdge.map(node => Util.getObjectID(node)));
+                        route.startingNodes.push(...newNodesWithoutToEdge.map((node: RouteNodeOrID) => Util.getObjectID(node)));
                     }
 
                     return Promise.all(<any[]>[route.save(), ...setEdgePromises]).then(res => res[0]);
@@ -139,16 +157,15 @@ export namespace Routes {
     const checkGroups = (groups: string[][], currentNodes: RouteNodeDocument[]): Promise<string[][]> => {
         const oldGroups: string[][] = currentNodes.map(node => Util.getObjectIDs(node.persons));
 
-        const newGroupsPersonIds: string[] = [].concat(...groups);
+        const newGroupsPersonIds: string[] = (<string[]>[]).concat(...groups);
 
         for (let group of oldGroups) {
             for (let personId of group) {
                 if (newGroupsPersonIds.indexOf(personId) < 0) {
                     return People.getById(personId).then(person =>
                         Promise.reject(
-                            'The new groups should at least contain all people from the old groups! Person \'' +
-                            person.name +
-                            '\' is not specified in the new groups!'
+                            `The new groups should at least contain all people from the old groups!
+                            Person '${person ? person.name : undefined}' is not specified in the new groups!`
                         )
                     );
                 }
@@ -176,10 +193,10 @@ export namespace Routes {
     };
 
 
-    // TODO
+    // TODO - MA. - strict errors ignored - make function better
     const createGroups = (expeditie: ExpeditieOrID, route: RouteOrID, currentNodes: RouteNodeOrID[], groups: string[][]): Promise<RouteNodeDocument[]> => {
         return Promise.resolve(expeditie)
-            .then(Expedities.addParticipants(Util.getObjectIDs([].concat(...groups))))
+            .then(Expedities.addParticipants(Util.getObjectIDs((<string[]>[]).concat(...groups))))
             .then(() => RouteNodes.getDocuments(currentNodes))
             .then(currentNodes => {
                 const newRouteNodes: string[][] = [];
@@ -199,7 +216,8 @@ export namespace Routes {
 
                     if (groupNeedsNewNode) {
                         newRouteNodes.push(Util.getObjectIDs(group));
-                    } else {
+                    } else if (nonNewNode) {
+                        // @ts-ignore
                         pRouteNodes.push(RouteNodes.getDocument(nonNewNode));
                     }
                 }
