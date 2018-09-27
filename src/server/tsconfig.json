@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "outDir": "../dist/server",
+    "outDir": "../../dist/server",
     "lib": [
       "es2016",
       "es2016.array.include",
