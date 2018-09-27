@@ -1,3 +1,5 @@
+import mapboxgl from 'mapbox-gl';
+
 import { SocketHandler } from '../sockets/socketHandler';
 import { Tables } from '../database/tables';
 

@@ -12,6 +12,7 @@ module.exports = (gulp, plugins) => () =>
                     debug: true
                 })
                     .plugin(plugins.tsify)
+                    .transform(plugins.babelify, { extensions: ['.ts', '.js'], presets: ['@babel/preset-env'] })
                     .bundle();
 
             file.path = file.path.replace('.ts', '.js');
