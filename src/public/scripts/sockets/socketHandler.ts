@@ -1,7 +1,7 @@
+const socketio = require('socket.io-client');
+
 import { Sockets } from './sockets';
 import { LoadingBar } from '../map/loadingBar';
-
-declare const io;
 
 export const enum SocketIDs {
     GET_NODES = 'GetNodes',
@@ -15,7 +15,7 @@ export namespace SocketHandler {
     let _expeditieNameShort;
 
     export function init() {
-        socket = io();
+        socket = socketio();
 
         socket
             .on(SocketIDs.GET_NODES, Sockets.getNodes)
