@@ -1,8 +1,9 @@
-/// <reference path="../map/loadingBar.ts" />
-/// <reference path="../map/mapHandler.ts" />
-/// <reference path="socketHandler.ts" />
+import { SocketHandler } from './socketHandler';
+import { Tables } from '../database/tables';
+import { MapHandler } from '../map/mapHandler';
+import { LoadingBar } from '../map/loadingBar';
 
-namespace Sockets {
+export namespace Sockets {
     export function getNodes(nodes: Tables.RouteNode[]) {
         LoadingBar.setLoadingText('Received nodes.');
 

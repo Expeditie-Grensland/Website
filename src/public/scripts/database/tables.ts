@@ -1,4 +1,4 @@
-namespace Tables {
+export namespace Tables {
     export type DocumentOrID<T> = T | string;
     export type ExpeditieOrID = DocumentOrID<Expeditie>;
     export type LocationOrID = DocumentOrID<Location>;

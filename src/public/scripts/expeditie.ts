@@ -1,6 +1,6 @@
-/// <reference path="map/loadingBar.ts" />
-/// <reference path="map/mapHandler.ts" />
-/// <reference path="sockets/socketHandler.ts" />
+import { LoadingBar } from './map/loadingBar';
+import { SocketHandler } from './sockets/socketHandler';
+import { MapHandler } from './map/mapHandler';
 
 declare var MapboxLanguage: any;
 declare var expeditieNameShort: string;

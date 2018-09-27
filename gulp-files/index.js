@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')({
     overridePattern: false,
-    pattern: ['favicons', 'del']
+    pattern: ['favicons', 'del', 'browserify', 'tsify']
 });
 
 const load = (path) => require(`./${path}`)(gulp, plugins);
@@ -45,8 +45,6 @@ gulp.task('build:prod', gulp.series('clean', gulp.parallel(
     'server:prod',
     'styles:prod'
 )));
-
-gulp.task('build', gulp.series('build:prod'));
 
 
 gulp.task('once', gulp.series('build:dev', 'server:run'));

@@ -1,15 +1,16 @@
-/// <reference path="sockets.ts" />
+import { Sockets } from './sockets';
+import { LoadingBar } from '../map/loadingBar';
 
 declare const io;
 
-const enum SocketIDs {
+export const enum SocketIDs {
     GET_NODES = 'GetNodes',
     GET_BOUNDINGBOX = 'GetBoundingBox',
     GET_LOCATIONS = 'GetLocations',
     LOCATIONS_DONE = 'LocationsDone'
 }
 
-namespace SocketHandler {
+export namespace SocketHandler {
     export let socket;
     let _expeditieNameShort;
 

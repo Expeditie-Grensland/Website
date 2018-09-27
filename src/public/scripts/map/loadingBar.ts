@@ -1,4 +1,4 @@
-namespace LoadingBar {
+export namespace LoadingBar {
     const loadingBar = $('#loadingBar');
     const loadingText = $('#loadingText');
 

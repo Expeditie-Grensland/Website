@@ -7,6 +7,6 @@ module.exports = (gulp, plugins) => {
             .pipe(plugins.sourcemaps.init())
             .pipe(project())
             .js
-            .pipe(plugins.sourcemaps.write('.'))
+            .pipe(plugins.sourcemaps.write())
             .pipe(gulp.dest('dist/server/'));
 };

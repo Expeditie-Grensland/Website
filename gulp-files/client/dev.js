@@ -1,12 +1,20 @@
-module.exports = (gulp, plugins) => {
-    const project = plugins.typescript.createProject('src/public/scripts/tsconfig.json');
+module.exports = (gulp, plugins) => () =>
+    gulp.src([
+        'src/public/scripts/home.ts',
+        'src/public/scripts/expeditie.ts',
+        'src/public/scripts/dictionary.ts'
+    ], { read: false, base: 'src/public/scripts/' })
+        .pipe(plugins.tap((file) => {
+            file.contents =
+                plugins.browserify({
+                    entries: [file.path],
+                    basedir: 'src/public/scripts/',
+                    debug: true
+                })
+                    .plugin(plugins.tsify)
+                    .bundle();
 
-    return () =>
-        project.src()
-            .pipe(plugins.newer({ dest: 'dist/public/scripts/', ext: '.js' }))
-            .pipe(plugins.sourcemaps.init())
-            .pipe(project())
-            .js
-            .pipe(plugins.sourcemaps.write('.'))
-            .pipe(gulp.dest('dist/public/scripts/'));
-};
+            file.path = file.path.replace('.ts', '.js');
+        }))
+        .pipe(plugins.buffer())
+        .pipe(gulp.dest('dist/public/scripts'));

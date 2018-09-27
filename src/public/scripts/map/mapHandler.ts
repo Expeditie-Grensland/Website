@@ -1,15 +1,15 @@
-/// <reference path="../database/tables.ts" />
-/// <reference path="../sockets/socketHandler.ts" />
+import { SocketHandler } from '../sockets/socketHandler';
+import { Tables } from '../database/tables';
 
-namespace MapHandler {
+export namespace MapHandler {
     const LOCATION_SOURCE = 'locations';
 
     export let map: mapboxgl.Map = null;
 
     let boundingBox: Tables.RouteBoundingBox = null;
-    const nodeMap: { [key:string]: Tables.RouteNode } = {};
-    const locationMap: { [key:string]: Tables.Location } = {};
-    const locationNodeMap: { [key:string]: string[] } = {}; //Map RouteNode ids to location ids.
+    const nodeMap: { [key: string]: Tables.RouteNode } = {};
+    const locationMap: { [key: string]: Tables.Location } = {};
+    const locationNodeMap: { [key: string]: string[] } = {}; //Map RouteNode ids to location ids.
 
     let mapStyleLoaded = false;
 
@@ -84,7 +84,7 @@ namespace MapHandler {
         const features: GeoJSON.Feature<GeoJSON.LineString>[] = [];
 
         for (let key of Object.keys(nodeMap)) {
-            const node = nodeMap[key]
+            const node = nodeMap[key];
 
             const coords: mapboxgl.LngLat[] = [];
             const nodeLocations = locationNodeMap[node._id]
