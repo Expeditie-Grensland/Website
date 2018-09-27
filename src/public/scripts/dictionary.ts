@@ -1,12 +1,12 @@
 const playAudio = (word: string) => () => {
-    let player: HTMLAudioElement = <HTMLAudioElement>document.getElementById('player:' + word);
+    let player = <HTMLAudioElement>document.getElementById('player:' + word);
     player.play();
     return false;
 };
 
 const gotoAnchor = (word: string) => () => {
-    let top = document.getElementById(word).offsetTop;
-    window.scrollTo(0, top);
+    let element = <HTMLElement>document.getElementById(word);
+    window.scrollTo(0, element.offsetTop);
     return false;
 };
 

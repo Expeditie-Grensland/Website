@@ -11,8 +11,8 @@ export const enum SocketIDs {
 }
 
 export namespace SocketHandler {
-    export let socket;
-    let _expeditieNameShort;
+    export let socket: any;
+    let _expeditieNameShort: string;
 
     export function init() {
         socket = socketio();
