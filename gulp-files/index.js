@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')({
     overridePattern: false,
-    pattern: ['favicons', 'del', 'browserify', 'tsify']
+    pattern: ['favicons', 'del', 'browserify', 'tsify', 'babelify']
 });
 
 const load = (path) => require(`./${path}`)(gulp, plugins);

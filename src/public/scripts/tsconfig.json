@@ -2,10 +2,12 @@
   "compileOnSave": false,
   "compilerOptions": {
     "target": "es5",
+    "module": "es6",
     "outDir": "../../dist/public/scripts",
     "lib": [
       "es5",
       "dom"
-    ]
+    ],
+    "allowSyntheticDefaultImports": true
   }
 }

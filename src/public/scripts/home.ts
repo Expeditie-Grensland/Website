@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import 'bootstrap';
+
 $(document).ready(() => {
     console.log('Document ready');
 
@@ -43,7 +46,7 @@ $(document).ready(() => {
             rightArrow.addClass('grey');
     });
 
-    $('.videoModal').on('hide.bs.modal', function() {
+    $('.videoModal').on('hide.bs.modal', function () {
         (<HTMLVideoElement>$(this).find('video')[0]).pause();
     });
 });
