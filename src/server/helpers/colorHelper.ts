@@ -69,9 +69,8 @@ export namespace ColorHelper {
 
         const similarNode = existingNodes.find(n => personArraysEqual(n.persons, node.persons));
 
-        if (similarNode !== undefined) {
+        if (similarNode != undefined && similarNode.color != undefined)
             return similarNode.color;
-        }
 
         if (cache) addCachedNode(node);
 
@@ -80,11 +79,7 @@ export namespace ColorHelper {
     }
 
     function addCachedNode(node: RouteNode) {
-        let nodes = [];
-
-        if (nodesCached.has(Util.getObjectID(node.route))) {
-            nodes = nodesCached.get(Util.getObjectID(node.route));
-        }
+        let nodes = nodesCached.get(Util.getObjectID(node.route)) || [];
 
         nodes.push(node);
 
@@ -102,7 +97,7 @@ export namespace ColorHelper {
             throw new RangeError(sprintf(i18next.t('colorhelper_error_not_enough_colors'), getAmountOfColors(), index + 1));
         }
 
-        return Color[Object.keys(Color)[index]];
+        return Color[<keyof typeof Color>Object.keys(Color)[index]];
     }
 
     function getAmountOfColors(): number {

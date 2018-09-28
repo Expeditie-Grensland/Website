@@ -29,6 +29,6 @@ router.get('/', async (req, res) => {
         dictionary: await Words.getAll(),
         getFileUrl: MediaFiles.getUrl,
         generateSimple,
-        marked: (s) => marked(s, { renderer })
+        marked: (s: string) => marked(s, { renderer })
     });
 });

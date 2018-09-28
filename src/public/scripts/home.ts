@@ -1,9 +1,7 @@
 import $ from 'jquery';
 import 'bootstrap';
 
-$(document).ready(() => {
-    console.log('Document ready');
-
+$(() => {
     const columnDiv = $('#columns');
     const columns = $('.column');
     const leftArrow = $('.arrow.left');
@@ -12,14 +10,15 @@ $(document).ready(() => {
 
     const expeditieCount = columns.length;
 
-    const columnWidth = columnDiv.width() / expeditieCount;
+    const columnWidth = columnDiv.width()! / expeditieCount;
 
-    if ($(window).scrollLeft() <= 0) leftArrow.addClass('grey');
+    if ($(window).scrollLeft()! <= 0) leftArrow.addClass('grey');
 
-    if ($(window).scrollLeft() + 1 >= expeditieCount * columnWidth - $(window).width()) rightArrow.addClass('grey');
 
-    leftArrow.click(() => {
-        let newScroll = $(window).scrollLeft() - columnWidth;
+    if ($(window).scrollLeft()! + 1 >= expeditieCount * columnWidth - $(window).width()!) rightArrow.addClass('grey');
+
+    leftArrow.on('click', () => {
+        let newScroll = $(window).scrollLeft()! - columnWidth;
 
         if (newScroll < 0) newScroll = 0;
 
@@ -29,8 +28,8 @@ $(document).ready(() => {
         if (Math.round(newScroll) <= 0) leftArrow.addClass('grey');
     });
 
-    rightArrow.click(() => {
-        let newScroll = $(window).scrollLeft() + columnWidth;
+    rightArrow.on('click', () => {
+        let newScroll = $(window).scrollLeft()! + columnWidth;
 
         if (newScroll > expeditieCount * columnWidth) newScroll = expeditieCount * columnWidth;
 
@@ -42,7 +41,7 @@ $(document).ready(() => {
             500
         );
 
-        if (Math.round(newScroll) >= Math.round(expeditieCount * columnWidth - $(window).width()))
+        if (Math.round(newScroll) >= Math.round(expeditieCount * columnWidth - $(window).width()!))
             rightArrow.addClass('grey');
     });
 

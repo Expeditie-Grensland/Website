@@ -28,7 +28,8 @@ router.use((req, res, next) => {
     if (req.isAuthenticated())
         next();
     else {
-        req.session.returnTo = req.originalUrl;
+        if (req.session)
+            req.session.returnTo = req.originalUrl;
         res.redirect('/members/login');
     }
 });

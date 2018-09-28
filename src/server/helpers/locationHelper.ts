@@ -5,6 +5,7 @@ import { Util } from '../components/documents/util';
 import { LocationDocument, LocationModel } from '../components/locations/model';
 import { RouteNodeOrID } from '../components/routenodes/model';
 
+// TODO: MA. - Neaten up this file
 export namespace LocationHelper {
     const lastLocationsMap: Map<string, Promise<[LocationDocument, LocationDocument]>> = new Map();
 
@@ -18,10 +19,16 @@ export namespace LocationHelper {
      */
     export async function setVisualArea(location: LocationDocument): Promise<LocationDocument> {
         const area = await calculateVisualArea(location);
+        if (!location.node) {
+            throw new Error('Location node is unexpectedly empty');
+        }
+
         const lastLocations = await getLastLocationsCached(location.node);
 
-        await Locations.setVisualArea(area)(lastLocations[1]);
-        await addLocation(location);
+        if (lastLocations) {
+            await Locations.setVisualArea(area)(lastLocations[1]);
+            await addLocation(location);
+        }
 
         return location;
     }
@@ -30,6 +37,10 @@ export namespace LocationHelper {
         let nodeToLocationMap: Map<string, LocationDocument[]> = new Map();
 
         for (let location of locations) {
+            if (!location.node) {
+                throw new Error('A location node is unexpectedly empty');
+            }
+
             let array = nodeToLocationMap.get(Util.getObjectID(location.node));
 
             if (array === undefined) {
@@ -48,7 +59,11 @@ export namespace LocationHelper {
 
             const lastLocations = await getLastLocations(locations.slice(-2));
 
-            lastLocationsMap.set(Util.getObjectID(lastLocations[1].node), Promise.resolve(lastLocations));
+            if (lastLocations) {
+                const node = lastLocations[1].node;
+                if (node)
+                    lastLocationsMap.set(Util.getObjectID(node), Promise.resolve(lastLocations));
+            }
 
             for (let i = 3; i < locations.length; i++) {
                 const visualArea = await calculateVisualArea(locations[i]);
@@ -64,6 +79,9 @@ export namespace LocationHelper {
     }
 
     async function calculateVisualArea(location: LocationDocument): Promise<number> {
+        if (!location.node)
+            return Promise.resolve(Number.POSITIVE_INFINITY);
+
         return getLastLocationsCached(Util.getObjectID(location.node)).then(lastLocations => {
             if (lastLocations != undefined) {
                 const triangle = turf.polygon([
@@ -83,12 +101,17 @@ export namespace LocationHelper {
         });
     }
 
-    function addLocation(location: LocationDocument) {
-        let lastLocations = getLastLocationsCached(location.node).then(lastLocations => {
-            return <[LocationDocument, LocationDocument]>[lastLocations[1], location];
-        });
+    function addLocation(location: LocationDocument): [LocationDocument, LocationDocument] | void {
+        if (location.node) {
+            let lastLocations = getLastLocationsCached(location.node)
+                .then(lastLocations => {
+                    if (lastLocations)
+                        return <[LocationDocument, LocationDocument]>[lastLocations[1], location];
+                    throw new Error('Last locations are undefined');
+                });
 
-        lastLocationsMap.set(Util.getObjectID(location.node), lastLocations);
+            lastLocationsMap.set(Util.getObjectID(location.node), lastLocations);
+        }
     }
 
     async function getLastLocations(locations: LocationDocument[]): Promise<[LocationDocument, LocationDocument] | undefined> {
@@ -102,12 +125,21 @@ export namespace LocationHelper {
             });
     }
 
-    function getLastLocationsCached(node: RouteNodeOrID): Promise<[LocationDocument, LocationDocument] | undefined> {
-        let lastLocations = lastLocationsMap.get(Util.getObjectID(node));
+    function getLastLocationsCached(node: RouteNodeOrID): Promise<[LocationDocument, LocationDocument] | void> {
+        let x: any = lastLocationsMap.get(Util.getObjectID(node));
 
-        if (lastLocations === undefined) {
-            lastLocations = Locations.getInNodeByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
+        if (x == undefined)
+            return Promise.resolve();
 
+        let lastLocations: Promise<[LocationDocument, LocationDocument]> = x;
+
+        if (lastLocations == undefined) {
+            let x: any = Locations.getInNodeByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
+
+            if (x == undefined)
+                return Promise.resolve();
+
+            lastLocations = x;
             lastLocationsMap.set(Util.getObjectID(node), lastLocations);
         }
 

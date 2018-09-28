@@ -8,6 +8,7 @@ import { router as mediaFilesRouter } from './mediaFiles';
 import { router as personsRouter } from './persons';
 import { router as routesRouter } from './routes';
 import { router as wordsRouter } from './words';
+import { PersonOrID } from '../components/people/model';
 
 export const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/authenticate', (req, res, next) => {
-    passport.authenticate('ldapauth', { session: false }, (err, user, info) => {
+    passport.authenticate('ldapauth', { session: false }, (err: Error | null, user: PersonOrID | null, info: Error | null) => {
         if (err)
             next(err);
         else if (!user)
@@ -33,10 +34,12 @@ router.post('/authenticate', (req, res, next) => {
 
 router.use((req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == 'Bearer')
-        AuthHelper.parseJwt(req.headers.authorization.split(' ')[1], (err, decoded: { id }) => {
+        AuthHelper.parseJwt(req.headers.authorization.split(' ')[1], (err, decoded: string | { id?: string }) => {
             if (err)
                 next([401, err.message]);
             else {
+                if (typeof decoded === 'string' || decoded.id == undefined)
+                    return next([401, new Error('Unexpected jwt format')]);
                 People.getById(decoded.id)
                     .then(person => {
                         req.user = person;
@@ -46,7 +49,7 @@ router.use((req, res, next) => {
             }
         });
     else
-        next([401, 'Token header not present']);
+        next([401, new Error('Token header not present')]);
 });
 
 router.use('/expedities', expeditiesRouter);
@@ -58,9 +61,9 @@ router.use('/words', wordsRouter);
 router.use((req, res) =>
     res.status(404).json({ message: 'Not found' }));
 
-router.use((err, req, res, next) => {
+router.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (res.headersSent) {
-        return next(err)
+        return next(err);
     }
 
     let status = 500;

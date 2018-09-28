@@ -47,7 +47,7 @@ $(() => {
         console.log('Map load!');
     });
 
-    map.on('error', e => {
+    map.on('error', (e: any) => {
         console.error('Map error: ' + e.error);
     });
 

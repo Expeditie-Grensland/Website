@@ -6,9 +6,9 @@ import { Tables } from '../database/tables';
 export namespace MapHandler {
     const LOCATION_SOURCE = 'locations';
 
-    export let map: mapboxgl.Map = null;
+    export let map: mapboxgl.Map;
 
-    let boundingBox: Tables.RouteBoundingBox = null;
+    let boundingBox: Tables.RouteBoundingBox;
     const nodeMap: { [key: string]: Tables.RouteNode } = {};
     const locationMap: { [key: string]: Tables.Location } = {};
     const locationNodeMap: { [key: string]: string[] } = {}; //Map RouteNode ids to location ids.
@@ -120,6 +120,7 @@ export namespace MapHandler {
     export function onMapStyleLoad() {
         mapStyleLoaded = true;
 
+        // @ts-ignore
         map.addSource(LOCATION_SOURCE, { type: 'geojson', data: null });
 
         updateMap();
