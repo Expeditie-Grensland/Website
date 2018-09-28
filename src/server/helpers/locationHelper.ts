@@ -128,15 +128,15 @@ export namespace LocationHelper {
     function getLastLocationsCached(node: RouteNodeOrID): Promise<[LocationDocument, LocationDocument] | void> {
         let x: any = lastLocationsMap.get(Util.getObjectID(node));
 
-        if (x === undefined)
+        if (x == undefined)
             return Promise.resolve();
 
         let lastLocations: Promise<[LocationDocument, LocationDocument]> = x;
 
-        if (lastLocations === undefined) {
+        if (lastLocations == undefined) {
             let x: any = Locations.getInNodeByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
 
-            if (x === undefined)
+            if (x == undefined)
                 return Promise.resolve();
 
             lastLocations = x;

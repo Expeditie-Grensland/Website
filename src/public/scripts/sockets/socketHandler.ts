@@ -1,4 +1,4 @@
-const socketio = require('socket.io-client');
+import socketio from 'socket.io-client';
 
 import { Sockets } from './sockets';
 import { LoadingBar } from '../map/loadingBar';
@@ -11,7 +11,7 @@ export const enum SocketIDs {
 }
 
 export namespace SocketHandler {
-    export let socket: any;
+    export let socket: SocketIOClient.Socket;
     let _expeditieNameShort: string;
 
     export function init() {

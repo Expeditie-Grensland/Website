@@ -97,7 +97,7 @@ export namespace ColorHelper {
             throw new RangeError(sprintf(i18next.t('colorhelper_error_not_enough_colors'), getAmountOfColors(), index + 1));
         }
 
-        return <Color>Color[<any>Object.keys(Color)[index]];
+        return Color[<keyof typeof Color>Object.keys(Color)[index]];
     }
 
     function getAmountOfColors(): number {

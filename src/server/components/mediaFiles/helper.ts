@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { config } from '../../helpers/configHelper';
+import * as express from 'express';
 import * as multer from 'multer';
 import * as mongoose from 'mongoose';
 import * as fs from 'fs';
@@ -45,13 +46,13 @@ export namespace MediaFileHelper {
     export namespace Multer {
         const destination: string = getFilesFolder();
 
-        const filename = (req: Express.Request, file: Express.Multer.File, cb: ((error: Error | null, filename: string) => void)) => {
+        const filename = (req: express.Request, file: Express.Multer.File, cb: ((error: Error | null, filename: string) => void)) => {
             let id = mongoose.Types.ObjectId();
             let ext = mime2.getExtension(mime2.getType(file.originalname));
             cb(null, `${id}.${ext}`);
         };
 
-        const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: ((error: Error | null, acceptFile: boolean) => void)) =>
+        const fileFilter = (req: express.Request, file: Express.Multer.File, cb: ((error: Error | null, acceptFile: boolean) => void)) =>
             cb(null, mime2.getType(file.originalname) != null);
 
         export const settings = { storage: multer.diskStorage({ destination, filename }), fileFilter };

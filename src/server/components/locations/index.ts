@@ -39,7 +39,6 @@ export namespace Locations {
             .then(Documents.ensureNotNull)
             .then(route => {
                 // TODO: change when changing to ObjectIds
-                // FIXME:
                 let personIdToRouteNodeMap: Map<string, Promise<RouteNodeDocument>> = new Map();
 
                 const _getCurrentNodeWithPersonCached = (person: PersonOrID): Promise<RouteNodeDocument> => {

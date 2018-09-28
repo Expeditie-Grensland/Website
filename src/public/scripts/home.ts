@@ -1,9 +1,7 @@
 import $ from 'jquery';
 import 'bootstrap';
 
-$(document).ready(() => {
-    console.log('Document ready');
-
+$(() => {
     const columnDiv = $('#columns');
     const columns = $('.column');
     const leftArrow = $('.arrow.left');
@@ -21,7 +19,7 @@ $(document).ready(() => {
     // @ts-ignore
     if ($(window).scrollLeft() + 1 >= expeditieCount * columnWidth - $(window).width()) rightArrow.addClass('grey');
 
-    leftArrow.click(() => {
+    leftArrow.on('click', () => {
         // @ts-ignore
         let newScroll = $(window).scrollLeft() - columnWidth;
 
@@ -33,7 +31,7 @@ $(document).ready(() => {
         if (Math.round(newScroll) <= 0) leftArrow.addClass('grey');
     });
 
-    rightArrow.click(() => {
+    rightArrow.on('click', () => {
         // @ts-ignore
         let newScroll = $(window).scrollLeft() + columnWidth;
 
