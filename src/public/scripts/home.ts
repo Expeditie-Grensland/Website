@@ -10,18 +10,15 @@ $(() => {
 
     const expeditieCount = columns.length;
 
-    // @ts-ignore
-    const columnWidth = columnDiv.width() / expeditieCount;
+    const columnWidth = columnDiv.width()! / expeditieCount;
 
-    // @ts-ignore
-    if ($(window).scrollLeft() <= 0) leftArrow.addClass('grey');
+    if ($(window).scrollLeft()! <= 0) leftArrow.addClass('grey');
 
-    // @ts-ignore
-    if ($(window).scrollLeft() + 1 >= expeditieCount * columnWidth - $(window).width()) rightArrow.addClass('grey');
+
+    if ($(window).scrollLeft()! + 1 >= expeditieCount * columnWidth - $(window).width()!) rightArrow.addClass('grey');
 
     leftArrow.on('click', () => {
-        // @ts-ignore
-        let newScroll = $(window).scrollLeft() - columnWidth;
+        let newScroll = $(window).scrollLeft()! - columnWidth;
 
         if (newScroll < 0) newScroll = 0;
 
@@ -32,8 +29,7 @@ $(() => {
     });
 
     rightArrow.on('click', () => {
-        // @ts-ignore
-        let newScroll = $(window).scrollLeft() + columnWidth;
+        let newScroll = $(window).scrollLeft()! + columnWidth;
 
         if (newScroll > expeditieCount * columnWidth) newScroll = expeditieCount * columnWidth;
 
@@ -45,8 +41,7 @@ $(() => {
             500
         );
 
-        // @ts-ignore
-        if (Math.round(newScroll) >= Math.round(expeditieCount * columnWidth - $(window).width()))
+        if (Math.round(newScroll) >= Math.round(expeditieCount * columnWidth - $(window).width()!))
             rightArrow.addClass('grey');
     });
 
