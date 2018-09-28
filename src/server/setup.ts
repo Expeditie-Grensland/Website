@@ -97,6 +97,8 @@ export namespace Setup {
     export function setupDatabase(app: express.Express, dev: boolean) {
         mongoose.set('debug', dev);
 
+        mongoose.set('useCreateIndex', true);
+
         mongoose.connect(
             config.mongo.url,
             {
