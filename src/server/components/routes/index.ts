@@ -198,7 +198,7 @@ export namespace Routes {
     // TODO - MA. - strict errors ignored - make function better
     const createGroups = (expeditie: ExpeditieOrID, route: RouteOrID, currentNodes: RouteNodeOrID[], groups: string[][]): Promise<RouteNodeDocument[]> => {
         return Promise.resolve(expeditie)
-            .then(Expedities.addParticipants(Util.getObjectIDs(R.flatten(groups))))
+            .then(Expedities.addParticipantsR(R.__, Util.getObjectIDs(R.flatten(groups))))
             .then(() => RouteNodes.getDocuments(currentNodes))
             .then(currentNodes => {
                 const newRouteNodes: string[][] = [];
