@@ -142,7 +142,7 @@ export namespace Expedities {
 
                 return Promise.all([expeditie, Routes.getDocument(expeditie.route)]);
             })
-            .then(([expeditie]) => expeditie);
+            .then(([expeditie]) => Routes.setGroups(expeditie, groups).then(()=> expeditie));
 
     export const addLocation = (location: Location) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
