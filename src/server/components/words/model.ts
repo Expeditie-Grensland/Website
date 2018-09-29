@@ -14,7 +14,6 @@ const schema = new mongoose.Schema(
         word: String,
         definitions: [String],
         phonetic: String,
-        audio: String,
         audioFile: mediaFileEmbeddedSchema
     }
 );
@@ -25,7 +24,6 @@ export interface Word {
     word: string;
     definitions: string[];
     phonetic?: string;
-    audio?: string;
     audioFile?: MediaFileEmbedded;
 }
 

@@ -10,18 +10,14 @@ export const PersonID = 'Person';
  */
 
 const schema = new mongoose.Schema({
-    email: String,
     name: String,
     expedities: [reference(ExpeditieID)],
-    language: String,
     ldapId: String
 });
 
 export interface Person {
-    email?: string;
     name: string;
     expedities?: ExpeditieOrID[];
-    language?: string;
     ldapId?: string;
 }
 
