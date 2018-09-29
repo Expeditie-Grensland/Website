@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
-import { ExpeditieID, ExpeditieOrID } from "../expedities/model";
-
-export const PersonID = 'Person';
+import { ExpeditieOrID } from '../expedities/model';
+import { ExpeditieId } from '../expedities/id';
+import { PersonId } from './id';
 
 /**
  * A Person describes a person who participates in an expeditie. They are guaranteed to have a name
@@ -11,7 +11,7 @@ export const PersonID = 'Person';
 
 const schema = new mongoose.Schema({
     name: String,
-    expedities: [reference(ExpeditieID)],
+    expedities: [reference(ExpeditieId)],
     ldapId: String
 });
 
@@ -23,6 +23,6 @@ export interface Person {
 
 export interface PersonDocument extends Person, mongoose.Document {}
 
-export const PersonModel = mongoose.model<PersonDocument>(PersonID, schema);
+export const PersonModel = mongoose.model<PersonDocument>(PersonId, schema);
 
 export type PersonOrID = DocumentOrID<PersonDocument>;

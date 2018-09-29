@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
-import { RouteNodeID, RouteNodeOrID } from '../routenodes/model';
-
-export const RouteID = 'Routes';
+import { RouteNodeOrID } from '../routenodes/model';
+import { RouteNodeId } from '../routenodes/id';
+import { RouteId } from './id';
 
 /**
  * The bounding 'box' (more like a rectangle on a sphere) for a Route. All points in a Route lie on or within the
@@ -23,8 +23,8 @@ export interface BoundingBox {
  */
 
 const schema = new mongoose.Schema({
-    startingNodes: [reference(RouteNodeID)],
-    currentNodes: [reference(RouteNodeID)]
+    startingNodes: [reference(RouteNodeId)],
+    currentNodes: [reference(RouteNodeId)]
 });
 
 export interface Route {
@@ -34,6 +34,6 @@ export interface Route {
 
 export interface RouteDocument extends Route, mongoose.Document {}
 
-export const RouteModel = mongoose.model<RouteDocument>(RouteID, schema);
+export const RouteModel = mongoose.model<RouteDocument>(RouteId, schema);
 
 export type RouteOrID = DocumentOrID<RouteDocument>;

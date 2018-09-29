@@ -1,9 +1,10 @@
-import { Word, WordDocument, WordID, WordModel, WordOrID } from './model';
+import { Word, WordDocument, WordModel, WordOrID } from './model';
 import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { MediaFileUse } from '../mediaFiles/model';
 import * as mongoose from 'mongoose';
 import { Util } from '../documents/util';
 import { Documents } from '../documents/new';
+import { WordId } from './id';
 
 export namespace Words {
     export const create = (word: Word): Promise<WordDocument> =>
@@ -31,7 +32,7 @@ export namespace Words {
 
     export const setAudioFile = (word: WordOrID, file: MediaFileOrId): Promise<WordDocument | null> => {
         const usage: MediaFileUse = {
-            model: WordID,
+            model: WordId,
             id: mongoose.Types.ObjectId(Util.getObjectID(word)),
             field: 'audioFile'
         };

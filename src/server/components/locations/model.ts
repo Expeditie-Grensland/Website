@@ -1,9 +1,10 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
-import { PersonID, PersonOrID } from '../people/model';
-import { RouteNodeID, RouteNodeOrID } from '../routenodes/model';
-
-export const LocationID = 'Location';
+import { PersonOrID } from '../people/model';
+import { RouteNodeOrID } from '../routenodes/model';
+import { LocationId } from './id';
+import { PersonId } from '../people/id';
+import { RouteNodeId } from '../routenodes/id';
 
 /**
  * A Location describes the output of a GPS receiver, using latitude, longitude
@@ -17,8 +18,8 @@ export const LocationID = 'Location';
 
 const schema = new mongoose.Schema({
     visualArea: { type: Number, default: Number.POSITIVE_INFINITY },
-    person: reference(PersonID),
-    node: reference(RouteNodeID),
+    person: reference(PersonId),
+    node: reference(RouteNodeId),
     timestamp: Number,
     timezone: String,
     lat: Number,
@@ -59,6 +60,6 @@ export interface Location {
 export interface LocationDocument extends Location, mongoose.Document {
 }
 
-export const LocationModel = mongoose.model<LocationDocument>(LocationID, schema);
+export const LocationModel = mongoose.model<LocationDocument>(LocationId, schema);
 
 export type LocationOrID = DocumentOrID<LocationDocument>;

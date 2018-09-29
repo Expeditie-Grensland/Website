@@ -2,7 +2,7 @@ import { Locations } from '../locations';
 import { People } from '../people';
 import { Routes } from '../routes';
 import { Util } from '../documents/util';
-import { Expeditie, ExpeditieDocument, ExpeditieID, ExpeditieModel, ExpeditieOrID } from './model';
+import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
 import { Location, LocationDocument } from '../locations/model';
@@ -11,6 +11,7 @@ import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { MediaFileUse } from '../mediaFiles/model';
 import * as mongoose from 'mongoose';
 import { Documents } from '../documents/new';
+import { ExpeditieId } from './id';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -173,7 +174,7 @@ export namespace Expedities {
 
     export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
         const usage: MediaFileUse = {
-            model: ExpeditieID,
+            model: ExpeditieId,
             id: mongoose.Types.ObjectId(Util.getObjectID(expeditie)),
             field: 'backgroundFile'
         };
@@ -196,7 +197,7 @@ export namespace Expedities {
 
     export const setMovieCoverFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
         const usage: MediaFileUse = {
-            model: ExpeditieID,
+            model: ExpeditieId,
             id: mongoose.Types.ObjectId(Util.getObjectID(expeditie)),
             field: 'movieCoverFile'
         };

@@ -1,8 +1,9 @@
 import * as mongoose from 'mongoose';
 
-import { MediaFile, MediaFileDocument, MediaFileEmbedded, MediaFileId, mediaFileModel, MediaFileOrId, MediaFileUse } from './model';
+import { MediaFile, MediaFileDocument, MediaFileEmbedded, mediaFileModel, MediaFileOrId, MediaFileUse } from './model';
 import { MediaFileHelper } from './helper';
 import { Documents } from '../documents/new';
+import { MediaFileId } from './id';
 
 export namespace MediaFiles {
     export const create = (file: MediaFile): Promise<MediaFileDocument> =>
@@ -69,5 +70,6 @@ export namespace MediaFiles {
             })
 }
 
-export { MediaFile, MediaFileDocument, MediaFileId, MediaFileOrId, mediaFileModel } from './model';
+export { MediaFile, MediaFileDocument, MediaFileOrId, mediaFileModel } from './model';
 export { MediaFileHelper } from './helper';
+export { MediaFileId } from './id';

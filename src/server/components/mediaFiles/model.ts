@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 
 import { DocumentOrId } from '../documents/new';
+import { MediaFileId } from './id';
 
 export interface MediaFile {
     _id: mongoose.Types.ObjectId;
@@ -36,8 +37,6 @@ const mediaFileUseSchema = new mongoose.Schema({
 export interface MediaFileDocument extends MediaFile, mongoose.Document {
     _id: any;
 }
-
-export const MediaFileId = 'MediaFile';
 
 export type MediaFileOrId = DocumentOrId<MediaFileDocument>;
 

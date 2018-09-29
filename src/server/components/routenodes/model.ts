@@ -1,17 +1,18 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
-import { PersonID, PersonOrID } from '../people/model';
-import { RouteID, RouteOrID } from '../routes/model';
-
-export const RouteNodeID = 'RouteNode';
+import { PersonOrID } from '../people/model';
+import { RouteOrID } from '../routes/model';
+import { PersonId } from '../people/id';
+import { RouteNodeId } from './id';
+import { RouteId } from '../routes/id';
 
 /**
  * A RouteEdge represent a moving of people between different RouteNodes.
  */
 
 const routeEdgeSchema = new mongoose.Schema({
-    to: reference(RouteNodeID),
-    people: [reference(PersonID)]
+    to: reference(RouteNodeId),
+    people: [reference(PersonId)]
 });
 
 export interface RouteEdge {
@@ -26,9 +27,9 @@ export interface RouteEdge {
  */
 
 const schema = new mongoose.Schema({
-    route: reference(RouteID),
+    route: reference(RouteId),
     color: String,
-    persons: [reference(PersonID)],
+    persons: [reference(PersonId)],
     edges: [routeEdgeSchema]
 });
 
@@ -41,6 +42,6 @@ export interface RouteNode {
 
 export interface RouteNodeDocument extends RouteNode, mongoose.Document {}
 
-export const RouteNodeModel = mongoose.model<RouteNodeDocument>(RouteNodeID, schema);
+export const RouteNodeModel = mongoose.model<RouteNodeDocument>(RouteNodeId, schema);
 
 export type RouteNodeOrID = DocumentOrID<RouteNodeDocument>;
