@@ -7,7 +7,7 @@ import { RouteEdge, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../
 import { BoundingBox, Route, RouteDocument, RouteModel, RouteOrID } from './model';
 import { ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
-import { LocationModel } from '../locations/model';
+import { LocationDocument, LocationModel } from '../locations/model';
 import { RouteNodes } from '../routenodes';
 
 export namespace Routes {
@@ -22,6 +22,10 @@ export namespace Routes {
 
     export const getAll = (): Promise<RouteDocument[]> =>
         RouteModel.find({}).exec();
+
+    export const getLocations = (route: RouteOrID): Promise<LocationDocument[]> =>
+        Routes.getNodes(route)
+            .then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
 
     export const getNodes = (route: RouteOrID): Promise<RouteNodeDocument[]> =>
         RouteNodeModel.find({ route: Util.getObjectID(route) }).exec();

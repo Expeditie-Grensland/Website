@@ -2,6 +2,7 @@ import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID 
 import { ColorHelper } from '../../helpers/colorHelper';
 import { Util } from '../documents/util';
 import { Documents } from '../documents/new';
+import { LocationDocument, LocationModel } from '../locations/model';
 
 export namespace RouteNodes {
     export const create = (node: RouteNode): Promise<RouteNodeDocument> => {
@@ -34,4 +35,11 @@ export namespace RouteNodes {
             Util.getObjectID(node),
             { edges: edges },
             { new: true }).exec();
+
+    export const getLocationsSortedByTimestampDescending = (node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
+        LocationModel.find({ node: Util.getObjectID(node) })
+            .sort({ timestamp: 'desc' })
+            .skip(skip)
+            .limit(limit)
+            .exec();
 }

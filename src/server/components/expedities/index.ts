@@ -5,7 +5,7 @@ import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
-import { Location, LocationDocument } from '../locations/model';
+import { Location, LocationDocument, LocationModel } from '../locations/model';
 import * as i18next from 'i18next';
 import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { MediaFileUse } from '../mediaFiles/model';
@@ -149,7 +149,7 @@ export namespace Expedities {
 
                 return Promise.all([expeditie, Routes.getDocument(expeditie.route)]);
             })
-            .then(([expeditie]) => Routes.setGroups(expeditie, groups).then(()=> expeditie));
+            .then(([expeditie]) => Routes.setGroups(expeditie, groups).then(() => expeditie));
 
     export const addLocation = (expeditie: ExpeditieOrID, location: Location): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
@@ -177,7 +177,16 @@ export namespace Expedities {
 
     export const getLocations = (expeditie: ExpeditieOrID): Promise<LocationDocument[]> =>
         getRoute(expeditie)
-            .then(Locations.getInRoute);
+            .then(Routes.getLocations);
+
+    export const getLocationsSortedByVisualArea = (expeditie: ExpeditieOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
+        Expedities.getRoute(expeditie)
+            .then(Routes.getNodes)
+            .then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } })
+                .sort({ visualArea: 'desc' })
+                .skip(skip)
+                .limit(limit)
+                .exec());
 
     export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
         const usage: MediaFileUse = {
