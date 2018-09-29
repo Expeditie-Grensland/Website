@@ -1,3 +1,5 @@
+import * as R from 'ramda';
+
 import { Expedities } from '../expedities';
 import { People } from '../people';
 import { Util } from '../documents/util';
@@ -157,7 +159,7 @@ export namespace Routes {
     const checkGroups = (groups: string[][], currentNodes: RouteNodeDocument[]): Promise<string[][]> => {
         const oldGroups: string[][] = currentNodes.map(node => Util.getObjectIDs(node.persons));
 
-        const newGroupsPersonIds: string[] = (<string[]>[]).concat(...groups);
+        const newGroupsPersonIds: string[] = R.flatten(groups);
 
         for (let group of oldGroups) {
             for (let personId of group) {
@@ -196,7 +198,7 @@ export namespace Routes {
     // TODO - MA. - strict errors ignored - make function better
     const createGroups = (expeditie: ExpeditieOrID, route: RouteOrID, currentNodes: RouteNodeOrID[], groups: string[][]): Promise<RouteNodeDocument[]> => {
         return Promise.resolve(expeditie)
-            .then(Expedities.addParticipants(Util.getObjectIDs((<string[]>[]).concat(...groups))))
+            .then(Expedities.addParticipants(Util.getObjectIDs(R.flatten(groups))))
             .then(() => RouteNodes.getDocuments(currentNodes))
             .then(currentNodes => {
                 const newRouteNodes: string[][] = [];
