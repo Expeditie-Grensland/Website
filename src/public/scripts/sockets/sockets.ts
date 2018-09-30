@@ -1,34 +1,24 @@
-import { SocketHandler } from './socketHandler';
-import { Tables } from '../database/tables';
 import { MapHandler } from '../map/mapHandler';
 import { LoadingBar } from '../map/loadingBar';
+import { SocketTypes } from './types';
 
 export namespace Sockets {
-    export function getNodes(nodes: Tables.RouteNode[]) {
-        LoadingBar.setLoadingText('Received nodes.');
+    export function parseInfo(info: SocketTypes.Info) {
+        LoadingBar.setLoadingText('Received route info.');
 
-        MapHandler.addNodes(nodes);
-
-        SocketHandler.requestBoundingBox();
+        MapHandler.addNodes(info.nodes);
+        MapHandler.setBoundingBox(info.box);
     }
 
-    export function getBoundingBox(boundingBox: Tables.RouteBoundingBox) {
-        LoadingBar.setLoadingText('Received bounding box.');
-
-        MapHandler.setBoundingBox(boundingBox);
-
-        SocketHandler.requestLocations();
-    }
-
-    export function getLocations(batchNumber: number, locations: Tables.Location[]) {
+    export function parseLocations(batchNumber: number, locations: SocketTypes.Location[]) {
         LoadingBar.setLoadingText(
-            'Received location batch ' + batchNumber + ' with ' + locations.length + ' locations.'
+            `Received location batch ${batchNumber} with ${locations.length} locations.`
         );
 
         MapHandler.addLocations(locations);
     }
 
-    export function locationsDone() {
-        LoadingBar.setLoadingDone(true);
+    export function done() {
+        LoadingBar.setLoadingDone();
     }
 }

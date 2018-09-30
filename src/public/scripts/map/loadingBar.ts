@@ -9,7 +9,7 @@ export namespace LoadingBar {
         console.log(text);
     }
 
-    export function setLoadingDone(done: boolean) {
+    export function setLoadingDone() {
         loadingBar.hide();
         loadingText.html('Loading...');
         console.log('Loading done.');

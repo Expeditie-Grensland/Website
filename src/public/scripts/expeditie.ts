@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 const MapboxLanguage = require('@mapbox/mapbox-gl-language');
 
 import { LoadingBar } from './map/loadingBar';
-import { SocketHandler } from './sockets/socketHandler';
+import { SocketHandler } from './sockets/handler';
 import { MapHandler } from './map/mapHandler';
 
 declare var expeditieNameShort: string;

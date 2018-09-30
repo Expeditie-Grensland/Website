@@ -2,51 +2,75 @@ import * as socketio from 'socket.io';
 
 import { Expedities } from '../components/expedities';
 import { Routes } from '../components/routes';
-import { SocketIDs } from './socketHandler';
-import { ExpeditieDocument } from '../components/expedities/model';
-import { Locations } from '../components/locations';
+import { SocketIds } from './ids';
 import { Documents } from '../components/documents/new';
+import { RouteNodeDocument } from '../components/routeNodes/model';
+import { Util } from '../components/documents/util';
+import { SocketTypes } from './types';
+import { LocationDocument, LocationModel } from '../components/locations/model';
+import { RouteNodes } from '../components/routeNodes';
 
 export namespace Sockets {
-    const _emit = (io: socketio.Socket, id: string): ((...args: any[]) => void) =>
-        (...args) => io.emit(id, ...args);
-
-    export const getNodes = (io: socketio.Socket) => (expeditieName: string): Promise<void> =>
+    export const getExpeditie = (socket: socketio.Socket) => (expeditieName: string): Promise<void> =>
         Expedities.getByNameShort(expeditieName)
             .then(Documents.ensureNotNull)
             .then(Expedities.getRoute)
             .then(Routes.getNodes)
-            .then(_emit(io, SocketIDs.GET_NODES));
+            .then(_sendEverything(socket));
 
-    export const getBoundingBox = (io: socketio.Socket) => (expeditieName: string): Promise<void> =>
-        Expedities.getByNameShort(expeditieName)
-            .then(Documents.ensureNotNull)
-            .then(Expedities.getRoute)
-            .then(Routes.getBoundingBox)
-            .then(_emit(io, SocketIDs.GET_BOUNDINGBOX));
+    const _sendEverything = (socket: socketio.Socket) => async (nodes: RouteNodeDocument[]): Promise<void> => {
+        const sInfo = (await _sendInfo(socket, nodes));
+        console.log(sInfo);
+        const sNodes = sInfo.nodes;
+        const nodesMap: Map<string, number> = new Map(sNodes.map(n => <[string, number]>[n._id, n.id]));
+        await _sendLocations(socket, nodes, nodesMap)();
+        socket.emit(SocketIds.DONE);
+    };
 
-    const _sendBatches = (io: socketio.Socket) => {
-        const _sendBatchAndRecurse = (expeditie: ExpeditieDocument, batchN = 0): Promise<any> => {
-            if (!io.connected) return Promise.resolve();
+    const _sendInfo = (socket: socketio.Socket, nodes: RouteNodeDocument[]): Promise<SocketTypes.Info> => {
+        const sNodes = RouteNodes.getSocketNodes(nodes);
+        return Routes.getBoundingBox(nodes).then(sBox => {
+            let sInfo = <SocketTypes.Info>{
+                nodes: sNodes,
+                box: sBox
+            };
+            socket.emit(SocketIds.INFO, sInfo);
+            return sInfo;
+        });
+    };
+
+    const _getLocations = (nodes: RouteNodeDocument[], nodesMap: Map<string, number>, skip: number, limit: number): Promise<SocketTypes.Location[]> => {
+        let i = skip;
+        return LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } }).select({ node: 1, timestamp: 1, lat: 1, lon: 1 })
+            .sort({ visualArea: 'desc' }).skip(skip).limit(limit).exec()
+            .then(locations => locations.map((location: LocationDocument) => {
+                return <SocketTypes.Location>[
+                    i++,
+                    nodesMap.get(Util.getObjectID(location.node!)),
+                    location.timestamp,
+                    location.lat,
+                    location.lon
+                ];
+            }));
+    };
+
+    const _sendLocations = (socket: socketio.Socket, nodes: RouteNodeDocument[], nodesMap: Map<string, number>) => {
+        const _sendBatchAndRecurse = (batchN = 0): Promise<any> => {
+            if (!socket.connected) return Promise.resolve();
 
             let skip = 100 * (2 ** batchN - 1);
             let count = 100 * 2 ** batchN;
 
-            return Expedities.getLocationsSortedByVisualArea(expeditie, skip, count)
+            return _getLocations(nodes, nodesMap, skip, count)
                 .then(batch => {
-                    io.emit(SocketIDs.GET_LOCATIONS, ++batchN, batch);
+                    socket.emit(SocketIds.LOCATIONS, ++batchN, batch);
                     if (batch.length == count)
-                        return _sendBatchAndRecurse(expeditie, batchN);
-                    return [];
+                        return _sendBatchAndRecurse(batchN);
                 })
-                .catch(() => []);
+                .catch(() => {
+                    return;
+                });
         };
         return _sendBatchAndRecurse;
     };
-
-    export const getLocations = (io: socketio.Socket) => (expeditieName: string): Promise<void> =>
-        Expedities.getByNameShort(expeditieName)
-            .then(Documents.ensureNotNull)
-            .then(_sendBatches(io))
-            .then(_emit(io, SocketIDs.LOCATIONS_DONE));
 }

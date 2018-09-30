@@ -4,11 +4,12 @@ import { Expedities } from '../expedities';
 import { People } from '../people';
 import { Util } from '../documents/util';
 import { RouteEdge, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routeNodes/model';
-import { BoundingBox, Route, RouteDocument, RouteModel, RouteOrID } from './model';
+import { Route, RouteDocument, RouteModel, RouteOrID } from './model';
 import { ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
 import { LocationDocument, LocationModel } from '../locations/model';
 import { RouteNodes } from '../routeNodes';
+import { SocketTypes } from '../../sockets/types';
 
 export namespace Routes {
     export const create = (route: Route): Promise<RouteDocument> =>
@@ -139,26 +140,26 @@ export namespace Routes {
         );
     };
 
-    const _getMinMaxLatLon = (nodes: RouteNodeOrID[], latLon: 'lat' | 'lon', minMax: 1 | -1): Promise<number> => {
+    export const _getMinMaxLatLon = (nodes: RouteNodeOrID[], latLon: 'lat' | 'lon', minMax: 1 | -1): Promise<number> => {
         const nodeIDs = Util.getObjectIDs(nodes);
 
         return LocationModel.find({ node: { $in: nodeIDs } })
+            .select({ [latLon]: 1 })
             .sort({ [latLon]: minMax })
             .limit(1)
             .exec()
             .then(locations => locations[0][latLon]);
     };
 
-    export const getBoundingBox = (route: RouteOrID): Promise<BoundingBox> =>
-        getNodes(route)
-            .then(nodes => Promise.all([
-                _getMinMaxLatLon(nodes, 'lat', 1), // Minimum latitude
-                _getMinMaxLatLon(nodes, 'lat', -1), // Maximum latitude
-                _getMinMaxLatLon(nodes, 'lon', 1), // Minimum longitude
-                _getMinMaxLatLon(nodes, 'lon', -1) // Maximum longitude
-            ]))
+    export const getBoundingBox = (nodes: RouteNodeDocument[]): Promise<SocketTypes.BoundingBox> =>
+        Promise.all([
+            _getMinMaxLatLon(nodes, 'lat', 1), // Minimum latitude
+            _getMinMaxLatLon(nodes, 'lat', -1), // Maximum latitude
+            _getMinMaxLatLon(nodes, 'lon', 1), // Minimum longitude
+            _getMinMaxLatLon(nodes, 'lon', -1) // Maximum longitude
+        ])
             .then(([minLat, maxLat, minLon, maxLon]) => {
-                return { minLat, maxLat, minLon, maxLon };
+                return <SocketTypes.BoundingBox>{ minLat, maxLat, minLon, maxLon };
             });
 
     // TODO

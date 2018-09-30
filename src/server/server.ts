@@ -5,7 +5,7 @@ import * as socketio from 'socket.io';
 import { Setup } from './setup';
 import { Router } from './routes';
 import { config } from './helpers/configHelper';
-import { SocketHandler } from './sockets/socketHandler';
+import { SocketHandler } from './sockets/handler';
 import { ColorHelper } from './helpers/colorHelper';
 
 import 'source-map-support/register'

@@ -1,21 +1,21 @@
-import mapboxgl from 'mapbox-gl';
+import mapboxGl from 'mapbox-gl';
+import geoJson from 'geojson';
 
-import { SocketHandler } from '../sockets/socketHandler';
-import { Tables } from '../database/tables';
+import { SocketHandler } from '../sockets/handler';
+import { SocketTypes } from '../sockets/types';
 
 export namespace MapHandler {
     const LOCATION_SOURCE = 'locations';
 
-    export let map: mapboxgl.Map;
+    export let map: mapboxGl.Map;
 
-    let boundingBox: Tables.RouteBoundingBox;
-    const nodeMap: { [key: string]: Tables.RouteNode } = {};
-    const locationMap: { [key: string]: Tables.Location } = {};
-    const locationNodeMap: { [key: string]: string[] } = {}; //Map RouteNode ids to location ids.
+    const nodeMap: { [key: number]: SocketTypes.RouteNode } = {};
+    const locationMap: { [key: number]: SocketTypes.Location } = {};
+    const locationNodeMap: { [key: number]: number[] } = {}; //Map RouteNode ids to location ids.
 
     let mapStyleLoaded = false;
 
-    export function init(mapboxMap: mapboxgl.Map, expeditieNameShort: string) {
+    export function init(mapboxMap: mapboxGl.Map, expeditieNameShort: string) {
         map = mapboxMap;
 
         map.on('style.load', onMapStyleLoad);
@@ -23,21 +23,26 @@ export namespace MapHandler {
         SocketHandler.request(expeditieNameShort);
     }
 
-    export function setBoundingBox(b: Tables.RouteBoundingBox) {
-        boundingBox = b;
+    export function setBoundingBox(b: SocketTypes.BoundingBox) {
+        const bounds = new mapboxGl.LngLatBounds();
 
-        setViewportToBoundingBox(b);
+        bounds.extend(new mapboxGl.LngLat(b.minLon, b.minLat));
+        bounds.extend(new mapboxGl.LngLat(b.maxLon, b.maxLat));
+
+        map.fitBounds(bounds, {
+            padding: 20
+        });
     }
 
-    export function addNodes(nodes: Tables.RouteNode[]) {
+    export function addNodes(nodes: SocketTypes.RouteNode[]) {
         for (let node of nodes) {
-            nodeMap[node._id] = node;
+            nodeMap[node.id] = node;
 
-            locationNodeMap[node._id] = [];
+            locationNodeMap[node.id] = [];
 
             //TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
             map.addLayer({
-                id: LOCATION_SOURCE + node._id,
+                id: LOCATION_SOURCE + node.id,
                 type: 'line',
                 source: LOCATION_SOURCE,
                 paint: {
@@ -45,63 +50,52 @@ export namespace MapHandler {
                     'line-opacity': 1,
                     'line-width': 3
                 },
-                filter: ['==', 'node-id', node._id]
+                filter: ['==', 'node-id', node.id]
             });
         }
     }
 
-    export function addLocations(locations: Tables.Location[]) {
+    export function addLocations(locations: SocketTypes.Location[]) {
         for (let location of locations) {
-            const nodeLocations = locationNodeMap[<string>location.node];
+            const nodeLocations = locationNodeMap[location[1]];
 
-            nodeLocations.push(location._id);
+            nodeLocations.push(location[0]);
 
-            locationMap[location._id] = location;
-            locationNodeMap[<string>location.node] = nodeLocations;
+            locationMap[location[0]] = location;
+            locationNodeMap[location[1]] = nodeLocations;
         }
 
         if (mapStyleLoaded) updateMap();
     }
 
     export function updateMap() {
-        const locationSource = map.getSource(LOCATION_SOURCE) as mapboxgl.GeoJSONSource;
+        const locationSource = map.getSource(LOCATION_SOURCE) as mapboxGl.GeoJSONSource;
 
         const locationsGeoJSON = generateLocationsGeoJSON();
 
         locationSource.setData(locationsGeoJSON);
     }
 
-    export function setViewportToBoundingBox(bbox: Tables.RouteBoundingBox) {
-        const bounds = new mapboxgl.LngLatBounds();
-
-        bounds.extend(new mapboxgl.LngLat(bbox.minLon, bbox.minLat));
-        bounds.extend(new mapboxgl.LngLat(bbox.maxLon, bbox.maxLat));
-
-        map.fitBounds(bounds, {
-            padding: 20
-        });
-    }
-
-    export function generateLocationsGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.LineString> {
-        const features: GeoJSON.Feature<GeoJSON.LineString>[] = [];
+    export function generateLocationsGeoJSON(): geoJson.FeatureCollection<geoJson.LineString> {
+        const features: geoJson.Feature<geoJson.LineString>[] = [];
 
         for (let key of Object.keys(nodeMap)) {
-            const node = nodeMap[key];
+            const node = nodeMap[<any>key];
 
-            const coords: mapboxgl.LngLat[] = [];
-            const nodeLocations = locationNodeMap[node._id]
-                .map(l => getLocation(l))
-                .sort((l1, l2) => l1.timestamp - l2.timestamp);
+            const coords: mapboxGl.LngLat[] = [];
+            const nodeLocations = locationNodeMap[node.id]
+                .map(l => locationMap[l])
+                .sort((l1, l2) => l1[2] - l2[2]);
 
             for (let location of nodeLocations) {
-                coords.push(new mapboxgl.LngLat(location.lon, location.lat));
+                coords.push(new mapboxGl.LngLat(location[4], location[3]));
             }
 
             if (coords.length >= 2) {
                 features.push({
                     type: 'Feature',
                     properties: {
-                        'node-id': node._id
+                        'node-id': node.id
                     },
                     geometry: {
                         type: 'LineString',
@@ -124,13 +118,5 @@ export namespace MapHandler {
         map.addSource(LOCATION_SOURCE, { type: 'geojson', data: null });
 
         updateMap();
-    }
-
-    export function getNode(_id: string) {
-        return nodeMap[_id];
-    }
-
-    export function getLocation(_id: string) {
-        return locationMap[_id];
     }
 }
