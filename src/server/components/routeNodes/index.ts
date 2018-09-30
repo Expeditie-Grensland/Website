@@ -24,13 +24,12 @@ export namespace RouteNodes {
     export const getByIds = (ids: string[]): Promise<RouteNodeDocument[]> =>
         RouteNodeModel.find({ _id: { $in: ids } }).exec();
 
-    // TODO: Ensure not null
     export const populatePersons = (node: RouteNodeOrID): Promise<RouteNodeDocument> =>
         getDocument(node)
             .then(Documents.ensureNotNull)
             .then(node => node.populate('persons').execPopulate());
 
-    export const setEdges = (edges: RouteEdge[]) => (node: RouteNodeOrID): Promise<RouteNodeDocument | null> =>
+    export const setEdges = (node: RouteNodeOrID, edges: RouteEdge[]): Promise<RouteNodeDocument | null> =>
         RouteNodeModel.findByIdAndUpdate(
             Util.getObjectID(node),
             { edges: edges },

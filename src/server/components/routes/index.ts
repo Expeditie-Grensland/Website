@@ -3,12 +3,12 @@ import * as R from 'ramda';
 import { Expedities } from '../expedities';
 import { People } from '../people';
 import { Util } from '../documents/util';
-import { RouteEdge, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routenodes/model';
+import { RouteEdge, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from '../routeNodes/model';
 import { BoundingBox, Route, RouteDocument, RouteModel, RouteOrID } from './model';
 import { ExpeditieOrID } from '../expedities/model';
 import { PersonOrID } from '../people/model';
 import { LocationDocument, LocationModel } from '../locations/model';
-import { RouteNodes } from '../routenodes';
+import { RouteNodes } from '../routeNodes';
 
 export namespace Routes {
     export const create = (route: Route): Promise<RouteDocument> =>
@@ -44,7 +44,7 @@ export namespace Routes {
             return [];
         });
 
-    export const getCurrentNodeWithPerson = (person: PersonOrID) => (route: RouteOrID): Promise<RouteNodeDocument | null> =>
+    export const getCurrentNodeByPerson = (route: RouteOrID, person: PersonOrID): Promise<RouteNodeDocument | null> =>
         getDocument(route).then(route => {
             if (!route || !route.currentNodes)
                 throw new Error('Route not found!');
@@ -55,6 +55,8 @@ export namespace Routes {
                 persons: Util.getObjectID(person)
             }).exec();
         });
+
+    export const getCurrentNodeByPersonR = R.curry(getCurrentNodeByPerson);
 
     // TODO - MA. - strict errors ignored - make function better
     export const setGroups = (expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<RouteDocument> => {
@@ -117,7 +119,7 @@ export namespace Routes {
                             }
                         }
 
-                        if (edges.length > 0) setEdgePromises.push(RouteNodes.setEdges(edges)(oldCurrentNode));
+                        if (edges.length > 0) setEdgePromises.push(RouteNodes.setEdges(oldCurrentNode, edges));
                     }
 
                     const newNodesWithoutToEdge = newCurrentNodes.filter((node: RouteNodeOrID) => !newNodesWithToEdge.includes(Util.getObjectID(node)));

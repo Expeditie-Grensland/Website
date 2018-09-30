@@ -3,8 +3,8 @@ import * as turf from '@turf/turf';
 import { Locations } from '../components/locations';
 import { Util } from '../components/documents/util';
 import { LocationDocument, LocationModel } from '../components/locations/model';
-import { RouteNodeOrID } from '../components/routenodes/model';
-import { RouteNodes } from '../components/routenodes';
+import { RouteNodeOrID } from '../components/routeNodes/model';
+import { RouteNodes } from '../components/routeNodes';
 
 // TODO: MA. - Neaten up this file
 export namespace LocationHelper {

@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
-import { RouteNodeOrID } from '../routenodes/model';
-import { RouteNodeId } from '../routenodes/id';
+import { RouteNodeOrID } from '../routeNodes/model';
+import { RouteNodeId } from '../routeNodes/id';
 import { RouteId } from './id';
 
 /**

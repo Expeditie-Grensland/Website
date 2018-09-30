@@ -3,7 +3,7 @@ import { Routes } from '../routes';
 import { Util } from '../documents/util';
 import { Location, LocationDocument, LocationModel, LocationOrID } from './model';
 import { RouteOrID } from '../routes/model';
-import { RouteNodeDocument } from '../routenodes/model';
+import { RouteNodeDocument } from '../routeNodes/model';
 import { PersonOrID } from '../people/model';
 import { Documents } from '../documents/new';
 import * as R from 'ramda';
@@ -21,7 +21,7 @@ export namespace Locations {
 
         return Routes.getDocument(route)
             .then(Documents.ensureNotNull)
-            .then(Routes.getCurrentNodeWithPerson(location.person))
+            .then(Routes.getCurrentNodeByPersonR(R.__, location.person))
             .then(Documents.ensureNotNull)
             .then(node => location.node = Util.getObjectID(node))
             .then(() => location);
@@ -46,7 +46,7 @@ export namespace Locations {
                     let routeNode: Promise<RouteNodeDocument> | undefined = personIdToRouteNodeMap.get(Util.getObjectID(person));
 
                     if (!routeNode) {
-                        routeNode = Routes.getCurrentNodeWithPerson(person)(route).then(Documents.ensureNotNull);
+                        routeNode = Routes.getCurrentNodeByPerson(route, person).then(Documents.ensureNotNull);
                         personIdToRouteNodeMap.set(Util.getObjectID(person), routeNode);
                     }
 

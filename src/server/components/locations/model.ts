@@ -1,10 +1,10 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
 import { PersonOrID } from '../people/model';
-import { RouteNodeOrID } from '../routenodes/model';
+import { RouteNodeOrID } from '../routeNodes/model';
 import { LocationId } from './id';
 import { PersonId } from '../people/id';
-import { RouteNodeId } from '../routenodes/id';
+import { RouteNodeId } from '../routeNodes/id';
 
 /**
  * A Location describes the output of a GPS receiver, using latitude, longitude

@@ -2,7 +2,7 @@ import i18next = require('i18next');
 
 import { Routes } from '../components/routes';
 import { Util } from '../components/documents/util';
-import { RouteNode } from '../components/routenodes/model';
+import { RouteNode } from '../components/routeNodes/model';
 import { RouteOrID } from '../components/routes/model';
 import { PersonOrID } from '../components/people/model';
 
