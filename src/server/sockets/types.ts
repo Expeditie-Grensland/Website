@@ -2,22 +2,33 @@
 
 export namespace SocketTypes {
     export interface RouteNode {
+        id: number,
         _id: string;
         color: string;
     }
 
-    export interface Location {
-        _id: string;
-        node: string;
-        timestamp: number;
-        lat: number;
-        lon: number;
-    }
+    // export interface Location {
+    //     id: number;
+    //     node: number;
+    //     timestamp: number;
+    //     lat: number;
+    //     lon: number;
+    // }
+
+    /**
+     * [id, node, timestamp, lat, lon]
+     */
+    export type Location = [number, number, number, number, number]
 
     export interface BoundingBox {
         minLat: number;
         maxLat: number;
         minLon: number;
         maxLon: number;
+    }
+
+    export interface Info {
+        nodes: RouteNode[],
+        box: BoundingBox
     }
 }

@@ -3,6 +3,8 @@ import { ColorHelper } from '../../helpers/colorHelper';
 import { Util } from '../documents/util';
 import { Documents } from '../documents/new';
 import { LocationDocument, LocationModel } from '../locations/model';
+import { SocketTypes } from '../../sockets/types';
+import * as mongoose from 'mongoose';
 
 export namespace RouteNodes {
     export const create = (node: RouteNode): Promise<RouteNodeDocument> => {
@@ -41,4 +43,15 @@ export namespace RouteNodes {
             .skip(skip)
             .limit(limit)
             .exec();
+
+    export const getSocketNodes = (nodes: RouteNodeDocument[]): SocketTypes.RouteNode[] => {
+        let i = 0;
+        return nodes.map(node => {
+            return <SocketTypes.RouteNode>{
+                id: i++,
+                _id: mongoose.Types.ObjectId(node._id).toHexString(),
+                color: node.color || '#000'
+            };
+        });
+    };
 }

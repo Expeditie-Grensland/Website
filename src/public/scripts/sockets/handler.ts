@@ -10,13 +10,12 @@ export namespace SocketHandler {
         socket = socketio();
 
         socket
-            .on(SocketIds.NODES, Sockets.getNodes)
-            .on(SocketIds.BOUNDINGBOX, Sockets.getBoundingBox)
-            .on(SocketIds.LOCATIONS, Sockets.getLocations)
-            .on(SocketIds.LOCATIONS_DONE, Sockets.locationsDone);
+            .on(SocketIds.INFO, Sockets.parseInfo)
+            .on(SocketIds.LOCATIONS, Sockets.parseLocations)
+            .on(SocketIds.DONE, Sockets.done);
     }
 
     export function request(expeditieName: string) {
-        socket.emit(SocketIds.GET_EXPEDITIE, expeditieName);
+        socket.emit(SocketIds.REQUEST, expeditieName);
     }
 }

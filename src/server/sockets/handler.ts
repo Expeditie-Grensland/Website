@@ -6,5 +6,5 @@ import { SocketIds } from './ids';
 export namespace SocketHandler {
     export const bindHandlers = (io: socketio.Server) =>
         io.on('connection', socket =>
-            socket.on(SocketIds.GET_EXPEDITIE, Sockets.getExpeditie(socket)));
+            socket.on(SocketIds.REQUEST, Sockets.getExpeditie(socket)));
 }

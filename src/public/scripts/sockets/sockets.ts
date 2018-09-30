@@ -3,19 +3,14 @@ import { LoadingBar } from '../map/loadingBar';
 import { SocketTypes } from './types';
 
 export namespace Sockets {
-    export function getNodes(nodes: SocketTypes.RouteNode[]) {
-        LoadingBar.setLoadingText('Received nodes.');
+    export function parseInfo(info: SocketTypes.Info) {
+        LoadingBar.setLoadingText('Received route info.');
 
-        MapHandler.addNodes(nodes);
+        MapHandler.addNodes(info.nodes);
+        MapHandler.setBoundingBox(info.box);
     }
 
-    export function getBoundingBox(boundingBox: SocketTypes.BoundingBox) {
-        LoadingBar.setLoadingText('Received bounding box.');
-
-        MapHandler.setBoundingBox(boundingBox);
-    }
-
-    export function getLocations(batchNumber: number, locations: SocketTypes.Location[]) {
+    export function parseLocations(batchNumber: number, locations: SocketTypes.Location[]) {
         LoadingBar.setLoadingText(
             `Received location batch ${batchNumber} with ${locations.length} locations.`
         );
@@ -23,7 +18,7 @@ export namespace Sockets {
         MapHandler.addLocations(locations);
     }
 
-    export function locationsDone() {
+    export function done() {
         LoadingBar.setLoadingDone();
     }
 }
