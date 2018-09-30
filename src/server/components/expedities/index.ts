@@ -179,15 +179,6 @@ export namespace Expedities {
         getRoute(expeditie)
             .then(Routes.getLocations);
 
-    export const getLocationsSortedByVisualArea = (expeditie: ExpeditieOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
-        Expedities.getRoute(expeditie)
-            .then(Routes.getNodes)
-            .then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } })
-                .sort({ visualArea: 'desc' })
-                .skip(skip)
-                .limit(limit)
-                .exec());
-
     export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
         const usage: MediaFileUse = {
             model: ExpeditieId,

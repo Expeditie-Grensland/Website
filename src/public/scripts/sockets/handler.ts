@@ -2,13 +2,7 @@ import socketio from 'socket.io-client';
 
 import { Sockets } from './sockets';
 import { LoadingBar } from '../map/loadingBar';
-
-export const enum SocketIDs {
-    GET_NODES = 'GetNodes',
-    GET_BOUNDINGBOX = 'GetBoundingBox',
-    GET_LOCATIONS = 'GetLocations',
-    LOCATIONS_DONE = 'LocationsDone'
-}
+import { SocketIds } from './ids';
 
 export namespace SocketHandler {
     export let socket: SocketIOClient.Socket;
@@ -18,10 +12,10 @@ export namespace SocketHandler {
         socket = socketio();
 
         socket
-            .on(SocketIDs.GET_NODES, Sockets.getNodes)
-            .on(SocketIDs.GET_BOUNDINGBOX, Sockets.getBoundingBox)
-            .on(SocketIDs.GET_LOCATIONS, Sockets.getLocations)
-            .on(SocketIDs.LOCATIONS_DONE, Sockets.locationsDone);
+            .on(SocketIds.NODES, Sockets.getNodes)
+            .on(SocketIds.BOUNDINGBOX, Sockets.getBoundingBox)
+            .on(SocketIds.LOCATIONS, Sockets.getLocations)
+            .on(SocketIds.LOCATIONS_DONE, Sockets.locationsDone);
     }
 
     export function request(expeditienameShort: string) {
@@ -31,16 +25,16 @@ export namespace SocketHandler {
 
     export function requestNodes() {
         LoadingBar.setLoadingText('Loading route nodes...');
-        socket.emit(SocketIDs.GET_NODES, _expeditieNameShort);
+        socket.emit(SocketIds.GET_NODES, _expeditieNameShort);
     }
 
     export function requestBoundingBox() {
         LoadingBar.setLoadingText('Loading bounding box...');
-        socket.emit(SocketIDs.GET_BOUNDINGBOX, _expeditieNameShort);
+        socket.emit(SocketIds.GET_BOUNDINGBOX, _expeditieNameShort);
     }
 
     export function requestLocations() {
         LoadingBar.setLoadingText('Loading locations...');
-        socket.emit(SocketIDs.GET_LOCATIONS, _expeditieNameShort);
+        socket.emit(SocketIds.GET_LOCATIONS, _expeditieNameShort);
     }
 }
