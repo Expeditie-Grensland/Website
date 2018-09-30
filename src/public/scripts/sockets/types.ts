@@ -7,14 +7,6 @@ export namespace SocketTypes {
         color: string;
     }
 
-    // export interface Location {
-    //     id: number;
-    //     node: number;
-    //     timestamp: number;
-    //     lat: number;
-    //     lon: number;
-    // }
-
     /**
      * [id, node, timestamp, lat, lon]
      */
@@ -29,6 +21,7 @@ export namespace SocketTypes {
 
     export interface Info {
         nodes: RouteNode[],
-        box: BoundingBox
+        box: BoundingBox,
+        count: number
     }
 }

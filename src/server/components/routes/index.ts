@@ -140,16 +140,13 @@ export namespace Routes {
         );
     };
 
-    export const _getMinMaxLatLon = (nodes: RouteNodeOrID[], latLon: 'lat' | 'lon', minMax: 1 | -1): Promise<number> => {
-        const nodeIDs = Util.getObjectIDs(nodes);
-
-        return LocationModel.find({ node: { $in: nodeIDs } })
+    export const _getMinMaxLatLon = (nodes: RouteNodeOrID[], latLon: 'lat' | 'lon', minMax: 1 | -1): Promise<number> =>
+        LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } })
             .select({ [latLon]: 1 })
             .sort({ [latLon]: minMax })
             .limit(1)
             .exec()
             .then(locations => locations[0][latLon]);
-    };
 
     export const getBoundingBox = (nodes: RouteNodeDocument[]): Promise<SocketTypes.BoundingBox> =>
         Promise.all([
@@ -161,6 +158,9 @@ export namespace Routes {
             .then(([minLat, maxLat, minLon, maxLon]) => {
                 return <SocketTypes.BoundingBox>{ minLat, maxLat, minLon, maxLon };
             });
+
+    export const getLocationCount = (nodes: RouteNodeDocument[]): Promise<number> =>
+        LocationModel.count({ node: { $in: Util.getObjectIDs(nodes) } }).exec();
 
     // TODO
     const checkGroups = (groups: string[][], currentNodes: RouteNodeDocument[]): Promise<string[][]> => {

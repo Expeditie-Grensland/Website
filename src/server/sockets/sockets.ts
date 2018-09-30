@@ -20,23 +20,23 @@ export namespace Sockets {
 
     const _sendEverything = (socket: socketio.Socket) => async (nodes: RouteNodeDocument[]): Promise<void> => {
         const sInfo = (await _sendInfo(socket, nodes));
-        console.log(sInfo);
         const sNodes = sInfo.nodes;
         const nodesMap: Map<string, number> = new Map(sNodes.map(n => <[string, number]>[n._id, n.id]));
         await _sendLocations(socket, nodes, nodesMap)();
         socket.emit(SocketIds.DONE);
+        socket.disconnect();
     };
 
-    const _sendInfo = (socket: socketio.Socket, nodes: RouteNodeDocument[]): Promise<SocketTypes.Info> => {
+    const _sendInfo = async (socket: socketio.Socket, nodes: RouteNodeDocument[]): Promise<SocketTypes.Info> => {
         const sNodes = RouteNodes.getSocketNodes(nodes);
-        return Routes.getBoundingBox(nodes).then(sBox => {
-            let sInfo = <SocketTypes.Info>{
-                nodes: sNodes,
-                box: sBox
-            };
-            socket.emit(SocketIds.INFO, sInfo);
-            return sInfo;
-        });
+        const [box, count] = await Promise.all([Routes.getBoundingBox(nodes), Routes.getLocationCount(nodes)]);
+        let sInfo = <SocketTypes.Info>{
+            nodes: sNodes,
+            box,
+            count
+        };
+        socket.emit(SocketIds.INFO, sInfo);
+        return sInfo;
     };
 
     const _getLocations = (nodes: RouteNodeDocument[], nodesMap: Map<string, number>, skip: number, limit: number): Promise<SocketTypes.Location[]> => {
