@@ -1,4 +1,3 @@
-import { SocketHandler } from './handler';
 import { MapHandler } from '../map/mapHandler';
 import { LoadingBar } from '../map/loadingBar';
 import { SocketTypes } from './types';
@@ -8,16 +7,12 @@ export namespace Sockets {
         LoadingBar.setLoadingText('Received nodes.');
 
         MapHandler.addNodes(nodes);
-
-        SocketHandler.requestBoundingBox();
     }
 
     export function getBoundingBox(boundingBox: SocketTypes.BoundingBox) {
         LoadingBar.setLoadingText('Received bounding box.');
 
         MapHandler.setBoundingBox(boundingBox);
-
-        SocketHandler.requestLocations();
     }
 
     export function getLocations(batchNumber: number, locations: SocketTypes.Location[]) {
