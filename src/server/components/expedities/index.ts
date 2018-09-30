@@ -5,13 +5,14 @@ import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
-import { Location, LocationDocument } from '../locations/model';
+import { Location, LocationDocument, LocationModel } from '../locations/model';
 import * as i18next from 'i18next';
 import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { MediaFileUse } from '../mediaFiles/model';
 import * as mongoose from 'mongoose';
 import { Documents } from '../documents/new';
 import { ExpeditieId } from './id';
+import * as R from 'ramda';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -41,17 +42,19 @@ export namespace Expedities {
             .then(() => expeditie);
     };
 
-    const _addExpeditieToPersons = (persons: PersonOrID[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
-        Promise.all(persons.map(People.addExpeditie(expeditie)))
+    const _addExpeditieToPersons = (persons: PersonOrID[], expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+        Promise.all(persons.map(People.addExpeditieR(R.__, expeditie)))
             .then(() => getDocument(expeditie).then(Documents.ensureNotNull));
+
+    const _addExpeditieToPersonsR = R.curry(_addExpeditieToPersons);
 
     export const create = (expeditie: Expeditie): Promise<ExpeditieDocument> =>
         Promise.resolve(expeditie)
             .then(_createNewRouteIfUndefined)
             .then(ExpeditieModel.create)
-            .then(_addExpeditieToPersons(expeditie.participants));
+            .then(_addExpeditieToPersonsR(expeditie.participants));
 
-    export const setFinished = (finished: boolean) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument | null> =>
+    export const setFinished = (expeditie: ExpeditieOrID, finished: boolean): Promise<ExpeditieDocument | null> =>
         ExpeditieModel.findByIdAndUpdate(
             Util.getObjectID(expeditie),
             { finished: finished },
@@ -67,15 +70,15 @@ export namespace Expedities {
     export const remove = (expeditie: ExpeditieOrID): Promise<void> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
-            .then(expeditie => removeParticipants(expeditie.participants)(expeditie))
+            .then(expeditie => removeParticipants(expeditie, expeditie.participants))
             .then(expeditie => expeditie.remove())
             .then(() => undefined);
 
-    export const addParticipants = (participants: PersonOrID[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+    export const addParticipants = (expeditie: ExpeditieOrID, participants: PersonOrID[]): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
             .then(_checkFinished)
-            .then(_addExpeditieToPersons(participants))
+            .then(_addExpeditieToPersonsR(participants))
             .then(expeditie => ExpeditieModel.findByIdAndUpdate(
                 Util.getObjectID(expeditie),
                 {
@@ -87,16 +90,20 @@ export namespace Expedities {
             ).exec())
             .then(Documents.ensureNotNull);
 
-    const _removeExpeditieFromPersons = (persons: PersonOrID[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
-        Promise.all(persons.map(People.removeExpeditie(expeditie)))
+    export const addParticipantsR = R.curry(addParticipants);
+
+    const _removeExpeditieFromPersons = (expeditie: ExpeditieOrID, persons: PersonOrID[]): Promise<ExpeditieDocument> =>
+        Promise.all(persons.map(People.removeExpeditieR(R.__, expeditie)))
             .then(() => getDocument(expeditie))
             .then(Documents.ensureNotNull);
 
-    export const removeParticipants = (participants: PersonOrID[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+    const _removeExpeditieFromPersonsR = R.curry(_removeExpeditieFromPersons);
+
+    export const removeParticipants = (expeditie: ExpeditieOrID, participants: PersonOrID[]): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
             .then(_checkFinished)
-            .then(_removeExpeditieFromPersons(participants))
+            .then(_removeExpeditieFromPersonsR(R.__, participants))
             .then(expeditie => ExpeditieModel.findByIdAndUpdate(
                 Util.getObjectID(expeditie),
                 {
@@ -108,7 +115,7 @@ export namespace Expedities {
             ).exec())
             .then(Documents.ensureNotNull);
 
-    export const setRoute = (route: RouteOrID) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+    export const setRoute = (expeditie: ExpeditieOrID, route: RouteOrID): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
             .then(_checkFinished)
@@ -130,21 +137,21 @@ export namespace Expedities {
                     .then(Documents.ensureNotNull);
             });
 
-    export const setGroups = (groups: PersonOrID[][]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+    export const setGroups = (expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
             .then(_checkFinished)
             .then(expeditie => {
                 if (expeditie.route === undefined) {
                     return Routes.create({})
-                        .then(route => Promise.all([setRoute(route)(expeditie), route]));
+                        .then(route => Promise.all([setRoute(expeditie, route), route]));
                 }
 
                 return Promise.all([expeditie, Routes.getDocument(expeditie.route)]);
             })
-            .then(([expeditie]) => Routes.setGroups(expeditie, groups).then(()=> expeditie));
+            .then(([expeditie]) => Routes.setGroups(expeditie, groups).then(() => expeditie));
 
-    export const addLocation = (location: Location) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+    export const addLocation = (expeditie: ExpeditieOrID, location: Location): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
             .then(_checkFinished)
@@ -156,7 +163,7 @@ export namespace Expedities {
                     .then(() => expeditie);
             });
 
-    export const addLocations = (locations: Location[]) => (expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
+    export const addLocations = (expeditie: ExpeditieOrID, locations: Location[]): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
             .then(_checkFinished)
@@ -170,7 +177,16 @@ export namespace Expedities {
 
     export const getLocations = (expeditie: ExpeditieOrID): Promise<LocationDocument[]> =>
         getRoute(expeditie)
-            .then(Locations.getInRoute);
+            .then(Routes.getLocations);
+
+    export const getLocationsSortedByVisualArea = (expeditie: ExpeditieOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
+        Expedities.getRoute(expeditie)
+            .then(Routes.getNodes)
+            .then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } })
+                .sort({ visualArea: 'desc' })
+                .skip(skip)
+                .limit(limit)
+                .exec());
 
     export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
         const usage: MediaFileUse = {

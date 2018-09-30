@@ -3,7 +3,8 @@ import * as turf from '@turf/turf';
 import { Locations } from '../components/locations';
 import { Util } from '../components/documents/util';
 import { LocationDocument, LocationModel } from '../components/locations/model';
-import { RouteNodeOrID } from '../components/routenodes/model';
+import { RouteNodeOrID } from '../components/routeNodes/model';
+import { RouteNodes } from '../components/routeNodes';
 
 // TODO: MA. - Neaten up this file
 export namespace LocationHelper {
@@ -26,7 +27,7 @@ export namespace LocationHelper {
         const lastLocations = await getLastLocationsCached(location.node);
 
         if (lastLocations) {
-            await Locations.setVisualArea(area)(lastLocations[1]);
+            await Locations.setVisualArea(lastLocations[1], area);
             await addLocation(location);
         }
 
@@ -134,7 +135,7 @@ export namespace LocationHelper {
         let lastLocations: Promise<[LocationDocument, LocationDocument]> = x;
 
         if (lastLocations == undefined) {
-            let x: any = Locations.getInNodeByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
+            let x: any = RouteNodes.getLocationsSortedByTimestampDescending(Util.getObjectID(node), 1, 2).then(getLastLocations);
 
             if (x == undefined)
                 return Promise.resolve();

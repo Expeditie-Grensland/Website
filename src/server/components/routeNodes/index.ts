@@ -2,6 +2,7 @@ import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID 
 import { ColorHelper } from '../../helpers/colorHelper';
 import { Util } from '../documents/util';
 import { Documents } from '../documents/new';
+import { LocationDocument, LocationModel } from '../locations/model';
 
 export namespace RouteNodes {
     export const create = (node: RouteNode): Promise<RouteNodeDocument> => {
@@ -23,15 +24,21 @@ export namespace RouteNodes {
     export const getByIds = (ids: string[]): Promise<RouteNodeDocument[]> =>
         RouteNodeModel.find({ _id: { $in: ids } }).exec();
 
-    // TODO: Ensure not null
     export const populatePersons = (node: RouteNodeOrID): Promise<RouteNodeDocument> =>
         getDocument(node)
             .then(Documents.ensureNotNull)
             .then(node => node.populate('persons').execPopulate());
 
-    export const setEdges = (edges: RouteEdge[]) => (node: RouteNodeOrID): Promise<RouteNodeDocument | null> =>
+    export const setEdges = (node: RouteNodeOrID, edges: RouteEdge[]): Promise<RouteNodeDocument | null> =>
         RouteNodeModel.findByIdAndUpdate(
             Util.getObjectID(node),
             { edges: edges },
             { new: true }).exec();
+
+    export const getLocationsSortedByTimestampDescending = (node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
+        LocationModel.find({ node: Util.getObjectID(node) })
+            .sort({ timestamp: 'desc' })
+            .skip(skip)
+            .limit(limit)
+            .exec();
 }

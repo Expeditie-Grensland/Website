@@ -32,7 +32,7 @@ export namespace Sockets {
             let skip = 100 * (2 ** batchN - 1);
             let count = 100 * 2 ** batchN;
 
-            return Locations.getInExpeditieSortedByVisualArea(expeditie, skip, count)
+            return Expedities.getLocationsSortedByVisualArea(expeditie, skip, count)
                 .then(batch => {
                     io.emit(SocketIDs.GET_LOCATIONS, ++batchN, batch);
                     if (batch.length == count)

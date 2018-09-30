@@ -3,11 +3,10 @@ import { Routes } from '../routes';
 import { Util } from '../documents/util';
 import { Location, LocationDocument, LocationModel, LocationOrID } from './model';
 import { RouteOrID } from '../routes/model';
-import { RouteNodeDocument, RouteNodeOrID } from '../routenodes/model';
+import { RouteNodeDocument } from '../routeNodes/model';
 import { PersonOrID } from '../people/model';
-import { ExpeditieOrID } from '../expedities/model';
-import { Expedities } from '../expedities';
 import { Documents } from '../documents/new';
+import * as R from 'ramda';
 
 export namespace Locations {
     export const getById = (id: string): Promise<LocationDocument | null> =>
@@ -16,25 +15,27 @@ export namespace Locations {
     export const getDocument = (location: LocationOrID): Promise<LocationDocument | null> =>
         Util.getDocument(getById)(location);
 
-    const _setCurrentNodeIfUndefined = (route: RouteOrID) => (location: Location): Promise<Location> => {
+    const _setCurrentNodeIfUndefined = (location: Location, route: RouteOrID): Promise<Location> => {
         if (location.node !== undefined)
             return Promise.resolve(location);
 
         return Routes.getDocument(route)
             .then(Documents.ensureNotNull)
-            .then(Routes.getCurrentNodeWithPerson(location.person))
+            .then(Routes.getCurrentNodeByPersonR(R.__, location.person))
             .then(Documents.ensureNotNull)
             .then(node => location.node = Util.getObjectID(node))
             .then(() => location);
     };
 
+    const _setCurrentNodeIfUndefinedR = R.curry(_setCurrentNodeIfUndefined);
+
     export const create = (location: Location, route: RouteOrID): Promise<LocationDocument> =>
         Promise.resolve(location)
-            .then(_setCurrentNodeIfUndefined(route))
+            .then(_setCurrentNodeIfUndefinedR(R.__, route))
             .then(LocationModel.create)
             .then(LocationHelper.setVisualArea);
 
-    const _setCurrentNodeIfUndefinedMany = (route: RouteOrID) => (locations: Location[]): Promise<Location[]> =>
+    const _setCurrentNodeIfUndefinedMany = (locations: Location[], route: RouteOrID): Promise<Location[]> =>
         Routes.getDocument(route)
             .then(Documents.ensureNotNull)
             .then(route => {
@@ -45,7 +46,7 @@ export namespace Locations {
                     let routeNode: Promise<RouteNodeDocument> | undefined = personIdToRouteNodeMap.get(Util.getObjectID(person));
 
                     if (!routeNode) {
-                        routeNode = Routes.getCurrentNodeWithPerson(person)(route).then(Documents.ensureNotNull);
+                        routeNode = Routes.getCurrentNodeByPerson(route, person).then(Documents.ensureNotNull);
                         personIdToRouteNodeMap.set(Util.getObjectID(person), routeNode);
                     }
 
@@ -65,9 +66,11 @@ export namespace Locations {
                 return Promise.all(locations.map(_setCurrentNodeIfUndefinedCached));
             });
 
+    const _setCurrentNodeIfUndefinedManyR = R.curry(_setCurrentNodeIfUndefinedMany);
+
     export const createMany = (locations: Location[], route: RouteOrID): Promise<LocationDocument[]> =>
         Promise.resolve(locations)
-            .then(_setCurrentNodeIfUndefinedMany(route))
+            .then(_setCurrentNodeIfUndefinedManyR(R.__, route))
             .then(locations => LocationModel.insertMany(locations))
             .then(LocationHelper.setVisualAreas);
 
@@ -77,30 +80,10 @@ export namespace Locations {
             .then(location => location.remove())
             .then(() => undefined);
 
-    export const setVisualArea = (visualArea: number) => (location: LocationOrID): Promise<LocationDocument | null> =>
+    export const setVisualArea = (location: LocationOrID, visualArea: number): Promise<LocationDocument | null> =>
         LocationModel.findByIdAndUpdate(
             Util.getObjectID(location),
             { visualArea: visualArea },
             { new: true })
-            .exec();
-
-    export const getInRoute = (route: RouteOrID): Promise<LocationDocument[]> =>
-        Routes.getNodes(route)
-            .then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } }).exec());
-
-    export const getInExpeditieSortedByVisualArea = (expeditie: ExpeditieOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
-        Expedities.getRoute(expeditie)
-            .then(Routes.getNodes)
-            .then(nodes => LocationModel.find({ node: { $in: Util.getObjectIDs(nodes) } })
-                .sort({ visualArea: 'desc' })
-                .skip(skip)
-                .limit(limit)
-                .exec());
-
-    export const getInNodeByTimestampDescending = (node: RouteNodeOrID, skip: number, limit: number): Promise<LocationDocument[]> =>
-        LocationModel.find({ node: Util.getObjectID(node) })
-            .sort({ timestamp: 'desc' })
-            .skip(skip)
-            .limit(limit)
             .exec();
 }
