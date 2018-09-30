@@ -43,7 +43,7 @@ export namespace Expedities {
     };
 
     const _addExpeditieToPersons = (persons: PersonOrID[], expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
-        Promise.all(persons.map(People.addExpeditie(expeditie)))
+        Promise.all(persons.map(People.addExpeditieR(R.__, expeditie)))
             .then(() => getDocument(expeditie).then(Documents.ensureNotNull));
 
     const _addExpeditieToPersonsR = R.curry(_addExpeditieToPersons);
@@ -93,7 +93,7 @@ export namespace Expedities {
     export const addParticipantsR = R.curry(addParticipants);
 
     const _removeExpeditieFromPersons = (expeditie: ExpeditieOrID, persons: PersonOrID[]): Promise<ExpeditieDocument> =>
-        Promise.all(persons.map(People.removeExpeditie(expeditie)))
+        Promise.all(persons.map(People.removeExpeditieR(R.__, expeditie)))
             .then(() => getDocument(expeditie))
             .then(Documents.ensureNotNull);
 

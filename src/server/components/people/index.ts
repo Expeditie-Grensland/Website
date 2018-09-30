@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import { Util } from '../documents/util';
 import { Person, PersonDocument, PersonModel, PersonOrID } from './model';
 import { ExpeditieOrID } from '../expedities/model';
@@ -18,7 +19,7 @@ export namespace People {
     export const getByLdapId = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findOne({ ldapId: id }).exec();
 
-    export const addExpeditie = (expeditie: ExpeditieOrID) => (person: PersonOrID): Promise<PersonDocument | null> =>
+    export const addExpeditie = (person: PersonOrID, expeditie: ExpeditieOrID): Promise<PersonDocument | null> =>
         PersonModel.findByIdAndUpdate(
             Util.getObjectID(person),
             {
@@ -29,7 +30,9 @@ export namespace People {
             { new: true }
         ).exec();
 
-    export const removeExpeditie = (expeditie: ExpeditieOrID) => (person: PersonOrID): Promise<PersonDocument | null> =>
+    export const addExpeditieR = R.curry(addExpeditie);
+
+    export const removeExpeditie = (person: PersonOrID, expeditie: ExpeditieOrID): Promise<PersonDocument | null> =>
         PersonModel.findByIdAndUpdate(
             Util.getObjectID(person),
             {
@@ -39,4 +42,6 @@ export namespace People {
             },
             { new: true }
         ).exec();
+
+    export const removeExpeditieR = R.curry(removeExpeditie);
 }
