@@ -2,17 +2,22 @@ dist: trusty
 sudo: false
 
 language: node_js
-node_js:
-- '10'
+node_js: '10'
 
-cache:
-  directories:
-  - "node_modules"
+before_script: npm install -g gulp-cli
 
+script: gulp build:prod
 
-before_script:
-- npm install -g gulp-cli
+before_deploy:
+- openssl aes-256-cbc -K $encrypted_1a22cbd60c89_key -iv $encrypted_1a22cbd60c89_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
+- eval "$(ssh-agent -s)"
+- chmod 600 /tmp/deploy_rsa
+- ssh-add /tmp/deploy_rsa
+- echo 'expeditiegrensland.nl,195.201.128.114 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDagqruDZ4T2EIrrxfkwBkLqa2BQIUUySBItz36JOEn5hasJ9C/muZYs0z/0r3LMWwtCa3i0NI4J5AbPY4FtTyLhCPkBVdqkc/UvFsch3mjaQaGNN6qGrwAbe+TrF/xExUQt0d1cOihCg/ecWw/dihCT8H94w/fpt07KO6CzPZc4v6j7kPG81zZt4nU2o7lJiPG59Sd1s2Bvy+WCeeZYFT6+n4d9NQiS2X8tsaQlTSbvYmS+aMQqi68u93DeX/LOJvWlzLPsgSipvhFqHbOw8a510yAzUyeSCPvkj8lI1/vzHqJBvnHfEgf0b3DaXfmiwhHKbiWVYdTpLAQgVF1SW1V' >> $HOME/.ssh/known_hosts
 
-script:
-- gulp build:prod
-- tar -zcvf dist.tgz dist
+deploy:
+  provider: script
+  script: rsync -r --delete-after $TRAVIS_BUILD_DIR/dist/. nodejs@expeditiegrensland.nl:/var/www/expeditiegrensland.nl/dist-new/ && ssh nodejs@expeditiegrensland.nl sh /var/www/expeditiegrensland.nl/update.sh
+  skip_cleanup: true
+  on:
+    branch: release
