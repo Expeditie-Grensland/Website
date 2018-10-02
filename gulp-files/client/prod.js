@@ -18,4 +18,7 @@ module.exports = (gulp, plugins) => () =>
         }))
         .pipe(plugins.buffer())
         .pipe(plugins.uglify())
-        .pipe(gulp.dest('dist/public/scripts'));
+        .pipe(plugins.rev())
+        .pipe(gulp.dest('dist/public/scripts/'))
+        .pipe(plugins.rev.manifest())
+        .pipe(gulp.dest('dist/public/scripts/'));

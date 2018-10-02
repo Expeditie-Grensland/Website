@@ -3,7 +3,6 @@ module.exports = (gulp, plugins) => {
 
     return () =>
         project.src()
-            .pipe(plugins.newer({ dest: 'dist/server/', ext: '.js' }))
             .pipe(project())
             .js
             .pipe(gulp.dest('dist/server/'));
