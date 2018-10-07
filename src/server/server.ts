@@ -6,7 +6,6 @@ import { Setup } from './setup';
 import { Router } from './routes';
 import { config } from './helpers/configHelper';
 import { SocketHandler } from './sockets/handler';
-import { ColorHelper } from './helpers/colorHelper';
 
 import 'source-map-support/register';
 
@@ -26,7 +25,6 @@ Setup.setupDatabase(app, dev);
 SocketHandler.bindHandlers(io);
 
 app.use('/', Router(dev));
-ColorHelper.init();
 
 Setup.startServer(server, config.port);
 

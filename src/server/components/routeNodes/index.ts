@@ -1,17 +1,12 @@
 import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from './model';
-import { ColorHelper } from '../../helpers/colorHelper';
 import { Util } from '../documents/util';
 import { LocationDocument, LocationModel } from '../locations/model';
 import { SocketTypes } from '../../sockets/types';
 import * as mongoose from 'mongoose';
 
 export namespace RouteNodes {
-    export const create = (node: RouteNode): Promise<RouteNodeDocument> => {
-        if (node.color === undefined)
-            node.color = ColorHelper.generateColorForRouteNode(node);
-
-        return RouteNodeModel.create(node);
-    };
+    export const create = (node: RouteNode): Promise<RouteNodeDocument> =>
+        RouteNodeModel.create(node);
 
     export const getAll = (): Promise<RouteNodeDocument[]> =>
         RouteNodeModel.find({}).exec();
@@ -47,7 +42,7 @@ export namespace RouteNodes {
             return <SocketTypes.RouteNode>{
                 id: i++,
                 _id: mongoose.Types.ObjectId(node._id).toHexString(),
-                color: node.color || '#000'
+                color: '#000'
             };
         });
     };
