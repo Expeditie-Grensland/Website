@@ -17,10 +17,19 @@ export interface GeoNodeDocument extends GeoNode, mongoose.Document {
 }
 
 const geoNodeSchema = new mongoose.Schema({
-    expeditieId: { type: mongoose.Schema.Types.ObjectId, ref: ExpeditieId },
-    timeFrom: { type: Number, default: 0 },
+    expeditieId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: ExpeditieId
+    },
+    timeFrom: {
+        type: Number,
+        default: 0
+    },
     timeTill: Number,
-    peopleIds: [{ type: mongoose.Schema.Types.ObjectId, ref: PersonId }]
+    peopleIds: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: PersonId
+    }]
 });
 
 export const geoNodeModel = mongoose.model<GeoNodeDocument>(GeoNodeId, geoNodeSchema);

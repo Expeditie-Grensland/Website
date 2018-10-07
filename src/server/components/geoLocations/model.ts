@@ -8,19 +8,64 @@ export interface GeoLocation {
     _id?: mongoose.Types.ObjectId;
     expeditieId: mongoose.Types.ObjectId;
     personId: mongoose.Types.ObjectId;
-    timestamp: number;
-    timezone: string;
+    time: number;
+    timezone?: string;
+    latitude: number;
+    longitude: number;
+    altitude?: number;
+    horizontalAccuracy?: number;
+    verticalAccuracy?: number;
+    speed?: number;
+    speedAccuracy?: number;
+    bearing?: number;
+    bearingAccuracy?: number;
+    visualArea?: number;
 }
 
 export interface GeoLocationDocument extends GeoLocation, mongoose.Document {
     _id: mongoose.Types.ObjectId;
+    timezone: string;
+    visualArea: number;
 }
 
 const geoLocationSchema = new mongoose.Schema({
-    expeditieId: { type: mongoose.Schema.Types.ObjectId, ref: ExpeditieId },
-    personId: { type: mongoose.Schema.Types.ObjectId, ref: PersonId },
-    timestamp: Number,
-    timezone: String
+    expeditieId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: ExpeditieId
+    },
+    personId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: PersonId
+    },
+    time: {
+        type: Number,
+        required: true,
+        // @ts-ignore
+        set: (t: number) => t > 1e10 ? t / 1000 : t
+    },
+    timezone: {
+        type: String,
+        default: 'Europe/Amsterdam'
+    },
+    latitude: {
+        type: Number,
+        required: true
+    },
+    longitude: {
+        type: Number,
+        required: true
+    },
+    altitude: Number,
+    horizontalAccuracy: Number,
+    verticalAccuracy: Number,
+    speed: Number,
+    speedAccuracy: Number,
+    bearing: Number,
+    bearingAccuracy: Number,
+    visualArea: {
+        type: Number,
+        default: Number.POSITIVE_INFINITY
+    }
 });
 
 export const geoLocationModel = mongoose.model<GeoLocationDocument>(GeoLocationId, geoLocationSchema);

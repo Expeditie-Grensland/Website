@@ -12,6 +12,9 @@ export namespace Locations {
     export const getById = (id: string): Promise<LocationDocument | null> =>
         LocationModel.findById(id).exec();
 
+    export const getAll = (): Promise<LocationDocument[]> =>
+        LocationModel.find({}).exec();
+
     export const getDocument = (location: LocationOrID): Promise<LocationDocument | null> =>
         Util.getDocument(getById)(location);
 

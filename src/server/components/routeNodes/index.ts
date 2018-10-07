@@ -13,6 +13,9 @@ export namespace RouteNodes {
         return RouteNodeModel.create(node);
     };
 
+    export const getAll = (): Promise<RouteNodeDocument[]> =>
+        RouteNodeModel.find({}).exec();
+
     export const getDocument = (routenode: RouteNodeOrID): Promise<RouteNodeDocument | null> =>
         Util.getDocument(getById)(routenode);
 
