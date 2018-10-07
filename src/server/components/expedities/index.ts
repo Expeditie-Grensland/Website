@@ -5,7 +5,7 @@ import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
 import { RouteDocument, RouteOrID } from '../routes/model';
-import { Location, LocationDocument, LocationModel } from '../locations/model';
+import { Location, LocationDocument } from '../locations/model';
 import * as i18next from 'i18next';
 import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { MediaFileUse } from '../mediaFiles/model';
@@ -13,6 +13,8 @@ import * as mongoose from 'mongoose';
 import { Documents } from '../documents/new';
 import { ExpeditieId } from './id';
 import * as R from 'ramda';
+import { geoLocationModel } from '../geoLocations/model';
+import { SocketTypes } from '../../sockets/types';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -178,6 +180,28 @@ export namespace Expedities {
     export const getLocations = (expeditie: ExpeditieOrID): Promise<LocationDocument[]> =>
         getRoute(expeditie)
             .then(Routes.getLocations);
+
+    export const getLocationCount = (expeditie: ExpeditieOrID): Promise<number> =>
+        geoLocationModel.count({ expeditieId: Util.getObjectID(expeditie) }).exec();
+
+    export const _getMinMaxLatLon = (expeditie: ExpeditieOrID, latLon: 'latitude' | 'longitude', minMax: 1 | -1): Promise<number> =>
+        geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) })
+            .select({ [latLon]: 1 })
+            .sort({ [latLon]: minMax })
+            .limit(1)
+            .exec()
+            .then(locations => locations[0][latLon]);
+
+    export const getBoundingBox = async (expeditie: ExpeditieOrID): Promise<SocketTypes.BoundingBox> => {
+        const [minLat, maxLat, minLon, maxLon] = await Promise.all([
+            _getMinMaxLatLon(expeditie, 'latitude', 1), // Minimum latitude
+            _getMinMaxLatLon(expeditie, 'latitude', -1), // Maximum latitude
+            _getMinMaxLatLon(expeditie, 'longitude', 1), // Minimum longitude
+            _getMinMaxLatLon(expeditie, 'longitude', -1) // Maximum longitude
+        ]);
+
+        return <SocketTypes.BoundingBox>{ minLat, maxLat, minLon, maxLon };
+    };
 
     export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
         const usage: MediaFileUse = {

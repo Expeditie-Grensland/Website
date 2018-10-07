@@ -1,7 +1,8 @@
 import { GeoNode, GeoNodeDocument, geoNodeModel, GeoNodeOrId } from './model';
 import * as mongoose from 'mongoose';
 import { Documents } from '../documents/new';
-import { ExpeditieModel } from '../expedities/model';
+import { ExpeditieModel, ExpeditieOrID } from '../expedities/model';
+import { Util } from '../documents/util';
 
 export namespace GeoNodes {
     export const getById = (id: mongoose.Types.ObjectId): Promise<GeoNodeDocument | null> =>
@@ -9,6 +10,9 @@ export namespace GeoNodes {
 
     export const getByIds = (ids: mongoose.Types.ObjectId[]): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({ _id: { $in: ids } }).exec();
+
+    export const getByExpeditie = (expeditie: ExpeditieOrID): Promise<GeoNodeDocument[]> =>
+        geoNodeModel.find({ expeditieId: Util.getObjectID(expeditie) }).exec();
 
     export const getAll = (): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({}).exec();

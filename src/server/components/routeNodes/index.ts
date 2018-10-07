@@ -35,15 +35,4 @@ export namespace RouteNodes {
             .skip(skip)
             .limit(limit)
             .exec();
-
-    export const getSocketNodes = (nodes: RouteNodeDocument[]): SocketTypes.RouteNode[] => {
-        let i = 0;
-        return nodes.map(node => {
-            return <SocketTypes.RouteNode>{
-                id: i++,
-                _id: mongoose.Types.ObjectId(node._id).toHexString(),
-                color: '#000'
-            };
-        });
-    };
 }

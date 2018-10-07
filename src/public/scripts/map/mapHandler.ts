@@ -9,9 +9,10 @@ export namespace MapHandler {
 
     export let map: mapboxGl.Map;
 
-    const nodeMap: { [key: number]: SocketTypes.RouteNode } = {};
-    const locationMap: { [key: number]: SocketTypes.Location } = {};
-    const locationNodeMap: { [key: number]: number[] } = {}; //Map RouteNode ids to location ids.
+    const gNodes: SocketTypes.Node[] = [];
+    const gLocations: SocketTypes.Location[][] = [];
+    // const locationMap: { [key: number]: SocketTypes.Location } = {};
+    // const locationNodeMap: { [key: number]: number[] } = {}; //Map RouteNode ids to location ids.
 
     let mapStyleLoaded = false;
 
@@ -34,15 +35,14 @@ export namespace MapHandler {
         });
     }
 
-    export function addNodes(nodes: SocketTypes.RouteNode[]) {
+    export function addNodes(nodes: SocketTypes.Node[]) {
         for (let node of nodes) {
-            nodeMap[node.id] = node;
-
-            locationNodeMap[node.id] = [];
+            const nodeId = gNodes.push(node) - 1;
+            gLocations.push([]);
 
             //TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
             map.addLayer({
-                id: LOCATION_SOURCE + node.id,
+                id: LOCATION_SOURCE + nodeId,
                 type: 'line',
                 source: LOCATION_SOURCE,
                 paint: {
@@ -50,20 +50,21 @@ export namespace MapHandler {
                     'line-opacity': 1,
                     'line-width': 3
                 },
-                filter: ['==', 'node-id', node.id]
+                filter: ['==', 'node-id', nodeId]
             });
         }
     }
 
     export function addLocations(locations: SocketTypes.Location[]) {
-        for (let location of locations) {
-            const nodeLocations = locationNodeMap[location[1]];
+        for (let location of locations)
+            for (let i = 0; i < gNodes.length; i++)
+                if (gNodes[i].personIds.indexOf(location[1]) > -1 &&
+                    location[2] >= gNodes[i].timeFrom &&
+                    location[2] < gNodes[i].timeTill) {
 
-            nodeLocations.push(location[0]);
-
-            locationMap[location[0]] = location;
-            locationNodeMap[location[1]] = nodeLocations;
-        }
+                    gLocations[i].push(location);
+                    break;
+                }
 
         if (mapStyleLoaded) updateMap();
     }
@@ -79,35 +80,22 @@ export namespace MapHandler {
     export function generateLocationsGeoJSON(): geoJson.FeatureCollection<geoJson.LineString> {
         const features: geoJson.Feature<geoJson.LineString>[] = [];
 
-        for (let key of Object.keys(nodeMap)) {
-            const node = nodeMap[<any>key];
-
-            const coords: mapboxGl.LngLat[] = [];
-            const nodeLocations = locationNodeMap[node.id]
-                .map(l => locationMap[l])
-                .sort((l1, l2) => l1[2] - l2[2]);
-
-            for (let location of nodeLocations) {
-                coords.push(new mapboxGl.LngLat(location[4], location[3]));
-            }
-
-            if (coords.length >= 2) {
+        for (let i = 0; i < gNodes.length; i++)
+            if (gLocations[i].length > 1)
                 features.push({
                     type: 'Feature',
                     properties: {
-                        'node-id': node.id
+                        'node-id': i
                     },
                     geometry: {
                         type: 'LineString',
-                        coordinates: coords.map(coord => [coord.lng, coord.lat])
+                        coordinates: gLocations[i].sort((l1, l2) => l1[2] - l2[2]).map(l => [l[4], l[3]])
                     }
                 });
-            }
-        }
 
         return {
             type: 'FeatureCollection',
-            features: features
+            features
         };
     }
 
