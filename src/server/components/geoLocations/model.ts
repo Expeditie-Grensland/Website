@@ -66,7 +66,19 @@ const geoLocationSchema = new mongoose.Schema({
         type: Number,
         default: Number.POSITIVE_INFINITY
     }
-});
+})
+    .index({
+        expeditieId: 1,
+        visualArea: -1
+    })
+    .index({
+        expeditieId: 1,
+        latitude: 1
+    })
+    .index({
+        expeditieId: 1,
+        longitude: 1
+    });
 
 export const geoLocationModel = mongoose.model<GeoLocationDocument>(GeoLocationId, geoLocationSchema);
 
