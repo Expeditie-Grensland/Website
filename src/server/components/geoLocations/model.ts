@@ -40,7 +40,6 @@ const geoLocationSchema = new mongoose.Schema({
     time: {
         type: Number,
         required: true,
-        // @ts-ignore
         set: (t: number) => t > 1e10 ? t / 1000 : t
     },
     timezone: {

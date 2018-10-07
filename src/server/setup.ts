@@ -19,6 +19,7 @@ import { PersonDocument } from './components/people/model';
 import { router as apiRouter } from './api';
 import { MediaFileHelper } from './components/mediaFiles';
 import flash = require('connect-flash');
+import { GeoNodes } from './components/geoNodes';
 
 export namespace Setup {
     export function startServer(server: http.Server, port: number) {

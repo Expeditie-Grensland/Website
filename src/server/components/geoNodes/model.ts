@@ -7,9 +7,9 @@ import { PersonId } from '../people/id';
 export interface GeoNode {
     _id?: mongoose.Types.ObjectId;
     expeditieId: mongoose.Types.ObjectId;
-    timeFrom: number;
-    timeTill: number;
-    peopleIds: mongoose.Types.ObjectId[];
+    personIds: mongoose.Types.ObjectId[];
+    timeFrom?: number;
+    timeTill?: number;
 }
 
 export interface GeoNodeDocument extends GeoNode, mongoose.Document {
@@ -19,17 +19,24 @@ export interface GeoNodeDocument extends GeoNode, mongoose.Document {
 const geoNodeSchema = new mongoose.Schema({
     expeditieId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: ExpeditieId
+        ref: ExpeditieId,
+        required: true
     },
+    personIds: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: PersonId,
+        required: true
+    }],
     timeFrom: {
         type: Number,
-        default: 0
+        default: 0,
+        set: (t: number) => t > 1e10 ? t / 1000 : t
     },
-    timeTill: Number,
-    peopleIds: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: PersonId
-    }]
+    timeTill: {
+        type: Number,
+        default: Number.POSITIVE_INFINITY,
+        set: (t: number) => t > 1e10 ? t / 1000 : t
+    }
 });
 
 export const geoNodeModel = mongoose.model<GeoNodeDocument>(GeoNodeId, geoNodeSchema);
