@@ -25,7 +25,7 @@ export namespace Documents {
     export const ensureNotNull = <T extends mongoose.Document>(input: T | null | undefined): T => {
         if (input != null)
             return input;
-        throw new Error('Document was unexpectedly not found, please try again.')
+        throw new Error('Document was unexpectedly not found, please try again.');
     };
 
     export const getDocuments = <T extends mongoose.Document>(getByIds: ((id: mongoose.Types.ObjectId[]) => Promise<T[]>)) =>

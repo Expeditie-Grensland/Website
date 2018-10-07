@@ -1,7 +1,6 @@
 import { RouteEdge, RouteNode, RouteNodeDocument, RouteNodeModel, RouteNodeOrID } from './model';
 import { ColorHelper } from '../../helpers/colorHelper';
 import { Util } from '../documents/util';
-import { Documents } from '../documents/new';
 import { LocationDocument, LocationModel } from '../locations/model';
 import { SocketTypes } from '../../sockets/types';
 import * as mongoose from 'mongoose';
@@ -25,11 +24,6 @@ export namespace RouteNodes {
 
     export const getByIds = (ids: string[]): Promise<RouteNodeDocument[]> =>
         RouteNodeModel.find({ _id: { $in: ids } }).exec();
-
-    export const populatePersons = (node: RouteNodeOrID): Promise<RouteNodeDocument> =>
-        getDocument(node)
-            .then(Documents.ensureNotNull)
-            .then(node => node.populate('persons').execPopulate());
 
     export const setEdges = (node: RouteNodeOrID, edges: RouteEdge[]): Promise<RouteNodeDocument | null> =>
         RouteNodeModel.findByIdAndUpdate(
