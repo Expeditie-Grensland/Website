@@ -1,4 +1,5 @@
 import * as socketio from 'socket.io';
+import * as R from 'ramda';
 
 import { Expedities } from '../components/expedities';
 import { SocketIds } from './ids';
@@ -8,6 +9,7 @@ import { ExpeditieOrID } from '../components/expedities/model';
 import { GeoNodes } from '../components/geoNodes';
 import { People } from '../components/people';
 import { GeoLocationDocument, geoLocationModel } from '../components/geoLocations/model';
+import { GeoNodeDocument } from '../components/geoNodes/model';
 
 export namespace Sockets {
     export const getExpeditie = (socket: socketio.Socket) => async (expeditieName: string): Promise<void> => {
@@ -47,15 +49,49 @@ export namespace Sockets {
 
     const _getNodes = async (expeditie: ExpeditieOrID, personMap: Map<string, number>): Promise<SocketTypes.Node[]> => {
         const geoNodes = await GeoNodes.getByExpeditie(expeditie); // TODO: reverse lookup by implementing nodes in ExpeditieDocument
+        const colorsIds = _getNodeColors(geoNodes);
 
+        let n = 0;
         return geoNodes.map(node => {
             return <SocketTypes.Node>{
                 personIds: node.personIds.map(p => personMap.get(p.toHexString())),
                 timeFrom: node.timeFrom,
-                timeTill: node.timeTill,
-                color: '#000'
+                timeTill: node.timeTill != Number.POSITIVE_INFINITY ? node.timeTill : 1e10,
+                color: COLORS[colorsIds[n++]]
             };
         });
+    };
+
+    const COLORS = [
+        '#2962FF',
+        '#D50000',
+        '#00C853',
+        '#FF6D00',
+        '#C51162',
+        '#AA00FF',
+        '#AEEA00',
+        '#00BFA5',
+        '#00B8D4'
+    ];
+
+    const _getNodeColors = (nodes: GeoNodeDocument[]): number[] => {
+        const colors: number[] = [];
+
+        for (let nodeId = 0; nodeId < nodes.length; nodeId++) {
+            let color = 0;
+
+            for (let prevId = 0; prevId < colors.length; prevId++) {
+                if (R.equals(nodes[nodeId].personIds.sort(), nodes[prevId].personIds.sort())) {
+                    color = colors[prevId];
+                    break;
+                }
+                color = Math.max(color, colors[prevId] + 1);
+            }
+
+            colors.push(color);
+        }
+
+        return colors;
     };
 
     const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>) => {
@@ -80,7 +116,13 @@ export namespace Sockets {
 
     const _getLocations = (expeditie: ExpeditieOrID, personMap: Map<string, number>, skip: number, limit: number): Promise<SocketTypes.Location[]> => {
         let i = skip;
-        return geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) }).select({ _id: 0, time: 1, latitude: 1, longitude: 1, personId: 1 })
+        return geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) }).select({
+            _id: 0,
+            time: 1,
+            latitude: 1,
+            longitude: 1,
+            personId: 1
+        })
             .sort({ visualArea: 'desc' }).skip(skip).limit(limit).exec()
             .then(locations => locations.map((location: GeoLocationDocument) =>
                 <SocketTypes.Location>[

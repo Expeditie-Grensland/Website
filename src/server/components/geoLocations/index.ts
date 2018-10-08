@@ -10,7 +10,7 @@ export namespace GeoLocations {
         geoLocationModel.find({ _id: { $in: ids } }).exec();
 
     export const getAll = (): Promise<GeoLocationDocument[]> =>
-        geoLocationModel.find({}).exec();
+        geoLocationModel.find({}).sort({ _id: 1 }).exec();
 
     export const getDocument: (loc: GeoLocationOrId) => Promise<GeoLocationDocument | null> = Documents.getDocument(getById);
 

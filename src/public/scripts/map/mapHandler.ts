@@ -11,8 +11,6 @@ export namespace MapHandler {
 
     const gNodes: SocketTypes.Node[] = [];
     const gLocations: SocketTypes.Location[][] = [];
-    // const locationMap: { [key: number]: SocketTypes.Location } = {};
-    // const locationNodeMap: { [key: number]: number[] } = {}; //Map RouteNode ids to location ids.
 
     let mapStyleLoaded = false;
 
@@ -40,7 +38,7 @@ export namespace MapHandler {
             const nodeId = gNodes.push(node) - 1;
             gLocations.push([]);
 
-            //TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
+            // TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
             map.addLayer({
                 id: LOCATION_SOURCE + nodeId,
                 type: 'line',
@@ -57,7 +55,7 @@ export namespace MapHandler {
 
     export function addLocations(locations: SocketTypes.Location[]) {
         for (let location of locations)
-            for (let i = 0; i < gNodes.length; i++)
+            for (let i = 0; i < gNodes.length; i++) {
                 if (gNodes[i].personIds.indexOf(location[1]) > -1 &&
                     location[2] >= gNodes[i].timeFrom &&
                     location[2] < gNodes[i].timeTill) {
@@ -65,6 +63,7 @@ export namespace MapHandler {
                     gLocations[i].push(location);
                     break;
                 }
+            }
 
         if (mapStyleLoaded) updateMap();
     }

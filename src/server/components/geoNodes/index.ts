@@ -15,7 +15,7 @@ export namespace GeoNodes {
         geoNodeModel.find({ expeditieId: Util.getObjectID(expeditie) }).exec();
 
     export const getAll = (): Promise<GeoNodeDocument[]> =>
-        geoNodeModel.find({}).exec();
+        geoNodeModel.find({}).sort({ _id: 1 }).exec();
 
     export const getDocument: (node: GeoNodeOrId) => Promise<GeoNodeDocument | null> = Documents.getDocument(getById);
 

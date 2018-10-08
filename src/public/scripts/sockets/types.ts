@@ -11,7 +11,7 @@ export namespace SocketTypes {
     export type PersonMap = [string, number][];
 
     /**
-     * [id, person, time, latitude, longitude]
+     * [id, person, timestamp, latitude, longitude]
      */
     export type Location = [number, number, number, number, number];
 
