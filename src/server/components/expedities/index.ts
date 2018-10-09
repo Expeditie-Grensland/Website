@@ -184,25 +184,6 @@ export namespace Expedities {
     export const getLocationCount = (expeditie: ExpeditieOrID): Promise<number> =>
         geoLocationModel.count({ expeditieId: Util.getObjectID(expeditie) }).exec();
 
-    export const _getMinMaxLatLon = (expeditie: ExpeditieOrID, latLon: 'latitude' | 'longitude', minMax: 1 | -1): Promise<number> =>
-        geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) })
-            .select({ [latLon]: 1 })
-            .sort({ [latLon]: minMax })
-            .limit(1)
-            .exec()
-            .then(locations => locations[0][latLon]);
-
-    export const getBoundingBox = async (expeditie: ExpeditieOrID): Promise<SocketTypes.BoundingBox> => {
-        const [minLat, maxLat, minLon, maxLon] = await Promise.all([
-            _getMinMaxLatLon(expeditie, 'latitude', 1), // Minimum latitude
-            _getMinMaxLatLon(expeditie, 'latitude', -1), // Maximum latitude
-            _getMinMaxLatLon(expeditie, 'longitude', 1), // Minimum longitude
-            _getMinMaxLatLon(expeditie, 'longitude', -1) // Maximum longitude
-        ]);
-
-        return <SocketTypes.BoundingBox>{ minLat, maxLat, minLon, maxLon };
-    };
-
     export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
         const usage: MediaFileUse = {
             model: ExpeditieId,

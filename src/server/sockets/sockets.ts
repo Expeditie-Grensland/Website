@@ -19,7 +19,7 @@ export namespace Sockets {
         const [nodes, count, box] = await Promise.all([
             _getNodes(expeditie, personMap),
             Expedities.getLocationCount(expeditie),
-            Expedities.getBoundingBox(expeditie)
+            _getBoundingBox(expeditie)
         ]);
 
         const sInfo = <SocketTypes.Info>{
@@ -92,6 +92,20 @@ export namespace Sockets {
         }
 
         return colors;
+    };
+
+    const _getBoundingBox = async (expeditie: ExpeditieOrID): Promise<SocketTypes.BoundingBox> => {
+        const [minLat, maxLat, minLon, maxLon] = await Promise.all((<['latitude' | 'longitude', 1 | -1][]>[
+            ['latitude', 1], ['latitude', -1], ['longitude', 1], ['longitude', -1]
+        ]).map(([latLon, minMax]) =>
+            geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) })
+                .select({ [latLon]: 1 })
+                .sort({ [latLon]: minMax })
+                .limit(1)
+                .exec()
+                .then(locations => locations[0][latLon])));
+
+        return <SocketTypes.BoundingBox>{ minLat, maxLat, minLon, maxLon };
     };
 
     const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>) => {
