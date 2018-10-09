@@ -21,8 +21,14 @@ export namespace Util {
     export const getObjectID = <T extends mongoose.Document>(doc: DocumentOrID<T>): string =>
         isObjectID(doc) ? doc : _unwrapDocumentId(doc._id);
 
+    export const getRealObjectID = <T extends mongoose.Document>(doc: DocumentOrID<T>): mongoose.Types.ObjectId =>
+        isObjectID(doc) ? mongoose.Types.ObjectId(doc) : mongoose.Types.ObjectId(doc._id);
+
     export const getObjectIDs = <T extends mongoose.Document>(docs: DocumentOrID<T>[]): string[] =>
         docs.length < 1 ? [] : docs.map(getObjectID);
+
+    export const getRealObjectIDs = <T extends mongoose.Document>(docs: DocumentOrID<T>[]): mongoose.Types.ObjectId[] =>
+        docs.length < 1 ? [] : docs.map(getRealObjectID);
 
     export const getDocument = <T extends mongoose.Document>(findById: (id: string) => Promise<T | null>) =>
         (doc: DocumentOrID<T>): Promise<T | null> =>
