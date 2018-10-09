@@ -1,11 +1,9 @@
 import * as mongoose from 'mongoose';
 import { DocumentOrID, reference } from '../documents/util';
-import { RouteOrID } from '../routes/model';
 import { PersonOrID } from '../people/model';
 import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
 import { ExpeditieId } from './id';
 import { PersonId } from '../people/id';
-import { RouteId } from '../routes/id';
 import { GeoNodeId } from '../geoNodes/id';
 import { GeoNodeOrId } from '../geoNodes/model';
 
@@ -24,7 +22,6 @@ const schema = new mongoose.Schema({
     movieUrl: String,
     finished: { type: Boolean, default: false },
     participants: [reference(PersonId)],
-    route: reference(RouteId),
     nodeIds: { type: [mongoose.Schema.Types.ObjectId], ref: GeoNodeId },
     countries: [String],
     backgroundFile: mediaFileEmbeddedSchema,
@@ -44,7 +41,6 @@ export interface Expeditie {
     movieUrl: string;
     finished?: boolean;
     participants: PersonOrID[];
-    route?: RouteOrID;
     nodeIds: GeoNodeOrId;
     countries: string[];
     backgroundFile: MediaFileEmbedded;

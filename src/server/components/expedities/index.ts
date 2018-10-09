@@ -1,11 +1,7 @@
-import { Locations } from '../locations';
 import { People } from '../people';
-import { Routes } from '../routes';
 import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
-import { RouteDocument, RouteOrID } from '../routes/model';
-import { Location, LocationDocument } from '../locations/model';
 import * as i18next from 'i18next';
 import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { MediaFileUse } from '../mediaFiles/model';
@@ -14,7 +10,6 @@ import { Documents } from '../documents/new';
 import { ExpeditieId } from './id';
 import * as R from 'ramda';
 import { geoLocationModel } from '../geoLocations/model';
-import { SocketTypes } from '../../sockets/types';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -34,16 +29,6 @@ export namespace Expedities {
     export const getDocument = (location: ExpeditieOrID): Promise<ExpeditieDocument | null> =>
         Util.getDocument(getById)(location);
 
-    const _createNewRouteIfUndefined = (expeditie: Expeditie): Promise<Expeditie> => {
-        if (expeditie.route !== undefined)
-            return Promise.resolve(expeditie);
-
-        return Routes.create({})
-            .then(route => expeditie.route = Util.getObjectID(route))
-            .catch(err => console.error('Creating route failed!', err))
-            .then(() => expeditie);
-    };
-
     const _addExpeditieToPersons = (persons: PersonOrID[], expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
         Promise.all(persons.map(People.addExpeditieR(R.__, expeditie)))
             .then(() => getDocument(expeditie).then(Documents.ensureNotNull));
@@ -52,7 +37,6 @@ export namespace Expedities {
 
     export const create = (expeditie: Expeditie): Promise<ExpeditieDocument> =>
         Promise.resolve(expeditie)
-            .then(_createNewRouteIfUndefined)
             .then(ExpeditieModel.create)
             .then(_addExpeditieToPersonsR(expeditie.participants));
 
@@ -116,70 +100,6 @@ export namespace Expedities {
                 { new: true }
             ).exec())
             .then(Documents.ensureNotNull);
-
-    export const setRoute = (expeditie: ExpeditieOrID, route: RouteOrID): Promise<ExpeditieDocument> =>
-        getDocument(expeditie)
-            .then(Documents.ensureNotNull)
-            .then(_checkFinished)
-            .then(expeditie => ExpeditieModel.findByIdAndUpdate(
-                Util.getObjectID(expeditie),
-                { route: Util.getObjectID(route) },
-                { new: true }
-            ).exec())
-            .then(Documents.ensureNotNull);
-
-    export const getRoute = (expeditie: ExpeditieOrID): Promise<RouteDocument> =>
-        getDocument(expeditie)
-            .then(Documents.ensureNotNull)
-            .then(expeditie => {
-                if (!expeditie.route)
-                    throw new Error('Expeditie route is unexpectedly empty');
-
-                return Routes.getDocument(expeditie.route)
-                    .then(Documents.ensureNotNull);
-            });
-
-    export const setGroups = (expeditie: ExpeditieOrID, groups: PersonOrID[][]): Promise<ExpeditieDocument> =>
-        getDocument(expeditie)
-            .then(Documents.ensureNotNull)
-            .then(_checkFinished)
-            .then(expeditie => {
-                if (expeditie.route === undefined) {
-                    return Routes.create({})
-                        .then(route => Promise.all([setRoute(expeditie, route), route]));
-                }
-
-                return Promise.all([expeditie, Routes.getDocument(expeditie.route)]);
-            })
-            .then(([expeditie]) => Routes.setGroups(expeditie, groups).then(() => expeditie));
-
-    export const addLocation = (expeditie: ExpeditieOrID, location: Location): Promise<ExpeditieDocument> =>
-        getDocument(expeditie)
-            .then(Documents.ensureNotNull)
-            .then(_checkFinished)
-            .then(expeditie => {
-                if (!expeditie.route)
-                    throw new Error('Expeditie route is unexpectedly empty');
-
-                return Locations.create(location, expeditie.route)
-                    .then(() => expeditie);
-            });
-
-    export const addLocations = (expeditie: ExpeditieOrID, locations: Location[]): Promise<ExpeditieDocument> =>
-        getDocument(expeditie)
-            .then(Documents.ensureNotNull)
-            .then(_checkFinished)
-            .then(expeditie => {
-                if (!expeditie.route)
-                    throw new Error('Expeditie route is unexpectedly empty');
-
-                return Locations.createMany(locations, expeditie.route)
-                    .then(() => expeditie);
-            });
-
-    export const getLocations = (expeditie: ExpeditieOrID): Promise<LocationDocument[]> =>
-        getRoute(expeditie)
-            .then(Routes.getLocations);
 
     export const getLocationCount = (expeditie: ExpeditieOrID): Promise<number> =>
         geoLocationModel.count({ expeditieId: Util.getObjectID(expeditie) }).exec();
