@@ -2,13 +2,13 @@ module.exports = (gulp, plugins) =>
     gulp.parallel(
         () => gulp.src('src/views/**/*')
             .pipe(plugins.revRewrite({
-                manifest: gulp.src('dist/public/styles/rev-manifest.json'),
+                manifest: gulp.src('dist/static/styles/rev-manifest.json'),
                 modifyUnreved: (x) => 'styles/' + x,
                 modifyReved: (x) => 'styles/' + x,
                 replaceInExtensions: ['.pug']
             }))
             .pipe(plugins.revRewrite({
-                manifest: gulp.src('dist/public/scripts/rev-manifest.json'),
+                manifest: gulp.src('dist/static/scripts/rev-manifest.json'),
                 modifyUnreved: (x) => 'scripts/' + x,
                 modifyReved: (x) => 'scripts/' + x,
                 replaceInExtensions: ['.pug']
@@ -19,7 +19,7 @@ module.exports = (gulp, plugins) =>
             'src/config/**/*',
             '!src/config/config.json',
             'src/locales/**/*',
-            'src/public/loading.svg',
+            'src/static/**/*',
         ], { base: 'src/' })
             .pipe(gulp.dest('dist/')),
 

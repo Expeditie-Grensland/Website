@@ -27,7 +27,7 @@ export namespace Setup {
 
     export function setupExpress(app: express.Express, root: string, dev: boolean) {
         const viewsDir = path.join(root, 'views');
-        const publicDir = path.join(root, 'public');
+        const staticDir = path.join(root, 'static');
 
         app.set('view engine', 'pug');
         app.set('views', viewsDir);
@@ -39,7 +39,8 @@ export namespace Setup {
 
         if (dev) {
             app.use('/media', express.static(MediaFileHelper.getFilesFolder(), { fallthrough: false }));
-            app.use('/static', express.static(publicDir, { fallthrough: false }));
+            app.use('/static', express.static(staticDir, { fallthrough: false }));
+            app.get('/favicon.ico', (req, res) => res.redirect('/static/favicons/favicon.ico'));
         }
 
         i18next

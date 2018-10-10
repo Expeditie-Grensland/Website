@@ -1,14 +1,14 @@
 module.exports = (gulp, plugins) => () =>
     gulp.src([
-        'src/public/scripts/home.ts',
-        'src/public/scripts/expeditie.ts',
-        'src/public/scripts/dictionary.ts'
-    ], { read: false, base: 'src/public/scripts/' })
+        'src/client/home.ts',
+        'src/client/expeditie.ts',
+        'src/client/dictionary.ts'
+    ], { read: false, base: 'src/client/' })
         .pipe(plugins.tap((file) => {
             file.contents =
                 plugins.browserify({
                     entries: [file.path],
-                    basedir: 'src/public/scripts/'
+                    basedir: 'src/client/'
                 })
                     .plugin(plugins.tsify)
                     .transform(plugins.babelify, { extensions: ['.ts', '.js'], presets: ['@babel/preset-env'] })
@@ -19,6 +19,6 @@ module.exports = (gulp, plugins) => () =>
         .pipe(plugins.buffer())
         .pipe(plugins.uglify())
         .pipe(plugins.rev())
-        .pipe(gulp.dest('dist/public/scripts/'))
+        .pipe(gulp.dest('dist/static/scripts/'))
         .pipe(plugins.rev.manifest())
-        .pipe(gulp.dest('dist/public/scripts/'));
+        .pipe(gulp.dest('dist/static/scripts/'));

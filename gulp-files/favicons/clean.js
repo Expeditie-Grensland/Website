@@ -1,4 +1,4 @@
 module.exports = (gulp, plugins) => () =>
     plugins.del([
-        'dist/favicons/**'
+        'dist/static/favicons/**'
     ]);

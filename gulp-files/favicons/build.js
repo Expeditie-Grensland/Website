@@ -1,6 +1,6 @@
 module.exports = (gulp, plugins) => () =>
-    gulp.src('src/public/favicon.png')
-        .pipe(plugins.newer('dist/public/favicons/favicon.ico'))
+    gulp.src('src/static/favicon.png')
+        .pipe(plugins.newer('dist/static/favicons/favicon.ico'))
         .pipe(plugins.favicons.stream({
             appName: 'Expeditie Grensland',
             developerName: 'Expeditie Admins',
@@ -13,4 +13,4 @@ module.exports = (gulp, plugins) => () =>
             replace: true,
             loggin: true
         }))
-        .pipe(gulp.dest('dist/public/favicons/'));
+        .pipe(gulp.dest('dist/static/favicons/'));

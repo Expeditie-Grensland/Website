@@ -1,14 +1,14 @@
 module.exports = (gulp, plugins) => () =>
     gulp.src([
-        'src/public/scripts/home.ts',
-        'src/public/scripts/expeditie.ts',
-        'src/public/scripts/dictionary.ts'
-    ], { read: false, base: 'src/public/scripts/' })
+        'src/client/home.ts',
+        'src/client/expeditie.ts',
+        'src/client/dictionary.ts'
+    ], { read: false, base: 'src/client/' })
         .pipe(plugins.tap((file) => {
             file.contents =
                 plugins.browserify({
                     entries: [file.path],
-                    basedir: 'src/public/scripts/',
+                    basedir: 'src/client/',
                     debug: true
                 })
                     .plugin(plugins.tsify)
@@ -18,4 +18,4 @@ module.exports = (gulp, plugins) => () =>
             file.path = file.path.replace('.ts', '.js');
         }))
         .pipe(plugins.buffer())
-        .pipe(gulp.dest('dist/public/scripts'));
+        .pipe(gulp.dest('dist/static/scripts'));
