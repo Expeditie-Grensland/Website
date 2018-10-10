@@ -6,7 +6,6 @@ import { SocketIds } from './ids';
 import { Util } from '../components/documents/util';
 import { SocketTypes } from './types';
 import { ExpeditieOrID } from '../components/expedities/model';
-import { GeoNodes } from '../components/geoNodes';
 import { People } from '../components/people';
 import { GeoLocationDocument, geoLocationModel } from '../components/geoLocations/model';
 import { GeoNodeDocument } from '../components/geoNodes/model';
@@ -48,7 +47,7 @@ export namespace Sockets {
     };
 
     const _getNodes = async (expeditie: ExpeditieOrID, personMap: Map<string, number>): Promise<SocketTypes.Node[]> => {
-        const geoNodes = await GeoNodes.getByExpeditie(expeditie); // TODO: reverse lookup by implementing nodes in ExpeditieDocument
+        const geoNodes = await Expedities.getNodes(expeditie); // TODO: reverse lookup by implementing nodes in ExpeditieDocument
         const colorsIds = _getNodeColors(geoNodes);
 
         let n = 0;

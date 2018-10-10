@@ -11,9 +11,6 @@ export namespace GeoNodes {
     export const getByIds = (ids: mongoose.Types.ObjectId[]): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({ _id: { $in: ids } }).exec();
 
-    export const getByExpeditie = (expeditie: ExpeditieOrID): Promise<GeoNodeDocument[]> =>
-        geoNodeModel.find({ expeditieId: Util.getObjectID(expeditie) }).exec();
-
     export const getAll = (): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({}).sort({ _id: 1 }).exec();
 
@@ -21,17 +18,9 @@ export namespace GeoNodes {
 
     export const getDocuments: (nodes: GeoNodeOrId[]) => Promise<GeoNodeDocument[]> = Documents.getDocuments(getByIds);
 
-    export const create = async (node: GeoNode): Promise<GeoNodeDocument> => {
-        node._id = node._id || mongoose.Types.ObjectId();
+    export const create = async (node: GeoNode): Promise<GeoNodeDocument> =>
+        geoNodeModel.create(node);
 
-        await ExpeditieModel.findByIdAndUpdate(
-            Documents.getObjectId(node.expeditieId),
-            {
-                $addToSet: {
-                    nodes: node._id
-                }
-            });
-
-        return geoNodeModel.create(node);
-    };
+    export const createMany = async (nodes: GeoNode[]): Promise<GeoNodeDocument[]> =>
+        geoNodeModel.insertMany(nodes);
 }

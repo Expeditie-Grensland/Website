@@ -53,7 +53,7 @@ export namespace VisualAreaHelper {
         for (let i = locs[-1] ? 0 : 1; i < locs.length - 1; i++)
             locs[i].visualArea = calculateVisualArea(locs[i - 1], locs[i], locs[i + 1]);
 
-        return locs.splice(0, locs.length);
+        return locs.slice(0, locs.length);
     };
 
     export const setVisualAreas: ((locs: GeoLocation[]) => Promise<GeoLocation[]>) =

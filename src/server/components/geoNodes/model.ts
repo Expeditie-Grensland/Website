@@ -37,7 +37,11 @@ const geoNodeSchema = new mongoose.Schema({
         default: Number.POSITIVE_INFINITY,
         set: (t: number) => t > 1e10 ? t / 1000 : t
     }
-});
+})
+    .index({
+        expeditieId: 1,
+        timeTill: 1
+    });
 
 export const geoNodeModel = mongoose.model<GeoNodeDocument>(GeoNodeId, geoNodeSchema);
 

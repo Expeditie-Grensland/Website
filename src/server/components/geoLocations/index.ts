@@ -24,4 +24,10 @@ export namespace GeoLocations {
             VisualAreaHelper.setVisualArea,
             geoLocationModel.create
         );
+
+    export const createMany: ((locs: GeoLocation[]) => Promise<GeoLocationDocument[]>) =
+        R.pipeP(
+            VisualAreaHelper.setVisualAreas,
+            x => geoLocationModel.insertMany(x)
+        );
 }

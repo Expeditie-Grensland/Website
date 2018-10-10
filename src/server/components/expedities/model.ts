@@ -4,8 +4,6 @@ import { PersonOrID } from '../people/model';
 import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
 import { ExpeditieId } from './id';
 import { PersonId } from '../people/id';
-import { GeoNodeId } from '../geoNodes/id';
-import { GeoNodeOrId } from '../geoNodes/model';
 
 /**
  * The expeditie is the wrapping object for all data related to one trip. This is represented on the home page by
@@ -22,7 +20,6 @@ const schema = new mongoose.Schema({
     movieUrl: String,
     finished: { type: Boolean, default: false },
     participants: [reference(PersonId)],
-    nodeIds: { type: [mongoose.Schema.Types.ObjectId], ref: GeoNodeId },
     countries: [String],
     backgroundFile: mediaFileEmbeddedSchema,
     movieCoverFile: mediaFileEmbeddedSchema
@@ -41,7 +38,6 @@ export interface Expeditie {
     movieUrl: string;
     finished?: boolean;
     participants: PersonOrID[];
-    nodeIds: GeoNodeOrId;
     countries: string[];
     backgroundFile: MediaFileEmbedded;
     movieCoverFile: MediaFileEmbedded;
