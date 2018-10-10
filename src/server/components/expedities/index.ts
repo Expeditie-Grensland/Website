@@ -9,7 +9,7 @@ import * as mongoose from 'mongoose';
 import { Documents } from '../documents/new';
 import { ExpeditieId } from './id';
 import * as R from 'ramda';
-import { geoLocationModel } from '../geoLocations/model';
+import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -100,6 +100,9 @@ export namespace Expedities {
                 { new: true }
             ).exec())
             .then(Documents.ensureNotNull);
+
+    export const getLocations = (expeditie: ExpeditieOrID): Promise<GeoLocationDocument[]> =>
+        geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) }).exec();
 
     export const getLocationCount = (expeditie: ExpeditieOrID): Promise<number> =>
         geoLocationModel.count({ expeditieId: Util.getObjectID(expeditie) }).exec();

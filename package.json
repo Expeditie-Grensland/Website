@@ -59,7 +59,7 @@
     "@types/node": "^10.11.2",
     "@types/passport": "^0.4.6",
     "@types/pug": "^2.0.0-rc.1",
-    "@types/ramda": "github:types/npm-ramda#dist",
+    "@types/ramda": "github:Atema/ramda-types#dist",
     "@types/socket.io": "^1.4.38",
     "@types/socket.io-client": "^1.4.32",
     "babelify": "^10.0.0",
