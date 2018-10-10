@@ -1,16 +1,19 @@
 // The contents of this file should be kept in sync between the client and server version
 
 export namespace SocketTypes {
-    export interface RouteNode {
-        id: number,
-        _id: string;
+    export interface Node {
+        personIds: number[];
+        timeFrom: number;
+        timeTill: number;
         color: string;
     }
 
+    export type PersonMap = [string, number][];
+
     /**
-     * [id, node, timestamp, lat, lon]
+     * [id, person, timestamp, latitude, longitude]
      */
-    export type Location = [number, number, number, number, number]
+    export type Location = [number, number, number, number, number];
 
     export interface BoundingBox {
         minLat: number;
@@ -20,8 +23,9 @@ export namespace SocketTypes {
     }
 
     export interface Info {
-        nodes: RouteNode[],
-        box: BoundingBox,
-        count: number
+        nodes: Node[];
+        box: BoundingBox;
+        personMap: PersonMap;
+        count: number;
     }
 }

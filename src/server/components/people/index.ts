@@ -8,7 +8,7 @@ export namespace People {
         PersonModel.create(person);
 
     export const getAll = (): Promise<PersonDocument[]> =>
-        PersonModel.find({}).exec();
+        PersonModel.find({}).sort({ _id: 1 }).exec();
 
     export const getById = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findById(id).exec();

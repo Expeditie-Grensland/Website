@@ -98,6 +98,7 @@ export namespace Setup {
         mongoose.set('debug', dev);
 
         mongoose.set('useCreateIndex', true);
+        mongoose.set('useFindAndModify', false);
 
         mongoose.connect(
             config.mongo.url,

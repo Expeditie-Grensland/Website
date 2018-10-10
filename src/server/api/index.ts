@@ -6,7 +6,6 @@ import { People } from '../components/people';
 import { router as expeditiesRouter } from './expedities';
 import { router as mediaFilesRouter } from './mediaFiles';
 import { router as personsRouter } from './persons';
-import { router as routesRouter } from './routes';
 import { router as wordsRouter } from './words';
 import { PersonOrID } from '../components/people/model';
 
@@ -55,7 +54,6 @@ router.use((req, res, next) => {
 router.use('/expedities', expeditiesRouter);
 router.use('/media-files', mediaFilesRouter);
 router.use('/persons', personsRouter);
-router.use('/routes', routesRouter);
 router.use('/words', wordsRouter);
 
 router.use((req, res) =>
