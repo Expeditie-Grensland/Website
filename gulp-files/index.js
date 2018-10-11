@@ -54,9 +54,9 @@ gulp.task('build:prod', gulp.series(
 gulp.task('once', gulp.series('build:dev', 'server:run'));
 
 gulp.task('watch', gulp.series('build:dev', 'server:run', async () => {
-    gulp.watch('src/public/scripts/**/*.ts', gulp.series('client:dev'));
-    gulp.watch(['src/config/**/*', 'src/locales/**/*', 'src/public/loading.svg', 'src/views/**/*'], gulp.series('copy:dev'));
-    gulp.watch('src/public/favicon.png', gulp.series('favicons:build'));
+    gulp.watch('src/client/**/*.ts', gulp.series('client:dev'));
+    gulp.watch(['src/config/**/*', 'src/locales/**/*', 'src/static/loading.svg', 'src/views/**/*'], gulp.series('copy:dev'));
+    gulp.watch('src/static/favicon.png', gulp.series('favicons:build'));
     gulp.watch('src/server/**/*.ts', { delay: 2500 }, gulp.series('server:dev', 'server:run'));
-    gulp.watch('src/public/styles/**/*.styl', gulp.series('styles:dev'));
+    gulp.watch('src/styles/**/*.styl', gulp.series('styles:dev'));
 }));
