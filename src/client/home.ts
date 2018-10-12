@@ -1,7 +1,11 @@
 import $ from 'jquery';
 import 'bootstrap';
 
+import { registerWorker } from './workerHelper/register';
+
 $(() => {
+    registerWorker();
+
     const columnDiv = $('#columns');
     const columns = $('.column');
     const leftArrow = $('.arrow.left');

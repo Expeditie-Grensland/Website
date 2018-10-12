@@ -1,14 +1,18 @@
 import $ from 'jquery';
 import mapboxgl from 'mapbox-gl';
-const MapboxLanguage = require('@mapbox/mapbox-gl-language');
+// @ts-ignore
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import { LoadingBar } from './map/loadingBar';
 import { SocketHandler } from './sockets/handler';
 import { MapHandler } from './map/mapHandler';
+import { registerWorker } from './workerHelper/register';
 
 declare var expeditieNameShort: string;
 
 $(() => {
+    registerWorker();
+
     LoadingBar.setLoadingText('Loading map...');
 
     mapboxgl.accessToken =
@@ -22,7 +26,8 @@ $(() => {
 
     mapboxgl.setRTLTextPlugin(
         'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js',
-        () => {}
+        () => {
+        }
     );
 
     map.addControl(new mapboxgl.NavigationControl());
