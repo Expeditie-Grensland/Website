@@ -2,7 +2,8 @@ module.exports = (gulp, plugins) => () =>
     gulp.src([
         'src/client/home.ts',
         'src/client/expeditie.ts',
-        'src/client/dictionary.ts'
+        'src/client/dictionary.ts',
+        'src/client/serviceWorker.ts'
     ], { read: false, base: 'src/client/' })
         .pipe(plugins.tap((file) => {
             file.contents =

@@ -1,14 +1,25 @@
 import $ from 'jquery';
 import mapboxgl from 'mapbox-gl';
-const MapboxLanguage = require('@mapbox/mapbox-gl-language');
+import {LoadingBar} from './map/loadingBar';
+import {SocketHandler} from './sockets/handler';
+import {MapHandler} from './map/mapHandler';
 
-import { LoadingBar } from './map/loadingBar';
-import { SocketHandler } from './sockets/handler';
-import { MapHandler } from './map/mapHandler';
+const MapboxLanguage = require('@mapbox/mapbox-gl-language');
 
 declare var expeditieNameShort: string;
 
 $(() => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/scripts/serviceWorker.js')
+            .then(registration => {
+                console.log('Service worker registration succeeded:', registration);
+            }, error => {
+                console.log('Service worker registration failed:', error);
+            });
+    } else {
+        console.log('Service workers are not supported.');
+    }
+
     LoadingBar.setLoadingText('Loading map...');
 
     mapboxgl.accessToken =

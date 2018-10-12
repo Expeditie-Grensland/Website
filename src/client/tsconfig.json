@@ -1,5 +1,9 @@
 {
   "compileOnSave": false,
+  "exclude": [
+    "worker",
+    "serviceWorker.ts"
+  ],
   "compilerOptions": {
     "target": "es5",
     "module": "es6",
