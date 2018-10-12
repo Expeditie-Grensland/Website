@@ -1,19 +1,16 @@
 {
   "compileOnSave": false,
-  "exclude": [
-    "./worker/**/*"
-  ],
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/static/scripts/",
+    "outDir": "../../../dist/static/client/worker/",
     "lib": [
-      "es5",
-      "es2015.collection",
-      "dom"
+      "es2015",
+      "webworker"
     ],
     "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true
   }

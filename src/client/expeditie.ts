@@ -10,7 +10,7 @@ declare var expeditieNameShort: string;
 
 $(() => {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/scripts/serviceWorker.js')
+        navigator.serviceWorker.register('/worker.js')
             .then(registration => {
                 console.log('Service worker registration succeeded:', registration);
             }, error => {

@@ -1,13 +1,9 @@
-// <reference path='../../../node_modules/typescript/lib/lib.es6.d.ts' />
-// <reference path='../../../node_modules/typescript/lib/lib.webworker.d.ts' />
-// <reference path="serviceworker.d.ts" />
-
 export namespace TileCache {
 
-    export function init(self: ServiceWorkerGlobalScope) {
+    export function init(sw: ServiceWorkerGlobalScope) {
         console.log("Initializing tile cache..");
 
-        self.addEventListener("fetch", ((event: FetchEvent) => {
+        sw.addEventListener("fetch", ((event: FetchEvent) => {
             const url = event.request.url;
 
             console.log("Fetch intercepted: ");

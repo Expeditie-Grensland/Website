@@ -40,7 +40,8 @@ export namespace Setup {
         if (dev) {
             app.use('/media', express.static(MediaFileHelper.getFilesFolder(), { fallthrough: false }));
             app.use('/static', express.static(staticDir, { fallthrough: false }));
-            app.get('/favicon.ico', (req, res) => res.redirect('/static/favicons/favicon.ico'));
+            app.get('/favicon.ico', (req, res) => res.sendFile(path.join(staticDir, '/favicons/favicon.ico')));
+            app.get('/worker.js', (req, res) => res.sendFile(path.join(staticDir, '/scripts/worker.js')));
         }
 
         i18next
