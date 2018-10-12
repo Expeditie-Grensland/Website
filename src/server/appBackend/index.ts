@@ -3,10 +3,6 @@ import * as passport from 'passport';
 
 import { AuthHelper } from '../helpers/authHelper';
 import { People } from '../components/people';
-import { router as expeditiesRouter } from './expedities';
-import { router as mediaFilesRouter } from './mediaFiles';
-import { router as personsRouter } from './persons';
-import { router as wordsRouter } from './words';
 import { PersonOrID } from '../components/people/model';
 
 export const router = express.Router();
@@ -51,10 +47,7 @@ router.use((req, res, next) => {
         next([401, new Error('Token header not present')]);
 });
 
-router.use('/expedities', expeditiesRouter);
-router.use('/media-files', mediaFilesRouter);
-router.use('/persons', personsRouter);
-router.use('/words', wordsRouter);
+// TODO: router.use other files
 
 router.use((req, res) =>
     res.status(404).json({ message: 'Not found' }));

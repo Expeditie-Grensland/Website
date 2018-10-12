@@ -16,7 +16,7 @@ import { config } from './helpers/configHelper';
 import { People } from './components/people';
 import { Util } from './components/documents/util';
 import { PersonDocument } from './components/people/model';
-import { router as apiRouter } from './api';
+import { router as appBackend } from './appBackend';
 import { MediaFileHelper } from './components/mediaFiles';
 import flash = require('connect-flash');
 
@@ -35,7 +35,7 @@ export namespace Setup {
         app.use(bodyParser.json({ limit: '80MB' })); //TODO change this to something more sensible after importing.
         app.use(bodyParser.urlencoded({ extended: true }));
 
-        app.use('/api', apiRouter);
+        app.use('/app-backend', appBackend);
 
         if (dev) {
             app.use('/media', express.static(MediaFileHelper.getFilesFolder(), { fallthrough: false }));
