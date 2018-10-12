@@ -1,5 +1,6 @@
-module.exports = (gulp, plugins) => () =>
-    gulp.src([
+module.exports = (gulp, plugins) => () => {
+    const workerFilter = plugins.filter(['**/*', '!**/worker.js'], { restore: true });
+    return gulp.src([
         'src/client/home.ts',
         'src/client/expeditie.ts',
         'src/client/dictionary.ts',
@@ -22,7 +23,10 @@ module.exports = (gulp, plugins) => () =>
         }))
         .pipe(plugins.buffer())
         .pipe(plugins.uglify())
+        .pipe(workerFilter)
         .pipe(plugins.rev())
+        .pipe(workerFilter.restore)
         .pipe(gulp.dest('dist/static/scripts/'))
         .pipe(plugins.rev.manifest())
         .pipe(gulp.dest('dist/static/scripts/'));
+}
