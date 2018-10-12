@@ -1,24 +1,17 @@
 import $ from 'jquery';
 import mapboxgl from 'mapbox-gl';
-import {LoadingBar} from './map/loadingBar';
-import {SocketHandler} from './sockets/handler';
-import {MapHandler} from './map/mapHandler';
+// @ts-ignore
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
-const MapboxLanguage = require('@mapbox/mapbox-gl-language');
+import { LoadingBar } from './map/loadingBar';
+import { SocketHandler } from './sockets/handler';
+import { MapHandler } from './map/mapHandler';
+import { registerWorker } from './workerHelper/register';
 
 declare var expeditieNameShort: string;
 
 $(() => {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/worker.js')
-            .then(registration => {
-                console.log('Service worker registration succeeded:', registration);
-            }, error => {
-                console.log('Service worker registration failed:', error);
-            });
-    } else {
-        console.log('Service workers are not supported.');
-    }
+    registerWorker();
 
     LoadingBar.setLoadingText('Loading map...');
 
@@ -33,7 +26,8 @@ $(() => {
 
     mapboxgl.setRTLTextPlugin(
         'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js',
-        () => {}
+        () => {
+        }
     );
 
     map.addControl(new mapboxgl.NavigationControl());
