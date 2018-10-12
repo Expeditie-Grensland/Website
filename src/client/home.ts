@@ -14,40 +14,44 @@ $(() => {
 
     const expeditieCount = columns.length;
 
-    const columnWidth = columnDiv.width()! / expeditieCount;
+    const getColumnWidth = () =>
+        columnDiv.width()! / expeditieCount;
 
-    if ($(window).scrollLeft()! <= 0) leftArrow.addClass('grey');
+    const expeditiesOnScreen = () =>
+        Math.round($(window).width()! / getColumnWidth());
 
+    const scrollToExpeditieOffset = (t: number = 500) => {
+        expeditieOffset = Math.min(expeditieCount - expeditiesOnScreen(), Math.max(0, expeditieOffset)) || 0;
 
-    if ($(window).scrollLeft()! + 1 >= expeditieCount * columnWidth - $(window).width()!) rightArrow.addClass('grey');
+        let newScroll = Math.min(columnDiv.width()! - $(window).width()!, Math.max(0, expeditieOffset * getColumnWidth())) || 0;
+
+        if (expeditieOffset == 0) leftArrow.stop().hide(t);
+        else leftArrow.stop().show(t);
+
+        if (expeditieOffset == expeditieCount - expeditiesOnScreen()) rightArrow.stop().hide(t);
+        else rightArrow.stop().show(t);
+
+        html.stop().animate({ scrollLeft: newScroll }, t);
+    };
+
+    let expeditieOffset = Math.round($(window).scrollLeft()! / getColumnWidth());
+
+    scrollToExpeditieOffset(200);
 
     leftArrow.on('click', () => {
-        let newScroll = $(window).scrollLeft()! - columnWidth;
-
-        if (newScroll < 0) newScroll = 0;
-
-        rightArrow.removeClass('grey');
-        html.stop().animate({ scrollLeft: newScroll }, 500);
-
-        if (Math.round(newScroll) <= 0) leftArrow.addClass('grey');
+        expeditieOffset--;
+        scrollToExpeditieOffset();
     });
 
     rightArrow.on('click', () => {
-        let newScroll = $(window).scrollLeft()! + columnWidth;
+        expeditieOffset++;
 
-        if (newScroll > expeditieCount * columnWidth) newScroll = expeditieCount * columnWidth;
-
-        leftArrow.removeClass('grey');
-        html.stop().animate(
-            {
-                scrollLeft: newScroll
-            },
-            500
-        );
-
-        if (Math.round(newScroll) >= Math.round(expeditieCount * columnWidth - $(window).width()!))
-            rightArrow.addClass('grey');
+        scrollToExpeditieOffset();
     });
+
+    $(window).on('resize', () =>
+        scrollToExpeditieOffset(0)
+    );
 
     $('.videoModal').on('hide.bs.modal', function () {
         (<HTMLVideoElement>$(this).find('video')[0]).pause();
