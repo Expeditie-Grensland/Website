@@ -8,6 +8,7 @@ sw.addEventListener('install', (event: ExtendableEvent) => {
 });
 
 sw.addEventListener('activate', (event: ExtendableEvent) => {
+    console.log("Kicking out old service handler");
     event.waitUntil(sw.clients.claim());
 });
 
