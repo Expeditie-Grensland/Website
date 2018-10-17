@@ -2,7 +2,7 @@ export const registerWorker = () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/worker.js')
             .then(registration => {
-                console.log('Service worker registration succeeded:', registration);
+                console.log('Service worker registration succeeded.');
             }, error => {
                 console.log('Service worker registration failed:', error);
             });
