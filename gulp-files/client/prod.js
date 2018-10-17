@@ -16,7 +16,7 @@ module.exports = (gulp, plugins) => () => {
                     basedir: 'src/client/'
                 })
                     .plugin(plugins.tsify, { project })
-                    .transform(plugins.babelify, { extensions: ['.ts', '.js'], presets: ['@babel/preset-env'] })
+                    .transform(plugins.babelify, { global: true, extensions: ['.ts', '.js'], presets: ['@babel/preset-env'] })
                     .bundle();
 
             file.path = file.path.replace('.ts', '.js').replace('/index.js', '.js').replace('\\index.js', '.js');
