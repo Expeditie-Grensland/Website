@@ -7,11 +7,8 @@ import { ready } from './helpers/ready';
 
 // @ts-ignore
 import {Map, View} from 'ol';
-// @ts-ignore
 import TileLayer from 'ol/layer/Tile';
-// @ts-ignore
 import OSM from 'ol/source/OSM';
-// @ts-ignore
 import XYZ from 'ol/source/XYZ';
 
 
@@ -28,7 +25,7 @@ ready(() => {
             new TileLayer({
                 source: new XYZ({
                     url: 'https://api.mapbox.com/styles/v1/mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj/tiles/256/{z}/{x}/{y}@2x?access_token=' + accessToken
-                }),
+                })
             })
         ],
         target: 'map',
@@ -38,7 +35,7 @@ ready(() => {
         })
     });
 
-    const ol3d = new OLCesium({map: map});
+    const ol3d = new OLCesium({ map: map });
     ol3d.setEnabled(true);
 
     //SocketHandler.init();
