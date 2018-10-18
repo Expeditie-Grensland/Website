@@ -12,7 +12,7 @@ $(() => {
 
     LoadingBar.setLoadingText('Loading map...');
 
-    const map = createMap(false, false, false);
+    const map = createMap(false, true, true);
 
     SocketHandler.init();
     MapHandler.init(map, expeditieNameShort);
