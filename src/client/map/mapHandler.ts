@@ -1,55 +1,67 @@
-import mapboxGl from 'mapbox-gl';
-import geoJson from 'geojson';
+// @ts-ignore
+import Map from 'ol/Map';
+// @ts-ignore
+import VectorLayer from 'ol/layer/Vector';
+// @ts-ignore
+import {Fill, Stroke, Style} from 'ol/style';
+// @ts-ignore
+import {Vector as VectorSource} from 'ol/source';
+// @ts-ignore
+import GeoJSON from 'ol/format/GeoJSON';
+// @ts-ignore
+import {fromLonLat} from 'ol/proj';
 
-import { SocketHandler } from '../sockets/handler';
-import { SocketTypes } from '../sockets/types';
+import {SocketHandler} from '../sockets/handler';
+import {SocketTypes} from '../sockets/types';
 
 export namespace MapHandler {
-    const LOCATION_SOURCE = 'locations';
+    export interface NodeWithLayer extends SocketTypes.Node {
+        layer?: VectorLayer
+    }
 
-    export let map: mapboxGl.Map;
+    export let map: Map;
 
-    const gNodes: SocketTypes.Node[] = [];
+    const gNodes: NodeWithLayer[] = [];
     const gLocations: SocketTypes.Location[][] = [];
 
-    let mapStyleLoaded = false;
-
-    export function init(mapboxMap: mapboxGl.Map, expeditieNameShort: string) {
-        map = mapboxMap;
-
-        map.on('style.load', onMapStyleLoad);
+    export function init(map: Map, expeditieNameShort: string) {
+        MapHandler.map = map;
 
         SocketHandler.request(expeditieNameShort);
     }
 
     export function setBoundingBox(b: SocketTypes.BoundingBox) {
-        const bounds = new mapboxGl.LngLatBounds();
+        console.log([b.minLon, b.minLat, b.maxLon, b.maxLat]);
 
-        bounds.extend(new mapboxGl.LngLat(b.minLon, b.minLat));
-        bounds.extend(new mapboxGl.LngLat(b.maxLon, b.maxLat));
+        const [minX, minY] = fromLonLat(b.minLon, b.minLat);
+        const [maxX, maxY] = fromLonLat(b.maxLon, b.maxLat);
 
-        map.fitBounds(bounds, {
-            padding: 20
-        });
+        map.getView().fit(
+                [minX, minY, maxX, maxY],
+                {
+                    padding: [20, 20, 20, 20]
+                }
+            );
     }
 
     export function addNodes(nodes: SocketTypes.Node[]) {
         for (let node of nodes) {
-            const nodeId = gNodes.push(node) - 1;
-            gLocations.push([]);
 
-            // TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
-            map.addLayer({
-                id: LOCATION_SOURCE + nodeId,
-                type: 'line',
-                source: LOCATION_SOURCE,
-                paint: {
-                    'line-color': node.color,
-                    'line-opacity': 1,
-                    'line-width': 3
-                },
-                filter: ['==', 'node-id', nodeId]
+            const layer = new VectorLayer({
+                style: new Style({
+                    stroke: new Stroke({
+                        color: node.color,
+                        width: 3
+                    })
+                })
             });
+
+            map.addLayer(layer);
+
+            const layerNode = node as NodeWithLayer;
+            layerNode.layer = layer;
+            gNodes.push(layerNode);
+            gLocations.push([]);
         }
     }
 
@@ -65,45 +77,27 @@ export namespace MapHandler {
                 }
             }
 
-        if (mapStyleLoaded) updateMap();
+        updateMap();
     }
 
     export function updateMap() {
-        const locationSource = map.getSource(LOCATION_SOURCE) as mapboxGl.GeoJSONSource;
-
-        const locationsGeoJSON = generateLocationsGeoJSON();
-
-        locationSource.setData(locationsGeoJSON);
-    }
-
-    export function generateLocationsGeoJSON(): geoJson.FeatureCollection<geoJson.LineString> {
-        const features: geoJson.Feature<geoJson.LineString>[] = [];
 
         for (let i = 0; i < gNodes.length; i++)
-            if (gLocations[i].length > 1)
-                features.push({
+            if (gLocations[i].length > 1) {
+                const source = gNodes[i].layer.getSource() || new VectorSource();
+
+                source.clear();
+                source.addFeature((new GeoJSON()).readFeature({
                     type: 'Feature',
-                    properties: {
-                        'node-id': i
-                    },
-                    geometry: {
+                    geometry:   {
                         type: 'LineString',
-                        coordinates: gLocations[i].sort((l1, l2) => l1[2] - l2[2]).map(l => [l[4], l[3]])
+                        coordinates: gLocations[i].sort((l1, l2) => l1[2] - l2[2]).map(l => fromLonLat([l[4], l[3]]))
                     }
-                });
+                }));
 
-        return {
-            type: 'FeatureCollection',
-            features
-        };
-    }
+                gNodes[i].layer.setSource(source);
+            }
 
-    export function onMapStyleLoad() {
-        mapStyleLoaded = true;
 
-        // @ts-ignore
-        map.addSource(LOCATION_SOURCE, { type: 'geojson', data: null });
-
-        updateMap();
     }
 }
