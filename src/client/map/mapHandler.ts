@@ -1,5 +1,3 @@
-import mapboxGl from 'mapbox-gl';
-import geoJson from 'geojson';
 // @ts-ignore
 import binarySearchInsert from 'binary-search-insert';
 
@@ -8,24 +6,32 @@ import { SocketTypes } from '../sockets/types';
 import { Database } from '../database';
 import { DatabaseTypes } from '../database/types';
 
+// @ts-ignore
+import Map from 'ol/Map';
+// @ts-ignore
+import VectorLayer from 'ol/layer/Vector';
+// @ts-ignore
+import {Fill, Stroke, Style} from 'ol/style';
+// @ts-ignore
+import {Vector as VectorSource} from 'ol/source';
+// @ts-ignore
+import GeoJSON from 'ol/format/GeoJSON';
+// @ts-ignore
+import {fromLonLat} from 'ol/proj';
+
+
 export namespace MapHandler {
-    const LOCATION_SOURCE = 'locations';
+    export interface NodeWithLayer extends SocketTypes.Node {
+        layer?: VectorLayer
+    }
 
-    export let map: mapboxGl.Map;
+    export let map: Map;
 
-    let nodesN = 0;
-    const geoInfo: geoJson.FeatureCollection<geoJson.LineString> = {
-        type: 'FeatureCollection',
-        features: []
-    };
+    const gNodes: NodeWithLayer[] = [];
+    const gLocations: DatabaseTypes.Location[][] = [];
 
-    let lastUpdated = 0;
-
-    export function init(mapboxMap: mapboxGl.Map) {
-        map = mapboxMap;
-
-        map.on('style.load', onMapStyleLoad);
-
+    export function init(map: Map) {
+        MapHandler.map = map;
         Database.init();
         SocketHandler.init();
 
@@ -35,75 +41,70 @@ export namespace MapHandler {
     }
 
     export function setBoundingBox(b: SocketTypes.BoundingBox) {
-        const bounds = new mapboxGl.LngLatBounds();
+        console.log([b.minLon, b.minLat, b.maxLon, b.maxLat]);
 
-        bounds.extend(new mapboxGl.LngLat(b.minLon, b.minLat));
-        bounds.extend(new mapboxGl.LngLat(b.maxLon, b.maxLat));
+        const [minX, minY] = fromLonLat(b.minLon, b.minLat);
+        const [maxX, maxY] = fromLonLat(b.maxLon, b.maxLat);
 
-        map.fitBounds(bounds, {
-            padding: 20
-        });
+        map.getView().fit(
+                [minX, minY, maxX, maxY],
+                {
+                    padding: [20, 20, 20, 20]
+                }
+            );
     }
 
     export function addNodes(nodes: SocketTypes.Node[]) {
         for (let node of nodes) {
-            const nodeId = nodesN++;
-            geoInfo.features.push({
-                type: 'Feature',
-                properties: {
-                    nodeId,
-                    node
-                },
-                geometry: {
-                    type: 'LineString',
-                    coordinates: []
-                }
+            const layer = new VectorLayer({
+                style: new Style({
+                    stroke: new Stroke({
+                        color: node.color,
+                        width: 3
+                    })
+                })
             });
 
-            // TODO make this one layer instead of multiple. https://www.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
-            map.addLayer({
-                id: LOCATION_SOURCE + nodeId,
-                type: 'line',
-                source: LOCATION_SOURCE,
-                paint: {
-                    'line-color': node.color,
-                    'line-opacity': 1,
-                    'line-width': 3
-                },
-                filter: ['==', 'nodeId', nodeId]
-            });
+            map.addLayer(layer);
 
-
+            const layerNode = node as NodeWithLayer;
+            layerNode.layer = layer;
+            gNodes.push(layerNode);
+            gLocations.push([]);
         }
     }
 
-    const compareCoordinates = (a: number[], b: number[]) => a[3] - b[3];
-
     export const addLocations = (locs: DatabaseTypes.Location[], forceUpdate: boolean = false) => {
-        for (let loc of locs)
-            for (let feat of geoInfo.features) {
-                const node: SocketTypes.Node = feat.properties && feat.properties.node;
-                if (node &&
-                    node.personIds.indexOf(loc.personId) > -1 &&
-                    loc.time >= node.timeFrom &&
-                    loc.time < node.timeTill) {
+        for (let location of locs)
+            for (let i = 0; i < gNodes.length; i++) {
+                if (gNodes[i].personIds.indexOf(location.personId) > -1 &&
+                    location.time >= gNodes[i].timeFrom &&
+                    location.time < gNodes[i].timeTill) {
 
-                    binarySearchInsert(feat.geometry.coordinates, compareCoordinates, [loc.longitude, loc.latitude, 0, loc.time]);
+                    gLocations[i].push(location);
                     break;
                 }
             }
 
-        if (lastUpdated > 0 && (forceUpdate || Date.now() - lastUpdated > 2000)) {
-            lastUpdated = Date.now();
-            updateMap();
-        }
-    };
+        updateMap();
+    }
 
-    export const updateMap = () =>
-        (<mapboxGl.GeoJSONSource>map.getSource(LOCATION_SOURCE)).setData(geoInfo);
+    export function updateMap() {
 
-    const onMapStyleLoad = () => {
-        lastUpdated = Date.now();
-        map.addSource(LOCATION_SOURCE, { type: 'geojson', data: geoInfo });
+        for (let i = 0; i < gNodes.length; i++)
+            if (gLocations[i].length > 1) {
+                const source = gNodes[i].layer.getSource() || new VectorSource();
+
+                source.clear();
+                source.addFeature((new GeoJSON()).readFeature({
+                    type: 'Feature',
+                    geometry:   {
+                        type: 'LineString',
+                        coordinates: gLocations[i].sort((l1, l2) => l1.time - l2.time).map(l => fromLonLat([l.longitude, l.latitude]))
+                    }
+                }));
+
+                gNodes[i].layer.setSource(source);
+            }
     }
 }
