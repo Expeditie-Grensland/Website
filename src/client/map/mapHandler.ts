@@ -3,16 +3,16 @@ import Map from 'ol/Map';
 // @ts-ignore
 import VectorLayer from 'ol/layer/Vector';
 // @ts-ignore
-import {Fill, Stroke, Style} from 'ol/style';
+import { Fill, Stroke, Style } from 'ol/style';
 // @ts-ignore
-import {Vector as VectorSource} from 'ol/source';
+import { Vector as VectorSource } from 'ol/source';
 // @ts-ignore
 import GeoJSON from 'ol/format/GeoJSON';
 // @ts-ignore
-import {fromLonLat} from 'ol/proj';
+import { fromLonLat } from 'ol/proj';
 
-import {SocketHandler} from '../sockets/handler';
-import {SocketTypes} from '../sockets/types';
+import { SocketHandler } from '../sockets/handler';
+import { SocketTypes } from '../sockets/types';
 
 export namespace MapHandler {
     export interface NodeWithLayer extends SocketTypes.Node {
@@ -33,20 +33,23 @@ export namespace MapHandler {
     export function setBoundingBox(b: SocketTypes.BoundingBox) {
         console.log([b.minLon, b.minLat, b.maxLon, b.maxLat]);
 
-        const [minX, minY] = fromLonLat(b.minLon, b.minLat);
-        const [maxX, maxY] = fromLonLat(b.maxLon, b.maxLat);
+        const [minX, minY] = fromLonLat([b.minLon, b.minLat]);
+        const [maxX, maxY] = fromLonLat([b.maxLon, b.maxLat]);
+
+        console.log([minX, minY, maxX, maxY]);
 
         map.getView().fit(
-                [minX, minY, maxX, maxY],
-                {
-                    padding: [20, 20, 20, 20]
-                }
-            );
+            [minX, minY, maxX, maxY],
+            {
+                padding: [20, 20, 20, 20]
+            }
+        );
     }
 
     export function addNodes(nodes: SocketTypes.Node[]) {
         for (let node of nodes) {
 
+            // @ts-ignore
             const layer = new VectorLayer({
                 style: new Style({
                     stroke: new Stroke({
@@ -81,23 +84,20 @@ export namespace MapHandler {
     }
 
     export function updateMap() {
-
         for (let i = 0; i < gNodes.length; i++)
             if (gLocations[i].length > 1) {
-                const source = gNodes[i].layer.getSource() || new VectorSource();
+                const source = gNodes[i].layer!.getSource() || new VectorSource();
 
                 source.clear();
                 source.addFeature((new GeoJSON()).readFeature({
                     type: 'Feature',
-                    geometry:   {
+                    geometry: {
                         type: 'LineString',
                         coordinates: gLocations[i].sort((l1, l2) => l1[2] - l2[2]).map(l => fromLonLat([l[4], l[3]]))
                     }
                 }));
 
-                gNodes[i].layer.setSource(source);
+                gNodes[i].layer!.setSource(source);
             }
-
-
     }
 }

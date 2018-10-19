@@ -4,7 +4,7 @@ import { Sockets } from './sockets';
 import { SocketIds } from './ids';
 
 export namespace SocketHandler {
-    export let socket: SocketIOClient.Socket;
+    let socket: SocketIOClient.Socket;
 
     export function init() {
         socket = socketio();

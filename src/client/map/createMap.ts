@@ -15,20 +15,23 @@ import VectorTileLayer from 'ol/layer/VectorTile';
 // @ts-ignore
 import VectorTileSource from 'ol/source/VectorTile';
 // @ts-ignore
-import {Fill, Icon, Stroke, Style, Text} from 'ol/style';
+import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
 // @ts-ignore
 import OLCesium from 'olcs/OLCesium';
 // @ts-ignore
 import * as olms from 'ol-mapbox-style';
 
-declare const Cesium: any
+declare const Cesium: any;
 
 const mapboxAccessToken =
-    "pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw";
+    'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw';
+const mapboxStyle =
+    'mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj';
 const cesiumAccessToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlNjBjYzlkNy0wMjc5LTRlOTQtYjAyOS01MjU1ZWQ5NjUyOWMiLCJpZCI6NDA5NSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTUzOTg2NTU5NX0.NWLVr2L9Z8l-ogaGVWURKjFsJYfgGq_C_wMv1utumfk";
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlNjBjYzlkNy0wMjc5LTRlOTQtYjAyOS01MjU1ZWQ5NjUyOWMiLCJpZCI6NDA5NSwic2NvcGVzIjpbImFzci' +
+    'IsImdjIl0sImlhdCI6MTUzOTg2NTU5NX0.NWLVr2L9Z8l-ogaGVWURKjFsJYfgGq_C_wMv1utumfk';
 
-export default function createMap(vectorSource: boolean, useCesium: boolean, showTerrain: boolean): Map {
+export function createMap(vectorSource: boolean, useCesium: boolean, showTerrain: boolean): Map {
     const map = new Map({
         target: 'map',
         view: new View({
@@ -37,25 +40,26 @@ export default function createMap(vectorSource: boolean, useCesium: boolean, sho
         })
     });
 
-    if (vectorSource || useCesium) {
-        olms.apply(map, "https://api.mapbox.com/styles/v1/mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj?access_token=" + mapboxAccessToken);
+    if (vectorSource) {
+        olms.apply(map, `https://api.mapbox.com/styles/v1/${mapboxStyle}?access_token=${mapboxAccessToken}`);
     } else {
         map.addLayer(
             new TileLayer({
                 source: new XYZ({
                     tileSize: [512, 512],
-                    url: 'https://api.mapbox.com/styles/v1/mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj/tiles/512/{z}/{x}/{y}?access_token=' + mapboxAccessToken
+                    tilePixelRatio: 2,
+                    url: `https://api.mapbox.com/styles/v1/${mapboxStyle}/tiles/512/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`
                 })
             })
-        )
+        );
     }
 
-    if(useCesium) {
-        console.log("Loading cesium..")
+    if (useCesium) {
+        console.log('Loading cesium..');
 
         Cesium.Ion.defaultAccessToken = cesiumAccessToken;
 
-        const ol3d = new OLCesium({map: map});
+        const ol3d = new OLCesium({ map: map });
 
         if (showTerrain) {
             const scene = ol3d.getCesiumScene();
