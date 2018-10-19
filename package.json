@@ -14,6 +14,7 @@
   },
   "license": "GPL-3.0",
   "dependencies": {
+    "@babel/register": "^7.0.0",
     "@turf/turf": "^5.1.3",
     "body-parser": "^1.18.3",
     "connect-flash": "^0.1.1",
@@ -66,6 +67,7 @@
     "bootstrap": "^4.1.3",
     "browserify": "^16.2.3",
     "del": "^3.0.0",
+    "event-stream": "^4.0.1",
     "fancy-log": "^1.3.2",
     "favicons": "^5.2.0",
     "gulp": "^4.0.0",
@@ -77,15 +79,19 @@
     "gulp-rev": "^8.1.1",
     "gulp-rev-rewrite": "^1.1.1",
     "gulp-sourcemaps": "^2.6.4",
+    "gulp-streamify": "^1.0.2",
     "gulp-stylus": "^2.7.0",
     "gulp-tap": "^1.0.1",
     "gulp-typescript": "^5.0.0-alpha.3",
     "gulp-uglify": "^3.0.1",
     "jquery": "^3.3.1",
     "mapbox-gl": "^0.49.0",
+    "merge-stream": "^1.0.1",
     "popper.js": "^1.14.4",
     "socket.io-client": "^2.1.1",
     "tsify": "^4.0.0",
-    "typescript": "^3.1.1"
+    "typescript": "^3.1.1",
+    "vinyl-source-stream": "^2.0.0",
+    "watchify": "^3.11.0"
   }
 }

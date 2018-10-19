@@ -1,6 +1,6 @@
-const child_process = require('child_process');
+import child_process from 'child_process';
 
-module.exports = (gulp, plugins) => {
+module.exports = (gulp) => {
     let node;
 
     process.on('exit', () => {
