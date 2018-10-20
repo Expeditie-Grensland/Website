@@ -13,8 +13,9 @@ gulp.task('copy:dev', load('copy/dev'));
 gulp.task('copy:prod', load('copy/prod'));
 gulp.task('copy:watch', load('copy/watch'));
 
-gulp.task('favicons:build', load('favicons/build'));
 gulp.task('favicons:clean', load('favicons/clean'));
+gulp.task('favicons:dev', load('favicons/build'));
+gulp.task('favicons:prod', load('favicons/build', { prod: true }));
 gulp.task('favicons:watch', load('favicons/watch'));
 
 gulp.task('server:clean', load('server/clean'));
@@ -34,7 +35,7 @@ gulp.task('build:dev',
     gulp.parallel(
         'client:dev',
         'copy:dev',
-        'favicons:build',
+        'favicons:dev',
         'server:dev',
         'styles:dev'
     )
@@ -46,7 +47,7 @@ gulp.task('build:prod',
         gulp.parallel(
             'client:prod',
             'styles:prod',
-            'favicons:build',
+            'favicons:prod',
             'server:prod',
         ),
         gulp.parallel(
@@ -63,14 +64,14 @@ gulp.task('watch',
         gulp.parallel(
             'client:watch',
             'copy:dev',
-            'favicons:build',
+            'favicons:dev',
             'server:dev',
             'styles:dev'
         ),
         'server:run',
         gulp.parallel(
             'copy:watch',
-            'favicons:watch',
+            'favicons:dev',
             'server:watch',
             'styles:watch'
         )

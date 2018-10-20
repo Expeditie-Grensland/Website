@@ -5,12 +5,10 @@ import filter from 'gulp-filter';
 import rev from 'gulp-rev';
 import streamify from 'gulp-streamify';
 import uglify from 'gulp-uglify';
-import mergeStream from 'merge-stream'
+import mergeStream from 'merge-stream';
 import tsify from 'tsify';
 import source from 'vinyl-source-stream';
 import watchify from 'watchify';
-
-let i = 0;
 
 const entries = [
     'src/client/home.ts',
@@ -62,17 +60,18 @@ module.exports = (gulp, opts = { prod: false, watch: false }) => {
             return bundle(b, path);
         });
 
+        let stream = mergeStream(...tasks);
+
         if (opts.prod)
-            return mergeStream(...tasks)
+            stream = stream
                 .pipe(streamify(uglify()))
                 .pipe(workerFilter)
                 .pipe(streamify(rev()))
                 .pipe(workerFilter.restore)
                 .pipe(gulp.dest('dist/static/scripts/'))
-                .pipe(rev.manifest())
-                .pipe(gulp.dest('dist/static/scripts/'));
-        else
-            return mergeStream(...tasks)
-                .pipe(gulp.dest('dist/static/scripts/'));
+                .pipe(rev.manifest());
+
+        return stream
+            .pipe(gulp.dest('dist/static/scripts/'));
     }
 };

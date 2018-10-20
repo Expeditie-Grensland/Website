@@ -1,8 +1,9 @@
 import revRewrite from 'gulp-rev-rewrite';
+import uglify from 'gulp-uglify';
 
 module.exports = (gulp) =>
     gulp.parallel(
-        () => gulp.src('src/views/**/*')
+        () => gulp.src(['src/views/**/*', '!src/views/**/*.js'])
             .pipe(revRewrite({
                 manifest: gulp.src('dist/static/styles/rev-manifest.json'),
                 modifyUnreved: (x) => 'styles/' + x,
@@ -16,6 +17,10 @@ module.exports = (gulp) =>
                 replaceInExtensions: ['.pug']
             }))
             .pipe(gulp.dest('dist/views/')),
+
+        () => gulp.src('src/views/**/*.js')
+            .pipe(uglify())
+            .pipe(gulp.dest('dist/views')),
 
         () => gulp.src([
             'src/config/**/*',
