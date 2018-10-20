@@ -31,9 +31,6 @@ export namespace Expedities {
     export const getDocument = (location: ExpeditieOrID): Promise<ExpeditieDocument | null> =>
         Util.getDocument(getById)(location);
 
-    export const getUnfinishedByParticipant = (person: PersonOrID, fields: {} = {}): Promise<ExpeditieDocument[]> =>
-        ExpeditieModel.find({ participants: Util.getObjectID(person), finished: false }, fields).exec();
-
     const _addExpeditieToPersons = (persons: PersonOrID[], expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
         Promise.all(persons.map(People.addExpeditieR(R.__, expeditie)))
             .then(() => getDocument(expeditie).then(Documents.ensureNotNull));

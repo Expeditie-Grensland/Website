@@ -1,10 +1,13 @@
 import * as express from 'express';
 import * as passport from 'passport';
+import * as R from 'ramda';
 
 import { AuthHelper } from '../helpers/authHelper';
 import { People } from '../components/people';
 import { PersonDocument } from '../components/people/model';
-import { Expedities } from '../components/expedities';
+import { ExpeditieModel } from '../components/expedities/model';
+import { Util } from '../components/documents/util';
+import { MediaFiles } from '../components/mediaFiles';
 
 export const router = express.Router();
 
@@ -57,7 +60,22 @@ router.use((err: any, req: express.Request, res: express.Response, next: express
 });
 
 router.get('/expedities', (req, res) =>
-    Expedities.getUnfinishedByParticipant(req.user, { name: 1, nameShort: 1, sequenceNumber: 1 })
+    ExpeditieModel
+        .find({ participants: Util.getObjectID(req.user), finished: false }, {
+            name: 1,
+            subtitle: 1,
+            backgroundFile: 1
+        })
+        .sort({ sequenceNumber: -1 })
+        .exec()
+        .then(R.map(x => {
+            return {
+                id: x._id,
+                name: x.name,
+                subtitle: x.subtitle,
+                image: MediaFiles.getUrl(x.backgroundFile)
+            };
+        }))
         .then(x => res.status(200).json(x)));
 
 // TODO: router.use other files
