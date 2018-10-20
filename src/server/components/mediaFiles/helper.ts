@@ -6,6 +6,7 @@ import * as mongoose from 'mongoose';
 import * as fs from 'fs';
 import { MediaFile, MediaFileDocument, MediaFileOrId, MediaFiles } from '.';
 import { Documents } from '../documents/new';
+
 const Mime = require('mime/Mime');
 
 export namespace MediaFileHelper {
@@ -38,7 +39,8 @@ export namespace MediaFileHelper {
 
     const _mimeMap = {
         'image/jpeg': ['jpg', 'jpeg'],
-        'audio/mpeg': ['mp3', 'mpga', 'm3a']
+        'audio/mpeg': ['mp3', 'mpga', 'm3a'],
+        'video/mp4': ['mp4', 'mp4v', 'mpg4', 'm4v']
     };
 
     export const mime2 = new Mime(_mimeMap);

@@ -22,7 +22,8 @@ const schema = new mongoose.Schema({
     participants: [reference(PersonId)],
     countries: [String],
     backgroundFile: mediaFileEmbeddedSchema,
-    movieCoverFile: mediaFileEmbeddedSchema
+    movieCoverFile: mediaFileEmbeddedSchema,
+    movieFile: mediaFileEmbeddedSchema
 });
 
 schema.index({ nameShort: 1 });
@@ -41,6 +42,7 @@ export interface Expeditie {
     countries: string[];
     backgroundFile: MediaFileEmbedded;
     movieCoverFile: MediaFileEmbedded;
+    movieFile: MediaFileEmbedded;
 }
 
 export interface ExpeditieDocument extends Expeditie, mongoose.Document {

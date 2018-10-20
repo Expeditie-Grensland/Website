@@ -206,4 +206,27 @@ export namespace Expedities {
                 .exec())
             .then(Documents.ensureNotNull);
     };
+
+    export const setMovieFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
+        const usage: MediaFileUse = {
+            model: ExpeditieId,
+            id: mongoose.Types.ObjectId(Util.getObjectID(expeditie)),
+            field: 'movieFile'
+        };
+
+        return MediaFiles.ensureMime(file, ['video/mp4'])
+            .then(file => MediaFiles.addUse(file, usage))
+            .then(Documents.ensureNotNull)
+            .then(MediaFiles.getEmbed)
+            .then(embed => getDocument(expeditie)
+                .then(Documents.ensureNotNull)
+                .then(expeditie => MediaFiles.removeUse(expeditie.movieFile, usage))
+                .then(() => embed))
+            .then(embed => ExpeditieModel.findByIdAndUpdate(
+                Util.getObjectID(expeditie),
+                { movieFile: embed },
+                { new: true })
+                .exec())
+            .then(Documents.ensureNotNull);
+    };
 }

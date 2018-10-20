@@ -4,7 +4,7 @@ import { DocumentOrId } from '../documents/new';
 import { MediaFileId } from './id';
 
 export interface MediaFile {
-    _id: mongoose.Types.ObjectId;
+    _id?: mongoose.Types.ObjectId;
     ext: string;
     mime: string;
     uses?: MediaFileUse[];
