@@ -1,33 +1,52 @@
 import del from 'del';
 import gulp from 'gulp';
 
-const load = (path, ...args) => require(`./${path}`)(gulp, ...args);
+const loadTask = (comp, file, type) =>
+    gulp.task(`${comp}:${type || file}`, require(`./${comp}/${file}`)(gulp, { [type]: true }));
 
-gulp.task('client:clean', load('client/clean'));
-gulp.task('client:dev', load('client/build'));
-gulp.task('client:prod', load('client/build', { prod: true }));
-gulp.task('client:watch', load('client/build', { watch: true }));
+const loadTasks = (tasksObject) =>
+    Object.keys(tasksObject).forEach(comp =>
+        Array.isArray(tasksObject[comp]) ?
+            tasksObject[comp].forEach(type => loadTask(comp, '.', type))
+            : Object.keys(tasksObject[comp]).forEach(file =>
+                Array.isArray(tasksObject[comp][file]) ?
+                    tasksObject[comp][file].forEach(type => loadTask(comp, file, type))
+                    : loadTask(comp, file, tasksObject[comp][file])));
 
-gulp.task('copy:clean', load('copy/clean'));
-gulp.task('copy:dev', load('copy/dev'));
-gulp.task('copy:prod', load('copy/prod'));
-gulp.task('copy:watch', load('copy/watch'));
+loadTasks({
+    client: [
+        'dev',
+        'clean',
+        'prod',
+        'watch'
+    ],
 
-gulp.task('favicons:clean', load('favicons/clean'));
-gulp.task('favicons:dev', load('favicons/build'));
-gulp.task('favicons:prod', load('favicons/build', { prod: true }));
-gulp.task('favicons:watch', load('favicons/watch'));
+    copy: {
+        build: ['dev', 'prod'],
+        clean: '',
+        watch: ''
+    },
 
-gulp.task('server:clean', load('server/clean'));
-gulp.task('server:dev', load('server/dev'));
-gulp.task('server:prod', load('server/prod'));
-gulp.task('server:run', load('server/run'));
-gulp.task('server:watch', load('server/watch'));
+    favicons: {
+        build: ['dev', 'prod'],
+        clean: '',
+        watch: ''
+    },
 
-gulp.task('styles:clean', load('styles/clean'));
-gulp.task('styles:dev', load('styles/dev'));
-gulp.task('styles:prod', load('styles/prod'));
-gulp.task('styles:watch', load('styles/watch'));
+    server: {
+        build: ['dev', 'prod'],
+        clean: '',
+        run: '',
+        watch: ''
+    },
+
+    styles: {
+        build: ['dev', 'prod'],
+        clean: '',
+        watch: ''
+    }
+});
+
 
 gulp.task('clean', () => del('dist/**'));
 
