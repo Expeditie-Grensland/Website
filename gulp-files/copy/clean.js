@@ -1,5 +1,7 @@
-module.exports = (gulp, plugins) => () =>
-    plugins.del([
+import del from 'del';
+
+module.exports = (gulp) => () =>
+    del([
         'dist/config/**',
         'dist/locales/**',
         'dist/static/**/*',

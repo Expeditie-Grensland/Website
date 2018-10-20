@@ -1,7 +1,10 @@
-module.exports = (gulp, plugins) => () =>
+import favicons from 'favicons';
+import newer from 'gulp-newer';
+
+module.exports = (gulp) => () =>
     gulp.src('src/static/favicon.png')
-        .pipe(plugins.newer('dist/static/favicons/favicon.ico'))
-        .pipe(plugins.favicons.stream({
+        .pipe(newer('dist/static/favicons/favicon.ico'))
+        .pipe(favicons.stream({
             appName: 'Expeditie Grensland',
             developerName: 'Expeditie Admins',
             path: '/static/favicons/',

@@ -1,9 +1,12 @@
-module.exports = (gulp, plugins) => () =>
+import rev from 'gulp-rev';
+import stylus from 'gulp-stylus';
+
+module.exports = (gulp) => () =>
     gulp.src('src/styles/**/*.styl')
-        .pipe(plugins.stylus({
+        .pipe(stylus({
             compress: true
         }))
-        .pipe(plugins.rev())
+        .pipe(rev())
         .pipe(gulp.dest('dist/static/styles/'))
-        .pipe(plugins.rev.manifest())
+        .pipe(rev.manifest())
         .pipe(gulp.dest('dist/static/styles/'));

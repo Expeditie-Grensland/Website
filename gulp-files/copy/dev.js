@@ -1,11 +1,13 @@
-module.exports = (gulp, plugins) => gulp.parallel(
-    () => gulp.src([
+import newer from 'gulp-newer';
+
+module.exports = (gulp) => gulp.series(
+    gulp.src([
         'src/config/**/*',
         'src/locales/**/*',
         'src/static/**/*',
         'src/views/**/*'
     ], { base: 'src/' })
-        .pipe(plugins.newer({ dest: 'dist/' }))
+        .pipe(newer({ dest: 'dist/' }))
         .pipe(gulp.dest('dist/')),
 
     () => gulp.src('node_modules/cesium/Build/Cesium/**/*')

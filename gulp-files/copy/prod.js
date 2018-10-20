@@ -1,13 +1,15 @@
-module.exports = (gulp, plugins) =>
+import revRewrite from 'gulp-rev-rewrite';
+
+module.exports = (gulp) =>
     gulp.parallel(
         () => gulp.src('src/views/**/*')
-            .pipe(plugins.revRewrite({
+            .pipe(revRewrite({
                 manifest: gulp.src('dist/static/styles/rev-manifest.json'),
                 modifyUnreved: (x) => 'styles/' + x,
                 modifyReved: (x) => 'styles/' + x,
                 replaceInExtensions: ['.pug']
             }))
-            .pipe(plugins.revRewrite({
+            .pipe(revRewrite({
                 manifest: gulp.src('dist/static/scripts/rev-manifest.json'),
                 modifyUnreved: (x) => 'scripts/' + x,
                 modifyReved: (x) => 'scripts/' + x,
