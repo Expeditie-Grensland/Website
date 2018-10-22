@@ -1,4 +1,5 @@
-import $ from 'jquery';
+import 'core-js/fn/promise';
+
 import mapboxgl from 'mapbox-gl';
 // @ts-ignore
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
@@ -6,11 +7,12 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { LoadingBar } from './map/loadingBar';
 import { SocketHandler } from './sockets/handler';
 import { MapHandler } from './map/mapHandler';
-import { registerWorker } from './workerHelper/register';
+import { registerWorker } from './helpers/worker';
+import { ready } from './helpers/ready';
 
 declare var expeditieNameShort: string;
 
-$(() => {
+ready(() => {
     registerWorker();
 
     LoadingBar.setLoadingText('Loading map...');
@@ -57,5 +59,5 @@ $(() => {
     });
 
     SocketHandler.init();
-    MapHandler.init(map, expeditieNameShort);
+    MapHandler.init(map);
 });

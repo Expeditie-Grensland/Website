@@ -1,5 +1,4 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
     "target": "es2015",
     "module": "es2015",
@@ -12,6 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true
   }
 }

@@ -14,12 +14,12 @@ export namespace MapHandler {
 
     let mapStyleLoaded = false;
 
-    export function init(mapboxMap: mapboxGl.Map, expeditieNameShort: string) {
+    export function init(mapboxMap: mapboxGl.Map) {
         map = mapboxMap;
 
         map.on('style.load', onMapStyleLoad);
 
-        SocketHandler.request(expeditieNameShort);
+        SocketHandler.request();
     }
 
     export function setBoundingBox(b: SocketTypes.BoundingBox) {
