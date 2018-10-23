@@ -5,7 +5,6 @@ import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import { LoadingBar } from './map/loadingBar';
-import { SocketHandler } from './sockets/handler';
 import { MapHandler } from './map/mapHandler';
 import { registerWorker } from './helpers/worker';
 import { ready } from './helpers/ready';
@@ -58,6 +57,5 @@ ready(() => {
         console.error('Map error: ' + e.error);
     });
 
-    SocketHandler.init();
     MapHandler.init(map);
 });

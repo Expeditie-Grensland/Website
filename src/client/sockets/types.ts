@@ -10,8 +10,7 @@ export namespace SocketTypes {
     }
 
     export interface Node {
-        id: string;
-        personIds: number[];
+        personIds: string[];
         timeFrom: number;
         timeTill: number;
         color: string;

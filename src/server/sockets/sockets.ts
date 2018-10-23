@@ -17,7 +17,7 @@ export namespace Sockets {
 
         const personMap = await _getPersonMap();
         const [nodes, count, box, maxLocationId] = await Promise.all([
-            _getNodes(expeditie, personMap),
+            _getNodes(expeditie),
             _getLocationCount(expeditie, minLocationId),
             _getBoundingBox(expeditie),
             _getMaxLocationId(expeditie)
@@ -51,14 +51,14 @@ export namespace Sockets {
         return personMap;
     };
 
-    const _getNodes = async (expeditie: ExpeditieOrID, personMap: Map<string, number>): Promise<SocketTypes.Node[]> => {
+    const _getNodes = async (expeditie: ExpeditieOrID): Promise<SocketTypes.Node[]> => {
         const geoNodes = await Expedities.getNodes(expeditie); // TODO: reverse lookup by implementing nodes in ExpeditieDocument
         const colorsIds = _getNodeColors(geoNodes);
 
         let n = 0;
         return geoNodes.map(node => {
             return <SocketTypes.Node>{
-                personIds: node.personIds.map(p => personMap.get(p.toHexString())),
+                personIds: node.personIds.map(x => x.toHexString()),
                 timeFrom: node.timeFrom,
                 timeTill: node.timeTill != Number.POSITIVE_INFINITY ? node.timeTill : 1e10,
                 color: COLORS[colorsIds[n++]]
@@ -138,7 +138,8 @@ export namespace Sockets {
 
             return _getLocations(expeditie, personMap, skip, count, minLocationId)
                 .then(batch => {
-                    socket.emit(SocketIds.LOCATIONS, ++batchN, batch);
+                    if (batch.length != 0)
+                        socket.emit(SocketIds.LOCATIONS, ++batchN, batch);
                     if (batch.length == count)
                         return _sendBatchAndRecurse(batchN);
                 })
@@ -160,7 +161,7 @@ export namespace Sockets {
             longitude: 1,
             personId: 1
         })
-            .sort(!minLocationId ? { _id: -1 } : { visualArea: -1 }).skip(skip).limit(limit).exec()
+            .sort({ visualArea: -1 }).skip(skip).limit(limit).exec()
             .then(locations => locations.map((location: GeoLocationDocument) =>
                 <SocketTypes.Location>[
                     location._id.toHexString(),

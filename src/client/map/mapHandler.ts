@@ -3,6 +3,9 @@ import geoJson from 'geojson';
 
 import { SocketHandler } from '../sockets/handler';
 import { SocketTypes } from '../sockets/types';
+import { DatabaseModel } from '../database/model';
+import { Database } from '../database';
+import { DatabaseTypes } from '../database/types';
 
 export namespace MapHandler {
     const LOCATION_SOURCE = 'locations';
@@ -10,7 +13,7 @@ export namespace MapHandler {
     export let map: mapboxGl.Map;
 
     const gNodes: SocketTypes.Node[] = [];
-    const gLocations: SocketTypes.Location[][] = [];
+    const gLocations: DatabaseTypes.Location[][] = [];
 
     let mapStyleLoaded = false;
 
@@ -19,7 +22,12 @@ export namespace MapHandler {
 
         map.on('style.load', onMapStyleLoad);
 
-        SocketHandler.request();
+        Database.init();
+        SocketHandler.init();
+
+        Database.getLastLocationId()
+            .then(SocketHandler.request)
+            .catch(() => SocketHandler.request());
     }
 
     export function setBoundingBox(b: SocketTypes.BoundingBox) {
@@ -53,14 +61,14 @@ export namespace MapHandler {
         }
     }
 
-    export function addLocations(locations: SocketTypes.Location[]) {
-        for (let location of locations)
+    export function addLocations(locs: DatabaseTypes.Location[]) {
+        for (let loc of locs)
             for (let i = 0; i < gNodes.length; i++) {
-                if (gNodes[i].personIds.indexOf(location[1]) > -1 &&
-                    location[2] >= gNodes[i].timeFrom &&
-                    location[2] < gNodes[i].timeTill) {
+                if (gNodes[i].personIds.indexOf(loc.personId) > -1 &&
+                    loc.time >= gNodes[i].timeFrom &&
+                    loc.time < gNodes[i].timeTill) {
 
-                    gLocations[i].push(location);
+                    gLocations[i].push(loc);
                     break;
                 }
             }
@@ -88,7 +96,9 @@ export namespace MapHandler {
                     },
                     geometry: {
                         type: 'LineString',
-                        coordinates: gLocations[i].sort((l1, l2) => l1[2] - l2[2]).map(l => [l[4], l[3]])
+                        coordinates: gLocations[i]
+                            .sort((l1, l2) => l1.time - l2.time)
+                            .map(l => [l.longitude, l.latitude])
                     }
                 });
 

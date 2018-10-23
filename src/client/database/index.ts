@@ -1,14 +1,29 @@
-import Dexie from 'dexie';
-import { DataBaseTypes } from './types';
+import { DatabaseModel } from './model';
+import { DatabaseTypes } from './types';
 
-export class LocalDatabase extends Dexie {
-    locations!: Dexie.Table<DataBaseTypes.Location, string>;
+declare var expeditieNameShort: string;
 
-    constructor() {
-        super('ExpeditieGrensland');
+export namespace Database {
+    let db: DatabaseModel;
 
-        this.version(1).stores({
-            locations: 'id,expeditieId'
+    export const init = () => {
+        db = new DatabaseModel();
+
+        db.open().catch(function (e) {
+            console.error('Open failed: ' + e.stack);
         });
-    }
+    };
+
+    export const getLocations = (): Promise<DatabaseTypes.Location[]> =>
+        db.locations.where({ expeditieName: expeditieNameShort }).toArray();
+
+    export const getLastLocationId = (): Promise<string | undefined> =>
+        db.expedities.get(expeditieNameShort)
+            .then(expeditie => expeditie && expeditie.maxLocationId);
+
+    export const putExpeditie = (expeditie: DatabaseTypes.Expeditie) =>
+        db.expedities.put(expeditie);
+
+    export const putLocations = (locations: DatabaseTypes.Location[]) =>
+        db.locations.bulkPut(locations);
 }

@@ -1,16 +1,15 @@
 import { SocketTypes } from '../sockets/types';
 
-export namespace DataBaseTypes {
+export namespace DatabaseTypes {
     export interface Expeditie {
         name: string;
         nodes: SocketTypes.Node[];
         box: SocketTypes.BoundingBox;
-        count: number;
-        maxLocationId: string;
+        maxLocationId?: string;
     }
 
     export interface Location {
-        id: number;
+        id: string;
         expeditieName: string;
         personId: string;
         time: number;
@@ -18,3 +17,4 @@ export namespace DataBaseTypes {
         latitude: number;
     }
 }
+

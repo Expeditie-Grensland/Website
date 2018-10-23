@@ -17,7 +17,7 @@ export namespace SocketHandler {
             .on(SocketIds.DONE, Sockets.done);
     }
 
-    export function request() {
-        socket.emit(SocketIds.REQUEST, expeditieNameShort, '5afb3ddc6c878654c67d9a35');
+    export function request(id?: string) {
+        socket.emit(SocketIds.REQUEST, expeditieNameShort, id);
     }
 }
