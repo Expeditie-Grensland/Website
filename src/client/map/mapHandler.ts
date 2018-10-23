@@ -72,7 +72,7 @@ export namespace MapHandler {
                     break;
                 }
 
-        if (lastUpdated > 0 && (forceUpdate || Date.now() - lastUpdated > 1250)) {
+        if (lastUpdated > 0 && (forceUpdate || Date.now() - lastUpdated > 2000)) {
             lastUpdated = Date.now();
             updateMap();
         }

@@ -130,24 +130,24 @@ export namespace Sockets {
             .then(locations => locations[0]._id.toHexString())
             .catch(() => null);
 
-    const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>, minLocationId?: string) => {
-        const _sendBatchAndRecurse = (batchN = 0): Promise<any> => {
+    const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>, minLocationId?: string) =>
+        function sendBatchAndRecurse(skip = 0, count = 500): Promise<any> {
             if (!socket.connected) return Promise.resolve();
 
-            let skip = 1000 * batchN;
-            let count = 1000;
-
             return _getLocations(expeditie, personMap, skip, count, minLocationId)
-                .then(batch => {
-                    if (batch.length != 0)
-                        socket.emit(SocketIds.LOCATIONS, ++batchN, batch);
-                    if (batch.length == count)
-                        return _sendBatchAndRecurse(batchN);
-                })
+                .then(batch =>
+                    new Promise(resolve => {
+                        if (batch.length != 0)
+                            socket.emit(SocketIds.LOCATIONS, batch, () => {
+                                if (batch.length == count)
+                                    resolve(sendBatchAndRecurse(skip + count, Math.min(count * 2, 7500)));
+                                else resolve();
+                            });
+                        else resolve();
+                    })
+                )
                 .catch(console.error);
-        };
-        return _sendBatchAndRecurse();
-    };
+        }();
 
     const writeLocation = (loc: GeoLocationDocument, personMap: Map<string, number>): Buffer => {
         const x = new Pbf();

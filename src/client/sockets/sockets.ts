@@ -9,7 +9,6 @@ import { Database } from '../database';
 declare var expeditieNameShort: string;
 
 export namespace Sockets {
-
     const locations: DatabaseTypes.Location[] = [];
     let expeditie: DatabaseTypes.Expeditie;
     let personMap: { [numId: number]: string };
@@ -49,7 +48,7 @@ export namespace Sockets {
         };
     };
 
-    export function parseLocations(batchNumber: number, locs: ArrayBuffer[]) {
+    export const parseLocations = (locs: ArrayBuffer[], ack: () => void) => {
         receivedCount += locs.length;
         LoadingBar.setLoadingText(`Received ${receivedCount} out of ${totalCount} locations.`);
 
@@ -57,7 +56,9 @@ export namespace Sockets {
         locations.push(...dbLocs);
 
         MapHandler.addLocations(dbLocs);
-    }
+
+        ack();
+    };
 
     export function done() {
         LoadingBar.setLoadingDone();
