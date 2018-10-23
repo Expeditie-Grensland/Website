@@ -1,3 +1,5 @@
+import Pbf from 'pbf';
+
 import { MapHandler } from '../map/mapHandler';
 import { LoadingBar } from '../map/loadingBar';
 import { SocketTypes } from './types';
@@ -7,6 +9,7 @@ import { Database } from '../database';
 declare var expeditieNameShort: string;
 
 export namespace Sockets {
+
     const locations: DatabaseTypes.Location[] = [];
     let expeditie: DatabaseTypes.Expeditie;
     let personMap: { [numId: number]: string };
@@ -30,24 +33,27 @@ export namespace Sockets {
         totalCount = info.count;
 
         Database.getLocations()
-            .then(MapHandler.addLocations)
+            .then(locs => MapHandler.addLocations(locs, true))
             .catch(console.error);
     }
 
-    export function parseLocations(batchNumber: number, locs: SocketTypes.Location[]) {
+    const parseLocation = (loc: ArrayBuffer): DatabaseTypes.Location => {
+        const pbf = new Pbf(new Uint8Array(loc));
+        return {
+            id: pbf.readString(),
+            expeditieName: expeditieNameShort,
+            personId: personMap[pbf.readVarint()],
+            time: pbf.readDouble(),
+            longitude: pbf.readDouble(),
+            latitude: pbf.readDouble()
+        };
+    };
+
+    export function parseLocations(batchNumber: number, locs: ArrayBuffer[]) {
         receivedCount += locs.length;
         LoadingBar.setLoadingText(`Received ${receivedCount} out of ${totalCount} locations.`);
 
-        const dbLocs: DatabaseTypes.Location[] = locs.map(loc => {
-            return {
-                id: loc[0],
-                expeditieName: expeditieNameShort,
-                personId: personMap[loc[1]],
-                time: loc[2],
-                longitude: loc[4],
-                latitude: loc[3]
-            }
-        });
+        const dbLocs: DatabaseTypes.Location[] = locs.map(parseLocation);
         locations.push(...dbLocs);
 
         MapHandler.addLocations(dbLocs);
@@ -55,6 +61,7 @@ export namespace Sockets {
 
     export function done() {
         LoadingBar.setLoadingDone();
+        MapHandler.updateMap();
         Database.putLocations(locations)
             .catch(console.error);
         Database.putExpeditie(expeditie)
