@@ -3,6 +3,8 @@ import socketio from 'socket.io-client';
 import { Sockets } from './sockets';
 import { SocketIds } from './ids';
 
+declare var expeditieNameShort: string;
+
 export namespace SocketHandler {
     export let socket: SocketIOClient.Socket;
 
@@ -15,7 +17,7 @@ export namespace SocketHandler {
             .on(SocketIds.DONE, Sockets.done);
     }
 
-    export function request(expeditieName: string) {
-        socket.emit(SocketIds.REQUEST, expeditieName);
+    export function request(id?: string) {
+        socket.emit(SocketIds.REQUEST, expeditieNameShort, id);
     }
 }

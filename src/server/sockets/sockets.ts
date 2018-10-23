@@ -9,30 +9,35 @@ import { ExpeditieOrID } from '../components/expedities/model';
 import { People } from '../components/people';
 import { GeoLocationDocument, geoLocationModel } from '../components/geoLocations/model';
 import { GeoNodeDocument } from '../components/geoNodes/model';
+import * as mongoose from 'mongoose';
 
 export namespace Sockets {
-    export const getExpeditie = (socket: socketio.Socket) => async (expeditieName: string): Promise<void> => {
+    export const getExpeditie = (socket: socketio.Socket) => async (expeditieName: string, minLocationId?: string): Promise<void> => {
         const expeditie = (await Expedities.getByNameShort(expeditieName))!;
 
         const personMap = await _getPersonMap();
-        const [nodes, count, box] = await Promise.all([
-            _getNodes(expeditie, personMap),
-            Expedities.getLocationCount(expeditie),
-            _getBoundingBox(expeditie)
+        const [nodes, count, box, maxLocationId] = await Promise.all([
+            _getNodes(expeditie),
+            _getLocationCount(expeditie, minLocationId),
+            _getBoundingBox(expeditie),
+            _getMaxLocationId(expeditie)
         ]);
 
-        const sInfo = <SocketTypes.Info>{
+        const sInfo = <SocketTypes.Expeditie>{
+            id: Util.getObjectID(expeditie),
             nodes,
             box,
-            personMap: [...personMap],
-            count
+            personMap: [...personMap].reduce((obj, [s, n]) => Object.assign(obj, { [n]: s }), {}),
+            count,
+            maxLocationId
         };
 
         socket.emit(SocketIds.INFO, sInfo);
 
-        await _sendLocations(socket, expeditie, personMap);
+        await _sendLocations(socket, expeditie, personMap, minLocationId);
 
         socket.emit(SocketIds.DONE);
+
         socket.disconnect();
     };
 
@@ -46,20 +51,27 @@ export namespace Sockets {
         return personMap;
     };
 
-    const _getNodes = async (expeditie: ExpeditieOrID, personMap: Map<string, number>): Promise<SocketTypes.Node[]> => {
+    const _getNodes = async (expeditie: ExpeditieOrID): Promise<SocketTypes.Node[]> => {
         const geoNodes = await Expedities.getNodes(expeditie); // TODO: reverse lookup by implementing nodes in ExpeditieDocument
         const colorsIds = _getNodeColors(geoNodes);
 
         let n = 0;
         return geoNodes.map(node => {
             return <SocketTypes.Node>{
-                personIds: node.personIds.map(p => personMap.get(p.toHexString())),
+                personIds: node.personIds.map(x => x.toHexString()),
                 timeFrom: node.timeFrom,
                 timeTill: node.timeTill != Number.POSITIVE_INFINITY ? node.timeTill : 1e10,
                 color: COLORS[colorsIds[n++]]
             };
         });
     };
+
+
+    export const _getLocationCount = (expeditie: ExpeditieOrID, minLocationId?: string): Promise<number> =>
+        geoLocationModel.count(Object.assign(
+            { expeditieId: Util.getObjectID(expeditie) },
+            !minLocationId ? {} : { _id: { $gt: mongoose.Types.ObjectId(minLocationId) } }
+        )).exec();
 
     const COLORS = [
         '#2962FF',
@@ -102,21 +114,32 @@ export namespace Sockets {
                 .sort({ [latLon]: minMax })
                 .limit(1)
                 .exec()
-                .then(locations => locations[0][latLon])));
+                .then(locations => locations[0][latLon])
+                .catch(() => 0)));
 
         return <SocketTypes.BoundingBox>{ minLat, maxLat, minLon, maxLon };
     };
 
-    const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>) => {
+    const _getMaxLocationId = async (expeditie: ExpeditieOrID): Promise<string | null> =>
+        geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) })
+            .select({ _id: 1 })
+            .sort({ _id: -1 })
+            .limit(1)
+            .exec()
+            .then(locations => locations[0]._id.toHexString())
+            .catch(() => null);
+
+    const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>, minLocationId?: string) => {
         const _sendBatchAndRecurse = (batchN = 0): Promise<any> => {
             if (!socket.connected) return Promise.resolve();
 
             let skip = 100 * (2 ** batchN - 1);
             let count = 100 * 2 ** batchN;
 
-            return _getLocations(expeditie, personMap, skip, count)
+            return _getLocations(expeditie, personMap, skip, count, minLocationId)
                 .then(batch => {
-                    socket.emit(SocketIds.LOCATIONS, ++batchN, batch);
+                    if (batch.length != 0)
+                        socket.emit(SocketIds.LOCATIONS, ++batchN, batch);
                     if (batch.length == count)
                         return _sendBatchAndRecurse(batchN);
                 })
@@ -127,19 +150,21 @@ export namespace Sockets {
         return _sendBatchAndRecurse();
     };
 
-    const _getLocations = (expeditie: ExpeditieOrID, personMap: Map<string, number>, skip: number, limit: number): Promise<SocketTypes.Location[]> => {
-        let i = skip;
-        return geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) }).select({
-            _id: 0,
+    const _getLocations = (expeditie: ExpeditieOrID, personMap: Map<string, number>, skip: number, limit: number, minLocationId?: string): Promise<SocketTypes.Location[]> => {
+        return geoLocationModel.find(Object.assign(
+            { expeditieId: Util.getObjectID(expeditie) },
+            !minLocationId ? {} : { _id: { $gt: mongoose.Types.ObjectId(minLocationId) } }
+        )).select({
+            _id: 1,
             time: 1,
             latitude: 1,
             longitude: 1,
             personId: 1
         })
-            .sort({ visualArea: 'desc' }).skip(skip).limit(limit).exec()
+            .sort({ visualArea: -1 }).skip(skip).limit(limit).exec()
             .then(locations => locations.map((location: GeoLocationDocument) =>
                 <SocketTypes.Location>[
-                    i++,
+                    location._id.toHexString(),
                     personMap.get(location.personId.toHexString()),
                     location.time,
                     location.latitude,

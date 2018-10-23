@@ -53,7 +53,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
                 packageCache: {}
             })
                 .plugin(tsify, { project })
-                .transform(babelify, { extensions: ['.ts', '.js'], presets: ['@babel/preset-env'] });
+                .transform(babelify, { extensions: ['.ts', '.js'] });
 
             const path = entry
                 .replace('.ts', '.js')

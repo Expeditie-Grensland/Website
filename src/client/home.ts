@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import 'bootstrap';
 
-import { registerWorker } from './workerHelper/register';
+import { registerWorker } from './helpers/worker';
 
 $(() => {
     registerWorker();
