@@ -9,8 +9,6 @@ import { MapHandler } from './map/mapHandler';
 import { registerWorker } from './helpers/worker';
 import { ready } from './helpers/ready';
 
-declare var expeditieNameShort: string;
-
 ready(() => {
     registerWorker();
 

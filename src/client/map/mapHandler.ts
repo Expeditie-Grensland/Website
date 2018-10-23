@@ -15,7 +15,7 @@ export namespace MapHandler {
     const gNodes: SocketTypes.Node[] = [];
     const gLocations: DatabaseTypes.Location[][] = [];
 
-    let mapStyleLoaded = false;
+    let lastUpdated = 0;
 
     export function init(mapboxMap: mapboxGl.Map) {
         map = mapboxMap;
@@ -61,9 +61,9 @@ export namespace MapHandler {
         }
     }
 
-    export function addLocations(locs: DatabaseTypes.Location[]) {
+    export const addLocations = (locs: DatabaseTypes.Location[], forceUpdate: boolean = false) => {
         for (let loc of locs)
-            for (let i = 0; i < gNodes.length; i++) {
+            for (let i = 0; i < gNodes.length; i++)
                 if (gNodes[i].personIds.indexOf(loc.personId) > -1 &&
                     loc.time >= gNodes[i].timeFrom &&
                     loc.time < gNodes[i].timeTill) {
@@ -71,10 +71,12 @@ export namespace MapHandler {
                     gLocations[i].push(loc);
                     break;
                 }
-            }
 
-        if (mapStyleLoaded) updateMap();
-    }
+        if (lastUpdated > 0 && (forceUpdate || Date.now() - lastUpdated > 1250)) {
+            lastUpdated = Date.now();
+            updateMap();
+        }
+    };
 
     export function updateMap() {
         const locationSource = map.getSource(LOCATION_SOURCE) as mapboxGl.GeoJSONSource;
@@ -109,7 +111,7 @@ export namespace MapHandler {
     }
 
     export function onMapStyleLoad() {
-        mapStyleLoaded = true;
+        lastUpdated = Date.now();
 
         // @ts-ignore
         map.addSource(LOCATION_SOURCE, { type: 'geojson', data: null });

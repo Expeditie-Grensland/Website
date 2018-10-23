@@ -19,9 +19,13 @@ export namespace SocketTypes {
     export type PersonMap = {[num: number]: string};
 
     /**
-     * [id, person, timestamp, latitude, longitude]
+     * Location pbf:
+     * - id: string
+     * - person: fixed32
+     * - time: double
+     * - longitude: double
+     * - latitude: double
      */
-    export type Location = [string, number, number, number, number];
 
     export interface BoundingBox {
         minLat: number;
