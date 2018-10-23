@@ -5,7 +5,7 @@ import fancyLog from 'fancy-log';
 import filter from 'gulp-filter';
 import rev from 'gulp-rev';
 import streamify from 'gulp-streamify';
-import uglify from 'gulp-uglify';
+import terser from 'gulp-terser';
 import mergeStream from 'merge-stream';
 import tsify from 'tsify';
 import source from 'vinyl-source-stream';
@@ -72,7 +72,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
 
         if (opts.prod)
             stream = stream
-                .pipe(streamify(uglify()))
+                .pipe(streamify(terser()))
                 .pipe(workerFilter)
                 .pipe(streamify(rev()))
                 .pipe(workerFilter.restore)

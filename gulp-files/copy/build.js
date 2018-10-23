@@ -1,6 +1,6 @@
 import newer from 'gulp-newer';
 import revRewrite from 'gulp-rev-rewrite';
-import uglify from 'gulp-uglify';
+import terser from 'gulp-terser';
 import mergeStream from 'merge-stream';
 
 module.exports = (gulp, opts = { prod: false }) => () => {
@@ -23,7 +23,7 @@ module.exports = (gulp, opts = { prod: false }) => () => {
                 })),
 
             gulp.src('src/views/**/*.js', { base: 'src/' })
-                .pipe(uglify()),
+                .pipe(terser()),
 
             gulp.src([
                 'src/config/**/*',
