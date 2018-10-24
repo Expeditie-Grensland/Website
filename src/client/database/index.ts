@@ -24,6 +24,9 @@ export namespace Database {
     export const putExpeditie = (expeditie: DatabaseTypes.Expeditie) =>
         db.expedities.put(expeditie);
 
-    export const putLocations = (locs: DatabaseTypes.Location[]) =>
-        db.locations.bulkPut(locs);
+    export const putLocations = (locs: DatabaseTypes.Location[]): Promise<any> => {
+        if (locs.length == 0) return Promise.resolve();
+        return db.locations.bulkPut(locs.slice(0, 1000))
+            .then(() => putLocations(locs.slice(1000)))
+    }
 }

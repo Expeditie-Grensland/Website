@@ -10,7 +10,6 @@ import { ExpeditieOrID } from '../components/expedities/model';
 import { People } from '../components/people';
 import { GeoLocationDocument, geoLocationModel } from '../components/geoLocations/model';
 import { GeoNodeDocument } from '../components/geoNodes/model';
-import Pbf = require('pbf');
 
 export namespace Sockets {
     export const getExpeditie = (socket: socketio.Socket) => async (expeditieName: string, minLocationId?: string): Promise<void> => {
@@ -139,8 +138,8 @@ export namespace Sockets {
                     new Promise(resolve => {
                         if (batch.length != 0)
                             socket.emit(SocketIds.LOCATIONS, batch, () => {
-                                if (batch.length == count)
-                                    resolve(sendBatchAndRecurse(skip + count, Math.min(count * 2, 7500)));
+                                if (batch.length == count * 37)
+                                    resolve(sendBatchAndRecurse(skip + count, Math.min(count * 2, 5000)));
                                 else resolve();
                             });
                         else resolve();
@@ -149,19 +148,27 @@ export namespace Sockets {
                 .catch(console.error);
         }();
 
-    const writeLocation = (loc: GeoLocationDocument, personMap: Map<string, number>): Buffer => {
-        const x = new Pbf();
-        // @ts-ignore
-        x.writeString(loc._id.toHexString());
-        x.writeVarint(personMap.get(loc.personId.toHexString()) || 0);
-        x.writeDouble(loc.time);
-        x.writeDouble(loc.longitude);
-        x.writeDouble(loc.latitude);
-        return Buffer.from(x.finish());
-    };
-    const writeLocationR = R.curry(writeLocation);
+    const writeLocations = (locs: GeoLocationDocument[], personMap: Map<string, number>): Buffer => {
+        const buf = Buffer.allocUnsafe(37 * locs.length);
 
-    const _getLocations = (expeditie: ExpeditieOrID, personMap: Map<string, number>, skip: number, limit: number, minLocationId?: string): Promise<Buffer[]> => {
+        for (let i = 0; i < locs.length; i++) {
+            const offset = i * 37;
+
+            for (let j = 0; j < 12; j++)
+                // @ts-ignore: id represents ObjectId buffer, but is not documented
+                buf[offset + j] = locs[i]._id.id[j];
+
+            buf.writeUInt8(personMap.get(locs[i].personId.toHexString()) || 0, offset + 12);
+            buf.writeDoubleBE(locs[i].time, offset + 13);
+            buf.writeDoubleBE(locs[i].longitude, offset + 21);
+            buf.writeDoubleBE(locs[i].latitude, offset + 29);
+        }
+
+        return buf;
+    };
+    const writeLocationsR = R.curry(writeLocations);
+
+    const _getLocations = (expeditie: ExpeditieOrID, personMap: Map<string, number>, skip: number, limit: number, minLocationId?: string): Promise<Buffer> => {
         return geoLocationModel.find(Object.assign(
             { expeditieId: Util.getObjectID(expeditie) },
             !minLocationId ? {} : { _id: { $gt: mongoose.Types.ObjectId(minLocationId) } }
@@ -173,6 +180,6 @@ export namespace Sockets {
             personId: 1
         })
             .sort({ visualArea: -1 }).skip(skip).limit(limit).exec()
-            .then(locs => locs.map(writeLocationR(R.__, personMap)));
+            .then(writeLocationsR(R.__, personMap));
     };
 }

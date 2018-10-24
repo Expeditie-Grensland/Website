@@ -1,5 +1,3 @@
-import Pbf from 'pbf';
-
 import { MapHandler } from '../map/mapHandler';
 import { LoadingBar } from '../map/loadingBar';
 import { SocketTypes } from './types';
@@ -36,23 +34,28 @@ export namespace Sockets {
             .catch(console.error);
     }
 
-    const parseLocation = (loc: ArrayBuffer): DatabaseTypes.Location => {
-        const pbf = new Pbf(new Uint8Array(loc));
-        return {
-            id: pbf.readString(),
-            expeditieName: expeditieNameShort,
-            personId: personMap[pbf.readVarint()],
-            time: pbf.readDouble(),
-            longitude: pbf.readDouble(),
-            latitude: pbf.readDouble()
-        };
-    };
+    export const parseLocations = (locs: ArrayBuffer, ack: () => void) => {
+        const length = Math.floor(locs.byteLength / 37);
 
-    export const parseLocations = (locs: ArrayBuffer[], ack: () => void) => {
-        receivedCount += locs.length;
+        receivedCount += length;
         LoadingBar.setLoadingText(`Received ${receivedCount} out of ${totalCount} locations.`);
 
-        const dbLocs: DatabaseTypes.Location[] = locs.map(parseLocation);
+        const dbLocs: DatabaseTypes.Location[] = [];
+        const view = new DataView(locs);
+
+        for (let i = 0; i < length; i++) {
+            const offset = i * 37;
+
+            dbLocs.push({
+                id: view.getUint32(offset).toString(16) + view.getUint32(offset + 4).toString(16) + view.getUint32(offset + 8).toString(16),
+                expeditieName: expeditieNameShort,
+                personId: personMap[view.getUint8(offset + 12)],
+                time: view.getFloat64(offset + 13),
+                longitude: view.getFloat64(offset + 21),
+                latitude: view.getFloat64(offset + 29)
+            });
+        }
+
         locations.push(...dbLocs);
 
         MapHandler.addLocations(dbLocs);
