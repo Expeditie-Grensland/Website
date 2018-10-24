@@ -152,7 +152,7 @@ export namespace Sockets {
     const writeLocation = (loc: GeoLocationDocument, personMap: Map<string, number>): Buffer => {
         const x = new Pbf();
         // @ts-ignore
-        x.writeString(loc._id.toString('ascii'));
+        x.writeString(loc._id.toHexString());
         x.writeVarint(personMap.get(loc.personId.toHexString()) || 0);
         x.writeDouble(loc.time);
         x.writeDouble(loc.longitude);
