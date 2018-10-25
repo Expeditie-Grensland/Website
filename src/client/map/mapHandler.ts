@@ -47,11 +47,11 @@ export namespace MapHandler {
         const [maxX, maxY] = fromLonLat(b.maxLon, b.maxLat);
 
         map.getView().fit(
-                [minX, minY, maxX, maxY],
-                {
-                    padding: [20, 20, 20, 20]
-                }
-            );
+            [minX, minY, maxX, maxY],
+            {
+                padding: [20, 20, 20, 20]
+            }
+        );
     }
 
     export function addNodes(nodes: SocketTypes.Node[]) {
@@ -90,10 +90,9 @@ export namespace MapHandler {
     }
 
     export function updateMap() {
-
         for (let i = 0; i < gNodes.length; i++)
             if (gLocations[i].length > 1) {
-                const source = gNodes[i].layer.getSource() || new VectorSource();
+                const source = gNodes[i].layer!.getSource() || new VectorSource();
 
                 source.clear();
                 source.addFeature((new GeoJSON()).readFeature({
@@ -105,6 +104,7 @@ export namespace MapHandler {
                 }));
 
                 gNodes[i].layer.setSource(source);
+
             }
     }
 }

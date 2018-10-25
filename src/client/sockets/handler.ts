@@ -6,7 +6,7 @@ import { SocketIds } from './ids';
 declare var expeditieNameShort: string;
 
 export namespace SocketHandler {
-    export let socket: SocketIOClient.Socket;
+    let socket: SocketIOClient.Socket;
 
     export function init() {
         socket = socketio();

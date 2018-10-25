@@ -3,18 +3,6 @@ import Map from 'ol/Map';
 // @ts-ignore
 import View from 'ol/View';
 // @ts-ignore
-import TileLayer from 'ol/layer/Tile';
-// @ts-ignore
-import OSM from 'ol/source/OSM';
-// @ts-ignore
-import XYZ from 'ol/source/XYZ';
-// @ts-ignore
-import MVT from 'ol/format/MVT';
-// @ts-ignore
-import VectorTileLayer from 'ol/layer/VectorTile';
-// @ts-ignore
-import VectorTileSource from 'ol/source/VectorTile';
-// @ts-ignore
 import {Fill, Icon, Stroke, Style, Text} from 'ol/style';
 // @ts-ignore
 import * as olms from 'ol-mapbox-style';
