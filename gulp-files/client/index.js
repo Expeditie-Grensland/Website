@@ -43,17 +43,26 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
         const tasks = entries.map((entry) => {
             fancyLog(`Creating bundler for ${entry}`);
 
-            const project = entry.endsWith('worker/index.ts') ?
-                `${src}/worker/tsconfig.json` : `${src}/tsconfig.json`;
+            const isWorker = entry.endsWith('worker/index.ts');
 
-            let b = browserify({
+            const project = isWorker ?
+                `${src}/worker/tsconfig.json`
+                : `${src}/tsconfig.json`;
+
+            const babelOpts = !isWorker ?
+                { targets: '> 1% in NL, not dead, not ie < 12, not ios_saf < 11.4' }
+                : { targets: '> 1% in NL, not dead' };
+
+            const b = browserify({
                 entries: [entry],
                 debug: !opts.prod,
                 cache: {},
                 packageCache: {}
             })
                 .plugin(tsify, { project })
-                .transform(babelify, { extensions: ['.ts', '.js'] });
+                .transform(babelify, {
+                    global: true, extensions: ['.ts', '.js'], presets: [['@babel/preset-env', babelOpts]]
+                });
 
             const path = entry
                 .replace('.ts', '.js')

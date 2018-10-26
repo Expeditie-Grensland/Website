@@ -5,14 +5,14 @@ import View from 'ol/View';
 // @ts-ignore
 import {Fill, Icon, Stroke, Style, Text} from 'ol/style';
 // @ts-ignore
-import * as olms from 'ol-mapbox-style';
+import olms from 'ol-mapbox-style/olms';
 
 const mapboxAccessToken =
     "pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw";
 const mapboxStyle =
     "mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj";
 
-export default function createMap(): Map {
+export function createMap(): Map {
     const map = new Map({
         target: 'map',
         view: new View({

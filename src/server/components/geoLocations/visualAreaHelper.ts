@@ -1,4 +1,5 @@
-import * as turf from '@turf/turf';
+import area from '@turf/area';
+import { polygon } from '@turf/helpers';
 import * as R from 'ramda';
 
 import { GeoLocation, GeoLocationDocument, geoLocationModel, GeoLocationOrId } from './model';
@@ -10,7 +11,7 @@ export namespace VisualAreaHelper {
             .sort({ time: 'desc' }).limit(2).exec();
 
     const calculateVisualArea = (locBefore: GeoLocation, loc: GeoLocation, locAfter: GeoLocation): number =>
-        turf.area(turf.polygon([
+        area(polygon([
             [
                 [locBefore.longitude, locBefore.latitude],
                 [loc.longitude, loc.latitude],
