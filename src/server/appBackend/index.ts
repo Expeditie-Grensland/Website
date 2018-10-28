@@ -64,6 +64,7 @@ router.get('/expedities', (req, res) =>
         .find({ participants: Util.getObjectID(req.user), finished: false }, {
             name: 1,
             subtitle: 1,
+            color: 1,
             backgroundFile: 1
         })
         .sort({ sequenceNumber: -1 })
@@ -73,6 +74,7 @@ router.get('/expedities', (req, res) =>
                 id: x._id,
                 name: x.name,
                 subtitle: x.subtitle,
+                color: x.color,
                 image: MediaFiles.getUrl(x.backgroundFile)
             };
         }))
