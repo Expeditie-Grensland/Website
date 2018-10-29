@@ -6,12 +6,9 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import { LoadingBar } from './map/loadingBar';
 import { MapHandler } from './map/mapHandler';
-import { registerWorker } from './helpers/worker';
 import { ready } from './helpers/ready';
 
 ready(() => {
-    registerWorker();
-
     LoadingBar.setLoadingText('Loading map...');
 
     mapboxgl.accessToken =

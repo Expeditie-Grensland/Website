@@ -9,14 +9,16 @@ module.exports = (gulp, opts = { prod: false }) => () => {
 
     if (opts.prod)
         stream = stream
-            .pipe(stylus({ compress: true }))
+            .pipe(stylus({ 'include css': true, compress: true }))
             .pipe(rev())
             .pipe(gulp.dest('dist/static/styles/'))
             .pipe(rev.manifest());
     else
         stream = stream
             .pipe(sourcemaps.init())
-            .pipe(stylus())
+            .pipe(stylus({
+                'include css': true
+            }))
             .pipe(sourcemaps.write());
 
     return stream.pipe(gulp.dest('dist/static/styles/'));

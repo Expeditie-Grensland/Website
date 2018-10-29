@@ -10,12 +10,13 @@ html
 
         block styles
             link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto')
-            link(rel='stylesheet' href='/static/styles/main.css')
+            link(rel='stylesheet' href='/static/styles/all.css')
 
-        script
-            include includes/analytics.js
 
     body
+        div#cookieconsent
+
         block body
 
         block scripts
+            script(src='/static/scripts/all.js')

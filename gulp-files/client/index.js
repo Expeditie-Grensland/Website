@@ -16,6 +16,7 @@ const src = 'src/client';
 const dest = 'dist/static/scripts';
 
 const entries = [
+    `${src}/all.ts`,
     `${src}/home.ts`,
     `${src}/expeditie.ts`,
     `${src}/dictionary.ts`,
