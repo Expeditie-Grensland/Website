@@ -1,31 +1,34 @@
 import { ready } from './helpers/ready';
-// @ts-ignore: Typings for 'cookieconsent' module not available.
-import 'cookieconsent';
 
-declare var _paq: any, cookieconsent: any;
+declare var _paq: any;
 
 ready(() => {
+    /*
+     * Setup tracking
+     */
     // @ts-ignore
     global._paq = '_paq' in global ? _paq : [];
 
-    _paq.push(['requireConsent']);
+    _paq.push(['disableCookies']);
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
 
-    (() => {
-        const url = 'https://matomo.atema.one/';
-        _paq.push(['setTrackerUrl', url + 'piwik.php']);
-        _paq.push(['setSiteId', '1']);
+    const url = 'https://matomo.atema.one/';
 
-        const doc = document;
-        const element = doc.createElement('script');
-        const first_script = doc.getElementsByTagName('script')[0];
+    const doc = document;
+    const element = doc.createElement('script');
+    const first_script = doc.getElementsByTagName('script')[0];
+    _paq.push(['setTrackerUrl', url + 'piwik.php']);
+    _paq.push(['setSiteId', '1']);
 
-        element.defer = true;
-        element.src = url + 'piwik.js';
+    element.defer = true;
+    element.src = url + 'piwik.js';
 
-        first_script.parentNode!.insertBefore(element, first_script);
-    })();
+    first_script.parentNode!.insertBefore(element, first_script);
+
+    /*
+     * Register service worker
+     */
 
     if ('serviceWorker' in navigator)
         navigator.serviceWorker.register('/worker.js').then(
@@ -34,34 +37,4 @@ ready(() => {
         );
     else
         console.log('Service workers are not supported.');
-
-    cookieconsent.initialise({
-        container: document.getElementById('cookieconsent'),
-        palette: {
-            popup: {
-                background: '#efefef',
-                text: '#404040'
-            },
-            button: {
-                background: '#8ec760',
-                text: '#ffffff'
-            }
-        },
-        theme: 'edgeless',
-        content: {
-            deny: 'Do not allow',
-            allow: 'Allow cookies'
-        },
-        showLink: false,
-        position: 'bottom-left',
-        type: 'opt-in',
-        onInitialise: (status: string) => {
-            if (status == 'allow')
-                _paq.push(['setConsentGiven']);
-        },
-        onStatusChange: (status: string) => {
-            if (status == 'allow')
-                _paq.push(['setConsentGiven']);
-        }
-    });
 });
