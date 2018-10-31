@@ -2,7 +2,7 @@ dist: trusty
 sudo: false
 
 language: node_js
-node_js: '10'
+node_js: 11
 
 before_script: npm install -g gulp-cli
 
