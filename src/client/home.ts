@@ -52,4 +52,16 @@ $(() => {
     $('.videoModal').on('hide.bs.modal', function () {
         (<HTMLVideoElement>$(this).find('video')[0]).pause();
     });
+
+    function checkHash() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substr(1);
+
+            $('.modal.show').modal('hide');
+            $(`.movieModal${hash}`).modal('show');
+        }
+    }
+
+    window.onhashchange = checkHash;
+    checkHash();
 });
