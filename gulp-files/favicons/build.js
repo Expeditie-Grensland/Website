@@ -21,7 +21,8 @@ module.exports = (gulp, opts = { prod: false }) => () => {
             pipeHTML: true,
             replace: true,
             icons: {
-                appleStartup: false
+                appleStartup: false,
+                coast: false
             }
         }));
 
