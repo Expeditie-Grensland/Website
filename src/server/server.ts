@@ -8,6 +8,7 @@ import { config } from './helpers/configHelper';
 import { SocketHandler } from './sockets/handler';
 
 import 'source-map-support/register';
+import updateDatabase from "./components/updateDatabase"
 
 Error.stackTraceLimit = Infinity;
 
@@ -26,6 +27,8 @@ SocketHandler.bindHandlers(io);
 
 app.use('/', Router(dev));
 
-Setup.startServer(server, config.port);
+updateDatabase().then(() => {
+    Setup.startServer(server, config.port);
 
-console.info('Server started on port: ' + config.port);
+    console.info('Server started on port: ' + config.port);
+});

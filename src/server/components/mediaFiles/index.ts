@@ -1,9 +1,9 @@
 import * as mongoose from 'mongoose';
 
-import { MediaFile, MediaFileDocument, MediaFileEmbedded, mediaFileModel, MediaFileOrId, MediaFileUse } from './model';
-import { MediaFileHelper } from './helper';
-import { Documents } from '../documents/new';
-import { MediaFileId } from './id';
+import {MediaFile, MediaFileDocument, MediaFileEmbedded, mediaFileModel, MediaFileOrId, MediaFileUse} from './model';
+import {MediaFileHelper} from './helper';
+import {Documents} from '../documents/new';
+import {MediaFileId} from './id';
 
 export namespace MediaFiles {
     export const create = (file: MediaFile): Promise<MediaFileDocument> =>
@@ -32,7 +32,7 @@ export namespace MediaFiles {
         getDocument(file)
             .then(Documents.ensureNotNull)
             .then(file => {
-                return { id: file._id, ext: file.ext, mime: file.mime };
+                return { id: file._id, ext: file.ext, mime: file.mime, restricted: file.restricted };
             });
 
     export const addUse = (file: MediaFileOrId, usage: MediaFileUse): Promise<MediaFileDocument | null> =>

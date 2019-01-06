@@ -1,10 +1,17 @@
 import * as express from 'express';
 import * as passport from 'passport';
+import {AuthHelper} from "../../helpers/authHelper"
 
 export const router = express.Router();
 
 router.get('/login', (req, res, next) => {
     if (req.isAuthenticated()) {
+        if (req.session && req.session.returnTo) {
+            res.redirect(req.session.returnTo);
+            delete req.session.returnTo;
+            return;
+        }
+
         res.redirect('/members');
     } else {
         next();
@@ -24,15 +31,7 @@ router.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-router.use((req, res, next) => {
-    if (req.isAuthenticated())
-        next();
-    else {
-        if (req.session)
-            req.session.returnTo = req.originalUrl;
-        res.redirect('/members/login');
-    }
-});
+router.use(AuthHelper.loginRedirect);
 
 router.get('/', (req, res) => {
     res.render('members/index', {

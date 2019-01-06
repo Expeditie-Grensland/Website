@@ -7,12 +7,15 @@ export const router = express.Router();
 
 router.get('/', (req, res) => {
     Expedities.getAll().then(expedities => {
+        expedities.forEach(ex => console.log(ex));
+
         res.render('home', {
             expedities,
             t: (<any>req).t,
             t_ucf: ucFirstWrapper((<any>req).t),
             ucf: ucFirst,
-            getFileUrl: MediaFiles.getUrl
+            getFileUrl: MediaFiles.getUrl,
+            loggedIn: req.isAuthenticated()
         });
     });
 });

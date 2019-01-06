@@ -1,4 +1,5 @@
 import * as jwt from 'jsonwebtoken';
+import * as express from 'express';
 
 import { config } from './configHelper';
 import { PersonOrID } from '../components/people/model';
@@ -24,4 +25,15 @@ export namespace AuthHelper {
             callback
         )
     };
+
+    export const loginRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        if (req.isAuthenticated())
+            next();
+        else {
+            if (req.session)
+                req.session.returnTo = req.originalUrl;
+
+            res.redirect('/members/login');
+        }
+    }
 }

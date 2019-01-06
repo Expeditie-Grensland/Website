@@ -6,6 +6,7 @@ import * as mongoose from 'mongoose';
 import * as fs from 'fs';
 import { MediaFile, MediaFileDocument, MediaFileOrId, MediaFiles } from '.';
 import { Documents } from '../documents/new';
+import {AuthHelper} from "../../helpers/authHelper"
 
 const Mime = require('mime/Mime');
 
@@ -36,6 +37,11 @@ export namespace MediaFileHelper {
             });
         });
 
+    export const getIdFromPath = (path: string): mongoose.Types.ObjectId => {
+        const pathParts = path.split('/');
+        const fileName = pathParts[pathParts.length - 1];
+        return mongoose.Types.ObjectId(fileName.split('.')[0]);
+    }
 
     const _mimeMap = {
         'image/jpeg': ['jpg', 'jpeg'],
