@@ -12,7 +12,7 @@ router.get('/login', (req, res, next) => {
             return;
         }
 
-        res.redirect('/members');
+        res.redirect('/');
     } else {
         next();
     }
