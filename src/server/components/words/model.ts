@@ -12,7 +12,7 @@ const schema = new mongoose.Schema(
         word: String,
         definitions: [String],
         phonetic: String,
-        audioFile: mediaFileEmbeddedSchema
+        mediaFile: mediaFileEmbeddedSchema
     }
 );
 
@@ -22,7 +22,7 @@ export interface Word {
     word: string;
     definitions: string[];
     phonetic?: string;
-    audioFile?: MediaFileEmbedded;
+    mediaFile?: MediaFileEmbedded;
 }
 
 export interface WordDocument extends Word, mongoose.Document {

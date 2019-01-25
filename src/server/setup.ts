@@ -38,7 +38,7 @@ export namespace Setup {
         app.use('/app-backend', appBackend);
 
         if (dev) {
-            app.use('/media', express.static(MediaFileHelper.getFilesFolder(), { fallthrough: false }));
+            app.use('/media', (req, res) => res.redirect('https://expeditiegrensland.nl/media/' + req.path));
             app.use('/static', express.static(staticDir, { fallthrough: false }));
             app.get('/favicon.ico', (req, res) => res.sendFile(path.join(staticDir, '/favicons/favicon.ico')));
             app.get('/worker.js', (req, res) => res.sendFile(path.join(staticDir, '/scripts/worker.js')));

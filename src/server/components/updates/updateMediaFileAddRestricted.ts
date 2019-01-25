@@ -12,11 +12,14 @@ export default async function update() {
     for (const file of mediaFiles) {
         if (file != null && file.uses != null)
             for (const use of file.uses) {
-                console.log(use);
-
                 const user = await mongoose.model(use.model).findById(use.id);
 
                 if (user != null) {
+                    if ((user as any)[use.field] == null) {
+                        console.error(`Erroneous field reference for MediaFile (${file._id}). It has a use in '${use.model}.${use.field}, ${use.id}' but the field doesn't exist.`);
+                        continue;
+                    }
+
                     const restricted = (user as any)[use.field].restricted;
 
                     if (restricted == null) {

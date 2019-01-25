@@ -1,0 +1,9 @@
+mixin mediaFilePlayer(mediaFile)
+    if(mediaFile)
+        if(mediaFile.mime === 'audio/mpeg')
+            audio(src=getFileUrl(mediaFile) type=mediaFile.mime id=`player:${simple}`)
+            a.media(href=`#play:${simple}`) afspelen
+        if (mediaFile.mime === 'video/mp4')
+            a.media(href=`#play:${simple}`) afspelen
+            video(controls id=`player:${simple}` style="display: none;")
+                source(src=getFileUrl(mediaFile) type=mediaFile.mime)

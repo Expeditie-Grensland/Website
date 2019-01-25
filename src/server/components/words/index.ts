@@ -30,26 +30,30 @@ export namespace Words {
     export const getDocument = (word: WordOrID): Promise<WordDocument | null> =>
         Util.getDocument(getById)(word);
 
-    export const setAudioFile = (word: WordOrID, file: MediaFileOrId): Promise<WordDocument | null> => {
+    export const setMediaFile = (word: WordOrID, file: MediaFileOrId): Promise<WordDocument | null> => {
         const usage: MediaFileUse = {
             model: WordId,
             id: mongoose.Types.ObjectId(Util.getObjectID(word)),
-            field: 'audioFile'
+            field: 'mediaFile'
         };
 
-        return MediaFiles.ensureMime(file, ['audio/mpeg'])
+        return MediaFiles.ensureMime(file, ['audio/mpeg', 'video/mp4'])
             .then(file => MediaFiles.addUse(file, usage))
             // TODO: MA. - Find solution for all those ensureNotNulls everywhere.
             .then(Documents.ensureNotNull)
             .then(MediaFiles.getEmbed)
             .then(embed => getDocument(word)
                 .then(Documents.ensureNotNull)
-                .then(word => word.audioFile ? MediaFiles.removeUse(word.audioFile, usage) : undefined)
+                .then(word => word.mediaFile ? MediaFiles.removeUse(word.mediaFile, usage) : undefined)
                 .then(() => embed))
             .then(embed => WordModel.findByIdAndUpdate(
                 Util.getObjectID(word),
-                { audioFile: embed },
+                { mediaFile: embed },
                 { new: true })
                 .exec());
     };
 }
+
+export { Word, WordDocument, WordOrID } from './model';
+export { WordId } from './id';
+

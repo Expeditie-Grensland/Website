@@ -1,4 +1,5 @@
 extends main
+include includes/mediaFilePlayer
 
 block title
     title Expeditie - Woordenboek
@@ -27,9 +28,7 @@ block body
                 if(word.phonetic)
                     span.phon [#{word.phonetic}]
                     span.word &#32;
-                if(word.audioFile)
-                    audio(src=getFileUrl(word.audioFile) type='audio/mpeg' id=`player:${simple}`)
-                    a.audio(href=`#play:${simple}`) afspelen
+                +mediaFilePlayer(word.mediaFile)
 
             dd
                 ol

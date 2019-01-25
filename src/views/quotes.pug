@@ -1,0 +1,30 @@
+extends main
+include includes/mediaFilePlayer
+
+block title
+    title Expeditie - Quotes
+
+append scripts
+    script(src="/static/scripts/dictionary.js")
+
+append styles
+    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700&subset=latin-ext')
+    link(rel="stylesheet" href="/static/styles/dictionary.css")
+
+    meta(name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no')
+
+//- TODO: Introductie toevoegen
+
+block body
+    h1
+        span Citaten der Expeditie Grensland&#32;
+        span.edition Eerste Editie
+
+    dl
+        each quote in quotes
+            - simple = generateSimple(quote.quote);
+            dt(id=simple)
+                span.word #{quote.quote}&#32;
+                +mediaFilePlayer(quote.mediaFile)
+            dd
+                span.def !{marked(quote.context)}
