@@ -4,9 +4,13 @@ const playMedia = (word: string) => () => {
     console.log(player);
 
     if (player.tagName === "VIDEO")
-        if (player.style.display === "none")
+        if (player.style.display === "none") {
             player.style.display = "block";
-        else {
+            player.addEventListener('ended', () => {
+                player.style.display = "none";
+                player.load();
+            })
+        } else {
             player.style.display = "none";
             player.pause();         // pause video
             player.load();          // reload video to restart it
