@@ -25,7 +25,7 @@ block body
             - simple = generateSimple(quote.quote);
             dt(id=simple)
                 span.word #{quote.quote}&#32;
-                span.quotee &#8212; #{quote.quotee}&#32;
+                span.quotee &#8212;&nbsp;#{quote.quotee}&#32;
                 +mediaFilePlayer(quote.mediaFile)
             dd
                 span.def !{marked(quote.context)}
