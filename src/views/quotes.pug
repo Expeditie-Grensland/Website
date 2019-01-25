@@ -2,7 +2,7 @@ extends main
 include includes/mediaFilePlayer
 
 block title
-    title Expeditie - Quotes
+    title Expeditie - Citaten
 
 append scripts
     script(src="/static/scripts/dictionary.js")
@@ -25,6 +25,7 @@ block body
             - simple = generateSimple(quote.quote);
             dt(id=simple)
                 span.word #{quote.quote}&#32;
+                span.quotee &#8212; #{quote.quotee}&#32;
                 +mediaFilePlayer(quote.mediaFile)
             dd
                 span.def !{marked(quote.context)}
