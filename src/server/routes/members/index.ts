@@ -15,7 +15,7 @@ router.get('/login', (req, res, next) => {
             return;
         }
 
-        res.redirect('/');
+        res.redirect('/leden');
     } else {
         next();
     }
