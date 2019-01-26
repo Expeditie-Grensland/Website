@@ -36,11 +36,7 @@ router.get('/loguit', (req, res) => {
 
 router.use(AuthHelper.loginRedirect);
 
-router.get('/', (req, res) => {
-    res.render('members/index', {
-        user: req.user
-    });
-});
+router.get('/', (req, res) => res.render('members/index'));
 
 router.use('/woordenboek', dictionaryRouter);
 router.use('/citaten', quotesRouter);
