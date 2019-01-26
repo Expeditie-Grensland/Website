@@ -27,13 +27,15 @@ export namespace AuthHelper {
     };
 
     export const loginRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-        if (req.isAuthenticated())
+        if (req.isAuthenticated()) {
+            res.locals.user = req.user;
             next();
+        }
         else {
             if (req.session)
                 req.session.returnTo = req.originalUrl;
 
-            res.redirect('/members/login');
+            res.redirect('/leden/login');
         }
     }
 }

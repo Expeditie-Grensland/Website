@@ -13,15 +13,15 @@ append scripts
 block body
     .container
 
-        form.form-login(action='/members/login' method='post')
-            h2.form-login-heading Please sign in
+        form.form-login(action='/leden/login' method='post')
+            h2.form-login-heading Inloggen
 
             if messages
                 each message in messages
                     .alert.alert-danger(role='alert') !{message}
 
-            label(for='username' class='sr-only') Username
-            input.form-control(type='text' id='username' name='username' placeholder='Username' required autofocus)
-            label(for='password' class='sr-only') Password
-            input.form-control(type='password' id='password' name='password' placeholder='Password' required)
+            label(for='username' class='sr-only') Gebruikersnaam
+            input.form-control(type='text' id='username' name='username' placeholder='Gebruikersnaam' required autofocus)
+            label(for='password' class='sr-only') Wachtwoord
+            input.form-control(type='password' id='password' name='password' placeholder='Wachtwoord' required)
             input.btn.btn-lg.btn-primary.btn-block(value='Sign in' type='submit')
