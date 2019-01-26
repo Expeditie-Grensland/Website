@@ -1,8 +1,8 @@
 import * as express from 'express';
 import * as marked from 'marked';
 
-import { Quotes } from '../components/quotes';
-import { MediaFiles } from '../components/mediaFiles';
+import { Quotes } from '../../components/quotes';
+import { MediaFiles } from '../../components/mediaFiles';
 
 export const router = express.Router();
 
@@ -25,7 +25,7 @@ renderer.link = (href, title, text): string => {
 };
 
 router.get('/', async (req, res) => {
-    res.render('quotes', {
+    res.render('members/quotes', {
         quotes: await Quotes.getAll(),
         getFileUrl: MediaFiles.getUrl,
         generateSimple,

@@ -33,7 +33,7 @@ export namespace AuthHelper {
             if (req.session)
                 req.session.returnTo = req.originalUrl;
 
-            res.redirect('/members/login');
+            res.redirect('/leden/login');
         }
     }
 }

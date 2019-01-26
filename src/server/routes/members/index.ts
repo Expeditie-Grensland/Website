@@ -1,6 +1,9 @@
 import * as express from 'express';
 import * as passport from 'passport';
-import {AuthHelper} from "../../helpers/authHelper"
+import { AuthHelper } from '../../helpers/authHelper';
+
+import { router as dictionaryRouter } from './dictionary';
+import { router as quotesRouter } from './quotes';
 
 export const router = express.Router();
 
@@ -21,12 +24,12 @@ router.get('/login', (req, res, next) => {
 });
 
 router.post('/login', passport.authenticate('ldapauth', {
-    successReturnToOrRedirect: '/',
-    failureRedirect: '/members/login',
+    successReturnToOrRedirect: '/leden',
+    failureRedirect: '/leden/login',
     failureFlash: true
 }));
 
-router.get('/logout', (req, res) => {
+router.get('/loguit', (req, res) => {
     req.logout();
     res.redirect('/');
 });
@@ -38,3 +41,6 @@ router.get('/', (req, res) => {
         user: req.user
     });
 });
+
+router.use('/woordenboek', dictionaryRouter);
+router.use('/citaten', quotesRouter);
