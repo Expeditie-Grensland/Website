@@ -24,8 +24,9 @@ block body
         each quote in quotes
             - simple = generateSimple(quote.quote);
             dt(id=simple)
-                span.word #{quote.quote}&#32;
-                span.quotee &#8212;&nbsp;#{quote.quotee}&#32;
+                span.word &ldquo;#{quote.quote}&rdquo;&#32;
+                span.quotee &#8213;&nbsp;#{quote.quotee}
+                span.word &#32;
                 +mediaFilePlayer(quote.mediaFile)
             dd
                 span.def !{marked(quote.context)}
