@@ -14,7 +14,7 @@ export namespace Quotes {
         QuoteModel
             .find({})
             .collation({ locale: 'nl', strength: 1 })
-            .sort({ quote: 1 })
+            .sort({ time: 1 })
             .exec();
 
     export const getById = (id: string): Promise<QuoteDocument | null> =>

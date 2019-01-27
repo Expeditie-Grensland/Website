@@ -11,16 +11,22 @@ const schema = new mongoose.Schema(
     {
         quote: String,
         quotee: String,
+        time: {
+            type: Number,
+            required: true,
+            set: (t: number) => t > 1e10 ? t / 1000 : t
+        },
         context: String,
         mediaFile: mediaFileEmbeddedSchema
     }
 );
 
-schema.index({ quote: 1 }, { collation: { locale: 'nl', strength: 1 } });
+schema.index({ time: 1 }, { collation: { locale: 'nl', strength: 1 } });
 
 export interface Quote {
     quote: string;
     quotee: string;
+    time: number;
     context: string;
     mediaFile?: MediaFileEmbedded;
 }
