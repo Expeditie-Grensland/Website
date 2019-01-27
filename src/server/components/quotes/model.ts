@@ -21,7 +21,7 @@ const schema = new mongoose.Schema(
     }
 );
 
-schema.index({ time: 1 }, { collation: { locale: 'nl', strength: 1 } });
+schema.index({ time: 1 });
 
 export interface Quote {
     quote: string;
