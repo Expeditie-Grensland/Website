@@ -15,7 +15,7 @@ export namespace Sockets {
     let receivedCount: number = 0;
 
     export function parseInfo(info: SocketTypes.Expeditie) {
-        LoadingBar.setLoadingText('Received route info.');
+        LoadingBar.setLoadingText('Route info ontvangen.');
         personMap = info.personMap;
 
         expeditie = {
@@ -38,7 +38,7 @@ export namespace Sockets {
         const length = Math.floor(locs.byteLength / 37);
 
         receivedCount += length;
-        LoadingBar.setLoadingText(`Received ${receivedCount} out of ${totalCount} locations.`);
+        LoadingBar.setLoadingText(`${receivedCount} van ${totalCount} locaties ontvangen.`);
 
         const dbLocs: DatabaseTypes.Location[] = [];
         const view = new DataView(locs);

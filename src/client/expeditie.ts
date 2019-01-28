@@ -9,7 +9,7 @@ import { MapHandler } from './map/mapHandler';
 import { ready } from './helpers/ready';
 
 ready(() => {
-    LoadingBar.setLoadingText('Loading map...');
+    LoadingBar.setLoadingText('Kaart laden..');
 
     mapboxgl.accessToken =
         'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw';
@@ -29,8 +29,6 @@ ready(() => {
     map.addControl(new mapboxgl.NavigationControl());
 
     map.on('style.load', () => {
-        console.log('Map style loaded!');
-
         const mapLanguage = new MapboxLanguage();
         const browserLanguage = (navigator.languages ? navigator.languages[0] : navigator.language).split('-')[0];
 

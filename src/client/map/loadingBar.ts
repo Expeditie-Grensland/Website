@@ -9,6 +9,6 @@ export namespace LoadingBar {
 
     export function setLoadingDone() {
         loadingBar.style.display = 'none';
-        console.log('Loading done.');
+        console.log('Laden geslaagd.');
     }
 }
