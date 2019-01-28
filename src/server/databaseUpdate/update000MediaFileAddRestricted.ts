@@ -1,10 +1,9 @@
-import {mediaFileModel} from "../mediaFiles"
-import {MediaFiles} from "../mediaFiles"
-import * as mongoose from 'mongoose'
+import { mediaFileModel, MediaFiles } from '../components/mediaFiles';
+import * as mongoose from 'mongoose';
 
-export default async function update() {
+export default async () => {
     const promises = [
-        mediaFileModel.updateMany({restricted: {$exists: false}}, {restricted: false}).exec()
+        mediaFileModel.updateMany({ restricted: { $exists: false } }, { restricted: false }).exec()
     ];
 
     const mediaFiles = await MediaFiles.getAll();

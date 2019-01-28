@@ -1,0 +1,1 @@
+export const MetadatumId = 'Metadatum';
