@@ -12,13 +12,18 @@ import { PersonId } from './id';
 const schema = new mongoose.Schema({
     name: String,
     expedities: [reference(ExpeditieId)],
-    ldapId: String
+    ldapId: String,
+    team: {
+        type: String,
+        enum: ['Blauw', 'Rood']
+    }
 });
 
 export interface Person {
     name: string;
     expedities?: ExpeditieOrID[];
     ldapId?: string;
+    team?: 'Blauw' | 'Rood';
 }
 
 export interface PersonDocument extends Person, mongoose.Document {}
