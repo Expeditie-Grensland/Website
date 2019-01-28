@@ -4,6 +4,7 @@ import { AuthHelper } from '../../helpers/authHelper';
 
 import { router as dictionaryRouter } from './dictionary';
 import { router as quotesRouter } from './quotes';
+import { router as pointsRouter } from './points';
 
 export const router = express.Router();
 
@@ -40,3 +41,4 @@ router.get('/', (req, res) => res.render('members/index'));
 
 router.use('/woordenboek', dictionaryRouter);
 router.use('/citaten', quotesRouter);
+router.use('/punten', pointsRouter);
