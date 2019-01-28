@@ -4,9 +4,6 @@ import * as session from 'express-session';
 import * as redisConnect from 'connect-redis';
 import * as socketio from 'socket.io';
 import * as http from 'http';
-import * as i18next from 'i18next';
-import * as i18nextMiddleware from 'i18next-express-middleware';
-import * as FileSystemBackend from 'i18next-node-fs-backend';
 import * as mongoose from 'mongoose';
 import * as path from 'path';
 import * as passport from 'passport';
@@ -17,7 +14,6 @@ import { People } from './components/people';
 import { Util } from './components/documents/util';
 import { PersonDocument } from './components/people/model';
 import { router as appBackend } from './appBackend';
-import { MediaFileHelper } from './components/mediaFiles';
 import flash = require('connect-flash');
 
 export namespace Setup {
@@ -43,22 +39,6 @@ export namespace Setup {
             app.get('/favicon.ico', (req, res) => res.sendFile(path.join(staticDir, '/favicons/favicon.ico')));
             app.get('/worker.js', (req, res) => res.sendFile(path.join(staticDir, '/scripts/worker.js')));
         }
-
-        i18next
-            .use(FileSystemBackend)
-            .use(i18nextMiddleware.LanguageDetector)
-            .init({
-                preload: ['en', 'nl'],
-                lowerCaseLng: true,
-                fallbackLng: 'en',
-                saveMissing: true,
-                backend: {
-                    loadPath: path.join(root, 'locales/{{lng}}/{{ns}}.json'),
-                    addPath: path.join(root, 'locales/{{lng}}/{{ns}}.missing.json'),
-                    jsonIndent: 2
-                }
-            });
-        app.use(i18nextMiddleware.handle(i18next));
     }
 
     export function setupSession(app: express.Express, io: socketio.Server) {

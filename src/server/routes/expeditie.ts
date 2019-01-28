@@ -9,7 +9,7 @@ router.get('/', async (req, res, next) => {
 
     if (expeditie != null && expeditie.showMap) {
         res.render('expeditie', {
-            expeditie: expeditie,
+            expeditie,
         });
     } else {
         next();

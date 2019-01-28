@@ -8,7 +8,7 @@ import { config } from './helpers/configHelper';
 import { SocketHandler } from './sockets/handler';
 
 import 'source-map-support/register';
-import updateDatabase from "./components/updateDatabase"
+import updateDatabase from './components/updateDatabase';
 
 Error.stackTraceLimit = Infinity;
 

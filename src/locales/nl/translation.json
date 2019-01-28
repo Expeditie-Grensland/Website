@@ -1,8 +1,0 @@
-{
-  "expeditie": "expeditie",
-  "map": "kaart",
-  "movie": "film",
-  "movie_additive": "De Film",
-  "expeditie_finished_generic_error": "Sorry, de expeditie %s is gemarkeerd als beëindigd.",
-  "colorhelper_error_not_enough_colors": "Het aantal beschikbare kleuren (%d) is kleiner dan de huidige hoeveelheid groepen (%d)."
-}

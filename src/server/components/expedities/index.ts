@@ -2,7 +2,6 @@ import { People } from '../people';
 import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
-import * as i18next from 'i18next';
 import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { MediaFileUse } from '../mediaFiles/model';
 import * as mongoose from 'mongoose';
@@ -51,7 +50,7 @@ export namespace Expedities {
 
     const _checkFinished = (expeditie: ExpeditieDocument): Promise<ExpeditieDocument> => {
         if (expeditie.finished)
-            throw sprintf(i18next.t('expeditie_finished_generic_error'), expeditie.name);
+            throw sprintf('Sorry, de expeditie %s is gemarkeerd als beëindigd', expeditie.name);
         return Promise.resolve(expeditie);
     };
 

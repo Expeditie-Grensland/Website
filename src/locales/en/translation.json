@@ -1,8 +1,0 @@
-{
-  "expeditie": "expedition",
-  "map": "map",
-  "movie": "movie",
-  "movie_additive": "The Movie",
-  "expeditie_finished_generic_error": "Sorry, expeditie %s is marked as finished.",
-  "colorhelper_error_not_enough_colors": "The amount of available colors (%d) is too small for the current amount of groups (%d)."
-}
