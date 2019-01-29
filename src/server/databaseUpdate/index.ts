@@ -18,6 +18,10 @@ const UPDATES = [
     { // 3 -> 4
         info: 'Add team property to people',
         func: require('./update003SetPersonTeams')
+    },
+    { // 4 -> 5
+        info: 'Populate earned points collection',
+        func: require('./update004PopulatePoints')
     }
 ];
 
