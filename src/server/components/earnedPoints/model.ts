@@ -27,6 +27,8 @@ const schema = new mongoose.Schema({
     },
 });
 
+schema.index({ 'date.date': -1 });
+
 export interface EarnedPoint {
     date: OffsetDate;
     amount: number;
