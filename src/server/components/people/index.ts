@@ -16,6 +16,9 @@ export namespace People {
     export const getByIds = (ids: string[]): Promise<PersonDocument[]> =>
         PersonModel.find({ _id: { $in: ids } }).exec();
 
+    export const getByName = (name: string): Promise<PersonDocument | null> =>
+        PersonModel.findOne({ name }).exec();
+
     export const getByLdapId = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findOne({ ldapId: id }).exec();
 

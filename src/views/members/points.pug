@@ -1,0 +1,46 @@
+extends main
+
+block title
+    title Expeditie - De Punt'n
+
+append styles
+    link(rel='stylesheet' href='/static/styles/members/points.css')
+
+append body
+    .container.pt-5
+        .row.align-items-start.d-flex.pb-4
+            .col-auto.mr-auto
+                figure.figure.team
+                    img.figure-img.rounded(src='/static/images/KZ.png' alt='Team Blauw')
+                    figcaption.figure-caption.text-center Team Blauw
+
+            .col-auto
+                h1.display-4
+                    span.score.no-wrap.text-right #{score.Blauw}
+                    span.dash.text-center &ndash;
+                    span.score.no-wrap-text-left #{score.Rood}
+
+            .col-auto.ml-auto
+                figure.figure.team
+                    img.figure-img.rounded(src='/static/images/KG.png' alt='Team Rood')
+                    figcaption.figure-caption.text-center Team Rood
+
+        each earnedPointExpeditie in earnedPoints
+            .row.pt-3.pb-2
+                .col-12
+                    .expeditie-heading
+                        span.text-muted.text-uppercase.font-weight-bold #{earnedPointExpeditie[0].expeditie}
+            each earnedPoint in earnedPointExpeditie
+                .row.pb-1
+                    if earnedPoint.team === 'Blauw'
+                        .col-12
+                            span
+                                strong.points +#{earnedPoint.amount}&#32;
+                                span #{earnedPoint.name}&#32;
+                                span.text-muted (#{earnedPoint.date})
+                    else if earnedPoint.team === 'Rood'
+                        .col-12.text-right
+                            span
+                                span.text-muted (#{earnedPoint.date})&#32;
+                                span #{earnedPoint.name}&#32;
+                                strong.points +#{earnedPoint.amount}
