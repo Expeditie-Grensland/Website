@@ -17,14 +17,24 @@ router.get('/', async (req, res) => {
                 amount: x.amount,
                 name: (<PersonDocument>x.personId).name,
                 team: (<PersonDocument>x.personId).team,
-                expeditie: x.expeditieId ? (<ExpeditieDocument>x.expeditieId).name : ''
+                expeditie: x.expeditieId ? `Expeditie ${(<ExpeditieDocument>x.expeditieId).name}` : ''
             };
         }),
         // @ts-ignore
         R.groupWith(R.eqProps('expeditie'))
     )(await EarnedPoints.getAllPopulated());
 
-    console.log(earnedPoints);
+    const score = R.pipe(
+        // @ts-ignore
+        R.flatten,
+        // @ts-ignore
+        R.groupBy(R.prop('team')),
+        R.map(R.pipe(
+            // @ts-ignore
+            R.map(R.prop('amount')),
+            R.sum
+        ))
+    )(earnedPoints);
 
-    res.render('members/points', { earnedPoints });
+    res.render('members/points', { earnedPoints, score });
 });
