@@ -6,7 +6,7 @@ $(() => {
     const columns = $('.column');
     const leftArrow = $('.arrow.left');
     const rightArrow = $('.arrow.right');
-    const html = $('html');
+    const html = $('html, body');
 
     const expeditieCount = columns.length;
 
