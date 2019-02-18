@@ -7,14 +7,14 @@ append styles
     link(rel='stylesheet' href='/static/styles/members/points.css')
 
 append body
-    .container.pt-5
+    .container.pt-5.pb-5
         .row.align-items-start.d-flex.pb-4
             .col-auto.mr-auto
                 figure.figure.team
                     img.figure-img.rounded(src='/static/images/KZ.png' alt='Team Blauw')
                     figcaption.figure-caption.text-center Team Blauw
 
-            .col-auto
+            .col-auto.ml-auto.mr-auto
                 h1.display-4
                     span.score.no-wrap.text-right #{score.Blauw}
                     span.dash.text-center &ndash;
