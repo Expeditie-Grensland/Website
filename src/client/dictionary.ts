@@ -8,18 +8,29 @@ const playMedia = (word: string) => () => {
             player.style.display = "block";
             player.addEventListener('ended', () => {
                 player.style.display = "none";
-                player.load();
+                resetPlayerProgress(player);
             })
         } else {
             player.style.display = "none";
             player.pause();         // pause video
-            player.load();          // reload video to restart it
+            resetPlayerProgress(player);
             return false;
         }
 
     player.play();
     return false;
 };
+
+const resetPlayerProgress = (player: HTMLMediaElement) => {
+    const paused = player.paused;
+
+    if (!paused)
+        player.pause();
+    player.currentTime = 0;
+
+    if (!paused)
+        player.play();
+}
 
 const gotoAnchor = (word: string) => () => {
     let element = <HTMLElement>document.getElementById(word);
