@@ -3,10 +3,7 @@ import { Util } from '../documents/util';
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
 import { PersonOrID } from '../people/model';
 import { MediaFileOrId, MediaFiles } from '../mediaFiles';
-import { MediaFileUse } from '../mediaFiles/model';
-import * as mongoose from 'mongoose';
 import { Documents } from '../documents/new';
-import { ExpeditieId } from './id';
 import * as R from 'ramda';
 import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
 import { GeoNode, GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
@@ -157,72 +154,30 @@ export namespace Expedities {
         await GeoNodes.createMany(R.concat(newNodes, newPeopleNodes));
     };
 
-    export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
-        const usage: MediaFileUse = {
-            model: ExpeditieId,
-            id: mongoose.Types.ObjectId(Util.getObjectID(expeditie)),
-            field: 'backgroundFile'
-        };
-
-        return MediaFiles.ensureMime(file, ['image/jpeg'])
-            .then(file => MediaFiles.addUse(file, usage))
-            .then(Documents.ensureNotNull)
+    export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
+        MediaFiles.ensureMime(file, ['image/jpeg'])
             .then(MediaFiles.getEmbed)
-            .then(embed => getDocument(expeditie)
-                .then(Documents.ensureNotNull)
-                .then(expeditie => MediaFiles.removeUse(expeditie.backgroundFile, usage))
-                .then(() => embed))
             .then(embed => ExpeditieModel.findByIdAndUpdate(
                 Util.getObjectID(expeditie),
                 { backgroundFile: embed },
                 { new: true })
-                .exec())
-            .then(Documents.ensureNotNull);
-    };
+                .exec());
 
-    export const setMovieCoverFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
-        const usage: MediaFileUse = {
-            model: ExpeditieId,
-            id: mongoose.Types.ObjectId(Util.getObjectID(expeditie)),
-            field: 'movieCoverFile'
-        };
-
-        return MediaFiles.ensureMime(file, ['image/jpeg'])
-            .then(file => MediaFiles.addUse(file, usage))
-            .then(Documents.ensureNotNull)
+    export const setMovieCoverFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
+        MediaFiles.ensureMime(file, ['image/jpeg'])
             .then(MediaFiles.getEmbed)
-            .then(embed => getDocument(expeditie)
-                .then(Documents.ensureNotNull)
-                .then(expeditie => MediaFiles.removeUse(expeditie.movieCoverFile, usage))
-                .then(() => embed))
             .then(embed => ExpeditieModel.findByIdAndUpdate(
                 Util.getObjectID(expeditie),
                 { movieCoverFile: embed },
                 { new: true })
-                .exec())
-            .then(Documents.ensureNotNull);
-    };
+                .exec());
 
-    export const setMovieFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument> => {
-        const usage: MediaFileUse = {
-            model: ExpeditieId,
-            id: mongoose.Types.ObjectId(Util.getObjectID(expeditie)),
-            field: 'movieFile'
-        };
-
-        return MediaFiles.ensureMime(file, ['video/mp4'])
-            .then(file => MediaFiles.addUse(file, usage))
-            .then(Documents.ensureNotNull)
+    export const setMovieFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
+        MediaFiles.ensureMime(file, ['video/mp4'])
             .then(MediaFiles.getEmbed)
-            .then(embed => getDocument(expeditie)
-                .then(Documents.ensureNotNull)
-                .then(expeditie => MediaFiles.removeUse(expeditie.movieFile, usage))
-                .then(() => embed))
             .then(embed => ExpeditieModel.findByIdAndUpdate(
                 Util.getObjectID(expeditie),
                 { movieFile: embed },
                 { new: true })
-                .exec())
-            .then(Documents.ensureNotNull);
-    };
+                .exec());
 }

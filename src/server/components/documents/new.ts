@@ -28,6 +28,7 @@ export namespace Documents {
         (doc: DocumentOrId<T>): Promise<T | null> =>
             isDocument(doc) ? Promise.resolve(doc) : getById(getObjectId(doc));
 
+    // TODO: MA. - Find solution for all those ensureNotNulls everywhere.
     export const ensureNotNull = <T extends mongoose.Document>(input: T | null | undefined): T => {
         if (input != null)
             return input;

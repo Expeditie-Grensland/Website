@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 
-import {MediaFile, MediaFileDocument, MediaFileEmbedded, mediaFileModel, MediaFileOrId, MediaFileUse} from './model';
+import {MediaFile, MediaFileDocument, MediaFileEmbedded, mediaFileModel, MediaFileOrId} from './model';
 import {MediaFileHelper} from './helper';
 import {Documents} from '../documents/new';
 import {MediaFileId} from './id';
@@ -12,7 +12,6 @@ export namespace MediaFiles {
     export const remove = (file: MediaFileOrId): Promise<MediaFileDocument> =>
         getDocument(file)
             .then(Documents.ensureNotNull)
-            .then(MediaFileHelper.ensureFileNotInUse)
             .then(MediaFileHelper.deleteFile)
             .then((file: MediaFileDocument) => file.remove());
 
@@ -34,28 +33,6 @@ export namespace MediaFiles {
             .then(file => {
                 return { id: file._id, ext: file.ext, mime: file.mime, restricted: file.restricted };
             });
-
-    export const addUse = (file: MediaFileOrId, usage: MediaFileUse): Promise<MediaFileDocument | null> =>
-        mediaFileModel
-            .findByIdAndUpdate(
-                Documents.getObjectId(file),
-                { $push: { uses: usage } },
-                { new: true })
-            .exec();
-
-
-    export const removeUse = (file: MediaFileEmbedded, usage: MediaFileUse): Promise<void> => {
-        if (file === undefined || file === null || file.id === undefined || file.id === null)
-            return Promise.resolve();
-
-        return mediaFileModel
-            .findByIdAndUpdate(
-                Documents.getObjectId(file.id),
-                { $pull: { uses: usage } },
-                { new: true })
-            .exec()
-            .then(() => undefined);
-    };
 
     export const getUrl = (file: MediaFileEmbedded): string =>
         file !== undefined ? `/media/${file.id}.${file.ext}`: '';

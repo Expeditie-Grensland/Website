@@ -22,6 +22,10 @@ const UPDATES = [
     { // 4 -> 5
         info: 'Populate earned points collection',
         func: require('./update004PopulatePoints')
+    },
+    { // 5 -> 6
+        info: 'Remove mediaFile uses',
+        func: require('./update005RemoveFileUses')
     }
 ];
 

@@ -6,7 +6,6 @@ import * as mongoose from 'mongoose';
 import * as fs from 'fs';
 import { MediaFile, MediaFileDocument, MediaFileOrId, MediaFiles } from '.';
 import { Documents } from '../documents/new';
-import {AuthHelper} from "../../helpers/authHelper"
 
 const Mime = require('mime/Mime');
 
@@ -17,15 +16,6 @@ export namespace MediaFileHelper {
 
     export const getFileLocation = (file: MediaFile | MediaFileDocument) =>
         path.join(getFilesFolder(), `${file._id}.${file.ext}`);
-
-    export const ensureFileNotInUse = (file: MediaFileOrId): Promise<MediaFileDocument> =>
-        MediaFiles.getDocument(file)
-            .then(Documents.ensureNotNull)
-            .then(file => {
-                if (file.uses == null || file.uses.length < 1)
-                    return file;
-                throw new Error('File is still in use');
-            });
 
     export const deleteFile = (file: MediaFileDocument): Promise<MediaFileDocument> =>
         new Promise((resolve, reject) => {
@@ -41,7 +31,7 @@ export namespace MediaFileHelper {
         const pathParts = path.split('/');
         const fileName = pathParts[pathParts.length - 1];
         return mongoose.Types.ObjectId(fileName.split('.')[0]);
-    }
+    };
 
     const _mimeMap = {
         'image/jpeg': ['jpg', 'jpeg'],
