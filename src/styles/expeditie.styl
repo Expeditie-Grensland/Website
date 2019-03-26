@@ -1,17 +1,21 @@
-html
-  height 100%
-  width 100%
-  select none
-
-body
+html, body
+  height 100vh
+  width 100vw
   margin 0
   padding 0
-  height 100%
-  width 100%
+  overflow hidden
+  box-sizing border-box
+
+*
+  box-sizing inherit
+
+body
+  display flex
 
 #map
-  width: 100%
+  width: 60%
   height: 100%
+  vertical-align: top
 
 .mapboxgl-ctrl-bottom-right div, div a
   user-select none !important
@@ -19,7 +23,7 @@ body
 #loadingBar
   position absolute
   top 0
-  left 0
+  left 40%
   font-size 1em
   background-color #F0E68C
   text-align: center
@@ -35,3 +39,33 @@ body
   height 1em
   width auto
   vertical-align middle
+
+
+// ---------- Story ----------
+
+#story
+  display flex
+  height 100%
+  width 40%
+  overflow-y auto
+  padding 20px
+
+#graph
+  display inline-block
+  width 150px
+  flex 0 0 auto
+
+.storyElement
+  padding-bottom 20px
+
+.storyElement h1
+  margin-bottom 0
+
+.storyElement .time
+  margin 0
+  text-align right
+  font-size .7em
+
+.storyElement .people
+  margin-top 0
+  font-size .7em

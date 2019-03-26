@@ -16,6 +16,75 @@ append scripts
     script(src="/static/scripts/expeditie.js")
 
 block body
+    #story
+        #graph
+        #storyElements(data-track-start-count=2)
+            .storyElement.location(data-track-id="teheran")
+                h1 Teheran
+                p.time 13 december 2018
+                p.people Diederik & Matthijs
+            .storyElement.location(data-track-id="main")
+                h1 Bakoe
+                p.time 13 december 2018
+                p.people Maurice, Ronald & Atema
+            .storyElement.location(data-track-id="main" data-track-merge="teheran")
+                h1 Bakoe
+                p.time 13 december 2018
+                p.people Diederik, Matthijs, Maurice, Ronald & Atema
+            .storyElement.text(data-track-id="main")
+                h1 Tbilisi
+                p.time 13 december 2018
+                p.people Diederik, Matthijs, Maurice, Ronald & Atema
+                p    Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt, maar er moet nog veel gebeuren voordat hij de wereld kan veranderen.
+                |    Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt, maar er moet nog veel gebeuren voordat hij de wereld kan veranderen.
+                |    Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt, maar er moet nog veel gebeuren voordat hij de wereld kan veranderen.
+                |    Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt, maar er moet nog veel gebeuren voordat hij de wereld kan veranderen.
+                |    Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt, maar er moet nog veel gebeuren voordat hij de wereld kan veranderen.
+                |    Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt, maar er moet nog veel gebeuren voordat hij de wereld kan veranderen.
+            .storyElement.location(data-track-id="main")
+                h1 Yerevan
+                p.time 13 december 2018
+                p.people Maurice, Ronald, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="main")
+                h1 Vnukovo International Airport, Moskou
+                p.time 13 december 2018
+                p.people Maurice, Ronald, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="main")
+                h1 Sochi
+                p.time 13 december 2018
+                p.people Maurice, Ronald, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="main")
+                h1 Sukhum
+                p.time 13 december 2018
+                p.people Maurice, Ronald, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="main")
+                h1 Lake Ritsa
+                p.time 13 december 2018
+                p.people Maurice, Ronald, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="main")
+                h1 Olympisch Park Sochi
+                p.time 13 december 2018
+                p.people Maurice, Ronald, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="main")
+                h1 Moskou
+                p.time 13 december 2018
+                p.people Maurice, Ronald, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="boine")
+                h1 Finsterwolde
+                p.time 13 december 2018
+                p.people Ronald
+            .storyElement.location(data-track-id="main")
+                h1 Minsk
+                p.time 13 december 2018
+                p.people Maurice, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="main")
+                h1 Žiežmariai
+                p.time 13 december 2018
+                p.people Maurice, Atema, Matthijs & Diederik
+            .storyElement.location(data-track-id="main")
+                h1 Brussel
+                p.time 13 december 2018
+                p.people Maurice, Atema, Matthijs & Diederik
     #map
     #loadingBar
         include includes/loadSpinner.pug
