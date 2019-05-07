@@ -2,6 +2,7 @@
 
 export namespace SocketTypes {
     export interface Expeditie {
+        id: string;
         nodes: Node[];
         box: BoundingBox;
         personMap: PersonMap;
@@ -10,6 +11,7 @@ export namespace SocketTypes {
     }
 
     export interface Node {
+        id: string;
         personIds: string[];
         timeFrom: number;
         timeTill: number;
@@ -33,4 +35,37 @@ export namespace SocketTypes {
         minLon: number;
         maxLon: number;
     }
+
+    export interface BaseStoryElement {
+        type: "text" | "gallery" | "location";
+        expeditieId: string;
+        geoNodeId: string;
+        time: number;
+        latitude?: number;
+        longitude?: number;
+    }
+
+    export interface TextStoryElement extends BaseStoryElement {
+        type: "text";
+        title: string;
+        text: string;
+    }
+
+    export interface LocationStoryElement extends BaseStoryElement {
+        type: "location";
+        name: string;
+    }
+
+    export interface GalleryStoryElement extends BaseStoryElement {
+        type: "gallery";
+        pictures: GalleryItem[];
+    }
+
+    export interface GalleryItem {
+        file: string; // file path
+        mime: string;
+        caption: string;
+    }
+
+    export type StoryElement = TextStoryElement | LocationStoryElement | GalleryStoryElement;
 }

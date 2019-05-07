@@ -19,6 +19,7 @@ export namespace Sockets {
         personMap = info.personMap;
 
         expeditie = {
+            id: info.id,
             name: expeditieNameShort,
             nodes: info.nodes,
             box: info.box,

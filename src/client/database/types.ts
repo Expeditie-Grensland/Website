@@ -2,6 +2,7 @@ import { SocketTypes } from '../sockets/types';
 
 export namespace DatabaseTypes {
     export interface Expeditie {
+        id: string;
         name: string;
         nodes: SocketTypes.Node[];
         box: SocketTypes.BoundingBox;

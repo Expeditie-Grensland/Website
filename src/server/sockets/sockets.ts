@@ -58,6 +58,7 @@ export namespace Sockets {
         let n = 0;
         return geoNodes.map(node => {
             return <SocketTypes.Node>{
+                id: Util.getObjectID(node),
                 personIds: node.personIds.map(x => x.toHexString()),
                 timeFrom: node.timeFrom,
                 timeTill: node.timeTill != Number.POSITIVE_INFINITY ? node.timeTill : 1e10,
