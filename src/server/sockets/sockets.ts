@@ -1,15 +1,14 @@
 import * as socketio from 'socket.io';
 import * as R from 'ramda';
-import * as mongoose from 'mongoose';
 
-import { Expedities } from '../components/expedities';
-import { SocketIds } from './ids';
-import { Util } from '../components/documents/util';
-import { SocketTypes } from './types';
-import { ExpeditieOrID } from '../components/expedities/model';
-import { People } from '../components/people';
-import { GeoLocationDocument, geoLocationModel } from '../components/geoLocations/model';
-import { GeoNodeDocument } from '../components/geoNodes/model';
+import {Expedities} from '../components/expedities';
+import {SocketIds} from './ids';
+import {Util} from '../components/documents/util';
+import {SocketTypes} from './types';
+import {ExpeditieOrID} from '../components/expedities/model';
+import {People} from '../components/people';
+import {GeoLocationDocument, geoLocationModel} from '../components/geoLocations/model';
+import {GeoNodeDocument} from '../components/geoNodes/model';
 
 export namespace Sockets {
     export const getExpeditie = (socket: socketio.Socket) => async (expeditieName: string, lastClientUpdateTime?: number): Promise<void> => {
@@ -126,7 +125,7 @@ export namespace Sockets {
 
     const _getLastLocationTime = async (expeditie: ExpeditieOrID): Promise<number | null> =>
         geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) })
-            .select({ _id: 1 })
+            .select({ _id: 1, time: 1 })
             .sort({ _id: -1 })
             .limit(1)
             .exec()
@@ -190,98 +189,112 @@ export namespace Sockets {
     const _getStory = (expeditie: ExpeditieOrID, lastClientUpdateTime?: number): Promise<SocketTypes.StoryElement[]> => {
         return Promise.resolve(<SocketTypes.StoryElement[]> [
             {
+                id:          "0",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db06c878654c67ccb42",
-                time:        1557334547,
+                time:        1557334534,
                 name:        "Teheran"
             },
             {
+                id:          "1",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db06c878654c67ccb43",
-                time:        1557334547,
+                time:        1557334535,
                 name:        "Bakoe"
             },
             {
+                id:          "2",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1557334547,
+                time:        1557334536,
                 name:        "Bakoe"
             },
             {
+                id:          "3",
                 type:        "text",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1557334547,
+                time:        1557334537,
                 title:       "Tbilisi",
                 text:        "Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt maar hij moet nog veel leren voordat hij de wereld kan veranderen."
             },
             {
+                id:          "4",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1557334547,
+                time:        1557334538,
                 name:        "Yerevan"
             },
             {
+                id:          "5",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1557334547,
+                time:        1557334539,
                 name:        "Sochi"
             },
             {
+                id:          "6",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1557334547,
+                time:        1557334540,
                 name:        "Sukhum"
             },
             {
+                id:          "7",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1557334547,
+                time:        1557334541,
                 name:        "Lake Ritsa"
             },
             {
+                id:          "8",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1557334547,
+                time:        1557334542,
                 name:        "Olympisch Park Sochi"
             },
             {
+                id:          "9",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1557334547,
+                time:        1557334543,
                 name:        "Moskou"
             },
             {
+                id:          "10",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6368",
-                time:        1557334547,
+                time:        1557334544,
                 name:        "Finsterwolde"
             },
             {
+                id:          "11",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6369",
-                time:        1557334547,
+                time:        1557334545,
                 name:        "Minsk"
             },
             {
+                id:          "12",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6369",
-                time:        1557334547,
+                time:        1557334546,
                 name:        "Žiežmariai"
             },
             {
+                id:          "13",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6369",

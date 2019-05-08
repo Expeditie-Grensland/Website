@@ -16,7 +16,7 @@ export class DatabaseModel extends Dexie {
         });
 
         this.version(2).stores({
-            storyelements: 'expeditieId'
+            storyelements: 'id,expeditieId'
         });
     }
 }

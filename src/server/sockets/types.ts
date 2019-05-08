@@ -37,6 +37,7 @@ export namespace SocketTypes {
     }
 
     export interface BaseStoryElement {
+        id: string;
         type: "text" | "gallery" | "location";
         expeditieId: string;
         geoNodeId: string;
