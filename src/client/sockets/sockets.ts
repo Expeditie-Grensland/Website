@@ -3,12 +3,14 @@ import { LoadingBar } from '../map/loadingBar';
 import { SocketTypes } from './types';
 import { DatabaseTypes } from '../database/types';
 import { Database } from '../database';
+import {StoryHandler} from "../story/handler"
 
 declare var expeditieNameShort: string;
 
 export namespace Sockets {
     const locations: DatabaseTypes.Location[] = [];
     let expeditie: DatabaseTypes.Expeditie;
+    const story: SocketTypes.StoryElement[] = [];
     let personMap: { [numId: number]: string };
 
     let totalCount: number;
@@ -23,7 +25,7 @@ export namespace Sockets {
             name: expeditieNameShort,
             nodes: info.nodes,
             box: info.box,
-            maxLocationId: info.maxLocationId
+            lastUpdateTime: info.lastUpdateTime
         };
 
         MapHandler.addNodes(info.nodes);
@@ -32,6 +34,9 @@ export namespace Sockets {
 
         Database.getLocations()
             .then(locs => MapHandler.addLocations(locs, true))
+            .catch(console.error);
+        Database.getStoryElements()
+            .then(els => StoryHandler.addStoryElements(els))
             .catch(console.error);
     }
 
@@ -64,10 +69,20 @@ export namespace Sockets {
         ack();
     };
 
+    export function parseStoryElements(elements: SocketTypes.StoryElement[]) {
+        LoadingBar.setLoadingText('Verhaalinfo ontvangen.');
+
+        story.push(...elements);
+
+        StoryHandler.addStoryElements(elements);
+    }
+
     export function done() {
         LoadingBar.setLoadingDone();
         MapHandler.updateMap();
         Database.putLocations(locations)
+            .catch(console.error);
+        Database.putStoryElements(story)
             .catch(console.error);
         Database.putExpeditie(expeditie)
             .catch(console.error);

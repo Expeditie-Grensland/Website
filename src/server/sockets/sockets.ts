@@ -12,15 +12,15 @@ import { GeoLocationDocument, geoLocationModel } from '../components/geoLocation
 import { GeoNodeDocument } from '../components/geoNodes/model';
 
 export namespace Sockets {
-    export const getExpeditie = (socket: socketio.Socket) => async (expeditieName: string, minLocationId?: string): Promise<void> => {
+    export const getExpeditie = (socket: socketio.Socket) => async (expeditieName: string, lastClientUpdateTime?: number): Promise<void> => {
         const expeditie = (await Expedities.getByNameShort(expeditieName))!;
 
         const personMap = await _getPersonMap();
-        const [nodes, count, box, maxLocationId] = await Promise.all([
+        const [nodes, count, box, lastUpdateTime] = await Promise.all([
             _getNodes(expeditie),
-            _getLocationCount(expeditie, minLocationId),
+            _getLocationCount(expeditie, lastClientUpdateTime),
             _getBoundingBox(expeditie),
-            _getMaxLocationId(expeditie)
+            _getLastLocationTime(expeditie)
         ]);
 
         const sInfo = <SocketTypes.Expeditie>{
@@ -29,117 +29,14 @@ export namespace Sockets {
             box,
             personMap: [...personMap].reduce((obj, [s, n]) => Object.assign(obj, { [n]: s }), {}),
             count,
-            maxLocationId
+            lastUpdateTime
         };
 
         socket.emit(SocketIds.INFO, sInfo);
 
-        await _sendLocations(socket, expeditie, personMap, minLocationId);
+        await _sendLocations(socket, expeditie, personMap, lastClientUpdateTime);
 
-        const story: SocketTypes.Story = {
-            elements: [
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db06c878654c67ccb42",
-                    time: 1557334547,
-                    name: "Teheran"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db06c878654c67ccb43",
-                    time: 1557334547,
-                    name: "Bakoe"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db26c878654c67ce062",
-                    time: 1557334547,
-                    name: "Bakoe"
-                },
-                {
-                    type: "text",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db26c878654c67ce062",
-                    time: 1557334547,
-                    title: "Tbilisi",
-                    text: "Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt maar hij moet nog veel leren voordat hij de wereld kan veranderen."
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db26c878654c67ce062",
-                    time: 1557334547,
-                    name: "Yerevan"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db26c878654c67ce062",
-                    time: 1557334547,
-                    name: "Sochi"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db26c878654c67ce062",
-                    time: 1557334547,
-                    name: "Sukhum"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db26c878654c67ce062",
-                    time: 1557334547,
-                    name: "Lake Ritsa"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db26c878654c67ce062",
-                    time: 1557334547,
-                    name: "Olympisch Park Sochi"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3db26c878654c67ce062",
-                    time: 1557334547,
-                    name: "Moskou"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3dbd6c878654c67d6368",
-                    time: 1557334547,
-                    name: "Finsterwolde"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3dbd6c878654c67d6369",
-                    time: 1557334547,
-                    name: "Minsk"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3dbd6c878654c67d6369",
-                    time: 1557334547,
-                    name: "Žiežmariai"
-                },
-                {
-                    type: "location",
-                    expeditieId: "5afb39bf6c878654c67c0a29",
-                    geoNodeId: "5afb3dbd6c878654c67d6369",
-                    time: 1557334547,
-                    name: "Brussel"
-                }
-            ]
-        }
-
+        const story = await _getStory(expeditie, lastClientUpdateTime);
         socket.emit(SocketIds.STORY, story);
 
         socket.emit(SocketIds.DONE);
@@ -174,10 +71,10 @@ export namespace Sockets {
     };
 
 
-    export const _getLocationCount = (expeditie: ExpeditieOrID, minLocationId?: string): Promise<number> =>
+    export const _getLocationCount = (expeditie: ExpeditieOrID, lastUpdateTime?: number): Promise<number> =>
         geoLocationModel.count(Object.assign(
             { expeditieId: Util.getObjectID(expeditie) },
-            !minLocationId ? {} : { _id: { $gt: mongoose.Types.ObjectId(minLocationId) } }
+            !lastUpdateTime ? {} : { time: { $gt: lastUpdateTime } }
         )).exec();
 
     const COLORS = [
@@ -227,20 +124,20 @@ export namespace Sockets {
         return <SocketTypes.BoundingBox>{ minLat, maxLat, minLon, maxLon };
     };
 
-    const _getMaxLocationId = async (expeditie: ExpeditieOrID): Promise<string | null> =>
+    const _getLastLocationTime = async (expeditie: ExpeditieOrID): Promise<number | null> =>
         geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) })
             .select({ _id: 1 })
             .sort({ _id: -1 })
             .limit(1)
             .exec()
-            .then(locations => locations[0]._id.toHexString())
+            .then(locations => locations[0].time)
             .catch(() => null);
 
-    const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>, minLocationId?: string) =>
+    const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>, lastClientUpdateTime?: number) =>
         function sendBatchAndRecurse(skip = 0, count = 500): Promise<any> {
             if (!socket.connected) return Promise.resolve();
 
-            return _getLocations(expeditie, personMap, skip, count, minLocationId)
+            return _getLocations(expeditie, personMap, skip, count, lastClientUpdateTime)
                 .then(batch =>
                     new Promise(resolve => {
                         if (batch.length != 0)
@@ -275,10 +172,10 @@ export namespace Sockets {
     };
     const writeLocationsR = R.curry(writeLocations);
 
-    const _getLocations = (expeditie: ExpeditieOrID, personMap: Map<string, number>, skip: number, limit: number, minLocationId?: string): Promise<Buffer> => {
+    const _getLocations = (expeditie: ExpeditieOrID, personMap: Map<string, number>, skip: number, limit: number, lastClientUpdateTime?: number): Promise<Buffer> => {
         return geoLocationModel.find(Object.assign(
             { expeditieId: Util.getObjectID(expeditie) },
-            !minLocationId ? {} : { _id: { $gt: mongoose.Types.ObjectId(minLocationId) } }
+            !lastClientUpdateTime ? {} : { time: { $gt: lastClientUpdateTime } }
         )).select({
             _id: 1,
             time: 1,
@@ -289,4 +186,108 @@ export namespace Sockets {
             .sort({ visualArea: -1 }).skip(skip).limit(limit).exec()
             .then(writeLocationsR(R.__, personMap));
     };
+
+    const _getStory = (expeditie: ExpeditieOrID, lastClientUpdateTime?: number): Promise<SocketTypes.StoryElement[]> => {
+        return Promise.resolve(<SocketTypes.StoryElement[]> [
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db06c878654c67ccb42",
+                time:        1557334547,
+                name:        "Teheran"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db06c878654c67ccb43",
+                time:        1557334547,
+                name:        "Bakoe"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db26c878654c67ce062",
+                time:        1557334547,
+                name:        "Bakoe"
+            },
+            {
+                type:        "text",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db26c878654c67ce062",
+                time:        1557334547,
+                title:       "Tbilisi",
+                text:        "Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt maar hij moet nog veel leren voordat hij de wereld kan veranderen."
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db26c878654c67ce062",
+                time:        1557334547,
+                name:        "Yerevan"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db26c878654c67ce062",
+                time:        1557334547,
+                name:        "Sochi"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db26c878654c67ce062",
+                time:        1557334547,
+                name:        "Sukhum"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db26c878654c67ce062",
+                time:        1557334547,
+                name:        "Lake Ritsa"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db26c878654c67ce062",
+                time:        1557334547,
+                name:        "Olympisch Park Sochi"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3db26c878654c67ce062",
+                time:        1557334547,
+                name:        "Moskou"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3dbd6c878654c67d6368",
+                time:        1557334547,
+                name:        "Finsterwolde"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3dbd6c878654c67d6369",
+                time:        1557334547,
+                name:        "Minsk"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3dbd6c878654c67d6369",
+                time:        1557334547,
+                name:        "Žiežmariai"
+            },
+            {
+                type:        "location",
+                expeditieId: "5afb39bf6c878654c67c0a29",
+                geoNodeId:   "5afb3dbd6c878654c67d6369",
+                time:        1557334547,
+                name:        "Brussel"
+            }
+        ]);
+    }
 }

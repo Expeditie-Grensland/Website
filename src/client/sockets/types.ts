@@ -7,7 +7,7 @@ export namespace SocketTypes {
         box: BoundingBox;
         personMap: PersonMap;
         count: number;
-        maxLocationId: string;
+        lastUpdateTime: number;
     }
 
     export interface Node {
@@ -34,10 +34,6 @@ export namespace SocketTypes {
         maxLat: number;
         minLon: number;
         maxLon: number;
-    }
-
-    export interface Story {
-        elements: StoryElement[];
     }
 
     export interface BaseStoryElement {

@@ -29,7 +29,7 @@ export namespace MapHandler {
         Database.init();
         SocketHandler.init();
 
-        Database.getLastLocationId()
+        Database.getLastUpdateTime()
             .then(SocketHandler.request)
             .catch(() => SocketHandler.request());
     }

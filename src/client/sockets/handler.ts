@@ -14,10 +14,11 @@ export namespace SocketHandler {
         socket
             .on(SocketIds.INFO, Sockets.parseInfo)
             .on(SocketIds.LOCATIONS, Sockets.parseLocations)
+            .on(SocketIds.STORY, Sockets.parseStoryElements)
             .on(SocketIds.DONE, Sockets.done);
     }
 
-    export function request(id?: string) {
-        socket.emit(SocketIds.REQUEST, expeditieNameShort, id);
+    export function request(lastUpdateTime?: number) {
+        socket.emit(SocketIds.REQUEST, expeditieNameShort, lastUpdateTime);
     }
 }

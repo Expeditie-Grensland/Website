@@ -6,7 +6,7 @@ export namespace DatabaseTypes {
         name: string;
         nodes: SocketTypes.Node[];
         box: SocketTypes.BoundingBox;
-        maxLocationId?: string;
+        lastUpdateTime?: number;
     }
 
     export interface Location {

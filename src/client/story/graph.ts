@@ -1,5 +1,3 @@
-
-
 export namespace Graph {
     const WIDTH = 150
     const HORIZONTAL_SPACE = 70
