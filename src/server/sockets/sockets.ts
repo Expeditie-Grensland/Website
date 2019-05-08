@@ -36,6 +36,112 @@ export namespace Sockets {
 
         await _sendLocations(socket, expeditie, personMap, minLocationId);
 
+        const story: SocketTypes.Story = {
+            elements: [
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db06c878654c67ccb42",
+                    time: 1557334547,
+                    name: "Teheran"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db06c878654c67ccb43",
+                    time: 1557334547,
+                    name: "Bakoe"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db26c878654c67ce062",
+                    time: 1557334547,
+                    name: "Bakoe"
+                },
+                {
+                    type: "text",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db26c878654c67ce062",
+                    time: 1557334547,
+                    title: "Tbilisi",
+                    text: "Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt maar hij moet nog veel leren voordat hij de wereld kan veranderen."
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db26c878654c67ce062",
+                    time: 1557334547,
+                    name: "Yerevan"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db26c878654c67ce062",
+                    time: 1557334547,
+                    name: "Sochi"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db26c878654c67ce062",
+                    time: 1557334547,
+                    name: "Sukhum"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db26c878654c67ce062",
+                    time: 1557334547,
+                    name: "Lake Ritsa"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db26c878654c67ce062",
+                    time: 1557334547,
+                    name: "Olympisch Park Sochi"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3db26c878654c67ce062",
+                    time: 1557334547,
+                    name: "Moskou"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3dbd6c878654c67d6368",
+                    time: 1557334547,
+                    name: "Finsterwolde"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3dbd6c878654c67d6369",
+                    time: 1557334547,
+                    name: "Minsk"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3dbd6c878654c67d6369",
+                    time: 1557334547,
+                    name: "Žiežmariai"
+                },
+                {
+                    type: "location",
+                    expeditieId: "5afb39bf6c878654c67c0a29",
+                    geoNodeId: "5afb3dbd6c878654c67d6369",
+                    time: 1557334547,
+                    name: "Brussel"
+                }
+            ]
+        }
+
+        socket.emit(SocketIds.STORY, story);
+
         socket.emit(SocketIds.DONE);
 
         socket.disconnect();

@@ -36,6 +36,10 @@ export namespace SocketTypes {
         maxLon: number;
     }
 
+    export interface Story {
+        elements: StoryElement[];
+    }
+
     export interface BaseStoryElement {
         type: "text" | "gallery" | "location";
         expeditieId: string;

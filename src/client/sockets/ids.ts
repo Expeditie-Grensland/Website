@@ -4,5 +4,6 @@ export const enum SocketIds {
     REQUEST = 'Request',
     INFO = 'Info',
     LOCATIONS = 'Locations',
+    STORY = 'Story',
     DONE = 'Done'
 }
