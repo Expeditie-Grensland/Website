@@ -36,7 +36,7 @@ export namespace Sockets {
             .then(locs => MapHandler.addLocations(locs, true))
             .catch(console.error);
         Database.getStoryElements()
-            .then(els => StoryHandler.addStoryElements(els))
+            .then(els => StoryHandler.appendStoryElements(els))
             .catch(console.error);
     }
 
@@ -74,7 +74,7 @@ export namespace Sockets {
 
         story.push(...elements);
 
-        StoryHandler.addStoryElements(elements);
+        StoryHandler.appendStoryElements(elements);
     }
 
     export function done() {

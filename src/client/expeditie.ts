@@ -8,6 +8,7 @@ import { LoadingBar } from './map/loadingBar';
 import { MapHandler } from './map/mapHandler';
 import { ready } from './helpers/ready';
 import {Graph} from "./story/graph"
+import {StoryHandler} from "./story/handler"
 
 ready(() => {
     LoadingBar.setLoadingText('Kaart laden..');
@@ -53,4 +54,9 @@ ready(() => {
 
     Graph.init();
     MapHandler.init(map);
+
+    const storyWrapper = <HTMLDivElement>document!.getElementById("storyWrapper");
+
+    if(storyWrapper != null)
+        StoryHandler.init(storyWrapper);
 });
