@@ -187,6 +187,9 @@ export namespace Sockets {
     };
 
     const _getStory = (expeditie: ExpeditieOrID, lastClientUpdateTime?: number): Promise<SocketTypes.StoryElement[]> => {
+        if (lastClientUpdateTime != undefined)
+            return Promise.resolve(<SocketTypes.StoryElement[]> []);
+
         return Promise.resolve(<SocketTypes.StoryElement[]> [
             {
                 id:          "0",

@@ -114,7 +114,10 @@ export namespace Graph {
     };
 
     const generateStorySvg = (story: HTMLDivElement) => {
+        const graphTop = story.getBoundingClientRect().top;
         const startGraphWidth = parseInt(story.getAttribute('data-track-start-count')!);
+
+        console.log(graphTop);
 
         let trackCount = startGraphWidth;
         let trackIds: string[] = [];
@@ -161,7 +164,13 @@ export namespace Graph {
             const array: [number, string][] = new Array(trackCount).fill(null);
             const idx = trackIds.indexOf(trackId);
 
-            array[idx] = [storyElement.getBoundingClientRect().top, trackColors[idx]];
+            const headerRect = storyElement.getElementsByTagName("h1")[0].getBoundingClientRect();
+            const headerMiddle = (headerRect.top + headerRect.bottom) / 2.0;
+
+            console.log(storyElement.getElementsByTagName("h1")[0]);
+            console.log(headerMiddle);
+
+            array[idx] = [headerMiddle - graphTop , trackColors[idx]];
 
             svgArray.push(array);
         }
