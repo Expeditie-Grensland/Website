@@ -52,7 +52,7 @@ ready(() => {
         console.error('Map error: ' + e.error);
     });
 
-    Graph.init();
+   // Graph.init();
     MapHandler.init(map);
 
     const storyWrapper = <HTMLDivElement>document!.getElementById("storyWrapper");
