@@ -1,18 +1,10 @@
+import $ from 'jquery';
+import {SocketTypes} from "../sockets/types"
+
 export namespace Graph {
     const WIDTH = 150
     const HORIZONTAL_SPACE = 70
     const KNOWN_STORY_CLASSES = ['location', 'text', 'gallery'];
-    const LINE_COLORS = [
-        '#2962FF',
-        '#D50000',
-        '#00C853',
-        '#FF6D00',
-        '#C51162',
-        '#AA00FF',
-        '#AEEA00',
-        '#00BFA5',
-        '#00B8D4'
-    ];
 
     const svgElement = (type: string) => document.createElementNS('http://www.w3.org/2000/svg', type)
     const calculateHorizontal = (length: number, index: number) => (WIDTH - (length - 1) * HORIZONTAL_SPACE) / 2 + index * HORIZONTAL_SPACE
@@ -99,88 +91,83 @@ export namespace Graph {
     };
 
     const generateSvg = (elements: [number, string][][]) => {
-        const height = elements[elements.length - 1].find(e => e != null)![0] + 15;
-
         const svg = svgElement('svg');
-        svg.setAttribute('width', WIDTH.toString());
-        svg.setAttribute('height', height.toString());
 
-        [
-            ...createLines(elements),
-            ...createCircles(elements)
-        ].forEach(e => svg.appendChild(e));
+        if (elements.length > 0) {
+            const height = elements[elements.length - 1].find(e => e != null)![0] + 15;
+
+            svg.setAttribute('width', WIDTH.toString());
+            svg.setAttribute('height', height.toString());
+
+            [
+                ...createLines(elements),
+                ...createCircles(elements)
+            ].forEach(e => svg.appendChild(e));
+        }
 
         return svg;
     };
 
-    const generateStorySvg = (story: HTMLDivElement) => {
-        const graphTop = story.getBoundingClientRect().top;
-        const startGraphWidth = parseInt(story.getAttribute('data-track-start-count')!);
+    const generateStorySvg = (nodes: SocketTypes.Node[], story: SocketTypes.StoryElement[], htmlStory: HTMLElement, htmlHeaders: HTMLElement[]) => {
+        const graphTop = htmlStory.getBoundingClientRect().top;
 
-        console.log(graphTop);
-
-        let trackCount = startGraphWidth;
-        let trackIds: string[] = [];
-        let trackColors = LINE_COLORS;
-
-        const storyElements = Array.from(story.children);
+        let tracks: string[] = [];
+        let people: string[] = [];
 
         const svgArray: [number, string][][] = [];
 
-        let merged = false;
 
-        for (let storyElement of storyElements) {
-            if (!storyElement.classList.contains('storyElement'))
-                continue;
+        for (let idx = 0; idx != story.length; ++idx) {
+            const storyElement = story[idx];
+            const htmlHeader = htmlHeaders[idx];
+            const nodeId = storyElement.geoNodeId;
+            const node = nodes.find(node => node.id == nodeId)!;
 
-            const trackId = storyElement.getAttribute('data-track-id')!;
+                    // node unknown, create new track or merge existing
+            if (tracks.indexOf(nodeId) < 0) {
+                        // create new track, and try to merge previous tracks
 
-            if (trackIds.indexOf(trackId) < 0) {
-                trackIds.push(trackId);
+                const mergeCandidates = nodes.filter(n => tracks.indexOf(n.id) >= 0);
+                const mergeNodes = mergeCandidates.filter(n => n.personIds.some(pId => node.personIds.indexOf(pId) >= 0));
 
-                if (merged) {
-                    trackCount++;
-                    trackColors.splice(0, 1);
-                }
+                console.log("Adding new node: " + node.color);
+                tracks.push(nodeId);
+                people.push(...node.personIds)
+
+                console.log("Trying to merge node: " + node.color);
+
+                console.log("Possible merge candidates");
+                console.log(mergeNodes);
+                if (mergeNodes.length > 1 && !mergeNodes.some(node => node.id === nodeId))
+                    mergeNodes.forEach(n => tracks.splice(tracks.indexOf(n.id), 1))
+                else if (!mergeNodes.some(node => node.id === nodeId))
+                    mergeNodes
             }
 
-            let mergeId = storyElement.getAttribute('data-track-merge');
+            const array: [number, string][] = new Array(tracks.length).fill(null);
 
-            if (mergeId) {
-                const trackIdx = trackIds.indexOf(mergeId);
-
-                if (trackIdx > -1){
-                    trackIds.splice(trackIdx, 1);
-                    trackColors.splice(trackIdx, 1);
-
-                    trackColors.splice(trackIds.indexOf(trackId), 1);
-                }
-
-                trackCount--;
-
-                merged = true;
-            }
-
-            const array: [number, string][] = new Array(trackCount).fill(null);
-            const idx = trackIds.indexOf(trackId);
-
-            const headerRect = storyElement.getElementsByTagName("h1")[0].getBoundingClientRect();
+            const headerRect = htmlHeader.getBoundingClientRect();
             const headerMiddle = (headerRect.top + headerRect.bottom) / 2.0;
 
-            console.log(storyElement.getElementsByTagName("h1")[0]);
-            console.log(headerMiddle);
+            array[tracks.indexOf(nodeId)] = [headerMiddle - graphTop , node.color];
 
-            array[idx] = [headerMiddle - graphTop , trackColors[idx]];
-
+            console.log("Layer.");
+            console.log(array);
             svgArray.push(array);
         }
 
         console.log(svgArray);
-
         return generateSvg(svgArray);
     }
 
-    export function init() {
-        document!.getElementById("graph")!.appendChild(generateStorySvg(document.getElementById('storyElements') as HTMLDivElement));
+    export function createGraph(nodes: SocketTypes.Node[], story: SocketTypes.StoryElement[]) {
+        const graphEl = document!.getElementById("graph")!;
+        const storyEls = document!.getElementById("storyElements")!;
+        const storyHeaders = $('.storyElement h1').toArray();
+
+        const svg = generateStorySvg(nodes, story, storyEls, storyHeaders);
+
+        $(graphEl).empty();
+        graphEl.appendChild(svg);
     }
 }

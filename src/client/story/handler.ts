@@ -1,32 +1,43 @@
 import $ from 'jquery';
-import {Util} from 'util'
+import {Util} from './util'
 import {SocketTypes} from "../sockets/types"
+import {Graph} from "./graph"
 
 export namespace StoryHandler {
+    type StoryElement = SocketTypes.StoryElement;
 
     let storyWrapper: HTMLDivElement;
-    let storyElements: HTMLDivElement;
+    let storyElementsDiv: HTMLDivElement;
 
-    export function init(wrapperEl: HTMLDivElement) {
-        storyWrapper = wrapperEl;
-        storyElements = <HTMLDivElement>document!.getElementById('storyElements');
-        wrapperEl.addEventListener("scroll", onStoryScroll);
+    let personInfo: SocketTypes.PersonInfo;
+    let nodes: SocketTypes.Node[];
 
-        $(storyElements).empty();
+    let storyElements: StoryElement[] = [];
+
+    export function init(pI: SocketTypes.PersonInfo, ns: SocketTypes.Node[]) {
+        personInfo = pI;
+        nodes = ns;
+
+        storyWrapper = <HTMLDivElement>document!.getElementById("storyWrapper");
+        storyElementsDiv = <HTMLDivElement>document!.getElementById('storyElements');
+        storyWrapper.addEventListener("scroll", onStoryScroll);
     }
 
-    export function appendStoryElements(story: SocketTypes.StoryElement[]) {
+    export function appendStoryElements(story: StoryElement[]) {
+        storyElements.push(...story);
+        for (let element of story)
+            appendStoryElement(element);
+
         console.log("Added storyElements:");
         console.log(story);
 
-        for (let element of story) {
-            appendStoryElement(element);
-        }
+        Graph.createGraph(nodes, storyElements)
+
 
         // TODO: check for duplicates
     }
 
-    function appendStoryElement(element: SocketTypes.StoryElement) {
+    function appendStoryElement(element: StoryElement) {
         let el: JQuery<HTMLElement> | undefined = undefined;
 
         switch (element.type) {
@@ -44,7 +55,7 @@ export namespace StoryHandler {
         }
 
         if (el != undefined)
-            $(storyElements).append(el);
+            $(storyElementsDiv).append(el);
     }
 
     function createLocationStoryElement(element: SocketTypes.LocationStoryElement): JQuery<HTMLElement> {
@@ -74,7 +85,7 @@ export namespace StoryHandler {
             .append( createStoryElementHeader(element, "Gallery") )
     }
 
-    function createStoryElementHeader(element: SocketTypes.StoryElement, title: string): JQuery<HTMLElement> {
+    function createStoryElementHeader(element: StoryElement, title: string): JQuery<HTMLElement> {
         return $('<div>')
             .addClass('title')
             .append( $('<div>')
@@ -90,14 +101,38 @@ export namespace StoryHandler {
             )
             .append( $('<p>')
                 .addClass('people')
-                .text(element.geoNodeId)
+                .text(getPeopleString(element))
             )
+    }
+
+    function getPeopleString(element: StoryElement): string {
+        const people = getPeople(element);
+        let ret = "";
+        let idx = 0;
+
+        ret += people[idx++].name.split(' ')[0];
+
+        if (people.length > 1) {
+            for (; idx != people.length - 1; ++idx)
+                ret += ', ' + people[idx].name.split(' ')[0];
+            ret += " & " + people[idx].name.split(' ')[0];
+        }
+
+        return ret;
+    }
+
+    function getPeople(element: StoryElement): SocketTypes.ClientPerson[] {
+        const node = nodes.find(node => node.id === element.geoNodeId);
+
+        if (node != null)
+            return node.personIds.map(personId => personInfo[personId]).sort((p1, p2) => p1.name.localeCompare(p2.name));
+        return [];
     }
 
     function onStoryScroll(event: Event) {
         const titleEl = document!.getElementById("storyTitle");
 
-        // Change title CSS based on whether it is 'stuck' to the top of the window
+        // Change header CSS based on whether it is 'stuck' to the top of the window
         if (titleEl != null) {
             const titleRect = titleEl.getBoundingClientRect();
             if (titleEl.classList.contains('fixed')) {

@@ -6,6 +6,7 @@ export namespace SocketTypes {
         nodes: Node[];
         box: BoundingBox;
         personMap: PersonMap;
+        personInfo: PersonInfo;
         count: number;
         lastUpdateTime: number;
     }
@@ -18,7 +19,17 @@ export namespace SocketTypes {
         color: string;
     }
 
+    // maps short person id sent with location to full mongodb person id.
     export type PersonMap = {[num: number]: string};
+
+    // maps mongodb person id to person info
+    export type PersonInfo = {
+        [id: string]: ClientPerson
+    };
+
+    export interface ClientPerson {
+        name: string;
+    }
 
     /**
      * Location pbf:

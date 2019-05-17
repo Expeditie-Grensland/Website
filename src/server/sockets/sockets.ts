@@ -15,6 +15,7 @@ export namespace Sockets {
         const expeditie = (await Expedities.getByNameShort(expeditieName))!;
 
         const personMap = await _getPersonMap();
+        const personInfo = await _getPersonInfo(expeditie);
         const [nodes, count, box, lastUpdateTime] = await Promise.all([
             _getNodes(expeditie),
             _getLocationCount(expeditie, lastClientUpdateTime),
@@ -27,16 +28,17 @@ export namespace Sockets {
             nodes,
             box,
             personMap: [...personMap].reduce((obj, [s, n]) => Object.assign(obj, { [n]: s }), {}),
+            personInfo,
             count,
             lastUpdateTime
         };
 
         socket.emit(SocketIds.INFO, sInfo);
 
-        await _sendLocations(socket, expeditie, personMap, lastClientUpdateTime);
-
         const story = await _getStory(expeditie, lastClientUpdateTime);
         socket.emit(SocketIds.STORY, story);
+
+        await _sendLocations(socket, expeditie, personMap, lastClientUpdateTime);
 
         socket.emit(SocketIds.DONE);
 
@@ -51,6 +53,18 @@ export namespace Sockets {
             personMap.set(people[i]._id.toHexString(), i);
 
         return personMap;
+    };
+
+    const _getPersonInfo = async (expeditie: ExpeditieOrID): Promise<SocketTypes.PersonInfo> => {
+        const personInfo: SocketTypes.PersonInfo = {};
+        const people = await People.getByExpeditie(expeditie);
+
+        for (let person of people)
+            personInfo[Util.getObjectID(person)] = {
+                name: person.name
+            };
+
+        return personInfo;
     };
 
     const _getNodes = async (expeditie: ExpeditieOrID): Promise<SocketTypes.Node[]> => {
@@ -204,7 +218,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db06c878654c67ccb43",
-                time:        1526464800,
+                time:        1526464801,
                 name:        "Bakoe"
             },
             {
@@ -212,7 +226,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464800,
+                time:        1526464802,
                 name:        "Bakoe"
             },
             {
@@ -220,7 +234,7 @@ export namespace Sockets {
                 type:        "text",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464800,
+                time:        1526464803,
                 title:       "Tbilisi",
                 text:        "Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt maar hij moet nog veel leren voordat hij de wereld kan veranderen."
             },
@@ -229,7 +243,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464800,
+                time:        1526464804,
                 name:        "Yerevan"
             },
             {
@@ -237,7 +251,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464800,
+                time:        1526464805,
                 name:        "Sochi"
             },
             {
@@ -245,7 +259,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464800,
+                time:        1526464806,
                 name:        "Sukhum"
             },
             {
@@ -253,7 +267,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464800,
+                time:        1526464807,
                 name:        "Lake Ritsa"
             },
             {
@@ -261,7 +275,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464800,
+                time:        1526464808,
                 name:        "Olympisch Park Sochi"
             },
             {
@@ -269,7 +283,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464800,
+                time:        1526464809,
                 name:        "Moskou"
             },
             {
@@ -277,7 +291,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6368",
-                time:        1526464800,
+                time:        1526464810,
                 name:        "Finsterwolde"
             },
             {

@@ -54,9 +54,4 @@ ready(() => {
 
    // Graph.init();
     MapHandler.init(map);
-
-    const storyWrapper = <HTMLDivElement>document!.getElementById("storyWrapper");
-
-    if(storyWrapper != null)
-        StoryHandler.init(storyWrapper);
 });

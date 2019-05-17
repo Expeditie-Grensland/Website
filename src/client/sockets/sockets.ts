@@ -11,7 +11,8 @@ export namespace Sockets {
     const locations: DatabaseTypes.Location[] = [];
     let expeditie: DatabaseTypes.Expeditie;
     const story: SocketTypes.StoryElement[] = [];
-    let personMap: { [numId: number]: string };
+    let personMap: SocketTypes.PersonMap;
+    let personInfo: SocketTypes.PersonInfo;
 
     let totalCount: number;
     let receivedCount: number = 0;
@@ -19,6 +20,9 @@ export namespace Sockets {
     export function parseInfo(info: SocketTypes.Expeditie) {
         LoadingBar.setLoadingText('Route info ontvangen.');
         personMap = info.personMap;
+        personInfo = info.personInfo;
+
+        console.log(personInfo);
 
         expeditie = {
             id: info.id,
@@ -27,6 +31,8 @@ export namespace Sockets {
             box: info.box,
             lastUpdateTime: info.lastUpdateTime
         };
+
+        StoryHandler.init(personInfo, info.nodes);
 
         MapHandler.addNodes(info.nodes);
         MapHandler.setBoundingBox(info.box);

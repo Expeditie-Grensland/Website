@@ -41,5 +41,5 @@ export namespace Database {
 
     export const getStoryElements = (): Promise<SocketTypes.StoryElement[]> =>
         getExpeditie()
-            .then(expeditie => expeditie ? db.storyelements.where({expeditieId: expeditie.id}).toArray() : [])
+            .then(expeditie => expeditie ? db.storyelements.where({expeditieId: expeditie.id}).sortBy('time') : [])
 }

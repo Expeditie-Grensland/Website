@@ -22,6 +22,9 @@ export namespace People {
     export const getByLdapId = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findOne({ ldapId: id }).exec();
 
+    export const getByExpeditie = (expeditie: ExpeditieOrID): Promise<PersonDocument[]> =>
+        PersonModel.find({ expedities: Util.getObjectID(expeditie) }).sort({ _id: 1 }).exec();
+
     export const addExpeditie = (person: PersonOrID, expeditie: ExpeditieOrID): Promise<PersonDocument | null> =>
         PersonModel.findByIdAndUpdate(
             Util.getObjectID(person),
