@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import {Util} from 'util'
 import {SocketTypes} from "../sockets/types"
 
 export namespace StoryHandler {
@@ -26,7 +27,7 @@ export namespace StoryHandler {
     }
 
     function appendStoryElement(element: SocketTypes.StoryElement) {
-        let el: JQuery<HTMLElement>;
+        let el: JQuery<HTMLElement> | undefined = undefined;
 
         switch (element.type) {
             case "location": {
@@ -83,7 +84,8 @@ export namespace StoryHandler {
                 )
                 .append( $('<p>')
                     .addClass('time')
-                    .text(element.time)
+                    .text(Util.unixTimeToDisplayDate(element.time * 1000))
+                    .prop('title', Util.unixTimeToTitleDate(element.time * 1000))
                 )
             )
             .append( $('<p>')
