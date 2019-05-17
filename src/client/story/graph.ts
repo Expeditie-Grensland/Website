@@ -140,8 +140,8 @@ export namespace Graph {
                 console.log(mergeNodes);
                 if (mergeNodes.length > 1 && !mergeNodes.some(node => node.id === nodeId))
                     mergeNodes.forEach(n => tracks.splice(tracks.indexOf(n.id), 1))
-                else if (!mergeNodes.some(node => node.id === nodeId))
-                    mergeNodes
+                // else if (!mergeNodes.some(node => node.id === nodeId))
+                //     mergeNodes
             }
 
             const array: [number, string][] = new Array(tracks.length).fill(null);
