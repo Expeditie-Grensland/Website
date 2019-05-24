@@ -42,14 +42,15 @@ export namespace StoryHandler {
 
         switch (element.type) {
             case "location": {
-                el = createLocationStoryElement(<SocketTypes.LocationStoryElement>element)
+                el = createLocationStoryElement(<SocketTypes.LocationStoryElement>element);
                 break;
             }
             case "text": {
-                el = createTextStoryElement(<SocketTypes.TextStoryElement>element)
+                el = createTextStoryElement(<SocketTypes.TextStoryElement>element);
                 break;
             }
             case "gallery": {
+                el = createGalleryStoryElement(<SocketTypes.GalleryStoryElement>element);
                 break;
             }
         }

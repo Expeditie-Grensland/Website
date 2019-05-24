@@ -290,7 +290,7 @@ export namespace Sockets {
                 id:          "10",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
-                geoNodeId:   "5afb3dbd6c878654c67d6368",
+                geoNodeId:   "5afb3dbd6c878654c67d6369",
                 time:        1526464810,
                 name:        "Finsterwolde"
             },
@@ -298,7 +298,7 @@ export namespace Sockets {
                 id:          "11",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
-                geoNodeId:   "5afb3dbd6c878654c67d6369",
+                geoNodeId:   "5afb3dbd6c878654c67d6368",
                 time:        1547978400,
                 name:        "Minsk"
             },
@@ -306,7 +306,7 @@ export namespace Sockets {
                 id:          "12",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
-                geoNodeId:   "5afb3dbd6c878654c67d6369",
+                geoNodeId:   "5afb3dbd6c878654c67d6368",
                 time:        1557993600,
                 name:        "Žiežmariai"
             },
@@ -314,7 +314,7 @@ export namespace Sockets {
                 id:          "13",
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
-                geoNodeId:   "5afb3dbd6c878654c67d6369",
+                geoNodeId:   "5afb3dbd6c878654c67d6368",
                 time:        1558080000,
                 name:        "Brussel"
             }
