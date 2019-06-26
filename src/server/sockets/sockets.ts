@@ -210,7 +210,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db06c878654c67ccb42",
-                time:        1526464800,
+                time:        1499990400,
                 name:        "Teheran"
             },
             {
@@ -218,7 +218,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db06c878654c67ccb43",
-                time:        1526464801,
+                time:        1500082200,
                 name:        "Bakoe"
             },
             {
@@ -226,7 +226,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464802,
+                time:        1500411600,
                 name:        "Bakoe"
             },
             {
@@ -234,7 +234,7 @@ export namespace Sockets {
                 type:        "text",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464803,
+                time:        1500609600,
                 title:       "Tbilisi",
                 text:        "Jarenlang heeft de heer M.G. Meedendorp aan deze website gewerkt maar hij moet nog veel leren voordat hij de wereld kan veranderen."
             },
@@ -243,7 +243,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464804,
+                time:        1501041600,
                 name:        "Yerevan"
             },
             {
@@ -251,7 +251,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464805,
+                time:        1501293600,
                 name:        "Sochi"
             },
             {
@@ -259,7 +259,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464806,
+                time:        1501326000,
                 name:        "Sukhum"
             },
             {
@@ -267,7 +267,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464807,
+                time:        1501419600,
                 name:        "Lake Ritsa"
             },
             {
@@ -275,7 +275,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464808,
+                time:        1501671600,
                 name:        "Olympisch Park Sochi"
             },
             {
@@ -283,7 +283,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3db26c878654c67ce062",
-                time:        1526464809,
+                time:        1501704000,
                 name:        "Moskou"
             },
             {
@@ -291,7 +291,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6369",
-                time:        1526464810,
+                time:        1501873200,
                 name:        "Finsterwolde"
             },
             {
@@ -299,7 +299,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6368",
-                time:        1547978400,
+                time:        1502013600,
                 name:        "Minsk"
             },
             {
@@ -307,7 +307,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6368",
-                time:        1557993600,
+                time:        1502100000,
                 name:        "Žiežmariai"
             },
             {
@@ -315,7 +315,7 @@ export namespace Sockets {
                 type:        "location",
                 expeditieId: "5afb39bf6c878654c67c0a29",
                 geoNodeId:   "5afb3dbd6c878654c67d6368",
-                time:        1558080000,
+                time:        1502132400,
                 name:        "Brussel"
             }
         ]);

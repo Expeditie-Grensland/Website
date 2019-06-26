@@ -3,7 +3,9 @@ import { LoadingBar } from '../map/loadingBar';
 import { SocketTypes } from './types';
 import { DatabaseTypes } from '../database/types';
 import { Database } from '../database';
-import {StoryHandler} from "../story/handler"
+import {StoryHandler} from "../story/storyHandler"
+import {GraphBuilder} from "../story/graph/graphbuilder"
+import $ from "jquery"
 
 declare var expeditieNameShort: string;
 
@@ -42,7 +44,7 @@ export namespace Sockets {
             .then(locs => MapHandler.addLocations(locs, true))
             .catch(console.error);
         Database.getStoryElements()
-            .then(els => StoryHandler.appendStoryElements(els))
+            .then(appendStoryElements)
             .catch(console.error);
     }
 
@@ -78,9 +80,17 @@ export namespace Sockets {
     export function parseStoryElements(elements: SocketTypes.StoryElement[]) {
         LoadingBar.setLoadingText('Verhaalinfo ontvangen.');
 
+        appendStoryElements(elements);
+    }
+
+    export function appendStoryElements(elements: SocketTypes.StoryElement[]) {
         story.push(...elements);
 
         StoryHandler.appendStoryElements(elements);
+
+        const graphBuilder = new GraphBuilder(document!.getElementById("graph")!)
+        graphBuilder.constructGraph(expeditie.nodes, story)
+        graphBuilder.drawSVG(document!.getElementById("storyElements")!, $('.storyElement h1').toArray())
     }
 
     export function done() {

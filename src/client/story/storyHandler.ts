@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import {Util} from './util'
 import {SocketTypes} from "../sockets/types"
-import {Graph} from "./graph"
 
 export namespace StoryHandler {
     type StoryElement = SocketTypes.StoryElement;
@@ -30,9 +29,6 @@ export namespace StoryHandler {
 
         console.log("Added storyElements:");
         console.log(story);
-
-        Graph.createGraph(nodes, storyElements)
-
 
         // TODO: check for duplicates
     }

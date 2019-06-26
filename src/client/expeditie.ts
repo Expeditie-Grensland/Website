@@ -8,7 +8,7 @@ import { LoadingBar } from './map/loadingBar';
 import { MapHandler } from './map/mapHandler';
 import { ready } from './helpers/ready';
 import {Graph} from "./story/graph"
-import {StoryHandler} from "./story/handler"
+import {StoryHandler} from "./story/storyHandler"
 
 ready(() => {
     LoadingBar.setLoadingText('Kaart laden..');
