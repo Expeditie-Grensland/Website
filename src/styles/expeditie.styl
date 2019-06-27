@@ -45,11 +45,17 @@ body
 
 #storyWrapper
   position absolute
+  left 0
   width 35%
   height 100%
-  scrollbar-width none
+  scrollbar-width none      // Firefox
+  -ms-overflow-style none   // Edge
   padding 16px
   overflow-y auto
+
+#storyWrapper::-webkit-scrollbar {
+  width 0                   // Chrome/Safari
+}
 
 #storyTitle
   position sticky

@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import {Util} from './util'
 import {SocketTypes} from "../sockets/types"
+import {GraphBuilder} from "./graph/graphbuilder"
 
 export namespace StoryHandler {
     type StoryElement = SocketTypes.StoryElement;
@@ -13,6 +14,9 @@ export namespace StoryHandler {
 
     let storyElements: StoryElement[] = [];
 
+    const graphBuilder = new GraphBuilder(document!.getElementById("graph")!)
+
+
     export function init(pI: SocketTypes.PersonInfo, ns: SocketTypes.Node[]) {
         personInfo = pI;
         nodes = ns;
@@ -23,14 +27,22 @@ export namespace StoryHandler {
     }
 
     export function appendStoryElements(story: StoryElement[]) {
-        storyElements.push(...story);
-        for (let element of story)
+        if (story.length === 0)
+            return;
+
+        const newEls: StoryElement[] = [];
+
+        for (let el of story)
+            if (storyElements.find(st => st.id === el.id) == undefined)
+                newEls.push(el)
+
+        storyElements.push(...newEls)
+
+        for (let element of newEls)
             appendStoryElement(element);
 
-        console.log("Added storyElements:");
-        console.log(story);
-
-        // TODO: check for duplicates
+        graphBuilder.constructGraph(nodes, storyElements)
+        graphBuilder.drawSVG(document!.getElementById("storyElements")!)
     }
 
     function appendStoryElement(element: StoryElement) {
@@ -57,6 +69,7 @@ export namespace StoryHandler {
 
     function createLocationStoryElement(element: SocketTypes.LocationStoryElement): JQuery<HTMLElement> {
         return $('<div>')
+            .attr('id', element.id)
             .addClass('storyElement')
             .addClass('card')
             .addClass('location')
@@ -65,6 +78,7 @@ export namespace StoryHandler {
 
     function createTextStoryElement(element: SocketTypes.TextStoryElement): JQuery<HTMLElement> {
         return $('<div>')
+            .attr('id', element.id)
             .addClass('storyElement')
             .addClass('card')
             .addClass('text')
@@ -76,6 +90,7 @@ export namespace StoryHandler {
 
     function createGalleryStoryElement(element: SocketTypes.GalleryStoryElement): JQuery<HTMLElement> {
         return $('<div>')
+            .attr('id', element.id)
             .addClass('storyElement')
             .addClass('card')
             .addClass('gallery')

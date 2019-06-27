@@ -1,11 +1,9 @@
-import { MapHandler } from '../map/mapHandler';
-import { LoadingBar } from '../map/loadingBar';
-import { SocketTypes } from './types';
-import { DatabaseTypes } from '../database/types';
-import { Database } from '../database';
+import {MapHandler} from '../map/mapHandler';
+import {LoadingBar} from '../map/loadingBar';
+import {SocketTypes} from './types';
+import {DatabaseTypes} from '../database/types';
+import {Database} from '../database';
 import {StoryHandler} from "../story/storyHandler"
-import {GraphBuilder} from "../story/graph/graphbuilder"
-import $ from "jquery"
 
 declare var expeditieNameShort: string;
 
@@ -23,8 +21,6 @@ export namespace Sockets {
         LoadingBar.setLoadingText('Route info ontvangen.');
         personMap = info.personMap;
         personInfo = info.personInfo;
-
-        console.log(personInfo);
 
         expeditie = {
             id: info.id,
@@ -44,7 +40,7 @@ export namespace Sockets {
             .then(locs => MapHandler.addLocations(locs, true))
             .catch(console.error);
         Database.getStoryElements()
-            .then(appendStoryElements)
+            .then(els => appendStoryElements(els))
             .catch(console.error);
     }
 
@@ -87,10 +83,6 @@ export namespace Sockets {
         story.push(...elements);
 
         StoryHandler.appendStoryElements(elements);
-
-        const graphBuilder = new GraphBuilder(document!.getElementById("graph")!)
-        graphBuilder.constructGraph(expeditie.nodes, story)
-        graphBuilder.drawSVG(document!.getElementById("storyElements")!, $('.storyElement h1').toArray())
     }
 
     export function done() {

@@ -36,7 +36,7 @@ export namespace Database {
 
     export const putStoryElements = (els: SocketTypes.StoryElement[]): Promise<any> => {
         if (els.length == 0) return Promise.resolve();
-        return db.storyelements.bulkPut(els);
+        return db.storyelements.bulkPut(els).catch(console.error);
     }
 
     export const getStoryElements = (): Promise<SocketTypes.StoryElement[]> =>

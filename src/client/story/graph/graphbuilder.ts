@@ -18,9 +18,11 @@ export class GraphBuilder {
      * Finds the most recent Node and
      * @param {SocketTypes.Node[]} nodes
      * @param {SocketTypes.StoryElement[]} elements
-     * @returns {Graph}
      */
-    public constructGraph(nodes: Node[], elements: StoryElement[]): Graph {
+    public constructGraph(nodes: Node[], elements: StoryElement[]) {
+        if (nodes.length === 0 || elements.length === 0)
+            return;
+
         const roots: Vertex[] = this.findRootNodes(nodes, elements);
 
         nodes = nodes.filter(node => !roots.some(root => root.getStoryNode().id === node.id))
@@ -28,7 +30,6 @@ export class GraphBuilder {
         this.populateChildren(roots, nodes, elements)
 
         this.graph = new Graph(roots)
-        return this.graph
     }
 
     private findRootNodes(nodes: Node[], storyElements: SocketTypes.StoryElement[]): Vertex[] {
@@ -58,8 +59,8 @@ export class GraphBuilder {
 
         if (candidates.length == 0)
         {
-            console.log("no candidates left!")
-            console.log(nodes)
+            console.error("no candidates left!")
+            console.error(nodes)
             return []
         }
 
@@ -125,11 +126,11 @@ export class GraphBuilder {
         return new Vertex(node, elements.filter(el => el.geoNodeId == node.id), children)
     }
 
-    public drawSVG(storyElements: HTMLElement, storyElHeaders: HTMLElement[]) {
-        if (this.graph == null || storyElHeaders.length == 0)
+    public drawSVG(storyElements: HTMLElement) {
+        if (this.graph == null)
             return;
 
-        const svg = this.graph.toSVGGraph(storyElements, storyElHeaders)
+        const svg = this.graph.toSVGGraph(storyElements)
 
         $(this.parentEl).empty();
         this.parentEl.appendChild(svg)

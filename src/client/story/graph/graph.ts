@@ -1,4 +1,5 @@
 import {Vertex} from "./vertex"
+import $ from 'jquery';
 import {SocketTypes} from "../../sockets/types"
 import StoryElement = SocketTypes.StoryElement
 
@@ -30,10 +31,10 @@ export class Graph {
             if (nextLevel.length === 0)
                 break;
 
-                    // nodes are sorted in the order in which they start.
-            nextLevel.sort((a, b) => a.getStoryNode().timeFrom < b.getStoryNode().timeFrom ? -1 : 1)
+            // nodes are sorted in the order in which they start.
+            nextLevel.sort((a, b) => a.getStoryNode().timeFrom - b.getStoryNode().timeFrom)
 
-                    // deduplicate
+            // deduplicate
             const uniqueNextLevel: Vertex[] = []
             for (let vertex of nextLevel) {
                 if (uniqueNextLevel.some(v => v.getStoryNode().id === vertex.getStoryNode().id))
@@ -48,7 +49,7 @@ export class Graph {
         return nodes
     }
 
-    public toSVGGraph(storyElements: HTMLElement, storyElHeaders: HTMLElement[]): SVGElement {
+    public toSVGGraph(htmlStoryElements: HTMLElement): SVGElement {
         const svg = this.svgElement('svg')
 
         const layers = this.getAllLayers()
@@ -56,63 +57,76 @@ export class Graph {
         const horizontalSpace = 70
         const svgWidth = Math.max(maxLayerSize * horizontalSpace, 150)
 
-        let headerIdx = 0
-
-        const allStoryElements: StoryElement[] = []
-
-        for (let layer of layers)
-            for (let vertex of layer)
-                allStoryElements.push(...vertex.getStoryElements())
-
-        allStoryElements.sort((a, b) => a.time - b.time)
-
         for (let layer of layers) {
-            const layerStoryElements: StoryElement[] = []
-
-            for (let vertex of layer)
-                layerStoryElements.push(...vertex.getStoryElements())
-
-            layerStoryElements.sort((a, b) => a.time - b.time)
-
-                    // draw straight lines
+            // draw straight lines
             for (let vertex of layer) {
-                if (vertex.getStoryElements().length <= 1)
-                    break;
+                const storyElements = vertex.getStoryElements()
+
+                if (storyElements.length <= 1)
+                    continue;
 
                 const vertexIdx = layer.indexOf(vertex)
-                const firstStoryElement = layerStoryElements.find(el => el.geoNodeId === vertex.getStoryNode().id)!
-                const lastStoryElement = layerStoryElements.slice().reverse().find(el => el.geoNodeId === vertex.getStoryNode().id)!
-
-                console.log("line")     //TODO add id to html story element to ease lookup.
-                console.log(storyElHeaders[allStoryElements.indexOf(firstStoryElement)])
-                console.log(storyElHeaders[allStoryElements.indexOf(lastStoryElement)])
+                const firstStoryElement = $('#' + storyElements[0].id + ' h1')[0]
+                const lastStoryElement = $('#' + storyElements[storyElements.length - 1].id + ' h1')[0]
 
                 const x = this.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace)
-                const y1 = this.calculateY(storyElHeaders[allStoryElements.indexOf(firstStoryElement)])
-                const y2 = this.calculateY(storyElHeaders[allStoryElements.indexOf(lastStoryElement)])
+                const y1 = this.calculateY(firstStoryElement)
+                const y2 = this.calculateY(lastStoryElement)
 
                 svg.appendChild(this.generateLine(x, y1, x, y2, vertex.getStoryNode().color, 'none'))
             }
 
-            // TODO draw corners
+            // draw corners
+            for (let parent of layer) {
+                if (parent.getChildren() == null)
+                    continue;
 
-                    // draw circles
-            for (let storyElement of layerStoryElements) {
-                const vertex = layer.find(vertex => vertex.getStoryNode().id === storyElement.geoNodeId)!
-                const node = vertex.getStoryNode()
-                const header = storyElHeaders[headerIdx];
+                const layerIdx = layers.indexOf(layer);
+                const childLayer = layers[layerIdx + 1]
 
-                const vertexIdx = layer.indexOf(vertex)
-                const x = this.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace)
-                const y = this.calculateY(header)
+                const parentStoryElements = parent.getStoryElements().sort((a, b) => a.time - b.time)
+                const parentIdx = layer.indexOf(parent)
+                const parentEnd = parentStoryElements[parentStoryElements.length - 1]
+                const parentHeader = $('#' + parentEnd.id + ' h1')[0]
 
-                svg.appendChild(this.generateCircle(x, y, node.color))
+                const x1 = this.calculateX(parentIdx, layer.length, svgWidth, horizontalSpace)
+                const y1 = this.calculateY(parentHeader)
 
-                ++headerIdx
+                const children = parent.getChildren()!
+
+                for (let child of children) {
+                    const childStoryElements = child.getStoryElements().sort((a, b) => a.time - b.time)
+                    const childIdx = childLayer.indexOf(child)
+                    const childStart = childStoryElements[0]
+                    const childHeader = $('#' + childStart.id + ' h1')[0]
+
+                    const x2 = this.calculateX(childIdx, childLayer.length, svgWidth, horizontalSpace)
+                    const y2 = this.calculateY(childHeader)
+
+                    const color = children.length > 1 ? child.getStoryNode().color : parent.getStoryNode().color;
+
+                    svg.appendChild(this.generateLine(x1, y1, x2, y2, color, children.length > 1 ? 'begin' : 'end'))
+                }
+            }
+
+            // draw circles
+            for (let vertex of layer) {
+                const storyElements = vertex.getStoryElements()
+
+                for (let storyElement of storyElements) {
+                    const node = vertex.getStoryNode()
+                    const header = $('#' + storyElement.id + ' h1')![0]
+
+                    const vertexIdx = layer.indexOf(vertex)
+                    const x = this.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace)
+                    const y = this.calculateY(header)
+
+                    svg.appendChild(this.generateCircle(x, y, node.color))
+                }
             }
         }
-        const graphTop = storyElements.getBoundingClientRect().top;
-        const svgHeight = storyElements.getBoundingClientRect().height
+        const graphTop = htmlStoryElements.getBoundingClientRect().top;
+        const svgHeight = htmlStoryElements.getBoundingClientRect().height - 16 // 16px  padding
 
         svg.setAttribute('width', svgWidth.toString());
         svg.setAttribute('height', svgHeight.toString());
@@ -158,7 +172,7 @@ export class Graph {
 
     private svgElement = (type: string) => document.createElementNS('http://www.w3.org/2000/svg', type)
 
-    private generateCircle (x: number, y: number, color: string) {
+    private generateCircle(x: number, y: number, color: string) {
         const circle = this.svgElement('circle');
         circle.setAttribute('cx', x.toString());
         circle.setAttribute('cy', y.toString());
