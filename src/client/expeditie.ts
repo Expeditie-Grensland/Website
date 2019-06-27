@@ -7,8 +7,6 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { LoadingBar } from './map/loadingBar';
 import { MapHandler } from './map/mapHandler';
 import { ready } from './helpers/ready';
-import {Graph} from "./story/graph"
-import {StoryHandler} from "./story/storyHandler"
 
 ready(() => {
     LoadingBar.setLoadingText('Kaart laden..');
@@ -52,6 +50,5 @@ ready(() => {
         console.error('Map error: ' + e.error);
     });
 
-   // Graph.init();
     MapHandler.init(map);
 });
