@@ -47,12 +47,10 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
             const project = entry.endsWith('worker/index.ts') ?
                 `${src}/worker/tsconfig.json` : `${src}/tsconfig.json`;
 
-            let b = browserify({
+            let b = browserify(Object.assign({
                 entries: [entry],
-                debug: !opts.prod,
-                cache: {},
-                packageCache: {}
-            })
+                debug: !opts.prod
+            }, watchify.args))
                 .plugin(tsify, { project })
                 .transform(babelify, { extensions: ['.ts', '.js'] });
 
