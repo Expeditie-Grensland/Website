@@ -5,7 +5,7 @@ import { PersonOrID } from '../people/model';
 import { MediaFileOrId, MediaFiles } from '../mediaFiles';
 import { Documents } from '../documents/new';
 import * as R from 'ramda';
-import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
+import { GeoLocationDocument, geoLocationModel, GeoLocationOrId } from '../geoLocations/model';
 import { GeoNode, GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
 import { GeoNodes } from '../geoNodes';
 

@@ -18,7 +18,7 @@ export namespace GpxHelper {
                 const [expeditieId, personId] = Util.getRealObjectIDs([expeditie, person]);
 
                 // @ts-ignore
-                R.pipe(R.prop('tracks'), R.pluck('segments'), R.flatten, R.map((waypoint: any) => <GeoLocation>{
+                return R.pipe(R.prop('tracks'), R.pluck('segments'), R.flatten, R.map((waypoint: any) => <GeoLocation>{
                     expeditieId,
                     personId,
                     time: Date.parse(waypoint.time),

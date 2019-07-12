@@ -1,0 +1,12 @@
+extends main
+
+block title
+    title Expeditie Grensland - Terug Naar de Stans import
+
+append scripts
+    script(src='/static/scripts/importStan.js')
+
+block body
+    p Enter location GPX file here:
+    input#json(type='file')
+    input#submit(type='submit' value='upload')
