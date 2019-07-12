@@ -20,6 +20,7 @@ const entries = [
     `${src}/home.ts`,
     `${src}/expeditie.ts`,
     `${src}/dictionary.ts`,
+    `${src}/importStan.ts`,
     `${src}/worker/index.ts`
 ];
 
