@@ -21,13 +21,18 @@ router.post('/data', async (req, res) => {
     const expeditie = await Expedities.getByNameShort('stan2');
 
     if (expeditie == null)
+    {
         res.send('Expeditie not found.');
+        return;
+    }
+    if (expeditie.finished)
+        res.send('Expeditie finished.');
     if (martijn == null)
         res.send('Martijn not found.');
 
     const data: any = req.body;
 
-    const locations = await GpxHelper.generateLocations(data, expeditie!, martijn!);
+    const locations = await GpxHelper.generateLocations(data, expeditie, martijn!);
 
     await GeoLocations.createMany(locations);
 
