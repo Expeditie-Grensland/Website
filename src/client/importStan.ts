@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 $(document).ready(() => {
 
     function getFileContents(file: File): Promise<any> {
