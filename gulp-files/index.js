@@ -1,52 +1,31 @@
 import del from 'del';
 import gulp from 'gulp';
 
-const loadTask = (comp, file, type) =>
-    gulp.task(`${comp}:${type || file}`, require(`./${comp}/${file}`)(gulp, { [type]: true }));
+/*
+ * Load individual tasks from other files
+ * File name (component) in key is imported as function
+ * Task types in value are passed on as function arguments to function
+ * Tasks are registered as component:task
+ */
 
-const loadTasks = (tasksObject) =>
-    Object.keys(tasksObject).forEach(comp =>
-        Array.isArray(tasksObject[comp]) ?
-            tasksObject[comp].forEach(type => loadTask(comp, '.', type))
-            : Object.keys(tasksObject[comp]).forEach(file =>
-                Array.isArray(tasksObject[comp][file]) ?
-                    tasksObject[comp][file].forEach(type => loadTask(comp, file, type))
-                    : loadTask(comp, file, tasksObject[comp][file])));
+const componentTasks = {
+    client: ['dev', 'prod', 'clean', 'watch'],
+    copy: ['dev', 'prod', 'clean', 'watch'],
+    favicons: ['dev', 'prod', 'clean', 'watch'],
+    server: ['dev', 'prod', 'clean', 'watch', 'run'],
+    styles: ['dev', 'prod', 'clean', 'watch']
+};
 
-loadTasks({
-    client: [
-        'dev',
-        'clean',
-        'prod',
-        'watch'
-    ],
+Object.keys(componentTasks).forEach(comp =>
+    componentTasks[comp].forEach(type =>
+        gulp.task(`${comp}:${type}`, require(`./${comp}`)(gulp, { [type]: true }))));
 
-    copy: {
-        build: ['dev', 'prod'],
-        clean: '',
-        watch: ''
-    },
 
-    favicons: {
-        build: ['dev', 'prod'],
-        clean: '',
-        watch: ''
-    },
 
-    server: {
-        build: ['dev', 'prod'],
-        clean: '',
-        run: '',
-        watch: ''
-    },
-
-    styles: {
-        build: ['dev', 'prod'],
-        clean: '',
-        watch: ''
-    }
-});
-
+/*
+ * Load tasks that apply to multiple components
+ * Mostly tasks composed of the individual tasks
+ */
 
 gulp.task('clean', () => del('dist/**'));
 

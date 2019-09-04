@@ -27,6 +27,7 @@ const entries = [
 const workerFilter = filter(['**/*', '!**/worker.js'], { restore: true });
 
 module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
+    // client:clean
     if (opts.clean)
         return () => del(`${dest}/**`);
 
@@ -41,6 +42,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
     const bundleToDest = (b, path) => () =>
         bundle(b, path).pipe(gulp.dest(dest));
 
+    // client:dev, client:prod and client:watch
     return () => {
         const tasks = entries.map((entry) => {
             fancyLog(`Creating bundler for ${entry}`);
