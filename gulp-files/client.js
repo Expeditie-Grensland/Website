@@ -56,7 +56,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
                 cache: {},
                 packageCache: {}
             })
-                .plugin(tsify, { project })
+                .plugin(tsify, { project, files: [] })
                 .transform(babelify, { extensions: ['.ts', '.js'] });
 
             const path = entry
@@ -64,7 +64,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
                 .replace('/index.js', '.js')
                 .replace(`${src}/`, '');
 
-            if (opts.watch && !opts.prod)
+            if (opts.watch)
                 b
                     .plugin(watchify)
                     .on('update', bundleToDest(b, path));
