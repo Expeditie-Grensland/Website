@@ -90,7 +90,7 @@ gulp.task('watch',
         'server:run',
         gulp.parallel(
             'copy:watch',
-            'favicons:dev',
+            'favicons:watch',
             'server:watch',
             'styles:watch'
         )
