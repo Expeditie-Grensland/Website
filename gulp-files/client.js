@@ -55,7 +55,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
                 debug: !opts.prod,
                 cache: {},
                 packageCache: {}
-            })
+            }))
                 .plugin(tsify, { project, files: [] })
                 .transform(babelify, { extensions: ['.ts', '.js'] });
 
