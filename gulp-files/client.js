@@ -20,12 +20,14 @@ const entries = [
     `${src}/home.ts`,
     `${src}/expeditie.ts`,
     `${src}/dictionary.ts`,
+    `${src}/importStan.ts`,
     `${src}/worker/index.ts`
 ];
 
 const workerFilter = filter(['**/*', '!**/worker.js'], { restore: true });
 
 module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
+    // client:clean
     if (opts.clean)
         return () => del(`${dest}/**`);
 
@@ -40,6 +42,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
     const bundleToDest = (b, path) => () =>
         bundle(b, path).pipe(gulp.dest(dest));
 
+    // client:dev, client:prod and client:watch
     return () => {
         const tasks = entries.map((entry) => {
             fancyLog(`Creating bundler for ${entry}`);
@@ -49,9 +52,11 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
 
             let b = browserify(Object.assign({
                 entries: [entry],
-                debug: !opts.prod
-            }, watchify.args))
-                .plugin(tsify, { project })
+                debug: !opts.prod,
+                cache: {},
+                packageCache: {}
+            })
+                .plugin(tsify, { project, files: [] })
                 .transform(babelify, { extensions: ['.ts', '.js'] });
 
             const path = entry
@@ -59,7 +64,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
                 .replace('/index.js', '.js')
                 .replace(`${src}/`, '');
 
-            if (opts.watch && !opts.prod)
+            if (opts.watch)
                 b
                     .plugin(watchify)
                     .on('update', bundleToDest(b, path));
