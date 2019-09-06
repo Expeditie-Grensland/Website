@@ -103,7 +103,7 @@ export namespace StoryHandler {
             .append( $('<div>')
                 .addClass('header')
                 .append( $('<h1>')
-                    .text(title + ' watchwatch')
+                    .text(title)
                 )
                 .append( $('<p>')
                     .addClass('time')
