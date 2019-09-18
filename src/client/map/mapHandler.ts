@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import mapboxGl from 'mapbox-gl';
 import geoJson from 'geojson';
 // @ts-ignore
@@ -41,7 +42,12 @@ export namespace MapHandler {
         bounds.extend(new mapboxGl.LngLat(b.maxLon, b.maxLat));
 
         map.fitBounds(bounds, {
-            padding: 20
+            padding: {
+                top: 20,
+                bottom: 20,
+                left: $(window).width()! * 0.35,
+                right: 20
+            }
         });
     }
 
