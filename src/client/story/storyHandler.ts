@@ -143,19 +143,18 @@ export namespace StoryHandler {
 
     function onStoryScroll(event: Event) {
         const titleEl = document!.getElementById("storyTitle");
+        const wrapperEl = document!.getElementById("storyWrapper");
+        const mobileLayout = window.innerWidth < 1500;
 
         // Change header CSS based on whether it is 'stuck' to the top of the window
         if (titleEl != null) {
             const titleRect = titleEl.getBoundingClientRect();
-            if (titleEl.classList.contains('fixed')) {
-                if (titleRect.top > 0) {
+            if (titleEl.classList.contains('fixed'))
+                if (titleRect.top > 0)
                     titleEl.classList.remove('fixed')
-                }
-            } else {
-                if (titleRect.top <= 0) {
+            else
+                if (titleRect.top <= 0)
                     titleEl.classList.add('fixed')
-                }
-            }
         }
 
     }
