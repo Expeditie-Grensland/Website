@@ -1,5 +1,5 @@
 extends main
-include includes/modalHelper.pug
+include includes/expeditieMedia.pug
 
 block title
     title Expeditie Grensland
@@ -8,71 +8,25 @@ append scripts
     script(src='/static/scripts/home.js')
 
 append styles
-    link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css' integrity='sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO' crossorigin='anonymous')
+    link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
     link(rel='stylesheet' href='/static/styles/home.css')
 
-    style.
-        #columns {
-            width: #{Math.max(100, 100*expedities.length/5)}%;
-        }
-
-        @media screen and (max-width: 1500px) {
-            #columns {
-                width: #{Math.max(100, 100*expedities.length/4)}%;
-            }
-        }
-
-        @media screen and (max-width: 1200px) {
-            #columns {
-                width: #{Math.max(100, 100*expedities.length/3)}%;
-            }
-        }
-
-        @media screen and (max-width: 900px) {
-            #columns {
-                width: #{Math.max(100, 100*expedities.length/2)}%;
-            }
-        }
-
-        @media screen and (max-width: 600px) {
-            #columns {
-                width: #{Math.max(100, 100*expedities.length/1)}%;
-            }
-
-            .column:hover {
-                flex-grow: 1
-            }
-
-            .links {
-                height: 100%
-            }
-        }
 
 block body
-    a.arrow.left(style='display:none')
+    .container
+        .row
+            .col
+                a.img-large(href=expedities[0].nameShort style=`background-image:url(${getFileUrl(expedities[0].backgroundFile)})`)
+                    +innerImage(expedities[0])
 
-    #columns
-        each expeditie in expedities
-            .column
-                .background(style=`background-color:${expeditie.color};background-image:url(${getFileUrl(expeditie.backgroundFile)})`)
-                .expeditie(id=expeditie.nameShort)
-                    h1= expeditie.name
-                    h2= expeditie.subtitle
-                .links
-                    if expeditie.movieFile && (!expeditie.movieFile.restricted || loggedIn)
-                        button.link.btn.btn-default.btn-secondary(data-toggle='modal' href='.movieModal' + expeditie.nameShort)
-                            | Film
-                    if expeditie.showMap
-                        a.link.btn.btn-default.btn-primary(href=expeditie.nameShort role='button')
-                            | Kaart
 
-    a.arrow.right(style='display:none')
+        .row
+            .col
+                span.midtitle Voorgaande Expedities
 
-    #modals
-        each expeditie in expedities
-            if expeditie.movieFile && (!expeditie.movieFile.restricted || loggedIn)
-                +modal('videoModal movieModal' + expeditie.nameShort, expeditie.name + ': De Film')(class='modal-lg')
-                    .embed-responsive.embed-responsive-16by9
-                        video.embed-responsive-item(controls poster=getFileUrl(expeditie.movieCoverFile) preload='none')
-                            source(src=getFileUrl(expeditie.movieFile) type=expeditie.movieFile.mime)
-                            p Sorry, your browser doesn't support viewing this video.
+
+        .row
+            each expeditie in expedities.slice(1)
+                .col-12.col-md-6.col-lg-4
+                    a.img-small(href=expeditie.nameShort style=`background-image:url(${getFileUrl(expeditie.backgroundFile)})`)
+                        +innerImage(expeditie)

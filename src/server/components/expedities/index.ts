@@ -16,6 +16,9 @@ export namespace Expedities {
     export const getByNameShort = (nameShort: string): Promise<ExpeditieDocument | null> =>
         ExpeditieModel.findOne({ nameShort }).exec();
 
+    export const getByNameShortWithPeople = (nameShort: string): Promise<ExpeditieDocument | null> =>
+        ExpeditieModel.findOne({ nameShort }).populate('personIds').exec();
+
     export const getAll = (): Promise<ExpeditieDocument[]> =>
         ExpeditieModel
             .find({})

@@ -1,0 +1,22 @@
+extends main
+
+block title
+    title Expeditie #{expeditie.name} Kaart
+
+append styles
+    link(rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css")
+    link(rel="stylesheet" href="/static/styles/expeditie.css")
+
+    meta(name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no')
+
+append scripts
+    script.
+        var expeditieNameShort = "!{expeditie.nameShort}"
+
+    script(src="/static/scripts/expeditieMap.js")
+
+block body
+    #map
+    #loadingBar
+        include includes/loadSpinner.pug
+        #loadingText &nbsp;Loading...

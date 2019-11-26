@@ -1,22 +1,36 @@
 extends main
+include includes/expeditieMedia.pug
 
 block title
     title Expeditie #{expeditie.name}
 
 append styles
-    link(rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css")
-    link(rel="stylesheet" href="/static/styles/expeditie.css")
+    link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
+    link(rel='stylesheet' href='/static/styles/home.css')
 
-    meta(name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no')
-
-append scripts
-    script.
-        var expeditieNameShort = "!{expeditie.nameShort}"
-
-    script(src="/static/scripts/expeditie.js")
 
 block body
-    #map
-    #loadingBar
-        include includes/loadSpinner.pug
-        #loadingText &nbsp;Loading...
+    .container
+        .row
+            .col
+                .img-large(style=`background-image:url(${getFileUrl(expeditie.backgroundFile)})`)
+                    +innerImage(expeditie)
+
+
+        .row
+            .col-12.col-md-4.order-md-2.leden
+                if expeditie.showMap
+                    a.btn.btn-kaart(href=`${expeditie.nameShort}/kaart`) Open de Kaart
+                    br
+
+                each person, i in expeditie.personIds.sort(function(a, b) {return (a.name > b.name) ? 1 : -1})
+                    if i > 0
+                        br
+                    span= person.name
+
+            .col-12.col-md-8.order-md-1
+                if expeditie.movieFile && (!expeditie.movieFile.restricted || loggedIn)
+                    .embed-responsive.embed-responsive-16by9
+                        video.embed-responsive-item(controls poster=getFileUrl(expeditie.movieCoverFile) preload="none")
+                            source(src=getFileUrl(expeditie.movieFile) type=expeditie.movieFile.mime)
+                            p Sorry, deze video wordt niet door je browser ondersteund.

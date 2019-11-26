@@ -18,7 +18,7 @@ const dest = 'dist/static/scripts';
 const entries = [
     `${src}/all.ts`,
     `${src}/home.ts`,
-    `${src}/expeditie.ts`,
+    `${src}/expeditieMap.ts`,
     `${src}/dictionary.ts`,
     `${src}/importStan.ts`,
     `${src}/worker/index.ts`
