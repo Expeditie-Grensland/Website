@@ -4,7 +4,7 @@
   "filesFolder": "..\\..\\Files",
 
   "mongo": {
-    "url": "mongodb://localhost:27017/expeditie-grensland",
+    "url": "mongodb://localhost:27017/expeditie-grensland?authSource=admin",
     "user": "expeditie-grensland",
     "pass": ""
   },
