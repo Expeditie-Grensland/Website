@@ -11,9 +11,9 @@ import * as ldapauth from 'passport-ldapauth';
 
 import { config } from './helpers/configHelper';
 import { People } from './components/people';
-import { Util } from './components/documents/util';
 import { PersonDocument } from './components/people/model';
 import { router as appBackend } from './appBackend';
+import { Documents } from './components/documents';
 import flash = require('connect-flash');
 
 export namespace Setup {
@@ -65,9 +65,9 @@ export namespace Setup {
                 : done(new Error('LDAP user is unexpectedly null'))));
 
         passport.serializeUser((user: PersonDocument, done) =>
-            done(null, Util.getObjectID(user)));
+            done(null, Documents.getObjectId(user)));
 
-        passport.deserializeUser((userId: string, done) =>
+        passport.deserializeUser((userId: mongoose.Types.ObjectId, done) =>
             People.getById(userId)
                 .then(p => done(null, p || false))
                 .catch(done));

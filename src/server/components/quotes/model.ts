@@ -1,7 +1,8 @@
 import * as mongoose from 'mongoose';
-import { DocumentOrID } from '../documents/util';
+
 import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
 import { QuoteId } from './id';
+import { DocumentOrId } from '../documents';
 
 /**
  * Expeditie quotes.
@@ -31,9 +32,10 @@ export interface Quote {
     mediaFile?: MediaFileEmbedded;
 }
 
-export interface QuoteDocument extends Quote, mongoose.Document {}
+export interface QuoteDocument extends Quote, mongoose.Document {
+}
 
 export const QuoteModel = mongoose.model<QuoteDocument>(QuoteId, schema);
 
-export type QuoteOrID = DocumentOrID<QuoteDocument>;
+export type QuoteOrId = DocumentOrId<QuoteDocument>;
 

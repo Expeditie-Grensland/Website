@@ -1,7 +1,8 @@
 import * as mongoose from 'mongoose';
-import { DocumentOrID } from '../documents/util';
+
 import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
 import { WordId } from './id';
+import { DocumentOrId } from '../documents';
 
 /**
  * FIXME: Add description
@@ -30,5 +31,5 @@ export interface WordDocument extends Word, mongoose.Document {
 
 export const WordModel = mongoose.model<WordDocument>(WordId, schema);
 
-export type WordOrID = DocumentOrID<WordDocument>;
+export type WordOrId = DocumentOrId<WordDocument>;
 

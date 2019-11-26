@@ -1,13 +1,14 @@
 import * as express from 'express';
 import * as passport from 'passport';
 import * as R from 'ramda';
+import * as mongoose from 'mongoose';
 
 import { AuthHelper } from '../helpers/authHelper';
 import { People } from '../components/people';
 import { PersonDocument } from '../components/people/model';
 import { ExpeditieModel } from '../components/expedities/model';
-import { Util } from '../components/documents/util';
 import { MediaFiles } from '../components/mediaFiles';
+import { Documents } from '../components/documents';
 
 export const router = express.Router();
 
@@ -39,7 +40,7 @@ router.use((req, res, next) => {
             else {
                 if (typeof decoded === 'string' || decoded.id == undefined)
                     return next(new Error('Unexpected jwt format'));
-                People.getById(decoded.id)
+                People.getById(mongoose.Types.ObjectId(decoded.id))
                     .then(person => {
                         req.user = person;
                         next();
@@ -61,7 +62,7 @@ router.use((err: any, req: express.Request, res: express.Response, next: express
 
 router.get('/expedities', (req, res) =>
     ExpeditieModel
-        .find({ participants: Util.getObjectID(req.user), finished: false }, {
+        .find({ personIds: Documents.getObjectId(req.user), finished: false }, {
             name: 1,
             subtitle: 1,
             color: 1,
@@ -71,7 +72,7 @@ router.get('/expedities', (req, res) =>
         .exec()
         .then(R.map(x => {
             return {
-                id: x._id,
+                id: x._id.toHexString(),
                 name: x.name,
                 subtitle: x.subtitle,
                 color: x.color,

@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { GeoNodeId } from './id';
-import { DocumentOrId } from '../documents/new';
+import { DocumentOrId } from '../documents';
 import { ExpeditieId } from '../expedities/id';
 import { PersonId } from '../people/id';
 

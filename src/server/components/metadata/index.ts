@@ -16,3 +16,4 @@ export namespace Metadata {
     export const setValue = (key: string, value: any): Promise<MetadatumDocument | null> =>
         MetadatumModel.findByIdAndUpdate(key, { $set: { value } }).exec();
 }
+

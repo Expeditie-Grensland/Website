@@ -2,7 +2,7 @@ import * as turf from '@turf/turf';
 import * as R from 'ramda';
 
 import { GeoLocation, GeoLocationDocument, geoLocationModel, GeoLocationOrId } from './model';
-import { Documents } from '../documents/new';
+import { Documents } from '../documents';
 
 export namespace VisualAreaHelper {
     const getLastLocations = (loc: GeoLocation): Promise<GeoLocationDocument[]> =>

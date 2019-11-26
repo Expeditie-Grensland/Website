@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 
-import {DocumentOrId} from '../documents/new';
+import {DocumentOrId} from '../documents';
 import {MediaFileId} from './id';
 
 export interface MediaFile {

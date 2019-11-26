@@ -4,12 +4,12 @@ import * as mongoose from 'mongoose';
 
 import { Expedities } from '../components/expedities';
 import { SocketIds } from './ids';
-import { Util } from '../components/documents/util';
 import { SocketTypes } from './types';
-import { ExpeditieOrID } from '../components/expedities/model';
 import { People } from '../components/people';
 import { GeoLocationDocument, geoLocationModel } from '../components/geoLocations/model';
 import { GeoNodeDocument } from '../components/geoNodes/model';
+import { Documents } from '../components/documents';
+import { ExpeditieOrId } from '../components/expedities/model';
 
 export namespace Sockets {
     export const getExpeditie = (socket: socketio.Socket) => async (expeditieName: string, minLocationId?: string): Promise<void> => {
@@ -24,7 +24,7 @@ export namespace Sockets {
         ]);
 
         const sInfo = <SocketTypes.Expeditie>{
-            id: Util.getObjectID(expeditie),
+            id: Documents.getStringId(expeditie),
             nodes,
             box,
             personMap: [...personMap].reduce((obj, [s, n]) => Object.assign(obj, { [n]: s }), {}),
@@ -46,12 +46,12 @@ export namespace Sockets {
         const people = await People.getAll();
 
         for (let i = 0; i < people.length; i++)
-            personMap.set(people[i]._id.toHexString(), i);
+            personMap.set(Documents.getStringId(people[i]), i);
 
         return personMap;
     };
 
-    const _getNodes = async (expeditie: ExpeditieOrID): Promise<SocketTypes.Node[]> => {
+    const _getNodes = async (expeditie: ExpeditieOrId): Promise<SocketTypes.Node[]> => {
         const geoNodes = await Expedities.getNodes(expeditie); // TODO: reverse lookup by implementing nodes in ExpeditieDocument
         const colorsIds = _getNodeColors(geoNodes);
 
@@ -67,9 +67,9 @@ export namespace Sockets {
     };
 
 
-    export const _getLocationCount = (expeditie: ExpeditieOrID, minLocationId?: string): Promise<number> =>
+    export const _getLocationCount = (expeditie: ExpeditieOrId, minLocationId?: string): Promise<number> =>
         geoLocationModel.count(Object.assign(
-            { expeditieId: Util.getObjectID(expeditie) },
+            { expeditieId: Documents.getStringId(expeditie) },
             !minLocationId ? {} : { _id: { $gt: mongoose.Types.ObjectId(minLocationId) } }
         )).exec();
 
@@ -105,11 +105,11 @@ export namespace Sockets {
         return colors;
     };
 
-    const _getBoundingBox = async (expeditie: ExpeditieOrID): Promise<SocketTypes.BoundingBox> => {
+    const _getBoundingBox = async (expeditie: ExpeditieOrId): Promise<SocketTypes.BoundingBox> => {
         const [minLat, maxLat, minLon, maxLon] = await Promise.all((<['latitude' | 'longitude', 1 | -1][]>[
             ['latitude', 1], ['latitude', -1], ['longitude', 1], ['longitude', -1]
         ]).map(([latLon, minMax]) =>
-            geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) })
+            geoLocationModel.find({ expeditieId: Documents.getObjectId(expeditie) })
                 .select({ [latLon]: 1 })
                 .sort({ [latLon]: minMax })
                 .limit(1)
@@ -120,8 +120,8 @@ export namespace Sockets {
         return <SocketTypes.BoundingBox>{ minLat, maxLat, minLon, maxLon };
     };
 
-    const _getMaxLocationId = async (expeditie: ExpeditieOrID): Promise<string | null> =>
-        geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) })
+    const _getMaxLocationId = async (expeditie: ExpeditieOrId): Promise<string | null> =>
+        geoLocationModel.find({ expeditieId: Documents.getObjectId(expeditie) })
             .select({ _id: 1 })
             .sort({ _id: -1 })
             .limit(1)
@@ -129,7 +129,7 @@ export namespace Sockets {
             .then(locations => locations[0]._id.toHexString())
             .catch(() => null);
 
-    const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrID, personMap: Map<string, number>, minLocationId?: string) =>
+    const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrId, personMap: Map<string, number>, minLocationId?: string) =>
         function sendBatchAndRecurse(skip = 0, count = 500): Promise<any> {
             if (!socket.connected) return Promise.resolve();
 
@@ -168,9 +168,9 @@ export namespace Sockets {
     };
     const writeLocationsR = R.curry(writeLocations);
 
-    const _getLocations = (expeditie: ExpeditieOrID, personMap: Map<string, number>, skip: number, limit: number, minLocationId?: string): Promise<Buffer> => {
+    const _getLocations = (expeditie: ExpeditieOrId, personMap: Map<string, number>, skip: number, limit: number, minLocationId?: string): Promise<Buffer> => {
         return geoLocationModel.find(Object.assign(
-            { expeditieId: Util.getObjectID(expeditie) },
+            { expeditieId: Documents.getObjectId(expeditie) },
             !minLocationId ? {} : { _id: { $gt: mongoose.Types.ObjectId(minLocationId) } }
         )).select({
             _id: 1,

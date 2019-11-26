@@ -1,9 +1,10 @@
 import * as mongoose from 'mongoose';
-import { DocumentOrID, reference } from '../documents/util';
-import { PersonOrID } from '../people/model';
+
+import { PersonId } from '../people/id';
+import { PersonOrId } from '../people/model';
 import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
 import { ExpeditieId } from './id';
-import { PersonId } from '../people/id';
+import { DocumentOrId } from '../documents';
 
 /**
  * The expeditie is the wrapping object for all data related to one trip. This is represented on the home page by
@@ -18,7 +19,10 @@ const schema = new mongoose.Schema({
     color: String,
     showMap: Boolean,
     finished: { type: Boolean, default: false },
-    participants: [reference(PersonId)],
+    personIds: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: PersonId
+    }],
     countries: [String],
     backgroundFile: mediaFileEmbeddedSchema,
     movieCoverFile: mediaFileEmbeddedSchema,
@@ -36,7 +40,7 @@ export interface Expeditie {
     color: string;
     showMap: boolean;
     finished?: boolean;
-    participants: PersonOrID[];
+    personIds: PersonOrId[];
     countries: string[];
     backgroundFile: MediaFileEmbedded;
     movieCoverFile: MediaFileEmbedded;
@@ -48,4 +52,4 @@ export interface ExpeditieDocument extends Expeditie, mongoose.Document {
 
 export const ExpeditieModel = mongoose.model<ExpeditieDocument>(ExpeditieId, schema);
 
-export type ExpeditieOrID = DocumentOrID<ExpeditieDocument>;
+export type ExpeditieOrId = DocumentOrId<ExpeditieDocument>;

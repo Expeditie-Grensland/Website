@@ -26,6 +26,14 @@ const UPDATES = [
     { // 5 -> 6
         info: 'Remove mediaFile uses',
         func: require('./update005RemoveFileUses')
+    },
+    { // 6 -> 7
+        info: 'Remove expedities from people',
+        func: require('./update006RemovePeopleExpedities')
+    },
+    { // 7 -> 8
+        info: 'Update strings to ObjectIds',
+        func: require('./update007ChangeToObjectId')
     }
 ];
 

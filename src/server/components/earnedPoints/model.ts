@@ -1,11 +1,12 @@
 import * as mongoose from 'mongoose';
-import { DocumentOrId } from '../documents/new';
+
+import { DocumentOrId } from '../documents';
 import { PersonId } from '../people/id';
 import { ExpeditieId } from '../expedities/id';
+import { ExpeditieOrId } from '../expedities/model';
 import { EarnedPointId } from './id';
-import { PersonDocument } from '../people/model';
-import { ExpeditieDocument } from '../expedities/model';
 import { OffsetDate, offsetDateSchema } from '../offsetDate/model';
+import { PersonOrId } from '../people/model';
 
 const schema = new mongoose.Schema({
     date: {
@@ -24,7 +25,7 @@ const schema = new mongoose.Schema({
     expeditieId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: ExpeditieId
-    },
+    }
 });
 
 schema.index({ 'date.date': -1 });
@@ -32,8 +33,8 @@ schema.index({ 'date.date': -1 });
 export interface EarnedPoint {
     date: OffsetDate;
     amount: number;
-    personId: DocumentOrId<PersonDocument>;
-    expeditieId?: DocumentOrId<ExpeditieDocument>;
+    personId: PersonOrId;
+    expeditieId?: ExpeditieOrId;
 }
 
 export interface EarnedPointDocument extends EarnedPoint, mongoose.Document {

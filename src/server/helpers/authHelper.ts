@@ -2,14 +2,14 @@ import * as jwt from 'jsonwebtoken';
 import * as express from 'express';
 
 import { config } from './configHelper';
-import { PersonOrID } from '../components/people/model';
-import { Util } from '../components/documents/util';
+import { PersonOrId } from '../components/people/model';
+import { Documents } from '../components/documents';
 
 export namespace AuthHelper {
-    export const generateJwt = (person: PersonOrID, callback: jwt.SignCallback): void => {
+    export const generateJwt = (person: PersonOrId, callback: jwt.SignCallback): void => {
         jwt.sign(
             {
-                id: Util.getObjectID(person)
+                id: Documents.getStringId(person)
             },
             config.session.secret,
             {
@@ -23,19 +23,18 @@ export namespace AuthHelper {
             token,
             config.session.secret,
             callback
-        )
+        );
     };
 
     export const loginRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
         if (req.isAuthenticated()) {
             res.locals.user = req.user;
             next();
-        }
-        else {
+        } else {
             if (req.session)
                 req.session.returnTo = req.originalUrl;
 
             res.redirect('/leden/login');
         }
-    }
+    };
 }
