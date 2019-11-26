@@ -1,6 +1,6 @@
 import { TileCache } from './tileCache';
 
-const sw = self as ServiceWorkerGlobalScope;
+const sw: ServiceWorkerGlobalScope = self as any;
 
 sw.addEventListener('install', (event: ExtendableEvent) => {
     console.log('Installing Service Worker');

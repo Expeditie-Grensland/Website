@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as session from 'express-session';
+import * as redis from 'redis';
 import * as redisConnect from 'connect-redis';
 import * as socketio from 'socket.io';
 import * as http from 'http';
@@ -49,7 +50,9 @@ export namespace Setup {
         };
 
         if (config.session.useRedis)
-            sessionOptions.store = new (redisConnect(session))(config.redis);
+            sessionOptions.store = new (redisConnect(session))({
+                client: redis.createClient(config.redis)
+            });
 
         const sessionMiddle = session(sessionOptions);
         io.use((socket, next) => sessionMiddle(socket.request, socket.request.res, next));

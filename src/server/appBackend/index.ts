@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 
 import { AuthHelper } from '../helpers/authHelper';
 import { People } from '../components/people';
-import { PersonDocument } from '../components/people/model';
+import { PersonDocument, PersonOrId } from '../components/people/model';
 import { ExpeditieModel } from '../components/expedities/model';
 import { MediaFiles } from '../components/mediaFiles';
 import { Documents } from '../components/documents';
@@ -42,7 +42,7 @@ router.use((req, res, next) => {
                     return next(new Error('Unexpected jwt format'));
                 People.getById(mongoose.Types.ObjectId(decoded.id))
                     .then(person => {
-                        req.user = person;
+                        req.user = person as any;
                         next();
                     })
                     .catch(next);
@@ -62,7 +62,7 @@ router.use((err: any, req: express.Request, res: express.Response, next: express
 
 router.get('/expedities', (req, res) =>
     ExpeditieModel
-        .find({ personIds: Documents.getObjectId(req.user), finished: false }, {
+        .find({ personIds: Documents.getObjectId(req.user as PersonOrId), finished: false }, {
             name: 1,
             subtitle: 1,
             color: 1,

@@ -28,7 +28,6 @@
   },
 
   "redis": {
-    "url": "redis://localhost:6379/7",
-    "ttl": 864000
+    "url": "redis://localhost:6379/7"
   }
 }
