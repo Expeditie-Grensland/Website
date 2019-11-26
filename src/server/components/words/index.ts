@@ -1,7 +1,9 @@
-import { Word, WordDocument, WordModel, WordOrID } from './model';
-import { MediaFileOrId, MediaFiles } from '../mediaFiles';
-import { Util } from '../documents/util';
-import { WordId } from './id';
+import * as mongoose from 'mongoose';
+
+import { Word, WordDocument, WordModel, WordOrId } from './model';
+import { MediaFileOrId } from '../mediaFiles/model';
+import { MediaFiles } from '../mediaFiles';
+import { Documents } from '../documents';
 
 export namespace Words {
     export const create = (word: Word): Promise<WordDocument> =>
@@ -14,29 +16,26 @@ export namespace Words {
             .sort({ word: 1 })
             .exec();
 
-    export const getById = (id: string): Promise<WordDocument | null> =>
+    export const getById = (id: mongoose.Types.ObjectId): Promise<WordDocument | null> =>
         WordModel
             .findById(id)
             .exec();
 
-    export const getByIds = (ids: string[]): Promise<WordDocument[]> =>
+    export const getByIds = (ids: mongoose.Types.ObjectId[]): Promise<WordDocument[]> =>
         WordModel
             .find({ _id: { $in: ids } })
             .exec();
 
-    export const getDocument = (word: WordOrID): Promise<WordDocument | null> =>
-        Util.getDocument(getById)(word);
+    export const getDocument = (word: WordOrId): Promise<WordDocument | null> =>
+        Documents.getDocument(getById)(word);
 
-    export const setMediaFile = (word: WordOrID, file: MediaFileOrId): Promise<WordDocument | null> =>
+    export const setMediaFile = (word: WordOrId, file: MediaFileOrId): Promise<WordDocument | null> =>
         MediaFiles.ensureMime(file, ['audio/mpeg', 'video/mp4'])
             .then(MediaFiles.getEmbed)
             .then(embed => WordModel.findByIdAndUpdate(
-                Util.getObjectID(word),
+                Documents.getObjectId(word),
                 { mediaFile: embed },
                 { new: true })
                 .exec());
 }
-
-export { Word, WordDocument, WordOrID } from './model';
-export { WordId } from './id';
 

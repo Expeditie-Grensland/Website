@@ -1,11 +1,12 @@
-import { People } from '../people';
-import { Util } from '../documents/util';
-import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrID } from './model';
-import { PersonOrID } from '../people/model';
-import { MediaFileOrId, MediaFiles } from '../mediaFiles';
-import { Documents } from '../documents/new';
+import * as mongoose from 'mongoose';
 import * as R from 'ramda';
-import { GeoLocationDocument, geoLocationModel, GeoLocationOrId } from '../geoLocations/model';
+
+import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrId } from './model';
+import { PersonOrId } from '../people/model';
+import { MediaFiles } from '../mediaFiles';
+import { MediaFileOrId } from '../mediaFiles/model';
+import { Documents } from '../documents';
+import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
 import { GeoNode, GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
 import { GeoNodes } from '../geoNodes';
 
@@ -21,26 +22,19 @@ export namespace Expedities {
             .sort({ sequenceNumber: -1 })
             .exec();
 
-    export const getById = (id: string): Promise<ExpeditieDocument | null> =>
+    export const getById = (id: mongoose.Types.ObjectId): Promise<ExpeditieDocument | null> =>
         ExpeditieModel.findById(id).exec();
 
-    export const getDocument = (location: ExpeditieOrID): Promise<ExpeditieDocument | null> =>
-        Util.getDocument(getById)(location);
-
-    const _addExpeditieToPersons = (persons: PersonOrID[], expeditie: ExpeditieOrID): Promise<ExpeditieDocument> =>
-        Promise.all(persons.map(People.addExpeditieR(R.__, expeditie)))
-            .then(() => getDocument(expeditie).then(Documents.ensureNotNull));
-
-    const _addExpeditieToPersonsR = R.curry(_addExpeditieToPersons);
+    export const getDocument = (expeditie: ExpeditieOrId): Promise<ExpeditieDocument | null> =>
+        Documents.getDocument(getById)(expeditie);
 
     export const create = (expeditie: Expeditie): Promise<ExpeditieDocument> =>
         Promise.resolve(expeditie)
-            .then(ExpeditieModel.create)
-            .then(_addExpeditieToPersonsR(expeditie.participants));
+            .then(ExpeditieModel.create);
 
-    export const setFinished = (expeditie: ExpeditieOrID, finished: boolean): Promise<ExpeditieDocument | null> =>
+    export const setFinished = (expeditie: ExpeditieOrId, finished: boolean): Promise<ExpeditieDocument | null> =>
         ExpeditieModel.findByIdAndUpdate(
-            Util.getObjectID(expeditie),
+            Documents.getObjectId(expeditie),
             { finished: finished },
             { new: true }
         ).exec();
@@ -51,71 +45,60 @@ export namespace Expedities {
         return Promise.resolve(expeditie);
     };
 
-    export const remove = (expeditie: ExpeditieOrID): Promise<void> =>
+    export const remove = (expeditie: ExpeditieOrId): Promise<void> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
-            .then(expeditie => removeParticipants(expeditie, expeditie.participants))
             .then(expeditie => expeditie.remove())
             .then(() => undefined);
 
-    export const addParticipants = (expeditie: ExpeditieOrID, participants: PersonOrID[]): Promise<ExpeditieDocument> =>
+    export const addPeople = (expeditie: ExpeditieOrId, people: PersonOrId[]): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
             .then(_checkFinished)
-            .then(_addExpeditieToPersonsR(participants))
             .then(expeditie => ExpeditieModel.findByIdAndUpdate(
-                Util.getObjectID(expeditie),
+                Documents.getObjectId(expeditie),
                 {
                     $addToSet: {
-                        participants: { $each: Util.getObjectIDs(participants) }
+                        personIds: { $each: Documents.getObjectIds(people) }
                     }
                 },
                 { new: true }
             ).exec())
             .then(Documents.ensureNotNull);
 
-    export const addParticipantsR = R.curry(addParticipants);
 
-    const _removeExpeditieFromPersons = (expeditie: ExpeditieOrID, persons: PersonOrID[]): Promise<ExpeditieDocument> =>
-        Promise.all(persons.map(People.removeExpeditieR(R.__, expeditie)))
-            .then(() => getDocument(expeditie))
-            .then(Documents.ensureNotNull);
-
-    const _removeExpeditieFromPersonsR = R.curry(_removeExpeditieFromPersons);
-
-    export const removeParticipants = (expeditie: ExpeditieOrID, participants: PersonOrID[]): Promise<ExpeditieDocument> =>
+    export const removePeople = (expeditie: ExpeditieOrId, people: PersonOrId[]): Promise<ExpeditieDocument> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
             .then(_checkFinished)
-            .then(_removeExpeditieFromPersonsR(R.__, participants))
             .then(expeditie => ExpeditieModel.findByIdAndUpdate(
-                Util.getObjectID(expeditie),
+                Documents.getObjectId(expeditie),
                 {
                     $pullAll: {
-                        participants: Util.getObjectIDs(participants)
+                        personIds: Documents.getObjectIds(people)
                     }
                 },
                 { new: true }
             ).exec())
             .then(Documents.ensureNotNull);
 
-    export const getLocations = (expeditie: ExpeditieOrID): Promise<GeoLocationDocument[]> =>
-        geoLocationModel.find({ expeditieId: Util.getObjectID(expeditie) }).exec();
+    export const getLocations = (expeditie: ExpeditieOrId): Promise<GeoLocationDocument[]> =>
+        geoLocationModel.find({ expeditieId: Documents.getObjectId(expeditie) }).exec();
 
-    export const getNodes = (expeditie: ExpeditieOrID): Promise<GeoNodeDocument[]> =>
-        geoNodeModel.find({ expeditieId: Util.getObjectID(expeditie) }).exec();
+    export const getNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
+        geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie) }).exec();
 
-    export const getCurrentNodes = (expeditie: ExpeditieOrID): Promise<GeoNodeDocument[]> =>
-        geoNodeModel.find({ expeditieId: Util.getObjectID(expeditie), timeTill: Number.POSITIVE_INFINITY }).exec();
+    export const getCurrentNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
+        geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie), timeTill: Number.POSITIVE_INFINITY }).exec();
 
-    export const setGroups = async (expeditie: ExpeditieOrID, groups: PersonOrID[][], time: number): Promise<void> => {
+    export const setGroups = async (expeditie: ExpeditieOrId, groups: PersonOrId[][], time: number): Promise<void> => {
         const oldNodes = await getCurrentNodes(expeditie);
-        const oldGroups = oldNodes.map(n => Util.getRealObjectIDs(<any>n.personIds).sort());
+        const oldGroups = oldNodes.map(n => Documents.getObjectIds(<any>n.personIds).sort());
 
         if (Math.max(...oldNodes.map(n => n.timeFrom!)) >= time)
             throw new Error('The time should not be set lower than the start time of some current nodes.');
 
-        const newGroups = groups.map(g => Util.getRealObjectIDs(g).sort());
+        const newGroups = groups.map(g => Documents.getObjectIds(g).sort());
 
         if (R.difference(R.flatten(oldGroups), R.flatten(newGroups)).length > 0)
             throw new Error('All people in the expeditie should be represented in the new groups.');
@@ -123,10 +106,10 @@ export namespace Expedities {
         const newPeopleNodes: GeoNode[] = [];
         const newPeople = R.difference(R.flatten(newGroups), R.flatten(oldGroups));
 
-        if (newPeople.length > 0) await addParticipants(expeditie, newPeople.map(p => p.toHexString())); // TOOD: change when ObjectIds
+        if (newPeople.length > 0) await addPeople(expeditie, newPeople);
 
         for (let newPerson of newPeople) newPeopleNodes.push({
-            expeditieId: Util.getRealObjectID(expeditie),
+            expeditieId: Documents.getObjectId(expeditie),
             personIds: [newPerson],
             timeTill: time
         });
@@ -141,7 +124,7 @@ export namespace Expedities {
                 newPeopleNodes[R.findIndex(R.equals(newGroup), newPeople.map(x => [x]))].timeTill = Number.POSITIVE_INFINITY;
             else
                 newNodes.push({
-                    expeditieId: Util.getRealObjectID(expeditie),
+                    expeditieId: Documents.getObjectId(expeditie),
                     personIds: newGroup,
                     timeFrom: time
                 });
@@ -154,29 +137,29 @@ export namespace Expedities {
         await GeoNodes.createMany(R.concat(newNodes, newPeopleNodes));
     };
 
-    export const setBackgroundFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
+    export const setBackgroundFile = (expeditie: ExpeditieOrId, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
         MediaFiles.ensureMime(file, ['image/jpeg'])
             .then(MediaFiles.getEmbed)
             .then(embed => ExpeditieModel.findByIdAndUpdate(
-                Util.getObjectID(expeditie),
+                Documents.getObjectId(expeditie),
                 { backgroundFile: embed },
                 { new: true })
                 .exec());
 
-    export const setMovieCoverFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
+    export const setMovieCoverFile = (expeditie: ExpeditieOrId, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
         MediaFiles.ensureMime(file, ['image/jpeg'])
             .then(MediaFiles.getEmbed)
             .then(embed => ExpeditieModel.findByIdAndUpdate(
-                Util.getObjectID(expeditie),
+                Documents.getObjectId(expeditie),
                 { movieCoverFile: embed },
                 { new: true })
                 .exec());
 
-    export const setMovieFile = (expeditie: ExpeditieOrID, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
+    export const setMovieFile = (expeditie: ExpeditieOrId, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
         MediaFiles.ensureMime(file, ['video/mp4'])
             .then(MediaFiles.getEmbed)
             .then(embed => ExpeditieModel.findByIdAndUpdate(
-                Util.getObjectID(expeditie),
+                Documents.getObjectId(expeditie),
                 { movieFile: embed },
                 { new: true })
                 .exec());

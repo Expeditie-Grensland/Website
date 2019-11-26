@@ -4,18 +4,18 @@
 import * as gpxparse from 'gpx-parse';
 import * as R from 'ramda';
 
-import { PersonOrID } from '../people/model';
-import { Util } from '../documents/util';
+import { PersonOrId } from '../people/model';
 import { GeoLocation } from './model';
-import { ExpeditieOrID } from '../expedities/model';
+import { ExpeditieOrId } from '../expedities/model';
+import { Documents } from '../documents';
 
 export namespace GpxHelper {
-    export const generateLocations = (gpx: any, expeditie: ExpeditieOrID, person: PersonOrID, timezone: string = 'Europe/Amsterdam'): Promise<GeoLocation[]> => {
+    export const generateLocations = (gpx: any, expeditie: ExpeditieOrId, person: PersonOrId, timezone: string = 'Europe/Amsterdam'): Promise<GeoLocation[]> => {
         return new Promise((resolve, reject) =>
             gpxparse.parseGpx(gpx, (error: any, data: any) => {
                 if (error) return reject(error);
 
-                const [expeditieId, personId] = Util.getRealObjectIDs([expeditie, person]);
+                const [expeditieId, personId] = Documents.getObjectIds([expeditie, person]);
 
                 // @ts-ignore
                 return R.pipe(R.prop('tracks'), R.pluck('segments'), R.flatten, R.map((waypoint: any) => <GeoLocation>{

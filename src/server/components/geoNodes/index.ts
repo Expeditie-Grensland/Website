@@ -1,8 +1,7 @@
-import { GeoNode, GeoNodeDocument, geoNodeModel, GeoNodeOrId } from './model';
 import * as mongoose from 'mongoose';
-import { Documents } from '../documents/new';
-import { ExpeditieModel, ExpeditieOrID } from '../expedities/model';
-import { Util } from '../documents/util';
+
+import { GeoNode, GeoNodeDocument, geoNodeModel, GeoNodeOrId } from './model';
+import { Documents } from '../documents';
 
 export namespace GeoNodes {
     export const getById = (id: mongoose.Types.ObjectId): Promise<GeoNodeDocument | null> =>

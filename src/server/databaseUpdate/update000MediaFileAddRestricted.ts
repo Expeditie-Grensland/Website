@@ -1,5 +1,5 @@
-import { mediaFileModel, MediaFiles } from '../components/mediaFiles';
-import * as mongoose from 'mongoose';
+// import { mediaFileModel, MediaFiles } from '../components/mediaFiles';
+// import * as mongoose from 'mongoose';
 
 export default async () => {
     // const promises = [

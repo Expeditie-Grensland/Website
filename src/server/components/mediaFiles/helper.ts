@@ -1,11 +1,11 @@
 import * as path from 'path';
-import { config } from '../../helpers/configHelper';
 import * as express from 'express';
 import * as multer from 'multer';
 import * as mongoose from 'mongoose';
 import * as fs from 'fs';
-import { MediaFile, MediaFileDocument, MediaFileOrId, MediaFiles } from '.';
-import { Documents } from '../documents/new';
+
+import { config } from '../../helpers/configHelper';
+import { MediaFile, MediaFileDocument } from './model';
 
 const Mime = require('mime/Mime');
 

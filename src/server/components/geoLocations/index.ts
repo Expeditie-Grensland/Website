@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as R from 'ramda';
 
 import { GeoLocation, GeoLocationDocument, geoLocationModel, GeoLocationOrId } from './model';
-import { Documents } from '../documents/new';
+import { Documents } from '../documents';
 import { VisualAreaHelper } from './visualAreaHelper';
 
 export namespace GeoLocations {
