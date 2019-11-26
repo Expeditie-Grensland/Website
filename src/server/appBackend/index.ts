@@ -72,7 +72,7 @@ router.get('/expedities', (req, res) =>
         .exec()
         .then(R.map(x => {
             return {
-                id: x._id.toHexString(),
+                id: Documents.getStringId(x),
                 name: x.name,
                 subtitle: x.subtitle,
                 color: x.color,

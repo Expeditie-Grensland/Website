@@ -58,7 +58,7 @@ export namespace Sockets {
         let n = 0;
         return geoNodes.map(node => {
             return <SocketTypes.Node>{
-                personIds: node.personIds.map(x => x.toHexString()),
+                personIds: Documents.getStringIds(node.personIds),
                 timeFrom: node.timeFrom,
                 timeTill: node.timeTill != Number.POSITIVE_INFINITY ? node.timeTill : 1e10,
                 color: COLORS[colorsIds[n++]]
@@ -126,7 +126,7 @@ export namespace Sockets {
             .sort({ _id: -1 })
             .limit(1)
             .exec()
-            .then(locations => locations[0]._id.toHexString())
+            .then(locations => Documents.getStringId(locations[0]))
             .catch(() => null);
 
     const _sendLocations = (socket: socketio.Socket, expeditie: ExpeditieOrId, personMap: Map<string, number>, minLocationId?: string) =>
@@ -158,7 +158,7 @@ export namespace Sockets {
                 // @ts-ignore: id represents ObjectId buffer, but is not documented
                 buf[offset + j] = locs[i]._id.id[j];
 
-            buf.writeUInt8(personMap.get(locs[i].personId.toHexString()) || 0, offset + 12);
+            buf.writeUInt8(personMap.get(Documents.getStringId(locs[i].personId)) || 0, offset + 12);
             buf.writeDoubleBE(locs[i].time, offset + 13);
             buf.writeDoubleBE(locs[i].longitude, offset + 21);
             buf.writeDoubleBE(locs[i].latitude, offset + 29);
