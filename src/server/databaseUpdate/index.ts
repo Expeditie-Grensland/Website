@@ -34,6 +34,10 @@ const UPDATES = [
     { // 7 -> 8
         info: 'Update strings to ObjectIds',
         func: require('./update007ChangeToObjectId')
+    },
+    { // 8 -> 9
+        info: 'Replace expeditie background files',
+        func: require('./update008ReplaceImages')
     }
 ];
 
