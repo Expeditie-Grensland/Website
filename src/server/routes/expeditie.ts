@@ -8,13 +8,10 @@ export const router = express.Router({ mergeParams: true });
 router.get('/', async (req, res, next) => {
     const expeditie = await Expedities.getByNameShortWithPeople(req.params.expeditie);
 
-    console.log(expeditie);
-
     if (expeditie != null) {
         res.render('expeditie', {
             expeditie,
-            getFileUrl: MediaFiles.getUrl,
-            loggedIn: req.isAuthenticated()
+            getFileUrl: MediaFiles.getUrl
         });
     } else {
         next();

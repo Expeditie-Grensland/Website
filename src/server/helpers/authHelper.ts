@@ -26,15 +26,20 @@ export namespace AuthHelper {
         );
     };
 
-    export const loginRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    export const setAuthLocals = (req: express.Request, res: express.Response, next: express.NextFunction) => {
         if (req.isAuthenticated()) {
+            res.locals.loggedIn = req.isAuthenticated();
             res.locals.user = req.user;
-            next();
-        } else {
+        }
+        next();
+    };
+
+    export const loginRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        if (!req.isAuthenticated()) {
             if (req.session)
                 req.session.returnTo = req.originalUrl;
 
             res.redirect('/leden/login');
-        }
+        } else next();
     };
 }

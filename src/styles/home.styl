@@ -8,14 +8,35 @@ html, body
   color: $fgColor
   text-align: center
 
-.row
-  padding-bottom: 3rem
+.container
+  padding-bottom: 5rem
 
-  &:first-child
-    padding-top: 5rem
+.navbar
+  padding: 0
+  margin-top: 1.5rem
+  margin-bottom: 1.5rem
+
+.nav-link
+  padding: 0 !important
+  display: inline
+  color: darken($fgColor, 35%)
+  transition: color .15s ease-in-out
+
+  &:hover
+    color: darken($fgColor, 20%)
+
+
+a.img-large, a.img-small
+  display: block
+  color: $fgColor
+  text-decoration: none
+
+  &:hover
+    color: $fgColor
+    text-decoration: none
 
 .img-large
-  margin-bottom: 3rem
+  margin-bottom: 6rem
 
 .img-small
   margin-bottom: 2rem
@@ -23,9 +44,6 @@ html, body
 .img-large, .img-small
   width: 100%
   height: 0
-  background-size: cover
-  background-repeat: no-repeat
-  background-position: center
   overflow: hidden
   position: relative
   padding-bottom: 65%
@@ -33,25 +51,36 @@ html, body
 
 .embed-responsive
   box-shadow: 0 0 30px -10px #000
+  margin-bottom: 2rem
 
 a.img-large, a.img-small
   display: block
   color: inherit
   text-decoration: inherit
+  transition: box-shadow .15s ease-in-out
+
+  @media (hover: hover)
+    .img-bg
+      transition: filter .15s ease-in-out
 
   &:hover
     color: inherit
     text-decoration: inherit
+    box-shadow: 0 0 30px -5px #000
 
-  @media (hover: hover)
-    .img-inner
-      top: 0
-      height: 100%
-      opacity: 0
-      transition: opacity .3s ease 0s
+    @media (hover: hover)
+      .img-bg
+        filter: brightness(.85)
 
-      &:hover, &.hover
-        opacity: 1
+.img-bg
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  background-size: cover
+  background-repeat: no-repeat
+  background-position: center
 
 .img-inner
   display: table
@@ -97,8 +126,9 @@ a.img-large, a.img-small
 
 .midtitle
   font-size: 1.4rem
+  padding-bottom: 2rem
 
-.btn-kaart
+.btn
   margin-bottom: 1rem
   color: $fgColor
   background-color: transparent
@@ -115,5 +145,5 @@ a.img-large, a.img-small
   margin-bottom: 5rem
 
   @media (min-width: 768px)
-    margin-bottom: 0
+    margin-bottom: 2rem
     text-align: right

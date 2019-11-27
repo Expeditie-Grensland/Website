@@ -14,19 +14,27 @@ append styles
 
 block body
     .container
+        nav.navbar.navbar-expand
+            ul.navbar-nav.ml-auto
+                li.nav-item
+                    if loggedIn
+                        a.nav-link(href="/leden")= user.name
+                    else
+                        a.nav-link(href="/leden/login") Log In
+
         .row
             .col
-                a.img-large(href=expedities[0].nameShort style=`background-image:url(${getFileUrl(expedities[0].backgroundFile)})`)
+                a.img-large(href=`/${expedities[0].nameShort}` style=`background-image:url(${getFileUrl(expedities[0].backgroundFile)})`)
                     +innerImage(expedities[0])
 
 
         .row
-            .col
-                span.midtitle Voorgaande Expedities
+            .col.midtitle
+                span Voorgaande Expedities
 
 
         .row
             each expeditie in expedities.slice(1)
                 .col-12.col-md-6.col-lg-4
-                    a.img-small(href=expeditie.nameShort style=`background-image:url(${getFileUrl(expeditie.backgroundFile)})`)
+                    a.img-small(href=`/${expeditie.nameShort}`)
                         +innerImage(expeditie)

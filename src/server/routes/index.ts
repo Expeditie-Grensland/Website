@@ -5,9 +5,12 @@ import { router as expeditieRouter } from './expeditie';
 import { router as homeRouter } from './home';
 import { router as membersRouter } from './members';
 import { router as importRouter } from './importStan';
+import { AuthHelper } from '../helpers/authHelper';
 
 export function Router(dev: boolean): express.Router {
     const router = express.Router();
+
+    router.use(AuthHelper.setAuthLocals);
 
     router.use('/leden', membersRouter);
 

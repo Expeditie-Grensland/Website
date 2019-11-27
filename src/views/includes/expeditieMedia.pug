@@ -1,4 +1,5 @@
 mixin innerImage(expeditie)
+    .img-bg(style=`background-image:url(${getFileUrl(expeditie.backgroundFile)})`)
     .img-inner
         .img-inner2
             span.text-title= expeditie.name

@@ -9,8 +9,7 @@ router.get('/', (req, res) => {
     Expedities.getAll().then(expedities => {
         res.render('home', {
             expedities,
-            getFileUrl: MediaFiles.getUrl,
-            loggedIn: req.isAuthenticated()
+            getFileUrl: MediaFiles.getUrl
         });
     });
 });

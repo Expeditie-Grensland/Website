@@ -10,7 +10,19 @@ append styles
 
 
 block body
-    .container
+    .container.container
+        nav.navbar.navbar-expand
+            ul.navbar-nav
+                li.nav-item
+                    a.nav-link(href="/") &larr;&nbsp;Home
+
+            ul.navbar-nav.ml-auto
+                li.nav-item
+                    if loggedIn
+                        a.nav-link(href="/leden")= user.name
+                    else
+                        a.nav-link(href="/leden/login") Log In
+
         .row
             .col
                 .img-large(style=`background-image:url(${getFileUrl(expeditie.backgroundFile)})`)
@@ -20,7 +32,7 @@ block body
         .row
             .col-12.col-md-4.order-md-2.leden
                 if expeditie.showMap
-                    a.btn.btn-kaart(href=`${expeditie.nameShort}/kaart`) Open de Kaart
+                    a.btn(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
                     br
 
                 each person, i in expeditie.personIds.sort(function(a, b) {return (a.name > b.name) ? 1 : -1})
