@@ -28,6 +28,6 @@ export namespace GeoLocations {
     export const createMany: ((locs: GeoLocation[]) => Promise<GeoLocationDocument[]>) =
         R.pipeP(
             VisualAreaHelper.setVisualAreas,
-            x => geoLocationModel.insertMany(x)
+            x => geoLocationModel.insertMany(x, { ordered: false })
         );
 }

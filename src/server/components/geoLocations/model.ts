@@ -78,7 +78,12 @@ const geoLocationSchema = new mongoose.Schema({
     .index({
         expeditieId: 1,
         longitude: 1
-    });
+    })
+    .index({
+        expeditieId: 1,
+        personId: 1,
+        time: 1
+    }, { unique: true });
 
 export const geoLocationModel = mongoose.model<GeoLocationDocument>(GeoLocationId, geoLocationSchema);
 

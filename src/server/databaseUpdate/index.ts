@@ -38,6 +38,10 @@ const UPDATES = [
     { // 8 -> 9
         info: 'Replace expeditie background files',
         func: require('./update008ReplaceImages')
+    },
+    { // 9 -> 10
+        info: 'Remove duplicate locations',
+        func: require('./update009RemoveDuplicates')
     }
 ];
 
