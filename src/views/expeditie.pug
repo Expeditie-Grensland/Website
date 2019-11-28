@@ -4,10 +4,11 @@ include includes/expeditieMedia.pug
 block title
     title Expeditie #{expeditie.name}
 
-append styles
-    link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
-    link(rel='stylesheet' href='/static/styles/home.css')
+append scripts
+    script(src='/static/scripts/home.js')
 
+append styles
+    link(rel='stylesheet' href='/static/styles/home.css')
 
 block body
     .container.container
