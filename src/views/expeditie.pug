@@ -5,14 +5,14 @@ block title
     title Expeditie #{expeditie.name}
 
 append scripts
-    script(src='/static/scripts/home.js')
+    script(src='/static/scripts/public.js')
 
-append styles
-    link(rel='stylesheet' href='/static/styles/home.css')
+block styles
+    link(rel='stylesheet' href='/static/styles/public.css')
 
 block body
-    .container.container
-        nav.navbar.navbar-expand
+    .container.text-center
+        nav.navbar.navbar-dark.navbar-expand
             ul.navbar-nav
                 li.nav-item
                     a.nav-link(href="/") &larr;&nbsp;Home
@@ -26,19 +26,16 @@ block body
 
         .row
             .col
-                .img-large
+                .img-large.embed-responsive
                     +innerImage(expeditie)
 
 
         .row
-            .col-12.col-md-4.order-md-2.leden
+            .col-12.col-md-4.order-md-2.members.text-md-right
                 if expeditie.showMap
-                    a.btn(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
-                    br
+                    a.btn.btn-map.btn-outline-light(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
 
-                each person, i in expeditie.personIds.sort(function(a, b) {return (a.name > b.name) ? 1 : -1})
-                    if i > 0
-                        br
+                each person in expeditie.personIds.sort(function(a, b) {return (a.name > b.name) ? 1 : -1})
                     span= person.name
 
             .col-12.col-md-8.order-md-1

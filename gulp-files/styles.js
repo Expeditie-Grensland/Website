@@ -5,8 +5,7 @@ import postcss from 'gulp-postcss';
 import rev from 'gulp-rev';
 import sass from 'gulp-sass';
 import sourcemaps from 'gulp-sourcemaps';
-import sassCompiler from 'node-sass'
-import sassPackageImporter from 'node-sass-package-importer';
+import sassCompiler from 'sass'
 
 sass.compiler = sassCompiler;
 
@@ -27,16 +26,16 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
 
         if (opts.prod)
             stream = stream
-                .pipe(sass({ importer: sassPackageImporter(), outputStyle: 'compressed', includePath: '../..' }))
-                .pipe(postcss([autoprefixer({ env: '> 1% in NL, not dead' })]))
+                .pipe(sass({ outputStyle: 'compressed', includePath: '../..' }))
+                .pipe(postcss([autoprefixer({ env: '> 1% in NL, not dead', cascade: false })]))
                 .pipe(rev())
                 .pipe(gulp.dest('dist/static/styles/'))
                 .pipe(rev.manifest());
         else
             stream = stream
                 .pipe(sourcemaps.init())
-                .pipe(sass({ importer: sassPackageImporter(), includePath: '../..' }))
-                .pipe(postcss([autoprefixer({ env: '> 1% in NL, not dead' })]))
+                .pipe(sass({ includePath: '../..' }))
+                .pipe(postcss([autoprefixer({ env: '> 1% in NL, not dead', cascade: false })]))
                 .pipe(sourcemaps.write());
 
         return stream.pipe(gulp.dest('dist/static/styles/'));
