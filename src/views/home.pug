@@ -5,16 +5,14 @@ block title
     title Expeditie Grensland
 
 append scripts
-    script(src='/static/scripts/home.js')
+    script(src='/static/scripts/public.js')
 
-append styles
-    link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
-    link(rel='stylesheet' href='/static/styles/home.css')
-
+block styles
+    link(rel='stylesheet' href='/static/styles/public.css')
 
 block body
-    .container
-        nav.navbar.navbar-expand
+    .container.text-center
+        nav.navbar.navbar-dark.navbar-expand
             ul.navbar-nav.ml-auto
                 li.nav-item
                     if loggedIn
@@ -24,17 +22,14 @@ block body
 
         .row
             .col
-                a.img-large(href=`/${expedities[0].nameShort}`)
+                a.img-large.embed-responsive(href=`/${expedities[0].nameShort}`)
                     +innerImage(expedities[0])
 
 
         .row
-            .col.midtitle
+            .col-12.midtitle
                 span Voorgaande Expedities
-
-
-        .row
             each expeditie in expedities.slice(1)
                 .col-12.col-md-6.col-lg-4
-                    a.img-small(href=`/${expeditie.nameShort}`)
+                    a.img-small.embed-responsive.embed-responsive-20by13(href=`/${expeditie.nameShort}`)
                         +innerImage(expeditie)
