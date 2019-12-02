@@ -1,15 +1,17 @@
-import { TileCache } from './tileCache';
+import { RouteCache } from './routeCache';
 
-const sw: ServiceWorkerGlobalScope = self as any;
+declare const self: ServiceWorkerGlobalScope;
 
-sw.addEventListener('install', (event: ExtendableEvent) => {
+self.addEventListener('install', (event: ExtendableEvent) => {
     console.log('Installing Service Worker');
-    event.waitUntil(sw.skipWaiting());
+    event.waitUntil(self.skipWaiting());
 });
 
-sw.addEventListener('activate', (event: ExtendableEvent) => {
-    console.log("Kicking out old service handler");
-    event.waitUntil(sw.clients.claim());
+self.addEventListener('activate', (event: ExtendableEvent) => {
+    console.log('Kicking out old service handler');
+    event.waitUntil(self.clients.claim());
 });
 
-TileCache.init(sw);
+self.addEventListener('fetch', (event: FetchEvent) => {
+    RouteCache.onFetch(event);
+});

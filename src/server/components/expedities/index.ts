@@ -88,6 +88,9 @@ export namespace Expedities {
     export const getLocations = (expeditie: ExpeditieOrId): Promise<GeoLocationDocument[]> =>
         geoLocationModel.find({ expeditieId: Documents.getObjectId(expeditie) }).exec();
 
+    export const getLocationCount = (expeditie: ExpeditieOrId): Promise<number> =>
+        geoLocationModel.count({ expeditieId: Documents.getObjectId(expeditie) }).exec();
+
     export const getNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie) }).exec();
 

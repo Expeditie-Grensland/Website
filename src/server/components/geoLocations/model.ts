@@ -69,7 +69,18 @@ const geoLocationSchema = new mongoose.Schema({
 })
     .index({
         expeditieId: 1,
-        visualArea: -1
+        _id: -1
+    })
+    .index({
+        expeditieId: 1,
+        personId: 1
+    })
+    .index({
+        personId: 1,
+        time: 1
+    })
+    .index({
+        time: 1
     })
     .index({
         expeditieId: 1,

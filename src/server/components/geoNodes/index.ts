@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose';
 
 import { GeoNode, GeoNodeDocument, geoNodeModel, GeoNodeOrId } from './model';
 import { Documents } from '../documents';
+import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
 
 export namespace GeoNodes {
     export const getById = (id: mongoose.Types.ObjectId): Promise<GeoNodeDocument | null> =>

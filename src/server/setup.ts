@@ -3,7 +3,6 @@ import * as express from 'express';
 import * as session from 'express-session';
 import * as redis from 'redis';
 import * as redisConnect from 'connect-redis';
-import * as socketio from 'socket.io';
 import * as http from 'http';
 import * as mongoose from 'mongoose';
 import * as path from 'path';
@@ -42,7 +41,7 @@ export namespace Setup {
         }
     }
 
-    export function setupSession(app: express.Express, io: socketio.Server) {
+    export function setupSession(app: express.Express) {
         const sessionOptions: session.SessionOptions = {
             secret: config.session.secret,
             resave: false,
@@ -54,9 +53,7 @@ export namespace Setup {
                 client: redis.createClient(config.redis)
             });
 
-        const sessionMiddle = session(sessionOptions);
-        io.use((socket, next) => sessionMiddle(socket.request, socket.request.res, next));
-        app.use(sessionMiddle);
+        app.use(session(sessionOptions));
 
         app.use(flash());
     }
