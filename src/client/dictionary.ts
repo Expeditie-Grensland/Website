@@ -1,8 +1,6 @@
 const playMedia = (word: string) => () => {
     let player = <HTMLMediaElement>document.getElementById('player:' + word);
 
-    console.log(player);
-
     if (player.tagName === "VIDEO")
         if (player.style.display === "none") {
             player.style.display = "block";

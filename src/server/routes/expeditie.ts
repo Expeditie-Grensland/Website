@@ -51,11 +51,9 @@ router.get('/kaart/binary', async (req, res, next) => {
 
     if (req.header(H_LC) != undefined && req.header(H_LL) != undefined &&
         req.header(H_LC) == (await locationCount).toString(16) &&
-        req.header(H_LL) == (await lastLocation).toHexString()) {
+        req.header(H_LL) == (await lastLocation).toHexString())
 
-        console.log(304);
         return res.sendStatus(304);
-    }
 
     const nodes = Expedities.getNodes(expeditie);
 
@@ -66,7 +64,6 @@ router.get('/kaart/binary', async (req, res, next) => {
     res.setHeader(H_LC, (await locationCount).toString(16));
     res.setHeader(H_LL, (await lastLocation).toHexString());
 
-    console.log(200);
     res.write(buf, 'binary');
 
 

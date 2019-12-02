@@ -38,12 +38,10 @@ export namespace GeoJsonHelper {
         const view = new DataView(buf);
 
         const nodeCount = view.getInt32(0);
-        console.log("nodeCount: ", nodeCount);
         let offset = 4;
 
         for (let nodeNum = 0; nodeNum < nodeCount; nodeNum++) {
             const locCount = view.getInt32(offset);
-            console.log("locCount: ", locCount);
 
             offset += 4;
 

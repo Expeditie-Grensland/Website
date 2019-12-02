@@ -8,8 +8,6 @@ let geoJsonResult: (GeoJsonHelper.GeoJsonResult | null) = null;
 onmessage = (event) => {
     let key = event.data[0] as string;
 
-    console.log(key);
-
     if (key == "styleLoaded") {
         styleLoaded = true;
         if (geoJsonResult != null) postMessage(geoJsonResult);

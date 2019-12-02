@@ -61,7 +61,7 @@ const setRoute = (res: GeoJsonHelper.GeoJsonResult) => {
 
 
 map.on('load', () => {
-    console.log('Map load!');
+    console.info('Map load!');
     worker.postMessage(['styleLoaded']);
 });
 
