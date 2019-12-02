@@ -1,9 +1,7 @@
 import * as mongoose from 'mongoose';
-import * as R from 'ramda';
 
 import { GeoLocation, GeoLocationDocument, geoLocationModel, GeoLocationOrId } from './model';
 import { Documents } from '../documents';
-import { VisualAreaHelper } from './visualAreaHelper';
 
 export namespace GeoLocations {
     export const getById = (id: mongoose.Types.ObjectId): Promise<GeoLocationDocument | null> =>
@@ -19,15 +17,8 @@ export namespace GeoLocations {
 
     export const getDocuments: (locs: GeoLocationOrId[]) => Promise<GeoLocationDocument[]> = Documents.getDocuments(getByIds);
 
-    export const create: ((loc: GeoLocation) => Promise<GeoLocationDocument>) =
-        R.pipeP(
-            VisualAreaHelper.setVisualArea,
-            geoLocationModel.create
-        );
+    export const create: ((loc: GeoLocation) => Promise<GeoLocationDocument>) = geoLocationModel.create;
 
-    export const createMany: ((locs: GeoLocation[]) => Promise<GeoLocationDocument[]>) =
-        R.pipeP(
-            VisualAreaHelper.setVisualAreas,
-            x => geoLocationModel.insertMany(x, { ordered: false })
-        );
+    export const createMany = (locs: GeoLocation[]): Promise<GeoLocationDocument[]> =>
+        geoLocationModel.insertMany(locs, { ordered: false });
 }

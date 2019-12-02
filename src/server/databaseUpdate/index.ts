@@ -42,6 +42,10 @@ const UPDATES = [
     { // 9 -> 10
         info: 'Remove duplicate locations',
         func: require('./update009RemoveDuplicates')
+    },
+    { // 10 -> 11
+        info: 'Remove visualArea from GeoLocations',
+        func: require('./update010RemoveVisualArea')
     }
 ];
 
@@ -51,7 +55,7 @@ async function performUpdate(version: number, update: { info: string, func: any 
 }
 
 export default async function updateDatabase() {
-    let databaseVersion = <number | null> await Metadata.getValueByKey(DATABASE_VERSION_KEY);
+    let databaseVersion = <number | null>await Metadata.getValueByKey(DATABASE_VERSION_KEY);
 
     if (databaseVersion === null)
         databaseVersion = <number>(await Metadata.createKeyValue(DATABASE_VERSION_KEY, UPDATES.length)).value;

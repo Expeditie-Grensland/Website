@@ -20,13 +20,11 @@ export interface GeoLocation {
     speedAccuracy?: number;
     bearing?: number;
     bearingAccuracy?: number;
-    visualArea?: number;
 }
 
 export interface GeoLocationDocument extends GeoLocation, mongoose.Document {
     _id: mongoose.Types.ObjectId;
     timezone: string;
-    visualArea: number;
 }
 
 const geoLocationSchema = new mongoose.Schema({
@@ -61,11 +59,7 @@ const geoLocationSchema = new mongoose.Schema({
     speed: Number,
     speedAccuracy: Number,
     bearing: Number,
-    bearingAccuracy: Number,
-    visualArea: {
-        type: Number,
-        default: Number.POSITIVE_INFINITY
-    }
+    bearingAccuracy: Number
 })
     .index({
         expeditieId: 1,
@@ -81,14 +75,6 @@ const geoLocationSchema = new mongoose.Schema({
     })
     .index({
         time: 1
-    })
-    .index({
-        expeditieId: 1,
-        latitude: 1
-    })
-    .index({
-        expeditieId: 1,
-        longitude: 1
     })
     .index({
         expeditieId: 1,
