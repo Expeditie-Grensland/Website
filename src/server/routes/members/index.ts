@@ -5,6 +5,7 @@ import { AuthHelper } from '../../helpers/authHelper';
 import { router as dictionaryRouter } from './dictionary';
 import { router as quotesRouter } from './quotes';
 import { router as pointsRouter } from './points';
+import { MemberLinks } from '../../components/memberLinks';
 
 export const router = express.Router();
 
@@ -37,7 +38,16 @@ router.get('/loguit', (req, res) => {
 
 router.use(AuthHelper.loginRedirect);
 
-router.get('/', (req, res) => res.render('members/index'));
+router.get('/', async (req, res) => res.render('members/index', {
+    links: [
+        { title: 'Hoofdpagina', text: 'Alle Expedities (en verborgen videos)', href: '/' },
+        { title: 'Woordenboek', text: 'Het Grote Woordenboek der Expediets', href: '/leden/woordenboek' },
+        { title: 'Citaten', text: 'De Lange Citatenlijst der Expeditie Grensland', href: '/leden/citaten' },
+        { title: 'De Punt\'n', text: 'Welk team is het vurigst? Blauw, of Rood?', href: '/leden/punten' }
+    ].concat((await MemberLinks.getAll()).map((l) => {
+        return { title: l.title, text: l.text || '', href: l.href};
+    }))
+}));
 
 router.use('/woordenboek', dictionaryRouter);
 router.use('/citaten', quotesRouter);
