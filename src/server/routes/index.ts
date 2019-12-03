@@ -4,7 +4,6 @@ import { router as debugRouter } from './debug';
 import { router as expeditieRouter } from './expeditie';
 import { router as homeRouter } from './home';
 import { router as membersRouter } from './members';
-import { router as importRouter } from './importStan';
 import { AuthHelper } from '../helpers/authHelper';
 
 export function Router(dev: boolean): express.Router {
@@ -13,8 +12,6 @@ export function Router(dev: boolean): express.Router {
     router.use(AuthHelper.setAuthLocals);
 
     router.use('/leden', membersRouter);
-
-    router.use('/import_stan', importRouter);
 
     router.get('/login', (req, res) => res.redirect(301, '/leden/login'));
     router.get('/woordenboek', (req, res) => res.redirect(301, '/leden/woordenboek'));
