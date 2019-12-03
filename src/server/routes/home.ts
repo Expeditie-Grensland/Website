@@ -7,7 +7,8 @@ export const router = express.Router();
 
 router.get('/', (req, res) => {
     Expedities.getAll().then(expedities => {
-        res.render('home', {
+        res.render('public/home', {
+            isHome: true,
             expedities,
             getFileUrl: MediaFiles.getUrl
         });
