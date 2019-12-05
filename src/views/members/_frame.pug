@@ -1,0 +1,22 @@
+extends ../_frame
+
+block styles
+    link(rel='stylesheet' href='/static/styles/members.css')
+
+block scripts
+    script(src='/static/scripts/members.js')
+
+block body
+    .container.text-center
+        nav.navbar.navbar-light.navbar-expand
+            if !isHome && !isLogin
+                ul.navbar-nav
+                    li.nav-item
+                        a.nav-link(href="/leden") &larr;&nbsp;Home
+
+            if !isLogin
+                ul.navbar-nav.ml-auto
+                    li.nav-item
+                        a.nav-link(href="/leden/loguit")= user.name
+
+        block content

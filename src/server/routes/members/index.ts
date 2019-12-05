@@ -22,7 +22,7 @@ router.get('/login', (req, res, next) => {
         next();
     }
 }, (req, res) => {
-    res.render('members/login', { messages: req.flash('error') });
+    res.render('members/login', { isLogin: true, messages: req.flash('error') });
 });
 
 router.post('/login', passport.authenticate('ldapauth', {
@@ -39,6 +39,7 @@ router.get('/loguit', (req, res) => {
 router.use(AuthHelper.loginRedirect);
 
 router.get('/', async (req, res) => res.render('members/index', {
+    isHome: true,
     links: [
         { title: 'Hoofdpagina', text: 'Alle Expedities (en verborgen videos)', href: '/' },
         { title: 'Woordenboek', text: 'Het Grote Woordenboek der Expediets', href: '/leden/woordenboek' },
