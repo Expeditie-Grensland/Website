@@ -1,18 +1,23 @@
 import 'core-js/fn/promise';
-
 import mapboxgl from 'mapbox-gl';
-// @ts-ignore
-import { GeoJsonHelper } from './helpers/geoJson';
+import $ from 'jquery';
+
+import { GeoJsonResult } from './helpers/retrieval';
+import { StoryHandler } from './story/storyHandler';
 
 declare var expeditieNameShort: string;
 
 const worker: Worker = new Worker((document.getElementById('worker') as HTMLLinkElement).href);
-worker.postMessage(['retrieveGeoJson', expeditieNameShort]);
+worker.postMessage(['retrieveAll', expeditieNameShort]);
 
 // @ts-ignore
 worker.onmessage = (event) => {
-    setRoute(event.data);
-    worker.terminate();
+    switch (event.data[0]) {
+        case 'geoJson':
+            return setRoute(event.data[1]);
+        case 'story':
+            return StoryHandler.init(event.data[1]);
+    }
 };
 
 mapboxgl.accessToken =
@@ -26,11 +31,19 @@ const map = new mapboxgl.Map({
 
 map.addControl(new mapboxgl.NavigationControl());
 
-const setRoute = (res: GeoJsonHelper.GeoJsonResult) => {
+const setRoute = (res: GeoJsonResult) => {
     map.fitBounds(new mapboxgl.LngLatBounds(
         new mapboxgl.LngLat(res.minLon, res.minLat),
         new mapboxgl.LngLat(res.maxLon, res.maxLat)
-    ), { padding: 20, animate: false });
+    ), {
+        padding: {
+            top: 20,
+            bottom: 20,
+            left: $(window).width()! * 0.35 + 20,
+            right: 20
+        },
+        animate: false
+    });
 
     map.addSource('exp-route', { type: 'geojson', data: res.geoJson } as any);
 

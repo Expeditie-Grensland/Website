@@ -1,20 +1,24 @@
-import { GeoJsonHelper } from './helpers/geoJson';
+import { GeoJsonResult, RetrievalHelper } from './helpers/retrieval';
 
 declare function postMessage(message: any): void;
 
 let styleLoaded = false;
-let geoJsonResult: (GeoJsonHelper.GeoJsonResult | null) = null;
+let geoJsonResult: (GeoJsonResult | null) = null;
 
 onmessage = (event) => {
     let key = event.data[0] as string;
 
     if (key == "styleLoaded") {
         styleLoaded = true;
-        if (geoJsonResult != null) postMessage(geoJsonResult);
+        if (geoJsonResult != null) postMessage(['geoJson', geoJsonResult]);
     }
-    else if (key == "retrieveGeoJson")
-        GeoJsonHelper.retrieveGeoJson(event.data[1], (res: (GeoJsonHelper.GeoJsonResult)) => {
-            if (styleLoaded) return postMessage(res);
+    else if (key == "retrieveAll") {
+        RetrievalHelper.retrieveGeoJson(event.data[1], (res: (GeoJsonResult)) => {
+            if (styleLoaded) return postMessage(['geoJson', res]);
             geoJsonResult = res;
         });
+        RetrievalHelper.retrieveStory(event.data[1], (res: JSON) => {
+            return postMessage(['story', res]);
+        })
+    }
 };

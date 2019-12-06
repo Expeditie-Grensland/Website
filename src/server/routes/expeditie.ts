@@ -7,6 +7,7 @@ import { ExpeditieDocument } from '../components/expedities/model';
 import { geoLocationModel } from '../components/geoLocations/model';
 import { StoryElements } from '../components/storyElements';
 import { LocationStoryElementDocument, storyElementModel, TextStoryElementDocument } from '../components/storyElements/model';
+import { PersonDocument } from '../components/people/model';
 
 export const router = express.Router({ mergeParams: true });
 
@@ -90,6 +91,7 @@ router.get('/kaart/binary', async (req, res) => {
     res.end(null, 'binary');
 });
 
+// TODO: one X-Revision-Id header instead of separate
 const H_SC = 'X-Story-Count';
 const H_LS = 'X-Last-Story';
 
@@ -112,20 +114,35 @@ router.get('/kaart/story', async (req, res) => {
         return res.sendStatus(304);
 
     const stories = StoryElements.getByExpeditie(expeditie);
-    const nodes = await Expedities.getNodes(expeditie);
+    const nodes = await Expedities.getNodesWithPeople(expeditie);
 
     res.setHeader(H_SC, (await storyCount).toString(16));
     res.setHeader(H_LS, (await lastStory).toHexString());
 
-    res.end(JSON.stringify((await stories).map((story) => {
-        return {
-            type: story.type,
-            nodeNum: nodes.findIndex((node) =>
-                story.time >= node.timeFrom && story.time < node.timeTill && node.personIds.includes(story.personId)),
-            time: story.time,
-            title: (story as TextStoryElementDocument).title,
-            text: (story as TextStoryElementDocument).text,
-            name: (story as LocationStoryElementDocument).name
-        }
-    })));
+    const result = {
+        nodes: nodes.map((node, index) => {
+            return {
+                id: node._id.toHexString(),
+                nodeNum: index,
+                timeFrom: node.timeFrom,
+                timeTill: node.timeTill,
+                personNames: node.personIds.map((p: PersonDocument) => p.name) // FIXME: see geonodes model
+            };
+        }),
+        story: (await stories).map((story) => {
+            return {
+                id: story._id.toHexString(),
+                type: story.type,
+                nodeNum: nodes.findIndex((node) =>
+                    story.time >= node.timeFrom && story.time < node.timeTill &&
+                    node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))), // FIXME: see geonodes model
+                time: story.time,
+                title: (story as TextStoryElementDocument).title,
+                text: (story as TextStoryElementDocument).text,
+                name: (story as LocationStoryElementDocument).name
+            };
+        })
+    };
+
+    res.end(JSON.stringify(result));
 });

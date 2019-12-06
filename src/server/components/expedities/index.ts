@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as R from 'ramda';
 
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrId } from './model';
-import { PersonOrId } from '../people/model';
+import { PersonDocument, PersonOrId } from '../people/model';
 import { MediaFiles } from '../mediaFiles';
 import { MediaFileOrId } from '../mediaFiles/model';
 import { Documents } from '../documents';
@@ -93,6 +93,9 @@ export namespace Expedities {
 
     export const getNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ _id: 1 }).exec();
+
+    export const getNodesWithPeople = (expeditie: ExpeditieOrId): Promise<(GeoNodeDocument & { personIds: PersonDocument[] })[]> => // FIXME: see geonodes model
+        geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ _id: 1 }).populate('personIds').exec() as Promise<(GeoNodeDocument & { personIds: PersonDocument[] })[]>;
 
     export const getCurrentNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie), timeTill: Number.POSITIVE_INFINITY }).sort({ _id: 1 }).exec();

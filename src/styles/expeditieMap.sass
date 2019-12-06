@@ -1,39 +1,109 @@
 @import "../../node_modules/mapbox-gl/dist/mapbox-gl"
 
-html
-  height: 100%
-  width: 100%
-  user-select: none
-
-body
+html, body
+  height: 100vh
+  width: 100vw
   margin: 0
   padding: 0
-  height: 100%
-  width: 100%
+  overflow: hidden
+  box-sizing: border-box
+
+*
+  box-sizing: inherit
+
+body
+  display: flex
 
 #map
   width: 100%
   height: 100%
+  vertical-align: top
 
 .mapboxgl-ctrl-bottom-right div, div a
   user-select: none !important
 
-#loadingBar
+// ---------- Story ----------
+
+#storyWrapper
   position: absolute
-  top: 0
   left: 0
-  font-size: 1em
-  background-color: #F0E68C
-  text-align: center
-
-
-#loadingText
-  display: inline-block
+  width: 35%
   height: 100%
-  vertical-align: middle
+  // Firefox
+  scrollbar-width: none
+  // Edge
+  -ms-overflow-style: none
+  padding: 16px
+  overflow-y: auto
+
+  &::-webkit-scrollbar
+    // Chrome/Safari
+    width: 0
 
 
-.loadingSpinner
-  height: 1em
-  width: auto
-  vertical-align: middle
+#storyTitle
+  position: sticky
+  top: -16px
+  z-index: 10
+
+  margin-bottom: 16px
+  transition: margin 100ms, padding 100ms
+
+  h1
+    margin: 0
+
+  .subtitle
+    color: #404040
+    margin: 0 0 8px 0
+
+  .fixed
+    // is applied by javascript.
+       margin-left: -16px
+       padding-left: 32px
+
+       box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2)
+       border-radius: 0 5px 5px 0
+
+       background-color: #f5f5f5
+
+#story
+  display: flex
+
+#graph
+  min-width: 150px
+  display: inline-block
+  flex: 0 0 auto
+  padding: 0
+  margin-bottom: 16px
+
+
+#storyElements
+  margin-left: 16px
+
+.storyElement
+  margin-bottom: 16px
+
+  .header
+    display: flex
+    justify-content: space-between
+
+  h1
+    margin: 0
+
+  .time
+    display: inline-block
+    text-align: right
+    margin: 0
+    font-size: .7em
+    white-space: nowrap
+
+  .people
+    margin-top: 0
+    font-size: .7em
+
+.card
+  position: relative
+  background-color: #f5f5f5e6
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2)
+  border-radius: 5px
+  padding: 16px

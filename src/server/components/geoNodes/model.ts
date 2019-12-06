@@ -4,6 +4,7 @@ import { DocumentOrId } from '../documents';
 import { ExpeditieId } from '../expedities/id';
 import { PersonId } from '../people/id';
 
+// FIXME: replace ObjectId with DocumentOrId<> types (in all models) OR union types as return type for functions
 export interface GeoNode {
     _id?: mongoose.Types.ObjectId;
     expeditieId: mongoose.Types.ObjectId;
