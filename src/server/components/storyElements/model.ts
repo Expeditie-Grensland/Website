@@ -35,6 +35,11 @@ export type StoryElementDocument = TextStoryElementDocument | LocationStoryEleme
 
 
 const storyElementSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['text', 'location'],
+        required: true
+    },
     expeditieId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: ExpeditieId,

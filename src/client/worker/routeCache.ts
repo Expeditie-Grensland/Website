@@ -1,25 +1,28 @@
 export namespace RouteCache {
     export const onFetch = (event: FetchEvent): boolean => {
-        const match = /^https?:\/\/.*\/(.*)\/kaart\/binary$/u.exec(event.request.url);
+        if (/^https?:\/\/.*\/(.*)\/kaart\/binary$/u.exec(event.request.url)) {
+            event.respondWith(getFromCacheAndRequest(event, 'X-Location-Count', 'X-Last-Location'));
+            return true;
+        }
 
-        if (!match)
-            return false;
+        if (/^https?:\/\/.*\/(.*)\/kaart\/story$/u.exec(event.request.url)) {
+            event.respondWith(getFromCacheAndRequest(event, 'X-Story-Count', 'X-Last-Story'));
+            return true;
+        }
 
-        event.respondWith(getFromCacheAndRequest(event));
-        return true;
+        return false;
     };
 
-    const H_LC = 'X-Location-Count';
-    const H_LL = 'X-Last-Location';
-
-    const getFromCacheAndRequest = (event:FetchEvent): Promise<Response> =>
+    const getFromCacheAndRequest = (event: FetchEvent, ...headerKeys: string[]): Promise<Response> =>
         caches.open('routes').then(cache => cache.match(event.request).then(cacheResponse => {
             let request = event.request;
 
             if (cacheResponse != undefined && cacheResponse.status == 200) {
                 const headers = new Headers(event.request.headers);
-                headers.set(H_LC, cacheResponse.headers.get(H_LC) as string);
-                headers.set(H_LL, cacheResponse.headers.get(H_LL) as string);
+
+                headerKeys.forEach(key => {
+                    headers.set(key, cacheResponse.headers.get(key) as string)
+                });
 
                 request = new Request(event.request, { headers });
             }
@@ -28,7 +31,7 @@ export namespace RouteCache {
                 if (response.status != 200 && cacheResponse != undefined)
                     return cacheResponse;
 
-                if (response.status == 200 && response.headers.get(H_LC) != null && response.headers.get(H_LL) != null)
+                if (response.status == 200 && !headerKeys.reduce((acc, key) => acc || response.headers.get(key) == null, false))
                     cache.put(event.request, response.clone());
 
                 return response;

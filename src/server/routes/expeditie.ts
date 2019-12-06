@@ -5,6 +5,8 @@ import { Expedities } from '../components/expedities';
 import { MediaFiles } from '../components/mediaFiles';
 import { ExpeditieDocument } from '../components/expedities/model';
 import { geoLocationModel } from '../components/geoLocations/model';
+import { StoryElements } from '../components/storyElements';
+import { LocationStoryElementDocument, storyElementModel, TextStoryElementDocument } from '../components/storyElements/model';
 
 export const router = express.Router({ mergeParams: true });
 
@@ -38,7 +40,7 @@ router.get('/kaart', async (req, res, next) => {
 const H_LC = 'X-Location-Count';
 const H_LL = 'X-Last-Location';
 
-router.get('/kaart/binary', async (req, res, next) => {
+router.get('/kaart/binary', async (req, res) => {
     const expeditie: ExpeditieDocument = res.locals.expeditie;
 
     const locationCount = Expedities.getLocationCount(expeditie);
@@ -86,4 +88,44 @@ router.get('/kaart/binary', async (req, res, next) => {
     }
 
     res.end(null, 'binary');
+});
+
+const H_SC = 'X-Story-Count';
+const H_LS = 'X-Last-Story';
+
+router.get('/kaart/story', async (req, res) => {
+    const expeditie: ExpeditieDocument = res.locals.expeditie;
+
+    const storyCount = StoryElements.getByExpeditieCount(expeditie);
+
+    const lastStory =
+        storyElementModel.find({ expeditieId: expeditie._id }).sort({ '_id': -1 }).limit(1).exec()
+            .then(x => x.length > 0 ? x[0]._id : new mongoose.Types.ObjectId('000000000000000000000000'));
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Charset', 'utf-8');
+
+    if (req.header(H_SC) != undefined && req.header(H_LS) != undefined &&
+        req.header(H_SC) == (await storyCount).toString(16) &&
+        req.header(H_LS) == (await lastStory).toHexString())
+
+        return res.sendStatus(304);
+
+    const stories = StoryElements.getByExpeditie(expeditie);
+    const nodes = await Expedities.getNodes(expeditie);
+
+    res.setHeader(H_SC, (await storyCount).toString(16));
+    res.setHeader(H_LS, (await lastStory).toHexString());
+
+    res.end(JSON.stringify((await stories).map((story) => {
+        return {
+            type: story.type,
+            nodeNum: nodes.findIndex((node) =>
+                story.time >= node.timeFrom && story.time < node.timeTill && node.personIds.includes(story.personId)),
+            time: story.time,
+            title: (story as TextStoryElementDocument).title,
+            text: (story as TextStoryElementDocument).text,
+            name: (story as LocationStoryElementDocument).name
+        }
+    })));
 });

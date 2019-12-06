@@ -14,6 +14,8 @@ export interface GeoNode {
 
 export interface GeoNodeDocument extends GeoNode, mongoose.Document {
     _id: mongoose.Types.ObjectId;
+    timeFrom: number;
+    timeTill: number;
 }
 
 const geoNodeSchema = new mongoose.Schema({

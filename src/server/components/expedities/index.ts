@@ -92,10 +92,10 @@ export namespace Expedities {
         geoLocationModel.count({ expeditieId: Documents.getObjectId(expeditie) }).exec();
 
     export const getNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
-        geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie) }).exec();
+        geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ _id: 1 }).exec();
 
     export const getCurrentNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
-        geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie), timeTill: Number.POSITIVE_INFINITY }).exec();
+        geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie), timeTill: Number.POSITIVE_INFINITY }).sort({ _id: 1 }).exec();
 
     export const setGroups = async (expeditie: ExpeditieOrId, groups: PersonOrId[][], time: number): Promise<void> => {
         const oldNodes = await getCurrentNodes(expeditie);
