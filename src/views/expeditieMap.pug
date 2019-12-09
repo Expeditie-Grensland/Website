@@ -1,13 +1,13 @@
-extends main
+extends _frame
 
 block title
     title Expeditie #{expeditie.name} Kaart
 
-append styles
+block styles
     link(rel="stylesheet" href="/static/styles/expeditieMap.css")
     link#worker(rel="prefetch" href="/static/scripts/expeditieMapWorker.js" as="worker")
 
-append scripts
+block scripts
     script.
         var expeditieNameShort = "!{expeditie.nameShort}"
 

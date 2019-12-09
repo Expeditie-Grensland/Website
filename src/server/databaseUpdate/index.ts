@@ -46,6 +46,10 @@ const UPDATES = [
     { // 10 -> 11
         info: 'Remove visualArea from GeoLocations',
         func: require('./update010RemoveVisualArea')
+    },
+    { // 11 -> 12
+        info: 'Set isAdmin to true for admins',
+        func: require('./update011SetAdmins')
     }
 ];
 

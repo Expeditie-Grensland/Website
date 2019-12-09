@@ -1,35 +1,25 @@
-extends ../main
-include ../includes/mediaFilePlayer
+extends _frame
+include ../_expeditieMedia
 
 block title
     title Expeditie - Woordenboek
 
-append scripts
-    script(src="/static/scripts/dictionary.js")
+block content
+    .row.pb-5
+        .col-12
+            .h1
+                span Het Grote Woordenboek der Expediets&#32;
+                small.text-muted Eerste Editie
 
-append styles
-    link(rel="stylesheet" href="/static/styles/dictionary.css")
-
-//- TODO: Introductie toevoegen
-
-block body
-    h1
-        span Het Grote Woordenboek der Expediets&#32;
-        span.edition Eerste Editie
-
-    dl
+    .row.pb-5
         each word in dictionary
-            - simple = generateSimple(word.word);
-            dt(id=simple)
-                span.word #{word.word}&#32;
-                if(word.phonetic)
-                    span.phon [#{word.phonetic}]
-                    span.word &#32;
-                +mediaFilePlayer(word.mediaFile)
-
-            dd
-                ol
+            .col-12.col-xl-9.pb-4(id=generateSimple(word.word))
+                .h2.pb-2
+                    span #{word.word}&#32;
+                    if (word.phonetic)
+                        small.text-muted [#{word.phonetic}]
+                ol.serif
                     each definition, index in word.definitions
-                        li
-                            span.index #{index + 1}.&#32;
-                            span.def !{marked(definition)}
+                        li.pb-1 !{marked(definition)}
+            .col-12.col-xl-3.pb-4
+                +mediaFilePlayer(word.mediaFile)

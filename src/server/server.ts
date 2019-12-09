@@ -20,7 +20,7 @@ Setup.setupSession(app);
 Setup.addAuthMiddleware(app);
 Setup.setupDatabase(app, dev);
 
-app.use('/', Router(dev));
+app.use('/', Router());
 
 updateDatabase().then(() => {
     Setup.startServer(server, config.port);

@@ -1,5 +1,8 @@
 @import "https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
 
+@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css"
+@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css"
+
 $body-bg: #fff
 $light: #fafafa
 
@@ -8,10 +11,10 @@ $body-color: $dark
 
 $font-family-sans-serif: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
 
-$link-color: $dark
-$link-decoration: none
-$link-hover-color: $dark
-$link-hover-decoration: none
+//$link-color: $dark
+//$link-decoration: none
+//$link-hover-color: $dark
+//$link-hover-decoration: none
 
 $navbar-padding-x: 0
 $navbar-padding-y: 1.5rem
@@ -27,7 +30,7 @@ $navbar-light-disabled-color: lighten($dark, 60%)
 $headings-margin-bottom: 0
 $headings-font-weight: 400
 $h1-font-size: 2rem
-$h2-font-size: 1.2rem
+$h2-font-size: 1.5rem
 
 @import "../../node_modules/bootstrap/scss/functions"
 @import "../../node_modules/bootstrap/scss/variables"
@@ -42,4 +45,44 @@ $h2-font-size: 1.2rem
 @import "../../node_modules/bootstrap/scss/navbar"
 @import "../../node_modules/bootstrap/scss/utilities"
 @import "../../node_modules/bootstrap/scss/card"
+@import "../../node_modules/bootstrap/scss/forms"
+@import "../../node_modules/bootstrap/scss/input-group"
 
+.pnt-team > img
+  width: 100%
+  max-width: 100px
+
+.pnt-dash
+  display: inline-block
+  width: 1.5em
+
+.pnt-score
+  display: inline-block
+  width: 1.75em
+
+.pnt-exp-h
+  text-align: center
+  position: relative
+  z-index: 1
+
+  &:before
+    border-top: 2px solid #eee
+    content: ''
+    margin: 0 auto
+    position: absolute
+    top: 50%
+    left: 0
+    right: 0
+    bottom: 0
+    width: 100%
+    z-index: -1
+
+  span
+    display: inline-block
+    text-align: center
+    background: #fff
+    padding: 0 15px
+
+.pnt-points
+  display: inline-block
+  width: 2.25em

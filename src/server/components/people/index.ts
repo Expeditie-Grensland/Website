@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 
-import { Person, PersonDocument, PersonModel } from './model';
+import { Person, PersonDocument, PersonModel, PersonOrId } from './model';
+import { Documents } from '../documents';
 
 export namespace People {
     export const create = (person: Person): Promise<PersonDocument> =>
@@ -17,4 +18,7 @@ export namespace People {
 
     export const getByLdapId = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findOne({ ldapId: id }).exec();
+
+    export const setIsAdmin = (person: PersonOrId, isAdmin: boolean): Promise<PersonDocument | null> =>
+        PersonModel.findByIdAndUpdate(Documents.getObjectId(person), {isAdmin}, {new: true}).exec();
 }

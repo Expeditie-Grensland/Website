@@ -1,11 +1,18 @@
 extends _frame
 
-append content
+block title
+    title Expeditie - Leden
+
+block content
     .row
         each link in links
-            .col-12.col-sm-6.col-lg-4
-                .card.mb-3.bg-light
-                    .card-body
-                        h5.card-title= link.title
-                        p.card-text= link.text
-                        a.card-link(href=link.href) Open
+            if (link.href) || (link.adminHref && user.isAdmin)
+                .col-12.col-md-6.col-lg-4
+                    .card.mb-3
+                        .card-body
+                            h5.card-title= link.title
+                            p.card-text= link.text
+                            if link.href
+                                a.card-link(href=link.href) Open
+                            if link.adminHref && user.isAdmin
+                                a.card-link(href=link.adminHref) Admin

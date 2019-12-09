@@ -1,29 +1,22 @@
-extends ../main
-include ../includes/mediaFilePlayer
+extends _frame
+include ../_expeditieMedia
 
 block title
     title Expeditie - Citaten
 
-append scripts
-    script(src="/static/scripts/dictionary.js")
+block content
+    .row.pb-5
+        .col-12
+            .h1
+                span De Lange Citatenlijst der Expeditie Grensland&#32;
+                small.text-muted Eerste Editie
 
-append styles
-    link(rel="stylesheet" href="/static/styles/dictionary.css")
-
-//- TODO: Introductie toevoegen
-
-block body
-    h1
-        span De Lange Citatenlijst der Expeditie Grensland&#32;
-        span.edition Eerste Editie
-
-    dl
+    .row.pb-5
         each quote in quotes
-            - simple = generateSimple(quote.quote);
-            dt(id=simple)
-                span.word &ldquo;#{quote.quote}&rdquo;&#32;
-                span.quotee &#8213;&nbsp;#{quote.quotee}
-                span.word &#32;
+            .col-12.col-lg-9.pb-5(id=generateSimple(quote.quote))
+                .h2.pb-2
+                    span &ldquo;#{quote.quote}&rdquo;&#32;
+                    small.text-muted &#8213;&nbsp;#{quote.quotee}
+                span !{marked(quote.context)}
+            .col-12.col-xl-3.pb-4
                 +mediaFilePlayer(quote.mediaFile)
-            dd
-                span.def !{marked(quote.context)}

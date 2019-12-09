@@ -14,11 +14,14 @@ block body
                     li.nav-item
                         a.nav-link(href="/") &larr;&nbsp;Home
 
-            ul.navbar-nav.ml-auto
-                li.nav-item
-                    if loggedIn
-                        a.nav-link(href="/leden")= user.name
-                    else
+            if !loggedIn
+                ul.navbar-nav.ml-auto
+                    li.nav-item
                         a.nav-link(href="/leden/login") Log In
+
+            if loggedIn
+                ul.navbar-nav.ml-auto
+                    li.nav-item
+                        a.nav-link(href="/leden")= user.name
 
         block content

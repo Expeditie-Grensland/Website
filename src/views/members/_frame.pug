@@ -7,16 +7,24 @@ block scripts
     script(src='/static/scripts/members.js')
 
 block body
-    .container.text-center
+    .container
         nav.navbar.navbar-light.navbar-expand
             if !isHome && !isLogin
                 ul.navbar-nav
                     li.nav-item
-                        a.nav-link(href="/leden") &larr;&nbsp;Home
+                        a.nav-link(href='/leden') &larr;&nbsp;Leden
+
+            if isLogin
+                ul.navbar-nav
+                    li.nav-item
+                        a.nav-link(href='/') &larr;&nbsp;Home
 
             if !isLogin
                 ul.navbar-nav.ml-auto
                     li.nav-item
-                        a.nav-link(href="/leden/loguit")= user.name
+                        a.nav-link.disabled= user.name
+                    li.nav-item.pl-2
+                        a.nav-link(href="/leden/loguit") Log Uit
+
 
         block content
