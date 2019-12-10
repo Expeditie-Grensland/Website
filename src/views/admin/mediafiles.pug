@@ -1,5 +1,5 @@
-extends ../../members/_frame
-include ../../_expeditieMedia
+extends ../members/_frame
+include ../_expeditieMedia
 
 block title
     title Expeditie - Admin - Bestanden
@@ -17,7 +17,7 @@ block content
                     .alert.alert-info= msg
 
         .col-12.mb-2
-            form(method='POST' action='/admin/bestanden/opladen' enctype='multipart/form-data')
+            form(method='POST' action='/admin/bestanden/upload' enctype='multipart/form-data')
                 .form-row.align-items-center
                     .col-12.col-md-6.mb-2.mr-md-2
                         .custom-file
@@ -28,14 +28,14 @@ block content
                             input#filesRestrict.custom-control-input(name='restricted' type="checkbox")
                             label.custom-control-label(for='filesRestrict') Beperk toegang
                     .col-auto.mb-2
-                        button.btn.btn-primary(type='submit') Opladen
+                        button.btn.btn-primary(type='submit') Uploaden
 
         .col-12.mb-4
-            form(method='POST' action='/admin/bestanden/creeren')
+            form(method='POST' action='/admin/bestanden/add')
                 .form-row.align-items-center
                     .col-auto.mb-2.mr-2
                         select.custom-select(name='mime' required)
-                            option(selected) Mime type
+                            option(selected value='' disabled) Mime type
                             option(value="image/jpeg") image/jpeg
                             option(value="audio/mpeg") audio/mpeg
                             option(value="video/mp4") video/mp4
@@ -44,7 +44,7 @@ block content
                             input#mimeRestrict.custom-control-input(name='restricted' type="checkbox")
                             label.custom-control-label(for='mimeRestrict') Beperk toegang
                     .col-auto.mb-2
-                        button.btn.btn-primary(type='submit') Creëren
+                        button.btn.btn-primary(type='submit') Toevoegen
 
         .col-12.mb-4
             table.table.table-responsive
@@ -58,7 +58,7 @@ block content
                         th
 
                 tbody
-                    each file in files
+                    each file, i in files
                         tr
                             td= file._id.toHexString()
                             td= file.ext
@@ -67,6 +67,6 @@ block content
                             td.media-preview
                                 +mediaFilePlayer(file)
                             td
-                                form.form-confirm(method='POST' action=`/admin/bestanden/verwijderen`)
+                                form.form-confirm(id=`f-${i}` method='POST' action=`/admin/bestanden/edit`)
                                     input(type='hidden' name='id' value=file._id.toHexString())
-                                    button.btn.btn-danger(type='submit') Verwijderen
+                                    button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen

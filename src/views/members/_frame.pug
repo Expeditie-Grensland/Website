@@ -7,7 +7,7 @@ block scripts
     script(src='/static/scripts/members.js')
 
 block body
-    .container
+    div(class=(fluidContainer ? 'container-fluid' : 'container'))
         nav.navbar.navbar-light.navbar-expand
             if !isHome && !isLogin
                 ul.navbar-nav

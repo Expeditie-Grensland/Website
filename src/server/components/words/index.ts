@@ -28,14 +28,5 @@ export namespace Words {
 
     export const getDocument = (word: WordOrId): Promise<WordDocument | null> =>
         Documents.getDocument(getById)(word);
-
-    export const setMediaFile = (word: WordOrId, file: MediaFileOrId): Promise<WordDocument | null> =>
-        MediaFiles.ensureMime(file, ['audio/mpeg', 'video/mp4'])
-            .then(MediaFiles.getEmbed)
-            .then(embed => WordModel.findByIdAndUpdate(
-                Documents.getObjectId(word),
-                { mediaFile: embed },
-                { new: true })
-                .exec());
 }
 

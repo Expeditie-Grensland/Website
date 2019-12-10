@@ -142,31 +142,4 @@ export namespace Expedities {
 
         await GeoNodes.createMany(R.concat(newNodes, newPeopleNodes));
     };
-
-    export const setBackgroundFile = (expeditie: ExpeditieOrId, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
-        MediaFiles.ensureMime(file, ['image/jpeg'])
-            .then(MediaFiles.getEmbed)
-            .then(embed => ExpeditieModel.findByIdAndUpdate(
-                Documents.getObjectId(expeditie),
-                { backgroundFile: embed },
-                { new: true })
-                .exec());
-
-    export const setMovieCoverFile = (expeditie: ExpeditieOrId, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
-        MediaFiles.ensureMime(file, ['image/jpeg'])
-            .then(MediaFiles.getEmbed)
-            .then(embed => ExpeditieModel.findByIdAndUpdate(
-                Documents.getObjectId(expeditie),
-                { movieCoverFile: embed },
-                { new: true })
-                .exec());
-
-    export const setMovieFile = (expeditie: ExpeditieOrId, file: MediaFileOrId): Promise<ExpeditieDocument | null> =>
-        MediaFiles.ensureMime(file, ['video/mp4'])
-            .then(MediaFiles.getEmbed)
-            .then(embed => ExpeditieModel.findByIdAndUpdate(
-                Documents.getObjectId(expeditie),
-                { movieFile: embed },
-                { new: true })
-                .exec());
 }

@@ -36,7 +36,7 @@ export namespace AuthHelper {
 
     export const loginRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
         if (!req.isAuthenticated()) {
-            if (req.session)
+            if (req.session && req.method == 'GET')
                 req.session.returnTo = req.originalUrl;
 
             res.redirect('/leden/login');
