@@ -46,12 +46,12 @@ export namespace MediaFileHelper {
 
         const filename = (req: express.Request, file: Express.Multer.File, cb: ((error: Error | null, filename: string) => void)) => {
             let id = mongoose.Types.ObjectId();
-            let ext = mime2.getExtension(mime2.getType(file.originalname));
+            let ext = mime2.getExtension(file.mimetype);
             cb(null, `${id}.${ext}`);
         };
 
         const fileFilter = (req: express.Request, file: Express.Multer.File, cb: ((error: Error | null, acceptFile: boolean) => void)) =>
-            cb(null, mime2.getType(file.originalname) != null);
+            cb(null, mime2.getExtension(file.mimetype) != null);
 
         export const settings = { storage: multer.diskStorage({ destination, filename }), fileFilter };
     }

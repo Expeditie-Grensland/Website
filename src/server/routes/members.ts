@@ -53,21 +53,25 @@ router.get('/', async (req, res) => res.render('members/index', {
             title: 'Woordenboek',
             text: 'Het Grote Woordenboek der Expediets',
             href: '/leden/woordenboek',
-            adminHref: '/leden/woordenboek/admin'
+            adminHref: '/admin/woordenboek'
         },
         {
             title: 'Citaten',
             text: 'De Lange Citatenlijst der Expeditie Grensland',
             href: '/leden/citaten',
-            adminHref: '/leden/woordenboek/admin'
+            adminHref: '/admin/citaten'
         },
         {
             title: 'De Punt\'n',
             text: 'Welk team is het vurigst? Blauw, of Rood?',
             href: '/leden/punten',
-            adminHref: '/leden/woordenboek/admin'
+            adminHref: '/admin/punten'
         },
-        { title: 'Bestanden', text: 'Laad ze op, of laad ze neer', adminHref: '/leden/bestanden/admin' }
+        {
+            title: 'Bestanden',
+            text: 'Laad ze op, of laad ze neer',
+            adminHref: '/admin/bestanden'
+        }
     ].concat((await MemberLinks.getAll()).map((l) => {
         return { title: l.title, text: l.text || '', href: l.href };
     }))
