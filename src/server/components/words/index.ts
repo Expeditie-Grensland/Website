@@ -1,8 +1,6 @@
 import * as mongoose from 'mongoose';
 
 import { Word, WordDocument, WordModel, WordOrId } from './model';
-import { MediaFileOrId } from '../mediaFiles/model';
-import { MediaFiles } from '../mediaFiles';
 import { Documents } from '../documents';
 
 export namespace Words {

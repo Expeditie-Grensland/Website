@@ -8,6 +8,8 @@ import { MediaFileHelper } from '../components/mediaFiles/helper';
 import { MediaFile } from '../components/mediaFiles/model';
 import { Quotes } from '../components/quotes';
 import { Quote } from '../components/quotes/model';
+import { Words } from '../components/words';
+import { Word } from '../components/words/model';
 
 
 export const router = express.Router();
@@ -209,5 +211,107 @@ router.post('/citaten/edit', (req, res) =>
         req.flash('error', e.message)
     ).then(() =>
         res.redirect('/admin/citaten')
+    )
+);
+
+router.get('/woordenboek', async (req, res) =>
+    res.render('admin/dictionary', {
+        fluidContainer: true,
+        words: await Words.getAll(),
+        infoMsgs: req.flash('info'),
+        errMsgs: req.flash('error')
+    })
+);
+
+router.post('/woordenboek/add', async (req, res) =>
+    Promise.resolve(req.body).then(async (b) => {
+        if (!b.word || !b.definitions || b.definitions.filter((x: string) => x != '').length < 1)
+            throw new Error('Niet alle verplichte velden waren ingevuld.');
+
+        const w: Word = {
+            word: b.word,
+            definitions: b.definitions.filter((x: string) => x != ''),
+            phonetic: b.phonetic || undefined
+        };
+
+        if (b.file) {
+            let id;
+
+            try {
+                id = mongoose.Types.ObjectId(b.file);
+            } catch {
+                throw new Error(`'${b.file}' is geen geldige Id.`);
+            }
+
+            const file = await MediaFiles.getDocument(id);
+
+            if (!file)
+                throw new Error(`Bestand '${b.file}' bestaat niet.`);
+
+            w.mediaFile = await MediaFiles.getEmbed(file!);
+        }
+
+        return Words.create(w);
+    }).then(w =>
+        req.flash('info', `Woord "${w.word}" is succesvol toegevoegd.`)
+    ).catch(e =>
+        req.flash('error', e.message)
+    ).then(() =>
+        res.redirect('/admin/woordenboek')
+    )
+);
+
+router.post('/woordenboek/edit', (req, res) =>
+    Promise.resolve(req.body).then(async (b) => {
+        if (b.action != 'delete' && b.action != 'change')
+            throw new Error('Er was geen geldige actie gespecificeerd.');
+
+        let id;
+
+        try {
+            id = mongoose.Types.ObjectId(b.id);
+        } catch {
+            throw new Error(`'${b.id}' is geen geldige Id.`);
+        }
+
+        const word = await Words.getById(id);
+
+        if (!word) throw new Error(`Woord '${req.body.id}' bestaat niet.`);
+
+        if (b.action == 'delete')
+            return word.remove();
+
+        if (!b.word || !b.definitions || b.definitions.filter((x: string) => x != '').length < 1)
+            throw new Error('Niet alle verplichte velden waren ingevuld.');
+
+        word.word = b.word;
+        word.definitions = b.definitions.filter((x: string) => x != '');
+        word.phonetic = b.phonetic || undefined;
+
+        if (b.file) {
+            let id;
+
+            try {
+                id = mongoose.Types.ObjectId(b.file);
+            } catch {
+                throw new Error(`'${b.file}' is geen geldige Id.`);
+            }
+
+            const file = await MediaFiles.getDocument(id);
+
+            if (!file)
+                throw new Error(`Bestand '${b.file}' bestaat niet.`);
+
+            word.mediaFile = await MediaFiles.getEmbed(file);
+        } else
+            word.mediaFile = undefined;
+
+        return word.save();
+    }).then(w =>
+        req.flash('info', `Woord "${w.word}" is succesvol ${req.body.action == 'delete' ? 'verwijderd' : 'gewijzigd'}.`)
+    ).catch(e =>
+        req.flash('error', e.message)
+    ).then(() =>
+        res.redirect('/admin/woordenboek')
     )
 );
