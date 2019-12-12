@@ -28,13 +28,4 @@ export namespace Quotes {
 
     export const getDocument = (quote: QuoteOrId): Promise<QuoteDocument | null> =>
         Documents.getDocument(getById)(quote);
-
-    export const setMediaFile = (quote: QuoteOrId, file: MediaFileOrId): Promise<QuoteDocument | null> =>
-        MediaFiles.ensureMime(file, ['audio/mpeg', 'video/mp4'])
-            .then(MediaFiles.getEmbed)
-            .then(embed => QuoteModel.findByIdAndUpdate(
-                Documents.getObjectId(quote),
-                { mediaFile: embed },
-                { new: true })
-                .exec());
 }

@@ -1,9 +1,9 @@
 import 'core-js/fn/promise';
 import mapboxgl from 'mapbox-gl';
-import $ from 'jquery';
+// import $ from 'jquery'; TODO: Reactivate for Stories
 
 import { GeoJsonResult } from './helpers/retrieval';
-import { StoryHandler } from './story/storyHandler';
+// import { StoryHandler } from './story/storyHandler'; TODO: Reactivate for Stories
 
 declare var expeditieNameShort: string;
 
@@ -15,8 +15,9 @@ worker.onmessage = (event) => {
     switch (event.data[0]) {
         case 'geoJson':
             return setRoute(event.data[1]);
-        case 'story':
-            return StoryHandler.init(event.data[1]);
+        // TODO: Reactivate for Stories
+        // case 'story':
+        //     return StoryHandler.init(event.data[1]);
     }
 };
 
@@ -39,7 +40,8 @@ const setRoute = (res: GeoJsonResult) => {
         padding: {
             top: 20,
             bottom: 20,
-            left: $(window).width()! * 0.35 + 20,
+            // left: $(window).width()! * 0.35 + 20, TODO: Reactivate for Stories
+            left: 20,
             right: 20
         },
         animate: false

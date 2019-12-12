@@ -2,7 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import * as express from 'express';
 
 import { config } from './configHelper';
-import { PersonOrId } from '../components/people/model';
+import { PersonDocument, PersonOrId } from '../components/people/model';
 import { Documents } from '../components/documents';
 
 export namespace AuthHelper {
@@ -36,10 +36,16 @@ export namespace AuthHelper {
 
     export const loginRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
         if (!req.isAuthenticated()) {
-            if (req.session)
+            if (req.session && req.method == 'GET')
                 req.session.returnTo = req.originalUrl;
 
             res.redirect('/leden/login');
+        } else next();
+    };
+
+    export const noAdminRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        if (!(req.user as PersonDocument).isAdmin) {
+            res.redirect('/leden');
         } else next();
     };
 }

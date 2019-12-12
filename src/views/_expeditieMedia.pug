@@ -1,0 +1,16 @@
+mixin innerImage(expeditie)
+    .img-bg.embed-responsive-item(style=`background-image:url(${getFileUrl(expeditie.backgroundFile)})`)
+    .img-inner.embed-responsive-item
+        span.h1= expeditie.name
+        span.h2= expeditie.subtitle
+
+mixin mediaFilePlayer(mediaFile)
+    if(mediaFile)
+        if(mediaFile.mime === 'audio/mpeg')
+            audio.mw-100(controls preload='none')
+                source(src=getFileUrl(mediaFile) type=mediaFile.mime)
+        if (mediaFile.mime === 'video/mp4')
+            video.mw-100(controls preload='none')
+                source(src=getFileUrl(mediaFile) type=mediaFile.mime)
+        if (mediaFile.mime === 'image/jpeg')
+            img(src=getFileUrl(mediaFile))

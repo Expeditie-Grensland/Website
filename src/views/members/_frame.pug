@@ -1,0 +1,30 @@
+extends ../_frame
+
+block styles
+    link(rel='stylesheet' href='/static/styles/members.css')
+
+block scripts
+    script(src='/static/scripts/members.js')
+
+block body
+    div(class=(fluidContainer ? 'container-fluid' : 'container'))
+        nav.navbar.navbar-light.navbar-expand
+            if !isHome && !isLogin
+                ul.navbar-nav
+                    li.nav-item
+                        a.nav-link(href='/leden') &larr;&nbsp;Leden
+
+            if isLogin
+                ul.navbar-nav
+                    li.nav-item
+                        a.nav-link(href='/') &larr;&nbsp;Home
+
+            if !isLogin
+                ul.navbar-nav.ml-auto
+                    li.nav-item
+                        a.nav-link.disabled= user.name
+                    li.nav-item.pl-2
+                        a.nav-link(href="/leden/loguit") Log Uit
+
+
+        block content

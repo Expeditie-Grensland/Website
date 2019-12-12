@@ -1,0 +1,72 @@
+extends ../members/_frame
+include ../_expeditieMedia
+
+block title
+    title Expeditie - Admin - Bestanden
+
+block content
+    .row
+        .col-12.mb-4
+            .h1 Bestanden
+
+        if errMsgs.length + infoMsgs.length
+            .col-12.mb-4
+                each msg in errMsgs
+                    .alert.alert-danger= msg
+                each msg in infoMsgs
+                    .alert.alert-info= msg
+
+        .col-12.mb-2
+            form(method='POST' action='/admin/bestanden/upload' enctype='multipart/form-data')
+                .form-row.align-items-center
+                    .col-12.col-md-6.mb-2.mr-md-2
+                        .custom-file
+                            input#files.custom-file-input(name='files' type='file' multiple accept='image/jpeg,audio/mpeg,video/mp4' required)
+                            label.custom-file-label(for='files') Kies bestanden
+                    .col-auto.mb-2.mr-2
+                        .custom-control.custom-checkbox
+                            input#filesRestrict.custom-control-input(name='restricted' type="checkbox")
+                            label.custom-control-label(for='filesRestrict') Beperk toegang
+                    .col-auto.mb-2
+                        button.btn.btn-primary(type='submit') Uploaden
+
+        .col-12.mb-4
+            form(method='POST' action='/admin/bestanden/add')
+                .form-row.align-items-center
+                    .col-auto.mb-2.mr-2
+                        select.custom-select(name='mime' required)
+                            option(selected value='' disabled) Mime type
+                            option(value="image/jpeg") image/jpeg
+                            option(value="audio/mpeg") audio/mpeg
+                            option(value="video/mp4") video/mp4
+                    .col-auto.mb-2.mr-2
+                        .custom-control.custom-checkbox
+                            input#mimeRestrict.custom-control-input(name='restricted' type="checkbox")
+                            label.custom-control-label(for='mimeRestrict') Beperk toegang
+                    .col-auto.mb-2
+                        button.btn.btn-primary(type='submit') Toevoegen
+
+        .col-12.mb-4
+            table.table.table-sticky-header
+                thead
+                    tr
+                        th(style='min-width: 15rem;') Id
+                        th(style='min-width: 5rem;') Extensie
+                        th(style='min-width: 7.5rem;') Mime
+                        th(style='min-width: 7.5rem;') Toegang
+                        th(style='min-width: 15rem;') Preview
+                        th
+
+                tbody
+                    each file, i in files
+                        tr
+                            td= file._id.toHexString()
+                            td= file.ext
+                            td= file.mime
+                            td= file.restricted ? "Beperkt" : "Niet beperkt"
+                            td.media-preview
+                                +mediaFilePlayer(file)
+                            td
+                                form.form-confirm(id=`f-${i}` method='POST' action=`/admin/bestanden/edit`)
+                                    input(type='hidden' name='id' value=file._id.toHexString())
+                                    button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen

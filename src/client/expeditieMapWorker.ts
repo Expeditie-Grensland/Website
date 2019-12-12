@@ -17,8 +17,9 @@ onmessage = (event) => {
             if (styleLoaded) return postMessage(['geoJson', res]);
             geoJsonResult = res;
         });
-        RetrievalHelper.retrieveStory(event.data[1], (res: JSON) => {
-            return postMessage(['story', res]);
-        })
+        // TODO: Reactivate for Stories
+        // RetrievalHelper.retrieveStory(event.data[1], (res: JSON) => {
+        //     return postMessage(['story', res]);
+        // })
     }
 };

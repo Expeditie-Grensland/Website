@@ -33,7 +33,7 @@ export default async () => {
     let expedities: ExpeditieDocument[] = await Expedities.getAll();
 
     for (let i = 0; i < expedities.length; i++) {
-        await Expedities.setBackgroundFile(expedities[i], newMediaFileDocuments[i])
+        // await Expedities.setBackgroundFile(expedities[i], newMediaFileDocuments[i])
     }
 
     let oldMediaFileIds: mongoose.Types.ObjectId[] = [

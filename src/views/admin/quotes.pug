@@ -1,0 +1,65 @@
+extends ../members/_frame
+include ../_expeditieMedia
+
+block title
+    title Expeditie - Admin - Citaten
+
+block content
+    .row
+        .col-12.mb-4
+            .h1 Citaten
+
+        if errMsgs.length + infoMsgs.length
+            .col-12.mb-4
+                each msg in errMsgs
+                    .alert.alert-danger= msg
+                each msg in infoMsgs
+                    .alert.alert-info= msg
+
+        .col-12.mb-4
+            form(method='POST' action='/admin/citaten/add')
+                .form-row.align-items-center
+                    .col-12.mb-2
+                        textarea.form-control(rows='1' name='quote' placeholder='Citaat' required)
+                    .col-12.mb-2
+                        textarea.form-control(rows='3' name='context' placeholder='Context' required)
+                    .col-auto.mb-2.mr-2
+                        input.form-control(type='text' name='quotee' placeholder='Persoon' size='30' required)
+                    .col-auto.mb-2.mr-2
+                        input.form-control(type='number' name='time' placeholder='Tijdstempel' required)
+                        // FIXME: date/time input
+                    .col-auto.mb-2.mr-2
+                        input.form-control(type='text' name='file' placeholder='Bijlage Id' size='30' minlength='24' maxlength='24')
+                    .col-auto.mb-2
+                        button.btn.btn-primary(type='submit') Toevoegen
+
+        .col-12.mb-4
+            table.table.table-sticky-header
+                thead
+                    tr
+                        th(style='min-width: 20rem') Quote
+                        th(style='min-width: 30rem; width: 100%;') Context
+                        th(style='min-width: 15rem;') Persoon
+                        th(style='min-width: 12.5rem;') Tijdstempel
+                        th(style='min-width: 17.5rem;') Bijlage Id
+                        th
+
+                tbody
+                    each quote, i in quotes
+                        tr
+                            td
+                                textarea.form-control(form=`f-${i}` name='quote' rows='3' required)= quote.quote
+                            td
+                                textarea.form-control(form=`f-${i}` name='context' rows='3' required)= quote.context
+                            td
+                                input.form-control(type='text' form=`f-${i}` name='quotee' value=quote.quotee required)
+                            td
+                                input.form-control(type='number' form=`f-${i}` name='time' value=quote.time required)
+                            td
+                                input.form-control(type='text' form=`f-${i}` name='file' value=(quote.mediaFile ? quote.mediaFile.id : '') minlength='24' maxlength='24')
+                            td
+                                form.form-confirm(id=`f-${i}` method='POST' action=`/admin/citaten/edit`)
+                                    input(type='hidden' name='id' value=quote._id.toHexString())
+                                    button.btn.btn-info.mb-2(type='submit' name='action' value='change') Wijzigen
+                                    br
+                                    button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen

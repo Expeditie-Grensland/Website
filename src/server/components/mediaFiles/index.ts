@@ -11,8 +11,8 @@ export namespace MediaFiles {
     export const remove = (file: MediaFileOrId): Promise<MediaFileDocument> =>
         getDocument(file)
             .then(Documents.ensureNotNull)
-            .then(MediaFileHelper.deleteFile)
-            .then((file: MediaFileDocument) => file.remove());
+            .then((file: MediaFileDocument) => file.remove())
+            .then(MediaFileHelper.deleteFile);
 
     export const createMany = (files: MediaFile[]): Promise<MediaFileDocument[]> =>
         mediaFileModel.insertMany(files);
@@ -33,7 +33,7 @@ export namespace MediaFiles {
                 return { id: file._id, ext: file.ext, mime: file.mime, restricted: file.restricted };
             });
 
-    export const getUrl = (file: MediaFileEmbedded): string =>
+    export const getUrl = (file: MediaFileEmbedded | MediaFileDocument): string =>
         file !== undefined ? `/media/${file.id}.${file.ext}` : '';
 
     export const ensureMime = (file: MediaFileOrId, mime: string[]): Promise<MediaFileDocument> =>

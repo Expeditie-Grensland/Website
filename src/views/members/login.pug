@@ -1,24 +1,44 @@
-extends ../main
+extends _frame
 
 block title
     title Expeditie - Log In
 
-append styles
-    link(rel='stylesheet' href='/static/styles/members/all.css')
-    link(rel='stylesheet' href='/static/styles/members/login.css')
+block content
+    .row
+        .col-12.col-md-6.offset-md-3.col-lg-4.offset-lg-4
+            .card
+                .card-body
+                    h4.card-title Inloggen
+                    hr
+                    if messages
+                        each message in messages
+                            p.text-danger.text-center= message
 
-block body
-    .container
+                    form(action='/leden/login' method='POST')
+                        .form-group
+                            .input-group
+                                .input-group-prepend
+                                    .input-group-text
+                                        span.fas.fa-fw.fa-user
+                                input.form-control(type='text' name='username' placeholder='Gebruikersnaam' required autofocus)
 
-        form.form-login(action='/leden/login' method='post')
-            h2.form-login-heading Inloggen
+                        .form-group
+                            .input-group
+                                .input-group-prepend
+                                    .input-group-text
+                                        span.fas.fa-fw.fa-key
+                                input.form-control(type='password' name='password' placeholder='Wachtwoord' required)
 
-            if messages
-                each message in messages
-                    .alert.alert-danger(role='alert') !{message}
+                        .form-group
+                            input.btn.btn-primary.btn-block(value='Log In' type='submit')
 
-            label(for='username' class='sr-only') Gebruikersnaam
-            input.form-control(type='text' id='username' name='username' placeholder='Gebruikersnaam' required autofocus)
-            label(for='password' class='sr-only') Wachtwoord
-            input.form-control(type='password' id='password' name='password' placeholder='Wachtwoord' required)
-            input.btn.btn-lg.btn-primary.btn-block(value='Log In' type='submit')
+        //form.form-login.ml-auto.mr-auto(action='/leden/login' method='post')
+        //    h2.form-login-heading Inloggen
+        //
+        //    if messages
+        //        each message in messages
+        //            .alert.alert-danger(role='alert') !{message}
+        //
+        //    input.form-control.form-control-lg(type='text' id='username' name='username' placeholder='Gebruikersnaam' required autofocus)
+        //    input.form-control.form-control-lg(type='password' id='password' name='password' placeholder='Wachtwoord' required)
+        //    input.btn.btn-lg.btn-primary.btn-block(value='Log In' type='submit')

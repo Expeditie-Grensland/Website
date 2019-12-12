@@ -1,13 +1,13 @@
-extends main
+extends _frame
 
 block title
     title Expeditie #{expeditie.name} Kaart
 
-append styles
+block styles
     link(rel="stylesheet" href="/static/styles/expeditieMap.css")
     link#worker(rel="prefetch" href="/static/scripts/expeditieMapWorker.js" as="worker")
 
-append scripts
+block scripts
     script.
         var expeditieNameShort = "!{expeditie.nameShort}"
 
@@ -15,10 +15,11 @@ append scripts
 
 block body
     #map
-    #storyWrapper
-        #storyTitle.card
-            p.subtitle= expeditie.subtitle
-            h1= expeditie.name
-        #story
-            #graph.card
-            #storyElements
+    // TODO: Reactivate for Stories
+    //#storyWrapper
+    //    #storyTitle.card
+    //        p.subtitle= expeditie.subtitle
+    //        h1= expeditie.name
+    //    #story
+    //        #graph.card
+    //        #storyElements

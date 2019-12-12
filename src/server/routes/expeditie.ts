@@ -23,7 +23,7 @@ router.use(async (req, res, next) => {
 });
 
 router.get('/', async (req, res, next) => {
-    res.render('expeditie', { getFileUrl: MediaFiles.getUrl });
+    res.render('public/expeditie', { getFileUrl: MediaFiles.getUrl });
 });
 
 router.use(async (req, res, next) => {

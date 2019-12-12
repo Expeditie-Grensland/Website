@@ -11,6 +11,7 @@ import { DocumentOrId } from '../documents';
 const schema = new mongoose.Schema({
     name: String,
     ldapId: String,
+    isAdmin: Boolean,
     team: {
         type: String,
         enum: ['Blauw', 'Rood']
@@ -20,6 +21,7 @@ const schema = new mongoose.Schema({
 export interface Person {
     name: string;
     ldapId?: string;
+    isAdmin?: boolean;
     team?: 'Blauw' | 'Rood';
 }
 
