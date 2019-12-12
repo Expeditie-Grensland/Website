@@ -16,7 +16,7 @@ block content
             if expeditie.showMap
                 a.btn.btn-map.btn-outline-light(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
 
-            each person in expeditie.personIds.sort(function(a, b) {return (a.name > b.name) ? 1 : -1})
+            each person in expeditie.personIds
                 span= person.name
 
         .col-12.col-md-8.order-md-1
