@@ -4,10 +4,12 @@ import { ExpeditieId } from '../expedities/id';
 import { PersonId } from '../people/id';
 import { StoryElementId } from './id';
 import { DocumentOrId } from '../documents';
+import { DateTimeInternal, dateTimeSchema } from '../dateTime/model';
 
 interface BaseStoryElement {
     expeditieId: mongoose.Types.ObjectId,
     personId: mongoose.Types.ObjectId,
+    dateTime: DateTimeInternal,
     time: number,
     index?: number
 }
@@ -34,6 +36,8 @@ export interface LocationStoryElementDocument extends LocationStoryElement, mong
 export type StoryElementDocument = TextStoryElementDocument | LocationStoryElementDocument;
 
 
+// TODO: look at discriminators (https://mongoosejs.com/docs/discriminators.html) and perhaps introduce them here.
+
 const storyElementSchema = new mongoose.Schema({
     type: {
         type: String,
@@ -50,10 +54,9 @@ const storyElementSchema = new mongoose.Schema({
         ref: PersonId,
         required: true
     },
-    time: {
-        type: Number,
-        required: true,
-        set: (t: number) => t > 1e10 ? t / 1000 : t
+    dateTime: {
+        type: dateTimeSchema,
+        default: dateTimeSchema
     },
     index: {
         type: Number,

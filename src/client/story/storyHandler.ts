@@ -1,8 +1,7 @@
 import $ from 'jquery';
-
-import { Util } from './util';
 import { GraphBuilder } from './graph/graphbuilder';
 import { LocationStoryElement, Node, StoryElement, StoryResult, TextStoryElement } from '../helpers/retrieval';
+import { DateTime } from 'luxon';
 
 export namespace StoryHandler {
     const storyWrapperDiv = document.getElementById('storyWrapper')!;
@@ -73,7 +72,20 @@ export namespace StoryHandler {
     //         .append(createStoryElementHeader(element, 'Gallery'));
     // }
 
+    const getDisplayDate = (dt: DateTime): string => {
+        if (dt.diffNow('hours').hours > -6 && dt.endOf('day').diffNow().milliseconds > 0) // Today and less than 6 hours ago
+            return dt.toRelative()!; // Relative time
+
+        if (dt.endOf('day').diff(DateTime.local().endOf('day'), 'days').days > -3) // Today, yesterday, or two days ago
+            return dt.toRelativeCalendar() + ' om ' + dt.toLocaleString({ hour: 'numeric', minute: '2-digit' }); // Relative date, absolute time
+
+        return dt.toLocaleString({ day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }); // Absolute date
+    };
+
+
     function createStoryElementHeader(element: StoryElement, title: string, nodes: Node[]): JQuery<HTMLElement> {
+        const dt = DateTime.fromSeconds(element.dateTime.stamp, { locale: 'nl-NL' });
+
         return $('<div>')
             .addClass('title')
             .append($('<div>')
@@ -83,8 +95,16 @@ export namespace StoryHandler {
                 )
                 .append($('<p>')
                     .addClass('time')
-                    .text(Util.unixTimeToDisplayDate(element.time * 1000))
-                    .prop('title', Util.unixTimeToTitleDate(element.time * 1000))
+                    .text(getDisplayDate(dt))
+                    .prop('title', dt.setZone(element.dateTime.zone).toLocaleString({
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        timeZoneName: 'long'
+                    }))
                 )
             )
             .append($('<p>')

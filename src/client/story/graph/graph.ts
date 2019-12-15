@@ -107,7 +107,7 @@ export class Graph {
                 const layerIdx = layers.indexOf(layer);
                 const childLayer = layers[layerIdx + 1];
 
-                const parentStoryElements = parent.getStoryElements().sort((a, b) => a.time - b.time);
+                const parentStoryElements = parent.getStoryElements().sort((a, b) => a.dateTime.stamp - b.dateTime.stamp);
                 const parentIdx = layer.indexOf(parent);
                 const parentEnd = parentStoryElements[parentStoryElements.length - 1];
                 const parentHeader = $('#' + parentEnd.id + ' h1')[0];
@@ -118,7 +118,7 @@ export class Graph {
                 const children = parent.getChildren()!;
 
                 for (let child of children) {
-                    const childStoryElements = child.getStoryElements().sort((a, b) => a.time - b.time);
+                    const childStoryElements = child.getStoryElements().sort((a, b) => a.dateTime.stamp - b.dateTime.stamp);
                     const childIdx = childLayer.indexOf(child);
                     const childStart = childStoryElements[0];
                     const childHeader = $('#' + childStart.id + ' h1')[0];

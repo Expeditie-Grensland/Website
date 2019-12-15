@@ -7,10 +7,10 @@ export namespace StoryElements {
         storyElementModel.create(person);
 
     export const getAll = (): Promise<StoryElementDocument[]> =>
-        storyElementModel.find({}).sort({ time: 1, index: 1 }).exec();
+        storyElementModel.find({}).sort({ 'dateTime.stamp': 1, index: 1 }).exec();
 
     export const getByExpeditie = (expeditie: ExpeditieOrId): Promise<StoryElementDocument[]> =>
-        storyElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ time: 1, index: 1 }).exec();
+        storyElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ 'dateTime.stamp': 1, index: 1 }).exec();
 
     export const getByExpeditieCount = (expeditie: ExpeditieOrId): Promise<number> =>
         storyElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).count().exec();

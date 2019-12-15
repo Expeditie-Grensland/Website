@@ -50,6 +50,10 @@ const UPDATES = [
     { // 11 -> 12
         info: 'Set isAdmin to true for admins',
         func: require('./update011SetAdmins')
+    },
+    { // 12 -> 13
+        info: 'Us Luxon DateTime for dates/times',
+        func: require('./update012UseLuxon')
     }
 ];
 

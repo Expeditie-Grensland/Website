@@ -9,7 +9,6 @@ import { MediaFiles } from '../components/mediaFiles';
 import { Quotes } from '../components/quotes';
 import * as R from 'ramda';
 import { EarnedPointDocument } from '../components/earnedPoints/model';
-import { OffsetDates } from '../components/offsetDate';
 import { PersonDocument } from '../components/people/model';
 import { ExpeditieDocument } from '../components/expedities/model';
 import { EarnedPoints } from '../components/earnedPoints';
@@ -118,7 +117,7 @@ router.get('/punten', async (req, res) => {
     const earnedPoints = R.pipe(
         R.map((x: EarnedPointDocument) => {
             return {
-                date: OffsetDates.getDateDDMM(x.date),
+                date: x.dateTime.object.toLocaleString({ month: '2-digit', day: '2-digit' }),
                 amount: x.amount,
                 name: (<PersonDocument>x.personId).name,
                 team: (<PersonDocument>x.personId).team,

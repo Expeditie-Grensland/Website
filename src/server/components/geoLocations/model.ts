@@ -4,13 +4,12 @@ import { GeoLocationId } from './id';
 import { DocumentOrId } from '../documents';
 import { ExpeditieId } from '../expedities/id';
 import { PersonId } from '../people/id';
+import { DateTimeInternal, dateTimeSchema } from '../dateTime/model';
 
 export interface GeoLocation {
-    _id?: mongoose.Types.ObjectId;
     expeditieId: mongoose.Types.ObjectId;
     personId: mongoose.Types.ObjectId;
-    time: number;
-    timezone?: string;
+    dateTime: DateTimeInternal;
     latitude: number;
     longitude: number;
     altitude?: number;
@@ -23,8 +22,6 @@ export interface GeoLocation {
 }
 
 export interface GeoLocationDocument extends GeoLocation, mongoose.Document {
-    _id: mongoose.Types.ObjectId;
-    timezone: string;
 }
 
 const geoLocationSchema = new mongoose.Schema({
@@ -36,14 +33,9 @@ const geoLocationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: PersonId
     },
-    time: {
-        type: Number,
-        required: true,
-        set: (t: number) => t > 1e10 ? t / 1000 : t
-    },
-    timezone: {
-        type: String,
-        default: 'Europe/Amsterdam'
+    dateTime: {
+        type: dateTimeSchema,
+        default: dateTimeSchema
     },
     latitude: {
         type: Number,
@@ -71,15 +63,15 @@ const geoLocationSchema = new mongoose.Schema({
     })
     .index({
         personId: 1,
-        time: 1
+        'dateTime.stamp': 1
     })
     .index({
-        time: 1
+        'dateTime.stamp': 1
     })
     .index({
         expeditieId: 1,
         personId: 1,
-        time: 1
+        'dateTime.stamp': 1
     }, { unique: true });
 
 export const geoLocationModel = mongoose.model<GeoLocationDocument>(GeoLocationId, geoLocationSchema);

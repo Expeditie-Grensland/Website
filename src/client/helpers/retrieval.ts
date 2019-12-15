@@ -18,7 +18,10 @@ export interface Node {
 interface BaseStoryElement {
     id: string, // TODO: should not be necessary
     nodeNum: number,
-    time: number
+    dateTime: {
+        stamp: number,
+        zone: string
+    }
 }
 
 export interface TextStoryElement extends BaseStoryElement {

@@ -3,8 +3,6 @@ import * as R from 'ramda';
 
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrId } from './model';
 import { PersonDocument, PersonOrId } from '../people/model';
-import { MediaFiles } from '../mediaFiles';
-import { MediaFileOrId } from '../mediaFiles/model';
 import { Documents } from '../documents';
 import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
 import { GeoNode, GeoNodeDocument, geoNodeModel } from '../geoNodes/model';

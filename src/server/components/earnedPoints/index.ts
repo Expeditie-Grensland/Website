@@ -5,10 +5,10 @@ export namespace EarnedPoints {
         EarnedPointModel.create(earnedPoint);
 
     export const getAll = (): Promise<EarnedPointDocument[]> =>
-        EarnedPointModel.find().sort({ 'date.date': -1 }).exec();
+        EarnedPointModel.find().sort({ 'dateTime.stamp': -1 }).exec();
 
     export const getAllPopulated = (): Promise<EarnedPointDocument[]> =>
-        EarnedPointModel.find().sort({ 'date.date': -1 })
+        EarnedPointModel.find().sort({ 'dateTime.stamp': -1 })
             .populate('personId', 'name nameShort team')
             .populate('expeditieId', 'name')
             .exec();

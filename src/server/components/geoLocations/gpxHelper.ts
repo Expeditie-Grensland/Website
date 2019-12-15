@@ -21,8 +21,10 @@ export namespace GpxHelper {
                 return R.pipe(R.prop('tracks'), R.pluck('segments'), R.flatten, R.map((waypoint: any) => <GeoLocation>{
                     expeditieId,
                     personId,
-                    time: Date.parse(waypoint.time),
-                    timezone,
+                    dateTime: {
+                        stamp: Date.parse(waypoint.time) / 1000,
+                        zone: timezone
+                    },
                     latitude: waypoint.lat,
                     longitude: waypoint.lon,
                     altitude: waypoint.elevation

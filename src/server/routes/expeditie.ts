@@ -72,9 +72,9 @@ router.get('/kaart/binary', async (req, res) => {
 
     for (let node of await nodes) {
         const nodeLocs = await geoLocationModel.find(
-            { expeditieId: node.expeditieId, personId: { $in: node.personIds }, time: { $gte: node.timeFrom, $lt: node.timeTill } },
+            { expeditieId: node.expeditieId, personId: { $in: node.personIds }, 'dateTime.stamp': { $gte: node.timeFrom, $lt: node.timeTill } },
             { _id: false, longitude: true, latitude: true }
-        ).sort({ time: 1 }).exec();
+        ).sort({ 'dateTime.stamp': 1 }).exec();
 
         buf = Buffer.allocUnsafe(4 + 16 * nodeLocs.length);
 
@@ -136,7 +136,10 @@ router.get('/kaart/story', async (req, res) => {
                 nodeNum: nodes.findIndex((node) =>
                     story.time >= node.timeFrom && story.time < node.timeTill &&
                     node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))), // FIXME: see geonodes model
-                time: story.time,
+                dateTime: {
+                    stamp: story.dateTime.stamp,
+                    zone: story.dateTime.zone
+                },
                 title: (story as TextStoryElementDocument).title,
                 text: (story as TextStoryElementDocument).text,
                 name: (story as LocationStoryElementDocument).name

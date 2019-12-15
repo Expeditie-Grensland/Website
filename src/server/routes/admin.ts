@@ -7,9 +7,10 @@ import { AuthHelper } from '../helpers/authHelper';
 import { MediaFileHelper } from '../components/mediaFiles/helper';
 import { MediaFile } from '../components/mediaFiles/model';
 import { Quotes } from '../components/quotes';
-import { Quote } from '../components/quotes/model';
+import { Quote, QuoteModel } from '../components/quotes/model';
 import { Words } from '../components/words';
 import { Word } from '../components/words/model';
+import { DateTime } from 'luxon';
 
 
 export const router = express.Router();
@@ -115,18 +116,21 @@ router.get('/citaten', async (req, res) =>
 
 router.post('/citaten/add', async (req, res) =>
     Promise.resolve(req.body).then(async (b) => {
-        if (!b.quote || !b.context || !b.quotee || !b.time)
+        if (!b.quote || !b.context || !b.quotee || !b.time || !b.zone)
             throw new Error('Niet alle verplichte velden waren ingevuld.');
 
-        if (isNaN(parseInt(b.time)))
-            throw new Error('Tijdstempel is niet een nummer.');
+        const dt = DateTime.fromISO(b.time, { zone: b.zone, locale: 'nl-NL' });
 
-        const q: Quote = {
+        if (dt.invalidExplanation)
+            throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
+
+        const q = new QuoteModel({
             quote: b.quote,
             quotee: b.quotee,
-            context: b.context,
-            time: parseInt(b.time)
-        };
+            context: b.context
+        });
+
+        q.dateTime.object = dt;
 
         if (b.file) {
             let id;
@@ -145,7 +149,7 @@ router.post('/citaten/add', async (req, res) =>
             q.mediaFile = await MediaFiles.getEmbed(file);
         }
 
-        return Quotes.create(q);
+        return q.save();
     }).then(q =>
         req.flash('info', `Citaat "${q.quote}" is succesvol toegevoegd.`)
     ).catch(e =>
@@ -175,16 +179,19 @@ router.post('/citaten/edit', (req, res) =>
         if (b.action == 'delete')
             return quote.remove();
 
-        if (!b.quote || !b.context || !b.quotee || !b.time)
+        if (!b.quote || !b.context || !b.quotee || !b.time || !b.zone)
             throw new Error('Niet alle verplichte velden waren ingevuld.');
 
-        if (isNaN(parseInt(b.time)))
-            throw new Error('Tijdstempel is niet een nummer.');
+        const dt = DateTime.fromISO(b.time, { zone: b.zone, locale: 'nl-NL' });
+
+        if (dt.invalidExplanation)
+            throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
+
 
         quote.quote = b.quote;
         quote.context = b.context;
         quote.quotee = b.quotee;
-        quote.time = b.time;
+        quote.dateTime.object = dt;
 
         if (b.file) {
             let id;

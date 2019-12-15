@@ -27,7 +27,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false, run: f
             if (node)
                 node.kill();
 
-            node = child_process.spawn('node', ['dist/server/server.js'], { stdio: 'inherit' });
+            node = child_process.spawn('node', ['--icu-data-dir=node_modules/full-icu', 'dist/server/server.js'], { stdio: 'inherit' });
 
             node.on('close', () => {
                 console.log('Node closed');

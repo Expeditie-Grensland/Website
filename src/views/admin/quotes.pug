@@ -26,8 +26,9 @@ block content
                     .col-auto.mb-2.mr-2
                         input.form-control(type='text' name='quotee' placeholder='Persoon' size='30' required)
                     .col-auto.mb-2.mr-2
-                        input.form-control(type='number' name='time' placeholder='Tijdstempel' required)
-                        // FIXME: date/time input
+                        input.form-control(type='datetime-local' name='time' placeholder='Lokale tijd' step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" size=30 required)
+                    .col-auto.mb-2.mr-2
+                        input.form-control(type='text' name='zone' placeholder='Tijdzone' size=30 required)
                     .col-auto.mb-2.mr-2
                         input.form-control(type='text' name='file' placeholder='Bijlage Id' size='30' minlength='24' maxlength='24')
                     .col-auto.mb-2
@@ -40,7 +41,7 @@ block content
                         th(style='min-width: 20rem') Quote
                         th(style='min-width: 30rem; width: 100%;') Context
                         th(style='min-width: 15rem;') Persoon
-                        th(style='min-width: 12.5rem;') Tijdstempel
+                        th(style='min-width: 12.5rem;') Lokale tijd en tijdzone
                         th(style='min-width: 17.5rem;') Bijlage Id
                         th
 
@@ -54,7 +55,11 @@ block content
                             td
                                 input.form-control(type='text' form=`f-${i}` name='quotee' value=quote.quotee required)
                             td
-                                input.form-control(type='number' form=`f-${i}` name='time' value=quote.time required)
+                                //- FIXME: Update with new DateTime usage
+                                - const dt = quote.dateTime.object, dtISO = dt.startOf('second').toISO({ includeOffset: false})
+
+                                input.form-control.mb-2(type='datetime-local' form=`f-${i}` name='time' value=dtISO step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" required)
+                                input.form-control(type='text' form=`f-${i}` name='zone' value=dt.zoneName required)
                             td
                                 input.form-control(type='text' form=`f-${i}` name='file' value=(quote.mediaFile ? quote.mediaFile.id : '') minlength='24' maxlength='24')
                             td

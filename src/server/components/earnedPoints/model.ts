@@ -5,13 +5,13 @@ import { PersonId } from '../people/id';
 import { ExpeditieId } from '../expedities/id';
 import { ExpeditieOrId } from '../expedities/model';
 import { EarnedPointId } from './id';
-import { OffsetDate, offsetDateSchema } from '../offsetDate/model';
 import { PersonOrId } from '../people/model';
+import { DateTimeInternal, dateTimeSchema } from '../dateTime/model';
 
 const schema = new mongoose.Schema({
-    date: {
-        type: offsetDateSchema,
-        required: true
+    dateTime: {
+        type: dateTimeSchema,
+        default: dateTimeSchema
     },
     amount: {
         type: Number,
@@ -28,10 +28,10 @@ const schema = new mongoose.Schema({
     }
 });
 
-schema.index({ 'date.date': -1 });
+schema.index({ 'dateTime.stamp': -1 });
 
 export interface EarnedPoint {
-    date: OffsetDate;
+    dateTime: DateTimeInternal;
     amount: number;
     personId: PersonOrId;
     expeditieId?: ExpeditieOrId;

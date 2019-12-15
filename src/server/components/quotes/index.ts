@@ -13,7 +13,7 @@ export namespace Quotes {
         QuoteModel
             .find({})
             .collation({ locale: 'nl', strength: 1 })
-            .sort({ time: 1 })
+            .sort({ 'dateTime.stamp': 1 })
             .exec();
 
     export const getById = (id: mongoose.Types.ObjectId): Promise<QuoteDocument | null> =>
