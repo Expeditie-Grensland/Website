@@ -13,6 +13,6 @@ block content
                             h5.card-title= link.title
                             p.card-text= link.text
                             if link.href
-                                a.card-link(href=link.href) Open
+                                a.card-link(href=link.href target=(link.target || false)) Open
                             if link.adminHref && user.isAdmin
                                 a.card-link(href=link.adminHref) Admin

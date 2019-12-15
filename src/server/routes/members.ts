@@ -72,7 +72,7 @@ router.get('/', async (req, res) => res.render('members/index', {
             adminHref: '/admin/bestanden'
         }
     ].concat((await MemberLinks.getAll()).map((l) => {
-        return { title: l.title, text: l.text || '', href: l.href };
+        return { title: l.title, text: l.text || '', href: l.href, target: '_blank' };
     }))
 }));
 
