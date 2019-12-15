@@ -1,16 +1,20 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as multer from 'multer';
+import { DateTime } from 'luxon';
 
 import { MediaFiles } from '../components/mediaFiles';
 import { AuthHelper } from '../helpers/authHelper';
 import { MediaFileHelper } from '../components/mediaFiles/helper';
 import { MediaFile } from '../components/mediaFiles/model';
 import { Quotes } from '../components/quotes';
-import { Quote, QuoteModel } from '../components/quotes/model';
+import { QuoteModel } from '../components/quotes/model';
 import { Words } from '../components/words';
 import { Word } from '../components/words/model';
-import { DateTime } from 'luxon';
+import { EarnedPoints } from '../components/earnedPoints';
+import { Expedities } from '../components/expedities';
+import { People } from '../components/people';
+import { EarnedPointModel } from '../components/earnedPoints/model';
 
 
 export const router = express.Router();
@@ -92,7 +96,7 @@ router.post('/bestanden/edit', (req, res) =>
 
         const file = await MediaFiles.getById(id);
 
-        if (!file) throw new Error(`Bestand '${req.body.id}' bestaat niet.`);
+        if (!file) throw new Error(`Bestand '${b.id}' bestaat niet.`);
 
         return MediaFiles.remove(file);
     }).then(f =>
@@ -174,7 +178,7 @@ router.post('/citaten/edit', (req, res) =>
 
         const quote = await Quotes.getById(id);
 
-        if (!quote) throw new Error(`Citaat '${req.body.id}' bestaat niet.`);
+        if (!quote) throw new Error(`Citaat '${b.id}' bestaat niet.`);
 
         if (b.action == 'delete')
             return quote.remove();
@@ -283,7 +287,7 @@ router.post('/woordenboek/edit', (req, res) =>
 
         const word = await Words.getById(id);
 
-        if (!word) throw new Error(`Woord '${req.body.id}' bestaat niet.`);
+        if (!word) throw new Error(`Woord '${b.id}' bestaat niet.`);
 
         if (b.action == 'delete')
             return word.remove();
@@ -320,5 +324,154 @@ router.post('/woordenboek/edit', (req, res) =>
         req.flash('error', e.message)
     ).then(() =>
         res.redirect('/admin/woordenboek')
+    )
+);
+
+
+router.get('/punten', async (req, res) =>
+    res.render('admin/earnedPoints', {
+        fluidContainer: true,
+        earnedPoints: await EarnedPoints.getAll(),
+        expedities: await Expedities.getAll(),
+        people: await People.getAll(),
+        infoMsgs: req.flash('info'),
+        errMsgs: req.flash('error')
+    })
+);
+
+router.post('/punten/add', async (req, res) =>
+    Promise.resolve(req.body).then(async (b) => {
+        if (!b.person || !b.expeditie || !b.amount || !b.time || !b.zone)
+            throw new Error('Niet alle verplichte velden waren ingevuld.');
+
+        const dt = DateTime.fromISO(b.time, { zone: b.zone, locale: 'nl-NL' });
+
+        if (dt.invalidExplanation)
+            throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
+
+        if (isNaN(parseInt(b.amount)))
+            throw new Error('Hoeveelheid is niet een nummer.');
+
+        let personId;
+
+        try {
+            personId = mongoose.Types.ObjectId(b.person);
+        } catch {
+            throw new Error(`'${b.person}' is geen geldige Id.`);
+        }
+
+        const person = await People.getById(personId);
+
+        if (!person) throw new Error(`Persoon '${b.person}' bestaat niet.`);
+
+        const ep = new EarnedPointModel({
+            amount: parseInt(b.amount),
+            personId: person._id.toHexString()
+        });
+
+        ep.dateTime.object = dt;
+
+        if (b.expeditie != 'none') {
+            let expeditieId;
+
+            try {
+                expeditieId = mongoose.Types.ObjectId(b.expeditie);
+            } catch {
+                throw new Error(`'${b.expeditie}' is geen geldige Id.`);
+            }
+
+            const expeditie = await Expedities.getById(expeditieId);
+
+            if (!expeditie) throw new Error(`Expeditie '${b.expeditie}' bestaat niet.`);
+
+            ep.expeditieId = expeditie._id;
+        } else {
+            ep.expeditieId = undefined;
+        }
+
+        return ep.save();
+    }).then(ep =>
+        req.flash('info', `Punt "${ep._id.toHexString()}" is succesvol toegevoegd.`)
+    ).catch(e =>
+        req.flash('error', e.message)
+    ).then(() =>
+        res.redirect('/admin/punten')
+    )
+);
+
+router.post('/punten/edit', (req, res) =>
+    Promise.resolve(req.body).then(async (b) => {
+        if (b.action != 'delete' && b.action != 'change')
+            throw new Error('Er was geen geldige actie gespecificeerd.');
+
+        let id;
+
+        try {
+            id = mongoose.Types.ObjectId(b.id);
+        } catch {
+            throw new Error(`'${b.id}' is geen geldige Id.`);
+        }
+
+        const ep = await EarnedPoints.getById(id);
+
+        if (!ep) throw new Error(`Punt '${b.id}' bestaat niet.`);
+
+        if (b.action == 'delete')
+            return ep.remove();
+
+        if (!b.person || !b.expeditie || !b.amount || !b.time || !b.zone)
+            throw new Error('Niet alle verplichte velden waren ingevuld.');
+
+        if (isNaN(parseInt(b.amount)))
+            throw new Error('Hoeveelheid is niet een nummer.');
+
+        ep.amount = parseInt(b.amount);
+
+        let personId;
+
+        try {
+            personId = mongoose.Types.ObjectId(b.person);
+        } catch {
+            throw new Error(`'${b.person}' is geen geldige Id.`);
+        }
+
+        const person = await People.getById(personId);
+
+        if (!person) throw new Error(`Persoon '${b.person}' bestaat niet.`);
+
+        ep.personId = person._id;
+
+        if (b.expeditie != 'none') {
+            let expeditieId;
+
+            try {
+                expeditieId = mongoose.Types.ObjectId(b.expeditie);
+            } catch {
+                throw new Error(`'${b.expeditie}' is geen geldige Id.`);
+            }
+
+            const expeditie = await Expedities.getById(expeditieId);
+
+            if (!expeditie) throw new Error(`Expeditie '${b.expeditie}' bestaat niet.`);
+
+            ep.expeditieId = expeditie._id;
+        } else {
+            ep.expeditieId = undefined;
+        }
+
+        const dt = DateTime.fromISO(b.time, { zone: b.zone, locale: 'nl-NL' });
+
+        if (dt.invalidExplanation)
+            throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
+
+        ep.dateTime.object = dt;
+
+        return ep.save();
+    }).then(ep =>
+        req.flash('info', `Punt "${ep._id.toHexString()}" is succesvol ${req.body.action == 'delete' ? 'verwijderd' : 'gewijzigd'}.`)
+    ).catch(e =>
+        req.flash('error', e.message)
+    ).then(() =>
+        res.redirect('/admin/punten')
     )
 );

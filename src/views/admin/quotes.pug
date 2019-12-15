@@ -55,7 +55,6 @@ block content
                             td
                                 input.form-control(type='text' form=`f-${i}` name='quotee' value=quote.quotee required)
                             td
-                                //- FIXME: Update with new DateTime usage
                                 - const dt = quote.dateTime.object, dtISO = dt.startOf('second').toISO({ includeOffset: false})
 
                                 input.form-control.mb-2(type='datetime-local' form=`f-${i}` name='time' value=dtISO step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" required)
