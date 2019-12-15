@@ -63,7 +63,8 @@ router.get('/', async (req, res) => res.render('members/index', {
         {
             title: 'De Punt\'n',
             text: 'Welk team is het vurigst? Blauw, of Rood?',
-            href: '/leden/punten'
+            href: '/leden/punten',
+            adminHref: '/admin/punten'
         },
         {
             title: 'Bestanden',
