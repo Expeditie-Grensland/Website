@@ -2,58 +2,58 @@ import { Metadata } from '../components/metadata';
 
 const DATABASE_VERSION_KEY = 'database_version';
 
-const UPDATES = [
+const UPDATES: {info: string, func: any}[] = [
     { // 0 -> 1
         info: 'Add restricted property to media files',
-        func: require('./update000MediaFileAddRestricted')
+        func: {}
     },
     { // 1 -> 2
         info: 'Change audioFile property to mediaFile for words',
-        func: require('./update001WordsAudioFile')
+        func: {}
     },
     { // 2 -> 3
         info: 'Add time property to quotes',
-        func: require('./update002QuotesAddTime')
+        func: {}
     },
     { // 3 -> 4
         info: 'Add team property to people',
-        func: require('./update003SetPersonTeams')
+        func: {}
     },
     { // 4 -> 5
         info: 'Populate earned points collection',
-        func: require('./update004PopulatePoints')
+        func: {}
     },
     { // 5 -> 6
         info: 'Remove mediaFile uses',
-        func: require('./update005RemoveFileUses')
+        func: {}
     },
     { // 6 -> 7
         info: 'Remove expedities from people',
-        func: require('./update006RemovePeopleExpedities')
+        func: {}
     },
     { // 7 -> 8
         info: 'Update strings to ObjectIds',
-        func: require('./update007ChangeToObjectId')
+        func: {}
     },
     { // 8 -> 9
         info: 'Replace expeditie background files',
-        func: require('./update008ReplaceImages')
+        func: {}
     },
     { // 9 -> 10
         info: 'Remove duplicate locations',
-        func: require('./update009RemoveDuplicates')
+        func: {}
     },
     { // 10 -> 11
         info: 'Remove visualArea from GeoLocations',
-        func: require('./update010RemoveVisualArea')
+        func: {}
     },
     { // 11 -> 12
         info: 'Set isAdmin to true for admins',
-        func: require('./update011SetAdmins')
+        func: {}
     },
     { // 12 -> 13
         info: 'Us Luxon DateTime for dates/times',
-        func: require('./update012UseLuxon')
+        func: {}
     }
 ];
 
