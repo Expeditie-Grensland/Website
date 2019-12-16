@@ -37,7 +37,7 @@ block content
                         select.custom-select(name='expeditie' required)
                             +expeditieOptions()
                     .col-auto.mb-2.mr-2
-                        input.form-control(type='number' name='amount' size=30 required)
+                        input.form-control(type='number' name='amount' placeholder="Aantal punten" size=30 required)
                     .col-auto.mb-2.mr-2
                         input.form-control(type='datetime-local' name='time' placeholder='Lokale tijd' step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" size=30 required)
                     .col-auto.mb-2.mr-2
