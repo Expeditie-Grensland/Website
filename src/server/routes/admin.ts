@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as multer from 'multer';
-import { DateTime } from 'luxon';
+import { DateTime, Info } from 'luxon';
 
 import { MediaFiles } from '../components/mediaFiles';
 import { AuthHelper } from '../helpers/authHelper';
@@ -15,6 +15,9 @@ import { EarnedPoints } from '../components/earnedPoints';
 import { Expedities } from '../components/expedities';
 import { People } from '../components/people';
 import { EarnedPointModel } from '../components/earnedPoints/model';
+import { GeoLocation } from '../components/geoLocations/model';
+import { GpxHelper } from '../components/geoLocations/gpxHelper';
+import { GeoLocations } from '../components/geoLocations';
 
 
 export const router = express.Router();
@@ -475,3 +478,59 @@ router.post('/punten/edit', (req, res) =>
         res.redirect('/admin/punten')
     )
 );
+
+router.get('/gpx', async (req, res) =>
+    res.render('admin/gpx', {
+        expedities: await Expedities.getAll(),
+        people: await People.getAll(),
+        infoMsgs: req.flash('info'),
+        errMsgs: req.flash('error')
+    })
+);
+
+router.post('/gpx/upload', multer({ storage: multer.memoryStorage() }).single('file'), (req, res) => {
+    Promise.resolve(req.body).then(async (b) => {
+        if (!b.person || !b.expeditie || !req.file || ! b.zone)
+            throw new Error('Niet alle verplichte velden waren ingevuld.');
+
+        let personId, expeditieId;
+
+        try {
+            personId = mongoose.Types.ObjectId(b.person);
+        } catch {
+            throw new Error(`'${b.person}' is geen geldige Id.`);
+        }
+
+        try {
+            expeditieId = mongoose.Types.ObjectId(b.expeditie);
+        } catch {
+            throw new Error(`'${b.expeditie}' is geen geldige Id.`);
+        }
+
+        const person = await People.getById(personId);
+        const expeditie = await Expedities.getById(expeditieId);
+
+        if (!person) throw new Error(`Persoon '${b.person}' bestaat niet.`);
+        if (!expeditie) throw new Error(`Expeditie '${b.expeditie}' bestaat niet.`);
+        if (expeditie.finished) throw new Error(`Expeditie '${expeditie.name}' is beëindigd.`)
+
+        if (!Info.isValidIANAZone(b.zone))
+            throw new Error(`Tijdzone ${b.zone} is niet geldig.`);
+
+        let locs: GeoLocation[];
+
+        try {
+            locs = await GpxHelper.generateLocations(req.file.buffer.toString(), expeditie, person, b.zone);
+        } catch (e) {
+            throw new Error(`Bestand kan niet worden gelezen: ${e.message}`)
+        }
+
+        return GeoLocations.createMany(locs);
+    }).then(() =>
+        req.flash('info', 'Locaties zijn succesvol geüpload.')
+    ).catch(e =>
+        req.flash('error', e.message)
+    ).then(() =>
+        res.redirect('/admin/gpx')
+    );
+});

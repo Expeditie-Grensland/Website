@@ -1,0 +1,46 @@
+extends ../members/_frame
+include ../_expeditieMedia
+
+block title
+    title Expeditie - Admin - GPX Upload
+
+mixin expeditieOptions(e)
+    option(selected=(e === undefined) value='' disabled) Expeditie
+    each expeditie in expedities
+        if !expeditie.finished
+            option(selected=(e && e.equals(expeditie._id)) value=expeditie._id.toHexString())= expeditie.name
+
+mixin personOptions(p)
+    option(selected=(p === undefined) value='' disabled) Persoon
+    each person in people
+        option(selected=(p && p.equals(person._id)) value=person._id.toHexString())= person.name
+
+block content
+    .row
+        .col-12.mb-4
+            .h1 GPX Upload
+
+        if errMsgs.length + infoMsgs.length
+            .col-12.mb-4
+                each msg in errMsgs
+                    .alert.alert-danger= msg
+                each msg in infoMsgs
+                    .alert.alert-info= msg
+
+        .col-12.mb-4
+            form(method='POST' action='/admin/gpx/upload' enctype='multipart/form-data')
+                .form-row.align-items-center
+                    .col-12.col-md-6.mb-2.mr-md-2
+                        .custom-file
+                            input#file.custom-file-input(name='file' type='file' accept='.gpx' required)
+                            label.custom-file-label(for='file') Kies bestand
+                    .col-auto.mb-2.mr-2
+                        select.custom-select(name='expeditie' required)
+                            +expeditieOptions()
+                    .col-auto.mb-2.mr-2
+                        select.custom-select(name='person' required)
+                            +personOptions(user)
+                    .col-auto.mb-2.mr-2
+                        input.form-control(type='text' name='zone' placeholder='Tijdzone' value='Europe/Amsterdam' size=30 required)
+                    .col-auto.mb-2
+                        button.btn.btn-primary(type='submit') Uploaden

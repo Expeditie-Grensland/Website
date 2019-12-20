@@ -70,6 +70,11 @@ router.get('/', async (req, res) => res.render('members/index', {
             title: 'Bestanden',
             text: 'Laad ze op, of laad ze neer',
             adminHref: '/admin/bestanden'
+        },
+        {
+            title: 'GPX Upload',
+            text: 'Omdat we nog steeds geen app hebben',
+            adminHref: '/admin/gpx'
         }
     ].concat((await MemberLinks.getAll()).map((l) => {
         return { title: l.title, text: l.text || '', href: l.href, target: '_blank' };
