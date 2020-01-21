@@ -1,6 +1,7 @@
 import * as express from 'express';
 
 import { router as expeditieRouter } from './expeditie';
+import { router as personRouter } from './person';
 import { router as homeRouter } from './home';
 import { router as membersRouter } from './members';
 import { router as adminRouter } from './admin';
@@ -20,6 +21,7 @@ export function Router(): express.Router {
 
     router.use('/', homeRouter);
     router.use('/:expeditie', expeditieRouter);
+    router.use('/:person', personRouter);
 
     return router;
 }

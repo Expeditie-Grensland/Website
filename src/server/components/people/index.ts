@@ -22,12 +22,15 @@ export namespace People {
     export const getDocuments = (persons: PersonOrId[]): Promise<PersonDocument[]> =>
         Documents.getDocuments(getByIds)(persons);
 
-    export const getByNames = (...names: string[]): Promise<PersonDocument | null> =>
-        PersonModel.findOne(names.map(n => `"${n}"`).join()).exec();
+    export const getByFirstLastName = (firstName: string, lastName: string): Promise<PersonDocument | null> =>
+        PersonModel.findOne({ firstName, lastName }).exec();
+
+    export const getByUserName = (userName: string): Promise<PersonDocument | null> =>
+        PersonModel.findOne({ userName }).exec();
 
     export const getByLdapId = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findOne({ ldapId: id }).exec();
 
     export const setIsAdmin = (person: PersonOrId, isAdmin: boolean): Promise<PersonDocument | null> =>
-        PersonModel.findByIdAndUpdate(Documents.getObjectId(person), {isAdmin}, {new: true}).exec();
+        PersonModel.findByIdAndUpdate(Documents.getObjectId(person), { isAdmin }, { new: true }).exec();
 }
