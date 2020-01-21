@@ -22,7 +22,7 @@ block body
             if !isLogin
                 ul.navbar-nav.ml-auto
                     li.nav-item
-                        a.nav-link.disabled= user.name
+                        a.nav-link.disabled= `${user.firstName} ${user.lastName}`
                     li.nav-item.pl-2
                         a.nav-link(href="/leden/loguit") Log Uit
 

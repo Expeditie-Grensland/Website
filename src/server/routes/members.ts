@@ -125,7 +125,7 @@ router.get('/punten', async (req, res) => {
             return {
                 date: x.dateTime.object.toLocaleString({ month: '2-digit', day: '2-digit' }),
                 amount: x.amount,
-                name: (<PersonDocument>x.personId).name,
+                name: `${(<PersonDocument>x.personId).firstName} ${(<PersonDocument>x.personId).lastName}` ,
                 team: (<PersonDocument>x.personId).team,
                 expeditie: x.expeditieId ? `Expeditie ${(<ExpeditieDocument>x.expeditieId).name}` : ''
             };

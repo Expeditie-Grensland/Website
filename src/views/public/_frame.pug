@@ -22,6 +22,6 @@ block body
             if loggedIn
                 ul.navbar-nav.ml-auto
                     li.nav-item
-                        a.nav-link(href="/leden")= user.name
+                        a.nav-link(href="/leden")= `${user.firstName} ${user.lastName}`
 
         block content

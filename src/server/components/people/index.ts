@@ -8,7 +8,7 @@ export namespace People {
         PersonModel.create(person);
 
     export const getAll = (): Promise<PersonDocument[]> =>
-        PersonModel.find({}).sort({ name: 1 }).exec();
+        PersonModel.find({}).sort({ lastName: 1 }).exec();
 
     export const getById = (id: mongoose.Types.ObjectId): Promise<PersonDocument | null> =>
         PersonModel.findById(id).exec();
@@ -22,8 +22,8 @@ export namespace People {
     export const getDocuments = (persons: PersonOrId[]): Promise<PersonDocument[]> =>
         Documents.getDocuments(getByIds)(persons);
 
-    export const getByName = (name: string): Promise<PersonDocument | null> =>
-        PersonModel.findOne({ name }).exec();
+    export const getByNames = (...names: string[]): Promise<PersonDocument | null> =>
+        PersonModel.findOne(names.map(n => `"${n}"`).join()).exec();
 
     export const getByLdapId = (id: string): Promise<PersonDocument | null> =>
         PersonModel.findOne({ ldapId: id }).exec();

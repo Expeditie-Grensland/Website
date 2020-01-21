@@ -9,7 +9,10 @@ import { DocumentOrId } from '../documents';
  */
 
 const schema = new mongoose.Schema({
-    name: String,
+    firstName: String,
+    lastName: String,
+    initials: String,
+    userName: String,
     ldapId: String,
     isAdmin: Boolean,
     team: {
@@ -18,8 +21,14 @@ const schema = new mongoose.Schema({
     }
 });
 
+schema.index({ lastName: 1, firstName: 1 });
+schema.index({ userName: 1 });
+
 export interface Person {
-    name: string;
+    firstName: string;
+    lastName: string;
+    initials: string;
+    userName: string;
     ldapId?: string;
     isAdmin?: boolean;
     team?: 'Blauw' | 'Rood';

@@ -13,7 +13,7 @@ mixin expeditieOptions(e)
 mixin personOptions(p)
     option(selected=(p === undefined) value='' disabled) Persoon
     each person in people
-        option(selected=(p && p.equals(person._id)) value=person._id.toHexString())= person.name
+        option(selected=(p && p.equals(person._id)) value=person._id.toHexString())= `${person.firstName} ${person.lastName}`
 
 block content
     .row

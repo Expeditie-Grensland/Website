@@ -27,7 +27,7 @@ router.post('/authenticate', (req, res, next) => {
                 if (err2)
                     next(err2);
                 else
-                    res.status(200).json({ token, name: user.name });
+                    res.status(200).json({ token, name: `${user.firstName} ${user.lastName}` });
             });
     })(req, res, next);
 });

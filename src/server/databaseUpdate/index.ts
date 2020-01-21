@@ -58,6 +58,10 @@ const UPDATES: {info: string, func: any}[] = [
     { // 13 -> 14
         info: 'Unset color field for expedities',
         func: require('./update013UnsetExpeditieColor')
+    },
+    { // 14 -> 15
+        info: 'Separate names into first and last names',
+        func: require('./update014SetFirstLastNames')
     }
 ];
 

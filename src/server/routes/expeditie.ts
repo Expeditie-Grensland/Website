@@ -126,7 +126,7 @@ router.get('/kaart/story', async (req, res) => {
                 nodeNum: index,
                 timeFrom: node.timeFrom,
                 timeTill: node.timeTill,
-                personNames: node.personIds.map((p: PersonDocument) => p.name) // FIXME: see geonodes model
+                personNames: node.personIds.map((p: PersonDocument) => `${p.firstName} ${p.lastName}`) // FIXME: see geonodes model
             };
         }),
         story: (await stories).map((story) => {

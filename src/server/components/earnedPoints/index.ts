@@ -13,7 +13,7 @@ export namespace EarnedPoints {
 
     export const getAllPopulated = (): Promise<EarnedPointDocument[]> =>
         EarnedPointModel.find().sort({ 'dateTime.stamp': -1 })
-            .populate('personId', 'name nameShort team')
+            .populate('personId', 'nameFirst nameLast team')
             .populate('expeditieId', 'name')
             .exec();
 }
