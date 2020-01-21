@@ -16,7 +16,7 @@ block content
             if expeditie.showMap
                 a.btn.btn-map.btn-outline-light(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
 
-            each person in expeditie.personIds
+            each person in expeditie.personIds.sort((e1, e2) => e1.lastName > e2.lastName || e1.lastName === e2.lastName && e1.firstName > e2.firstName ? 1 : -1)
                 span= `${person.firstName} ${person.lastName}`
 
         .col-12.col-md-8.order-md-1
