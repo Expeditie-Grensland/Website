@@ -75,7 +75,6 @@ router.get('/expedities', (req, res) =>
                 id: Documents.getStringId(x),
                 name: x.name,
                 subtitle: x.subtitle,
-                color: x.color,
                 image: MediaFiles.getUrl(x.backgroundFile)
             };
         }))

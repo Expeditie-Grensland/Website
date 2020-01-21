@@ -16,7 +16,6 @@ const schema = new mongoose.Schema({
     name: String,
     nameShort: String,
     subtitle: String,
-    color: String,
     showMap: Boolean,
     finished: { type: Boolean, default: false },
     personIds: [{
@@ -37,7 +36,6 @@ export interface Expeditie {
     name: string;
     nameShort: string;
     subtitle: string;
-    color: string;
     showMap: boolean;
     finished?: boolean;
     personIds: PersonOrId[];

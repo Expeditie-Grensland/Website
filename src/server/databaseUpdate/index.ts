@@ -54,6 +54,10 @@ const UPDATES: {info: string, func: any}[] = [
     { // 12 -> 13
         info: 'Us Luxon DateTime for dates/times',
         func: {}
+    },
+    { // 13 -> 14
+        info: 'Unset color field for expedities',
+        func: require('./update013UnsetExpeditieColor')
     }
 ];
 
