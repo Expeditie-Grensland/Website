@@ -27,6 +27,67 @@ router.use(AuthHelper.loginRedirect);
 router.use(AuthHelper.noAdminRedirect);
 
 
+const testAndGetFromId = async <T extends mongoose.Document>(stringId: string, getById: ((id: mongoose.Types.ObjectId) => Promise<T | null>), typeName: string): Promise<T> => {
+    let id;
+
+    try {
+        id = mongoose.Types.ObjectId(stringId);
+    } catch {
+        throw new Error(`${typeName} '${stringId}' heeft geen geldige Id.`);
+    }
+
+    const result = await getById(id);
+
+    if (!result)
+        throw new Error(`${typeName} '${stringId}' bestaat niet.`);
+
+    return result;
+};
+
+const getDateTimeFromTimeAndZone = (time: string, zone: string): DateTime => {
+    const dt = DateTime.fromISO(time, { zone, locale: 'nl-NL' });
+
+    if (dt.invalidExplanation)
+        throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
+
+    return dt;
+};
+
+const testValidAction = (action: string, ...validActions: string[]): void => {
+    if (!validActions.reduce((acc: boolean, cur) => acc || cur == action, false))
+        throw new Error('Er was geen geldige actie gespecificeerd.');
+};
+
+const testRequiredFields = (...fields: any[]): void => {
+    if (fields.reduce((acc: boolean, cur) => acc || !cur, false))
+        throw new Error('Niet alle verplichte velden waren ingevuld.');
+};
+
+const testAndGetNumber = (num: any, typeName: string): number => {
+    const number = parseInt(num);
+
+    if (isNaN(num))
+        throw new Error(`${typeName} is niet een nummer.`);
+
+    return number;
+};
+
+const testValidTimeZone = (zone: string) => {
+    if (!Info.isValidIANAZone(zone))
+        throw new Error(`Tijdzone ${zone} is niet geldig.`);
+};
+
+const tryCatchAndRedirect = async (req: any, res: any, destination: string, f: (() => Promise<string>)): Promise<void> => {
+    try {
+        req.flash('info', await f());
+    } catch (e) {
+        req.flash('error', e.message);
+    } finally {
+        res.redirect(destination);
+    }
+};
+
+
 router.get('/bestanden', async (req, res) =>
     res.render('admin/mediafiles', {
         files: await MediaFiles.getAll(),
@@ -38,9 +99,9 @@ router.get('/bestanden', async (req, res) =>
 
 const multerUpload = multer(MediaFileHelper.Multer.settings);
 
-router.post('/bestanden/upload', multerUpload.array('files'), (req, res, next) =>
-    Promise.resolve(req.files).then(fs => {
-        if (!fs) throw new Error('Bestanden zijn niet juist geüpload.');
+router.post('/bestanden/upload', multerUpload.array('files'), (req, res) =>
+    tryCatchAndRedirect(req, res, '/admin/bestanden', async () => {
+        if (!req.files) throw new Error('Bestanden zijn niet juist geüpload.');
 
         let mediaFiles: MediaFile[] = [];
 
@@ -55,61 +116,37 @@ router.post('/bestanden/upload', multerUpload.array('files'), (req, res, next) =
 
         if (!mediaFiles.length) throw new Error('Er zijn geen geldige bestanden geüpload.');
 
-        return MediaFiles.createMany(mediaFiles);
-    }).then(fs =>
-        req.flash('info', `Bestanden ${fs.map(f => `'${f._id.toHexString()}'`).join(', ')} zijn succesvol geüpload.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/bestanden')
-    )
-);
+        const fs = await MediaFiles.createMany(mediaFiles);
+
+        return `Bestanden ${fs.map(f => `'${f._id.toHexString()}'`).join(', ')} zijn succesvol geüpload.`;
+    }));
 
 router.post('/bestanden/add', (req, res) =>
-    Promise.resolve(req.body).then(b => {
+    tryCatchAndRedirect(req, res, '/admin/bestanden', async () => {
+        const b = req.body;
+
         if (!b.mime || MediaFileHelper.mime2.getExtension(b.mime) == null)
             throw new Error('Er was geen geldig mime type geselecteerd.');
 
-        return MediaFiles.create({
+        const f = await MediaFiles.create({
             ext: MediaFileHelper.mime2.getExtension(b.mime),
             mime: b.mime,
             restricted: !!b.restricted
         });
-    }).then(f =>
-        req.flash('info', `Bestand '${f._id.toHexString()}' is succesvol toegevoegd.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/bestanden')
-    )
-);
+
+        return `Bestand '${f._id.toHexString()}' is succesvol toegevoegd.`;
+    }));
 
 router.post('/bestanden/edit', (req, res) =>
-    Promise.resolve(req.body).then(async (b) => {
-        if (b.action != 'delete')
-            throw new Error('Er was geen geldige actie gespecificeerd.');
+    tryCatchAndRedirect(req, res, '/admin/bestanden', async () => {
+        const b = req.body;
 
-        let id;
+        testValidAction(b.action, 'delete');
 
-        try {
-            id = mongoose.Types.ObjectId(b.id);
-        } catch {
-            throw new Error(`'${b.id}' is geen geldige Id.`);
-        }
+        const file = await testAndGetFromId(b.id, MediaFiles.getById, 'Bestand');
 
-        const file = await MediaFiles.getById(id);
-
-        if (!file) throw new Error(`Bestand '${b.id}' bestaat niet.`);
-
-        return MediaFiles.remove(file);
-    }).then(f =>
-        req.flash('info', `Bestand '${f._id.toHexString()}' is succesvol verwijderd.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/bestanden')
-    )
-);
+        return `Bestand '${(await MediaFiles.remove(file))._id.toHexString()}' is succesvol verwijderd.`;
+    }));
 
 
 router.get('/citaten', async (req, res) =>
@@ -122,14 +159,10 @@ router.get('/citaten', async (req, res) =>
 );
 
 router.post('/citaten/add', async (req, res) =>
-    Promise.resolve(req.body).then(async (b) => {
-        if (!b.quote || !b.context || !b.quotee || !b.time || !b.zone)
-            throw new Error('Niet alle verplichte velden waren ingevuld.');
+    tryCatchAndRedirect(req, res, '/admin/citaten', async () => {
+        const b = req.body;
 
-        const dt = DateTime.fromISO(b.time, { zone: b.zone, locale: 'nl-NL' });
-
-        if (dt.invalidExplanation)
-            throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
+        testRequiredFields(b.quote, b.context, b.quotee, b.time, b.zone);
 
         const q = new QuoteModel({
             quote: b.quote,
@@ -137,96 +170,39 @@ router.post('/citaten/add', async (req, res) =>
             context: b.context
         });
 
-        q.dateTime.object = dt;
+        q.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
 
-        if (b.file) {
-            let id;
+        if (b.file)
+            q.mediaFile = await MediaFiles.getEmbed(await testAndGetFromId(b.file, MediaFiles.getDocument, 'Bestand'));
 
-            try {
-                id = mongoose.Types.ObjectId(b.file);
-            } catch {
-                throw new Error(`'${b.file}' is geen geldige Id.`);
-            }
-
-            const file = await MediaFiles.getDocument(id);
-
-            if (!file)
-                throw new Error(`Bestand '${b.file}' bestaat niet.`);
-
-            q.mediaFile = await MediaFiles.getEmbed(file);
-        }
-
-        return q.save();
-    }).then(q =>
-        req.flash('info', `Citaat "${q.quote}" is succesvol toegevoegd.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/citaten')
-    )
-);
+        return `Citaat "${(await q.save()).quote}" is succesvol toegevoegd.`;
+    }));
 
 router.post('/citaten/edit', (req, res) =>
-    Promise.resolve(req.body).then(async (b) => {
-        if (b.action != 'delete' && b.action != 'change')
-            throw new Error('Er was geen geldige actie gespecificeerd.');
+    tryCatchAndRedirect(req, res, '/admin/citaten', async () => {
+        const b = req.body;
 
-        let id;
+        testValidAction(b.action, 'delete', 'change');
 
-        try {
-            id = mongoose.Types.ObjectId(b.id);
-        } catch {
-            throw new Error(`'${b.id}' is geen geldige Id.`);
-        }
-
-        const quote = await Quotes.getById(id);
-
-        if (!quote) throw new Error(`Citaat '${b.id}' bestaat niet.`);
+        const quote = await testAndGetFromId(b.id, Quotes.getById, 'Citaat');
 
         if (b.action == 'delete')
-            return quote.remove();
+            return `Citaat "${(await quote.remove()).quote}" is succesvol verwijderd.`;
 
-        if (!b.quote || !b.context || !b.quotee || !b.time || !b.zone)
-            throw new Error('Niet alle verplichte velden waren ingevuld.');
-
-        const dt = DateTime.fromISO(b.time, { zone: b.zone, locale: 'nl-NL' });
-
-        if (dt.invalidExplanation)
-            throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
-
+        testRequiredFields(b.quote, b.context, b.quotee, b.time, b.zone);
 
         quote.quote = b.quote;
         quote.context = b.context;
         quote.quotee = b.quotee;
-        quote.dateTime.object = dt;
+        quote.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
 
-        if (b.file) {
-            let id;
-
-            try {
-                id = mongoose.Types.ObjectId(b.file);
-            } catch {
-                throw new Error(`'${b.file}' is geen geldige Id.`);
-            }
-
-            const file = await MediaFiles.getDocument(id);
-
-            if (!file)
-                throw new Error(`Bestand '${b.file}' bestaat niet.`);
-
-            quote.mediaFile = await MediaFiles.getEmbed(file);
-        } else
+        if (b.file)
+            quote.mediaFile = await MediaFiles.getEmbed(await testAndGetFromId(b.file, MediaFiles.getDocument, 'Bestand'));
+        else
             quote.mediaFile = undefined;
 
-        return quote.save();
-    }).then(q =>
-        req.flash('info', `Citaat "${q.quote}" is succesvol ${req.body.action == 'delete' ? 'verwijderd' : 'gewijzigd'}.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/citaten')
-    )
-);
+        return `Citaat "${(await quote.save()).quote}" is succesvol gewijzigd.`;
+    }));
 
 router.get('/woordenboek', async (req, res) =>
     res.render('admin/dictionary', {
@@ -238,9 +214,10 @@ router.get('/woordenboek', async (req, res) =>
 );
 
 router.post('/woordenboek/add', async (req, res) =>
-    Promise.resolve(req.body).then(async (b) => {
-        if (!b.word || !b.definitions || b.definitions.filter((x: string) => x != '').length < 1)
-            throw new Error('Niet alle verplichte velden waren ingevuld.');
+    tryCatchAndRedirect(req, res, '/admin/woordenboek', async () => {
+        const b = req.body;
+
+        testRequiredFields(b.word, b.definitions, b.definitions.filter((x: string) => x != '').length);
 
         const w: Word = {
             word: b.word,
@@ -248,87 +225,36 @@ router.post('/woordenboek/add', async (req, res) =>
             phonetic: b.phonetic || undefined
         };
 
-        if (b.file) {
-            let id;
+        if (b.file)
+            w.mediaFile = await MediaFiles.getEmbed(await testAndGetFromId(b.file, MediaFiles.getById, 'Bestand'));
 
-            try {
-                id = mongoose.Types.ObjectId(b.file);
-            } catch {
-                throw new Error(`'${b.file}' is geen geldige Id.`);
-            }
-
-            const file = await MediaFiles.getDocument(id);
-
-            if (!file)
-                throw new Error(`Bestand '${b.file}' bestaat niet.`);
-
-            w.mediaFile = await MediaFiles.getEmbed(file!);
-        }
-
-        return Words.create(w);
-    }).then(w =>
-        req.flash('info', `Woord "${w.word}" is succesvol toegevoegd.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/woordenboek')
-    )
-);
+        return `Woord "${(await Words.create(w)).word}" is succesvol toegevoegd.`;
+    }));
 
 router.post('/woordenboek/edit', (req, res) =>
-    Promise.resolve(req.body).then(async (b) => {
-        if (b.action != 'delete' && b.action != 'change')
-            throw new Error('Er was geen geldige actie gespecificeerd.');
+    tryCatchAndRedirect(req, res, '/admin/woordenboek', async () => {
+        const b = req.body;
 
-        let id;
+        testValidAction(b.action, 'delete', 'change');
 
-        try {
-            id = mongoose.Types.ObjectId(b.id);
-        } catch {
-            throw new Error(`'${b.id}' is geen geldige Id.`);
-        }
-
-        const word = await Words.getById(id);
-
-        if (!word) throw new Error(`Woord '${b.id}' bestaat niet.`);
+        const word = await testAndGetFromId(b.id, Words.getById, 'Woord');
 
         if (b.action == 'delete')
-            return word.remove();
+            return `Woord "${(await word.remove()).word}" is succesvol verwijderd.`;
 
-        if (!b.word || !b.definitions || b.definitions.filter((x: string) => x != '').length < 1)
-            throw new Error('Niet alle verplichte velden waren ingevuld.');
+        testRequiredFields(b.word, b.definitions, b.definitions.filter((x: string) => x != '').length);
 
         word.word = b.word;
         word.definitions = b.definitions.filter((x: string) => x != '');
         word.phonetic = b.phonetic || undefined;
 
-        if (b.file) {
-            let id;
-
-            try {
-                id = mongoose.Types.ObjectId(b.file);
-            } catch {
-                throw new Error(`'${b.file}' is geen geldige Id.`);
-            }
-
-            const file = await MediaFiles.getDocument(id);
-
-            if (!file)
-                throw new Error(`Bestand '${b.file}' bestaat niet.`);
-
-            word.mediaFile = await MediaFiles.getEmbed(file);
-        } else
+        if (b.file)
+            word.mediaFile = await MediaFiles.getEmbed(await testAndGetFromId(b.file, MediaFiles.getById, 'Bestand'));
+        else
             word.mediaFile = undefined;
 
-        return word.save();
-    }).then(w =>
-        req.flash('info', `Woord "${w.word}" is succesvol ${req.body.action == 'delete' ? 'verwijderd' : 'gewijzigd'}.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/woordenboek')
-    )
-);
+        return `Woord "${(await word.save()).word}" is succesvol gewijzigd.`;
+    }));
 
 
 router.get('/punten', async (req, res) =>
@@ -343,141 +269,54 @@ router.get('/punten', async (req, res) =>
 );
 
 router.post('/punten/add', async (req, res) =>
-    Promise.resolve(req.body).then(async (b) => {
-        if (!b.person || !b.expeditie || !b.amount || !b.time || !b.zone)
-            throw new Error('Niet alle verplichte velden waren ingevuld.');
+    tryCatchAndRedirect(req, res, '/admin/punten', async () => {
+        const b = req.body;
 
-        const dt = DateTime.fromISO(b.time, { zone: b.zone, locale: 'nl-NL' });
-
-        if (dt.invalidExplanation)
-            throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
-
-        if (isNaN(parseInt(b.amount)))
-            throw new Error('Hoeveelheid is niet een nummer.');
-
-        let personId;
-
-        try {
-            personId = mongoose.Types.ObjectId(b.person);
-        } catch {
-            throw new Error(`'${b.person}' is geen geldige Id.`);
-        }
-
-        const person = await People.getById(personId);
-
-        if (!person) throw new Error(`Persoon '${b.person}' bestaat niet.`);
+        testRequiredFields(b.person, b.expeditie, b.amount, b.time, b.zone);
 
         const ep = new EarnedPointModel({
-            amount: parseInt(b.amount),
-            personId: person._id.toHexString()
+            amount: testAndGetNumber(b.amount, 'Hoeveelheid'),
+            personId: (await testAndGetFromId(b.person, People.getById, 'Persoon'))._id
         });
 
-        ep.dateTime.object = dt;
+        ep.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
 
-        if (b.expeditie != 'none') {
-            let expeditieId;
-
-            try {
-                expeditieId = mongoose.Types.ObjectId(b.expeditie);
-            } catch {
-                throw new Error(`'${b.expeditie}' is geen geldige Id.`);
-            }
-
-            const expeditie = await Expedities.getById(expeditieId);
-
-            if (!expeditie) throw new Error(`Expeditie '${b.expeditie}' bestaat niet.`);
-
-            ep.expeditieId = expeditie._id;
-        } else {
+        if (b.expeditie != 'none')
+            ep.expeditieId = (await testAndGetFromId(b.expeditie, Expedities.getById, 'Expeditie'))._id;
+        else
             ep.expeditieId = undefined;
-        }
 
-        return ep.save();
-    }).then(ep =>
-        req.flash('info', `Punt "${ep._id.toHexString()}" is succesvol toegevoegd.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/punten')
-    )
-);
+        return `Punt "${(await ep.save())._id.toHexString()}" is succesvol toegevoegd.`;
+    }));
 
 router.post('/punten/edit', (req, res) =>
-    Promise.resolve(req.body).then(async (b) => {
-        if (b.action != 'delete' && b.action != 'change')
-            throw new Error('Er was geen geldige actie gespecificeerd.');
+    tryCatchAndRedirect(req, res, '/admin/punten', async () => {
+        const b = req.body;
 
-        let id;
+        testValidAction(b.action, 'delete', 'change');
 
-        try {
-            id = mongoose.Types.ObjectId(b.id);
-        } catch {
-            throw new Error(`'${b.id}' is geen geldige Id.`);
-        }
-
-        const ep = await EarnedPoints.getById(id);
-
-        if (!ep) throw new Error(`Punt '${b.id}' bestaat niet.`);
+        const ep = await testAndGetFromId(b.id, EarnedPoints.getById, 'Punt');
 
         if (b.action == 'delete')
-            return ep.remove();
+            return `Punt "${(await ep.remove())._id.toHexString()}" is succesvol verwijderd.`;
 
-        if (!b.person || !b.expeditie || !b.amount || !b.time || !b.zone)
-            throw new Error('Niet alle verplichte velden waren ingevuld.');
+        testRequiredFields(b.person, b.expeditie, b.amount, b.time, b.zone);
 
-        if (isNaN(parseInt(b.amount)))
-            throw new Error('Hoeveelheid is niet een nummer.');
+        testAndGetNumber(b.amount, 'Hoeveelheid');
 
         ep.amount = parseInt(b.amount);
 
-        let personId;
+        ep.personId = (await testAndGetFromId(b.person, People.getById, 'Persoon'))._id;
 
-        try {
-            personId = mongoose.Types.ObjectId(b.person);
-        } catch {
-            throw new Error(`'${b.person}' is geen geldige Id.`);
-        }
-
-        const person = await People.getById(personId);
-
-        if (!person) throw new Error(`Persoon '${b.person}' bestaat niet.`);
-
-        ep.personId = person._id;
-
-        if (b.expeditie != 'none') {
-            let expeditieId;
-
-            try {
-                expeditieId = mongoose.Types.ObjectId(b.expeditie);
-            } catch {
-                throw new Error(`'${b.expeditie}' is geen geldige Id.`);
-            }
-
-            const expeditie = await Expedities.getById(expeditieId);
-
-            if (!expeditie) throw new Error(`Expeditie '${b.expeditie}' bestaat niet.`);
-
-            ep.expeditieId = expeditie._id;
-        } else {
+        if (b.expeditie != 'none')
+            ep.expeditieId = (await testAndGetFromId(b.expeditie, Expedities.getById, 'Expeditie'))._id;
+        else
             ep.expeditieId = undefined;
-        }
 
-        const dt = DateTime.fromISO(b.time, { zone: b.zone, locale: 'nl-NL' });
+        ep.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
 
-        if (dt.invalidExplanation)
-            throw new Error('Tijd/zone is incorrect: ' + dt.invalidExplanation);
-
-        ep.dateTime.object = dt;
-
-        return ep.save();
-    }).then(ep =>
-        req.flash('info', `Punt "${ep._id.toHexString()}" is succesvol ${req.body.action == 'delete' ? 'verwijderd' : 'gewijzigd'}.`)
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/punten')
-    )
-);
+        return `Punt "${(await ep.save())._id.toHexString()}" is succesvol gewijzigd.`;
+    }));
 
 router.get('/gpx', async (req, res) =>
     res.render('admin/gpx', {
@@ -488,49 +327,28 @@ router.get('/gpx', async (req, res) =>
     })
 );
 
-router.post('/gpx/upload', multer({ storage: multer.memoryStorage() }).single('file'), (req, res) => {
-    Promise.resolve(req.body).then(async (b) => {
-        if (!b.person || !b.expeditie || !req.file || ! b.zone)
-            throw new Error('Niet alle verplichte velden waren ingevuld.');
+router.post('/gpx/upload', multer({ storage: multer.memoryStorage() }).single('file'), (req, res) =>
+    tryCatchAndRedirect(req, res, '/admin/gpx', async () => {
+        const b = req.body;
 
-        let personId, expeditieId;
+        testRequiredFields(b.person, b.expeditie, req.file, b.zone);
 
-        try {
-            personId = mongoose.Types.ObjectId(b.person);
-        } catch {
-            throw new Error(`'${b.person}' is geen geldige Id.`);
-        }
+        const person = await testAndGetFromId(b.person, People.getById, 'Persoon');
+        const expeditie = await testAndGetFromId(b.expeditie, Expedities.getById, 'Expeditie');
 
-        try {
-            expeditieId = mongoose.Types.ObjectId(b.expeditie);
-        } catch {
-            throw new Error(`'${b.expeditie}' is geen geldige Id.`);
-        }
+        if (expeditie.finished) throw new Error(`Expeditie '${expeditie.name}' is beëindigd.`);
 
-        const person = await People.getById(personId);
-        const expeditie = await Expedities.getById(expeditieId);
-
-        if (!person) throw new Error(`Persoon '${b.person}' bestaat niet.`);
-        if (!expeditie) throw new Error(`Expeditie '${b.expeditie}' bestaat niet.`);
-        if (expeditie.finished) throw new Error(`Expeditie '${expeditie.name}' is beëindigd.`)
-
-        if (!Info.isValidIANAZone(b.zone))
-            throw new Error(`Tijdzone ${b.zone} is niet geldig.`);
+        testValidTimeZone(b.zone);
 
         let locs: GeoLocation[];
 
         try {
             locs = await GpxHelper.generateLocations(req.file.buffer.toString(), expeditie, person, b.zone);
         } catch (e) {
-            throw new Error(`Bestand kan niet worden gelezen: ${e.message}`)
+            throw new Error(`Bestand kan niet worden gelezen: ${e.message}`);
         }
 
-        return GeoLocations.createMany(locs);
-    }).then(() =>
-        req.flash('info', 'Locaties zijn succesvol geüpload.')
-    ).catch(e =>
-        req.flash('error', e.message)
-    ).then(() =>
-        res.redirect('/admin/gpx')
-    );
-});
+        await GeoLocations.createMany(locs);
+
+        return 'Locaties zijn succesvol geüpload';
+    }));
