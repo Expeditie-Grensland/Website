@@ -59,9 +59,9 @@ export namespace Setup {
     }
 
     export function addAuthMiddleware(app: express.Express) {
-        passport.use(new ldapauth({ server: config.ldap }, (user: { ipaUniqueID?: string } | null, done: ldapauth.VerifyDoneCallback) =>
-            (user && user.ipaUniqueID) ?
-                People.getByLdapId(user.ipaUniqueID).then(p => p ? done(null, p) : done(null, false))
+        passport.use(new ldapauth({ server: config.ldap }, (user: any, done: ldapauth.VerifyDoneCallback) =>
+            (user && user[config.ldap.idField]) ?
+                People.getByLdapId(user[config.ldap.idField]).then(p => p ? done(null, p) : done(null, false))
                 : done(new Error('LDAP user is unexpectedly null'))));
 
         passport.serializeUser((user: PersonDocument, done) =>

@@ -1,23 +1,25 @@
 dist: trusty
-sudo: false
+os: linux
 
 language: node_js
 node_js: 12
 
-before_script: npm install -g gulp-cli
+addons:
+  ssh_known_hosts: expeditiegrensland.nl
 
-script: gulp build:prod
-
-before_deploy:
+before_script:
+- npm install -g gulp-cli
 - openssl aes-256-cbc -K $encrypted_27d6bcd2b8d4_key -iv $encrypted_27d6bcd2b8d4_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
 - eval "$(ssh-agent -s)"
 - chmod 600 /tmp/deploy_rsa
 - ssh-add /tmp/deploy_rsa
-- echo 'expeditiegrensland.nl,195.201.128.114 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDagqruDZ4T2EIrrxfkwBkLqa2BQIUUySBItz36JOEn5hasJ9C/muZYs0z/0r3LMWwtCa3i0NI4J5AbPY4FtTyLhCPkBVdqkc/UvFsch3mjaQaGNN6qGrwAbe+TrF/xExUQt0d1cOihCg/ecWw/dihCT8H94w/fpt07KO6CzPZc4v6j7kPG81zZt4nU2o7lJiPG59Sd1s2Bvy+WCeeZYFT6+n4d9NQiS2X8tsaQlTSbvYmS+aMQqi68u93DeX/LOJvWlzLPsgSipvhFqHbOw8a510yAzUyeSCPvkj8lI1/vzHqJBvnHfEgf0b3DaXfmiwhHKbiWVYdTpLAQgVF1SW1V' >> $HOME/.ssh/known_hosts
+
+script: gulp build:prod
 
 deploy:
   provider: script
-  script: rsync -r --delete-after $TRAVIS_BUILD_DIR/dist/. nodejs@expeditiegrensland.nl:/var/www/expeditiegrensland.nl/dist-new/ && ssh nodejs@expeditiegrensland.nl sh /var/www/expeditiegrensland.nl/update.sh
+  script: rsync -r --delete-after $TRAVIS_BUILD_DIR/dist/. nodejs@expeditiegrensland.nl:/var/www/expeditiegrensland.nl/"$TRAVIS_BRANCH"/dist-new/ && ssh nodejs@expeditiegrensland.nl sh /var/www/expeditiegrensland.nl/deploy.sh "$TRAVIS_BRANCH"
   skip_cleanup: true
   on:
-    branch: release
+    all_branches: true
+    condition: $(ssh nodejs@expeditiegrensland.nl sh /var/www/expeditiegrensland.nl/deploy_if.sh "$TRAVIS_BRANCH") == 0
