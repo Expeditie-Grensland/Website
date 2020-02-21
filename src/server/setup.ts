@@ -8,6 +8,8 @@ import * as mongoose from 'mongoose';
 import * as path from 'path';
 import * as passport from 'passport';
 import * as ldapauth from 'passport-ldapauth';
+import * as fs from 'fs';
+import * as net from 'net';
 
 import { config } from './helpers/configHelper';
 import { People } from './components/people';
@@ -17,8 +19,28 @@ import { Documents } from './components/documents';
 import flash = require('connect-flash');
 
 export namespace Setup {
-    export function startServer(server: http.Server, port: number) {
+    export function startServer(server: http.Server, port: number | string) {
         server.listen(port);
+
+        if (isNaN(parseInt(port as any))) {
+            // Server is listening on a socket
+
+            server.on('listening', () => fs.chmodSync(port as string, 0o777));
+
+            server.on('error', (e: any) => {
+                if (e.code !== 'EADDRINUSE') throw e;
+
+                net.connect({ path: port as string }, () => {
+                    throw e;
+                }).on('error', function (e: any) {
+                    if (e.code !== 'ECONNREFUSED') throw e;
+                    
+                    // Socket is not really in use: delete and re-listen
+                    fs.unlinkSync(port as string);
+                    server.listen(port);
+                });
+            });
+        }
     }
 
     export function setupExpress(app: express.Express, root: string, dev: boolean) {
