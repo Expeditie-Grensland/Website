@@ -91,7 +91,7 @@ const generateSimple = (word: string): string =>
 renderer.link = (href, title, text): string => {
     if (href == 'w') {
         href = `#${generateSimple(text)}`;
-    } else if (href.slice(0, 2) == 'w:') {
+    } else if (href != null && href.slice(0, 2) == 'w:') {
         href = `#${generateSimple(href.slice(2))}`;
     }
     return (new marked.Renderer()).link(href, title, text);

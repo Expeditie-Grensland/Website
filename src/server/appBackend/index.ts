@@ -33,11 +33,11 @@ router.post('/authenticate', (req, res, next) => {
 
 router.use((req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == 'Bearer')
-        AuthHelper.parseJwt(req.headers.authorization.split(' ')[1], (err, decoded: string | { id?: string }) => {
+        AuthHelper.parseJwt(req.headers.authorization.split(' ')[1], (err, decoded: string | { id?: string } | undefined) => {
             if (err)
                 next(err);
             else {
-                if (typeof decoded === 'string' || decoded.id == undefined)
+                if (typeof decoded === 'string' || decoded == undefined || decoded.id == undefined)
                     return next(new Error('Unexpected jwt format'));
                 People.getById(mongoose.Types.ObjectId(decoded.id))
                     .then(person => {

@@ -22,6 +22,12 @@ export const dateTimeSchema = new mongoose.Schema({
     }
 }, { _id: false });
 
+
+export const dateTimeSchemaDefault = {
+    stamp: 0,
+    zone: 'Europe/Asmterdam'
+};
+
 dateTimeSchema.virtual('object')
     .get(function (this: DateTimeInternal) {
         return DateTime.fromSeconds(this.stamp, { zone: this.zone, locale: 'nl-NL' });

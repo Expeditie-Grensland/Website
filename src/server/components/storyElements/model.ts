@@ -4,7 +4,7 @@ import { ExpeditieId } from '../expedities/id';
 import { PersonId } from '../people/id';
 import { StoryElementId } from './id';
 import { DocumentOrId } from '../documents';
-import { DateTimeInternal, dateTimeSchema } from '../dateTime/model';
+import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model';
 
 interface BaseStoryElement {
     expeditieId: mongoose.Types.ObjectId,
@@ -56,7 +56,7 @@ const storyElementSchema = new mongoose.Schema({
     },
     dateTime: {
         type: dateTimeSchema,
-        default: dateTimeSchema
+        default: dateTimeSchemaDefault
     },
     index: {
         type: Number,

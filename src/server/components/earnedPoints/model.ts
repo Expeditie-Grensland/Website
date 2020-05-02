@@ -6,12 +6,12 @@ import { ExpeditieId } from '../expedities/id';
 import { ExpeditieOrId } from '../expedities/model';
 import { EarnedPointId } from './id';
 import { PersonOrId } from '../people/model';
-import { DateTimeInternal, dateTimeSchema } from '../dateTime/model';
+import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model';
 
 const schema = new mongoose.Schema({
     dateTime: {
         type: dateTimeSchema,
-        default: dateTimeSchema
+        default: dateTimeSchemaDefault
     },
     amount: {
         type: Number,

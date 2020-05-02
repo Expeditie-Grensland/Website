@@ -4,7 +4,7 @@ import { GeoLocationId } from './id';
 import { DocumentOrId } from '../documents';
 import { ExpeditieId } from '../expedities/id';
 import { PersonId } from '../people/id';
-import { DateTimeInternal, dateTimeSchema } from '../dateTime/model';
+import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model';
 
 export interface GeoLocation {
     expeditieId: mongoose.Types.ObjectId;
@@ -35,7 +35,7 @@ const geoLocationSchema = new mongoose.Schema({
     },
     dateTime: {
         type: dateTimeSchema,
-        default: dateTimeSchema
+        default: dateTimeSchemaDefault
     },
     latitude: {
         type: Number,

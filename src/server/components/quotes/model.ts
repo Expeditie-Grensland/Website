@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
 import { QuoteId } from './id';
 import { DocumentOrId } from '../documents';
-import { DateTimeInternal, dateTimeSchema } from '../dateTime/model';
+import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model';
 
 /**
  * Expeditie quotes.
@@ -15,7 +15,7 @@ const schema = new mongoose.Schema(
         quotee: String,
         dateTime: {
             type: dateTimeSchema,
-            default: dateTimeSchema
+            default: dateTimeSchemaDefault
         },
         context: String,
         mediaFile: mediaFileEmbeddedSchema
