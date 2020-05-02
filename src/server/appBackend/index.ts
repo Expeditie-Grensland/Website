@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as passport from 'passport';
-import * as R from 'ramda';
 import * as mongoose from 'mongoose';
 
 import { AuthHelper } from '../helpers/authHelper';
@@ -70,12 +69,12 @@ router.get('/expedities', (req, res) =>
         })
         .sort({ sequenceNumber: -1 })
         .exec()
-        .then(R.map(x => {
+        .then(x => x.map(ex => {
             return {
-                id: Documents.getStringId(x),
-                name: x.name,
-                subtitle: x.subtitle,
-                image: MediaFiles.getUrl(x.backgroundFile)
+                id: Documents.getStringId(ex),
+                name: ex.name,
+                subtitle: ex.subtitle,
+                image: MediaFiles.getUrl(ex.backgroundFile)
             };
         }))
         .then(x => res.status(200).json(x)));

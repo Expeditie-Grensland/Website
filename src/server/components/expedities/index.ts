@@ -1,12 +1,10 @@
 import * as mongoose from 'mongoose';
-import * as R from 'ramda';
 
 import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrId } from './model';
 import { PersonDocument, PersonOrId } from '../people/model';
 import { Documents } from '../documents';
 import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
-import { GeoNode, GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
-import { GeoNodes } from '../geoNodes';
+import { GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -97,50 +95,4 @@ export namespace Expedities {
 
     export const getCurrentNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie), timeTill: Number.POSITIVE_INFINITY }).sort({ _id: 1 }).exec();
-
-    export const setGroups = async (expeditie: ExpeditieOrId, groups: PersonOrId[][], time: number): Promise<void> => {
-        const oldNodes = await getCurrentNodes(expeditie);
-        const oldGroups = oldNodes.map(n => Documents.getObjectIds(<any>n.personIds).sort());
-
-        if (Math.max(...oldNodes.map(n => n.timeFrom!)) >= time)
-            throw new Error('The time should not be set lower than the start time of some current nodes.');
-
-        const newGroups = groups.map(g => Documents.getObjectIds(g).sort());
-
-        if (R.difference(R.flatten(oldGroups), R.flatten(newGroups)).length > 0)
-            throw new Error('All people in the expeditie should be represented in the new groups.');
-
-        const newPeopleNodes: GeoNode[] = [];
-        const newPeople = R.difference(R.flatten(newGroups), R.flatten(oldGroups));
-
-        if (newPeople.length > 0) await addPeople(expeditie, newPeople);
-
-        for (let newPerson of newPeople) newPeopleNodes.push({
-            expeditieId: Documents.getObjectId(expeditie),
-            personIds: [newPerson],
-            timeTill: time
-        });
-
-        const newNodes: GeoNode[] = [];
-        const oldGroupsNotToUpdate: number[] = [];
-
-        for (let newGroup of newGroups) {
-            if (R.contains(newGroup, oldGroups))
-                oldGroupsNotToUpdate.push(R.findIndex(R.equals(newGroup), oldGroups));
-            else if (R.contains(newGroup, newPeople.map(x => [x])))
-                newPeopleNodes[R.findIndex(R.equals(newGroup), newPeople.map(x => [x]))].timeTill = Number.POSITIVE_INFINITY;
-            else
-                newNodes.push({
-                    expeditieId: Documents.getObjectId(expeditie),
-                    personIds: newGroup,
-                    timeFrom: time
-                });
-        }
-
-        for (let i = 0; i < oldGroups.length; i++)
-            if (oldGroupsNotToUpdate.indexOf(i) < 0)
-                await geoNodeModel.findByIdAndUpdate(oldNodes[i]._id, { $set: { timeTill: time } });
-
-        await GeoNodes.createMany(R.concat(newNodes, newPeopleNodes));
-    };
 }

@@ -7,8 +7,6 @@ import { MemberLinks } from '../components/memberLinks';
 import { Words } from '../components/words';
 import { MediaFiles } from '../components/mediaFiles';
 import { Quotes } from '../components/quotes';
-import * as R from 'ramda';
-import { EarnedPointDocument } from '../components/earnedPoints/model';
 import { PersonDocument } from '../components/people/model';
 import { ExpeditieDocument } from '../components/expedities/model';
 import { EarnedPoints } from '../components/earnedPoints';
@@ -120,31 +118,18 @@ router.get('/citaten', async (req, res) => {
 });
 
 router.get('/punten', async (req, res) => {
-    const earnedPoints = R.pipe(
-        R.map((x: EarnedPointDocument) => {
-            return {
-                date: x.dateTime.object.toLocaleString({ month: '2-digit', day: '2-digit' }),
-                amount: x.amount,
-                name: `${(<PersonDocument>x.personId).firstName} ${(<PersonDocument>x.personId).lastName}` ,
-                team: (<PersonDocument>x.personId).team,
-                expeditie: x.expeditieId ? `Expeditie ${(<ExpeditieDocument>x.expeditieId).name}` : ''
-            };
-        }),
-        // @ts-ignore
-        R.groupWith(R.eqProps('expeditie'))
-    )(await EarnedPoints.getAllPopulated());
+    const earnedPoints = (await EarnedPoints.getAllPopulated()).map(ep => {
+        return {
+            date: ep.dateTime.object.toLocaleString({ month: '2-digit', day: '2-digit' }),
+            amount: ep.amount,
+            name: `${(<PersonDocument>ep.personId).firstName} ${(<PersonDocument>ep.personId).lastName}`,
+            team: (<PersonDocument>ep.personId).team as string,
+            expeditie: ep.expeditieId ? `Expeditie ${(<ExpeditieDocument>ep.expeditieId).name}` : ''
+        };
+    });
 
-    const score = R.pipe(
-        // @ts-ignore
-        R.flatten,
-        // @ts-ignore
-        R.groupBy(R.prop('team')),
-        R.map(R.pipe(
-            // @ts-ignore
-            R.map(R.prop('amount')),
-            R.sum
-        ))
-    )(earnedPoints);
+    const score = earnedPoints.reduce((acc, cur) =>
+        Object.assign(acc, {[cur.team]: (acc[cur.team] || 0) + cur.amount}), {} as {[key: string]: number});
 
     res.render('members/points', { earnedPoints, score });
 });

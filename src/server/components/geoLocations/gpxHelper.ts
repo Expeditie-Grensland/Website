@@ -2,7 +2,6 @@
 // TODO: Consider switching library (gpx-parse is old and not much-used and doesn't have typings).
 //       Or removing this functionality altogether.
 import * as gpxparse from 'gpx-parse';
-import * as R from 'ramda';
 
 import { PersonOrId } from '../people/model';
 import { GeoLocation } from './model';
@@ -17,18 +16,17 @@ export namespace GpxHelper {
 
                 const [expeditieId, personId] = Documents.getObjectIds([expeditie, person]);
 
-                // @ts-ignore
-                return R.pipe(R.prop('tracks'), R.pluck('segments'), R.flatten, R.map((waypoint: any) => <GeoLocation>{
+                return resolve(data.tracks.map((track: any) => track.segments).flat(2).map((wpt: any) => <GeoLocation>{
                     expeditieId,
                     personId,
                     dateTime: {
-                        stamp: Date.parse(waypoint.time) / 1000,
+                        stamp: Date.parse(wpt.time) / 1000,
                         zone: timezone
                     },
-                    latitude: waypoint.lat,
-                    longitude: waypoint.lon,
-                    altitude: waypoint.elevation
-                }), resolve)(data);
+                    latitude: wpt.lat,
+                    longitude: wpt.lon,
+                    altitude: wpt.elevation
+                }));
             })
         );
     };
