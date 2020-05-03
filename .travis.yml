@@ -18,7 +18,7 @@ script: gulp build:prod
 
 deploy:
   provider: script
-  script: rsync -r --delete-after $TRAVIS_BUILD_DIR/dist/. nodejs@expeditiegrensland.nl:/var/www/expeditiegrensland.nl/"$TRAVIS_BRANCH"/dist-new/ && ssh nodejs@expeditiegrensland.nl sh /var/www/expeditiegrensland.nl/deploy.sh "$TRAVIS_BRANCH"
+  script: rsync -rp --delete-after $TRAVIS_BUILD_DIR/dist/. nodejs@expeditiegrensland.nl:/var/www/expeditiegrensland.nl/"$TRAVIS_BRANCH"/dist-new/ && ssh nodejs@expeditiegrensland.nl sh /var/www/expeditiegrensland.nl/deploy.sh "$TRAVIS_BRANCH"
   skip_cleanup: true
   on:
     all_branches: true
