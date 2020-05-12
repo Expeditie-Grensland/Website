@@ -12,7 +12,7 @@ import { PersonDocument } from '../components/people/model';
 export const router = express.Router({ mergeParams: true });
 
 router.use(async (req, res, next) => {
-    const expeditie = await Expedities.getByNameShortWithPeople(req.params.expeditie);
+    const expeditie = await Expedities.getByNameShortPopulated(req.params.expeditie);
 
     if (expeditie != null) {
         res.locals.expeditie = expeditie;

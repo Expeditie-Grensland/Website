@@ -16,12 +16,20 @@ block content
 
 
     .row
-        .col-12.col-md-4.order-md-2.members.text-md-right
+        .col-12.col-md-4.order-md-2.sidebar.text-md-right
             if expeditie.showMap
-                a.btn.btn-map.btn-outline-light(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
+                a.btn.btn-map.btn-outline-light.sidebar-item(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
 
-            each person in expeditie.personIds.sort((e1, e2) => e1.lastName > e2.lastName || e1.lastName === e2.lastName && e1.firstName > e2.firstName ? 1 : -1)
-                span= `${person.firstName} ${person.lastName}`
+            if expeditie.movieFile && (!expeditie.movieFile.restricted || loggedIn) && expeditie.movieEditorIds && expeditie.movieEditorIds.length > 0
+                div.sidebar-item
+                    span.sidebar-title= expeditie.movieEditorIds.length === 1 ? "Regisseur" : "Regisseurs"
+                    each person in expeditie.movieEditorIds.sort((e1, e2) => e1.lastName > e2.lastName || e1.lastName === e2.lastName && e1.firstName > e2.firstName ? 1 : -1)
+                        span= `${person.firstName} ${person.lastName}`
+
+            div.sidebar-item
+                span.sidebar-title Deelnemers
+                each person in expeditie.personIds.sort((e1, e2) => e1.lastName > e2.lastName || e1.lastName === e2.lastName && e1.firstName > e2.firstName ? 1 : -1)
+                    span= `${person.firstName} ${person.lastName}`
 
         .col-12.col-md-8.order-md-1
             if expeditie.movieFile && (!expeditie.movieFile.restricted || loggedIn)

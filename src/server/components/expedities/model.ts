@@ -25,7 +25,11 @@ const schema = new mongoose.Schema({
     countries: [String],
     backgroundFile: mediaFileEmbeddedSchema,
     movieCoverFile: mediaFileEmbeddedSchema,
-    movieFile: mediaFileEmbeddedSchema
+    movieFile: mediaFileEmbeddedSchema,
+    movieEditorIds: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: PersonId
+    }]
 });
 
 schema.index({ nameShort: 1 });
@@ -43,6 +47,7 @@ export interface Expeditie {
     backgroundFile: MediaFileEmbedded;
     movieCoverFile: MediaFileEmbedded;
     movieFile: MediaFileEmbedded;
+    movieEditorIds: PersonOrId[];
 }
 
 export interface ExpeditieDocument extends Expeditie, mongoose.Document {
