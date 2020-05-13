@@ -34,7 +34,7 @@ export namespace Setup {
                     throw e;
                 }).on('error', function (e: any) {
                     if (e.code !== 'ECONNREFUSED') throw e;
-                    
+
                     // Socket is not really in use: delete and re-listen
                     fs.unlinkSync(port as string);
                     server.listen(port);
@@ -59,6 +59,8 @@ export namespace Setup {
             app.use('/media', (req, res) => res.redirect('https://expeditiegrensland.nl/media/' + req.path));
             app.use('/static', express.static(staticDir, { fallthrough: false }));
             app.get('/favicon.ico', (req, res) => res.sendFile(path.join(staticDir, '/favicons/favicon.ico')));
+            app.get('/browserconfig.xml', (req, res) => res.sendFile(path.join(staticDir, '/favicons/browserconfig.xml')));
+            app.get('/manifest.webmanifest', (req, res) => res.sendFile(path.join(staticDir, '/favicons/manifest.webmanifest')));
             app.get('/worker.js', (req, res) => res.sendFile(path.join(staticDir, '/scripts/worker.js')));
         }
     }

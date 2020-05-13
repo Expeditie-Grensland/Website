@@ -11,7 +11,6 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
             'dist/config/**',
             'dist/locales/**',
             'dist/static/**/*',
-            '!dist/static/favicons/**',
             '!dist/static/scripts/**',
             '!dist/static/styles/**',
             'dist/views/**',
@@ -23,7 +22,7 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
 
     // copy:watch
     if (opts.watch)
-        return () => gulp.watch(['src/config/**/*', 'src/locales/**/*', 'src/static/loading.svg', 'src/views/**/*'], gulp.series('copy:dev'));
+        return () => gulp.watch(['src/config/**/*', 'src/locales/**/*', 'src/static/**/*', 'src/views/**/*'], gulp.series('copy:dev'));
 
     // copy:dev and copy:prod
     return () => {
