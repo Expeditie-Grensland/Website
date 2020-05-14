@@ -25,7 +25,7 @@ export const dateTimeSchema = new mongoose.Schema({
 
 export const dateTimeSchemaDefault = {
     stamp: 0,
-    zone: 'Europe/Asmterdam'
+    zone: 'Europe/Amsterdam'
 };
 
 dateTimeSchema.virtual('object')
