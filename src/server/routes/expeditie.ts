@@ -119,6 +119,9 @@ router.get('/kaart/story', async (req, res) => {
     res.setHeader(H_SC, (await storyCount).toString(16));
     res.setHeader(H_LS, (await lastStory).toHexString());
 
+    console.log(JSON.stringify(await nodes, null, 4));
+    console.log(JSON.stringify(await stories, null, 4));
+
     const result = {
         nodes: nodes.map((node, index) => {
             return {
@@ -133,9 +136,16 @@ router.get('/kaart/story', async (req, res) => {
             return {
                 id: story._id.toHexString(),
                 type: story.type,
-                nodeNum: nodes.findIndex((node) =>
-                    story.time >= node.timeFrom && story.time < node.timeTill &&
-                    node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))), // FIXME: see geonodes model
+                nodeNum: nodes.findIndex((node) => {
+                    console.log(story);
+                    console.log(story.personId);
+                    console.log(node.timeFrom);
+                    console.log(node.timeTill);
+                    console.log(node.personIds);
+
+                    return story.time >= node.timeFrom && story.time < node.timeTill &&
+                    node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))
+                }), // FIXME: see geonodes model
                 dateTime: {
                     stamp: story.dateTime.stamp,
                     zone: story.dateTime.zone
