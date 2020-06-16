@@ -83,6 +83,7 @@ export class Graph {
         for (let layer of layers) {
             // draw straight lines
             for (let vertex of layer) {
+                const node = vertex.getStoryNode()
                 const storyElements = vertex.getStoryElements();
 
                 if (storyElements.length <= 1)
@@ -96,7 +97,7 @@ export class Graph {
                 const y1 = Graph.calculateY(firstStoryElement);
                 const y2 = Graph.calculateY(lastStoryElement);
 
-                svg.appendChild(this.generateLine(x, y1, x, y2, '#f00', 'none')); // FIXME: colour
+                svg.appendChild(this.generateLine(x, y1, x, y2, node.color, 'none'));
             }
 
             // draw corners
@@ -126,7 +127,7 @@ export class Graph {
                     const x2 = Graph.calculateX(childIdx, childLayer.length, svgWidth, horizontalSpace);
                     const y2 = Graph.calculateY(childHeader);
 
-                    const color = children.length > 1 ? child.getStoryNode().color : parent.getStoryNode().color;// FIXME: colour
+                    const color = children.length > 1 ? child.getStoryNode().color : parent.getStoryNode().color;
 
                     svg.appendChild(this.generateLine(x1, y1, x2, y2, color, children.length > 1 ? 'begin' : 'end'));
                 }
@@ -144,7 +145,7 @@ export class Graph {
                     const x = Graph.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace);
                     const y = Graph.calculateY(header);
 
-                    svg.appendChild(this.generateCircle(x, y, node.color)); // FIXME: colour
+                    svg.appendChild(this.generateCircle(x, y, node.color));
                 }
             }
         }

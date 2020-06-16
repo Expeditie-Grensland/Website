@@ -92,7 +92,7 @@ export namespace RetrievalHelper {
 
         for (let nodeNum = 0; nodeNum < nodeCount; nodeNum++) {
             const color = '#' + view.getInt32(offset).toString(16).padStart(6, '0');
-            
+
             offset += 4;
 
             const locCount = view.getInt32(offset);
