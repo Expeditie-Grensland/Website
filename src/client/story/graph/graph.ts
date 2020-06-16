@@ -1,4 +1,4 @@
-import { Vertex } from './vertex';
+import {Vertex} from './vertex';
 import $ from 'jquery';
 
 export class Graph {
@@ -126,8 +126,7 @@ export class Graph {
                     const x2 = Graph.calculateX(childIdx, childLayer.length, svgWidth, horizontalSpace);
                     const y2 = Graph.calculateY(childHeader);
 
-                    // const color = children.length > 1 ? child.getStoryNode().color : parent.getStoryNode().color; FIXME: colour
-                    const color = '#f00';
+                    const color = children.length > 1 ? child.getStoryNode().color : parent.getStoryNode().color;// FIXME: colour
 
                     svg.appendChild(this.generateLine(x1, y1, x2, y2, color, children.length > 1 ? 'begin' : 'end'));
                 }
@@ -145,7 +144,7 @@ export class Graph {
                     const x = Graph.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace);
                     const y = Graph.calculateY(header);
 
-                    svg.appendChild(this.generateCircle(x, y, '#f00')); // FIXME: colour
+                    svg.appendChild(this.generateCircle(x, y, node.color)); // FIXME: colour
                 }
             }
         }

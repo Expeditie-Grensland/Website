@@ -53,20 +53,7 @@ const setRoute = (res: GeoJsonResult) => {
         paint: {
             'line-opacity': 1,
             'line-width': 3,
-            'line-color': [
-                'match',
-                ['get', 'nodeNum'],
-                0, '#2962ff',
-                1, '#d50000',
-                2, '#00c853',
-                3, '#ff6d00',
-                4, '#c51162',
-                5, '#aa00ff',
-                6, '#aeea00',
-                7, '#00bfa5',
-                8, '#00b8d4',
-                '#000'
-            ]
+            'line-color': ['get', 'color']
         }
     });
 };

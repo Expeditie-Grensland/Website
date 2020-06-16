@@ -12,7 +12,8 @@ export interface Node {
     nodeNum: number,
     timeFrom: number,
     timeTill: number,
-    personNames: string[]
+    personNames: string[],
+    color: string
 }
 
 interface BaseStoryElement {
@@ -90,13 +91,17 @@ export namespace RetrievalHelper {
         let offset = 4;
 
         for (let nodeNum = 0; nodeNum < nodeCount; nodeNum++) {
+            const color = '#' + view.getInt32(offset).toString(16).padStart(6, '0');
+            
+            offset += 4;
+
             const locCount = view.getInt32(offset);
 
             offset += 4;
 
             const feat: geoJson.Feature<geoJson.LineString> = {
                 type: 'Feature',
-                properties: { nodeNum },
+                properties: { color },
                 geometry: { type: 'LineString', coordinates: [] }
             };
 

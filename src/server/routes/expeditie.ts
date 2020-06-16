@@ -37,6 +37,20 @@ router.get('/kaart', async (req, res, next) => {
     res.render('expeditieMap');
 });
 
+const NODE_COLORS = [
+    0x2962ff,
+    0xd50000,
+    0x00c853,
+    0xff6d00,
+    0xc51162,
+    0xaa00ff,
+    0xaeea00,
+    0x00bfa5,
+    0x00b8d4,
+    0x000
+]
+
+const nodeNumToColor = (nodeNum: number) => nodeNum in NODE_COLORS ? NODE_COLORS[nodeNum] : NODE_COLORS[NODE_COLORS.length - 1]
 
 const H_LC = 'X-Location-Count';
 const H_LL = 'X-Last-Location';
@@ -69,20 +83,22 @@ router.get('/kaart/binary', async (req, res) => {
 
     res.write(buf, 'binary');
 
-
-    for (let node of await nodes) {
+    for (let nodeNum = 0; nodeNum != (await nodes).length; ++nodeNum) {
+        const node = (await nodes)[nodeNum]
         const nodeLocs = await geoLocationModel.find(
             { expeditieId: node.expeditieId, personId: { $in: node.personIds }, 'dateTime.stamp': { $gte: node.timeFrom, $lt: node.timeTill } },
             { _id: false, longitude: true, latitude: true }
         ).sort({ 'dateTime.stamp': 1 }).exec();
 
-        buf = Buffer.allocUnsafe(4 + 16 * nodeLocs.length);
+        buf = Buffer.allocUnsafe(8 + 16 * nodeLocs.length);
 
-        buf.writeUInt32BE(nodeLocs.length, 0);
+        buf.writeUInt32BE(nodeNumToColor(nodeNum), 0)
+
+        buf.writeUInt32BE(nodeLocs.length, 4);
 
         nodeLocs.forEach((loc, i) => {
-            buf.writeDoubleBE(loc.longitude, i * 16 + 4);
-            buf.writeDoubleBE(loc.latitude, i * 16 + 12);
+            buf.writeDoubleBE(loc.longitude, i * 16 + 8);
+            buf.writeDoubleBE(loc.latitude, i * 16 + 16);
         });
 
         res.write(buf, 'binary');
@@ -119,9 +135,6 @@ router.get('/kaart/story', async (req, res) => {
     res.setHeader(H_SC, (await storyCount).toString(16));
     res.setHeader(H_LS, (await lastStory).toHexString());
 
-    console.log(JSON.stringify(await nodes, null, 4));
-    console.log(JSON.stringify(await stories, null, 4));
-
     const result = {
         nodes: nodes.map((node, index) => {
             return {
@@ -129,23 +142,17 @@ router.get('/kaart/story', async (req, res) => {
                 nodeNum: index,
                 timeFrom: node.timeFrom,
                 timeTill: node.timeTill,
-                personNames: node.personIds.map((p: PersonDocument) => `${p.firstName} ${p.lastName}`) // FIXME: see geonodes model
+                personNames: node.personIds.map((p: PersonDocument) => `${p.firstName} ${p.lastName}`), // FIXME: see geonodes model
+                color: '#' + nodeNumToColor(index).toString(16).padStart(6, '0')
             };
         }),
         story: (await stories).map((story) => {
             return {
                 id: story._id.toHexString(),
                 type: story.type,
-                nodeNum: nodes.findIndex((node) => {
-                    console.log(story);
-                    console.log(story.personId);
-                    console.log(node.timeFrom);
-                    console.log(node.timeTill);
-                    console.log(node.personIds);
-
-                    return story.time >= node.timeFrom && story.time < node.timeTill &&
-                    node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))
-                }), // FIXME: see geonodes model
+                nodeNum: nodes.findIndex((node) =>
+                    story.dateTime.stamp >= node.timeFrom && story.dateTime.stamp < node.timeTill &&
+                    node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))), // FIXME: see geonodes model
                 dateTime: {
                     stamp: story.dateTime.stamp,
                     zone: story.dateTime.zone

@@ -10,7 +10,6 @@ interface BaseStoryElement {
     expeditieId: mongoose.Types.ObjectId,
     personId: mongoose.Types.ObjectId,
     dateTime: DateTimeInternal,
-    time: number,
     index?: number
 }
 
