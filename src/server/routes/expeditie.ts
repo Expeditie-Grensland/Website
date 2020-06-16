@@ -143,25 +143,35 @@ router.get('/kaart/story', async (req, res) => {
                 timeFrom: node.timeFrom,
                 timeTill: node.timeTill,
                 personNames: node.personIds.map((p: PersonDocument) => `${p.firstName} ${p.lastName}`), // FIXME: see geonodes model
-                color: '#' + nodeNumToColor(index).toString(16).padStart(6, '0')
+                color: '#' + nodeNumToColor(index).toString(16).padStart(6, '0'),
             };
         }),
-        story: (await stories).map((story) => {
+        story: await Promise.all((await stories).map(async (story) => {
+            const nodeNum = nodes.findIndex((node) =>
+                story.dateTime.stamp >= node.timeFrom && story.dateTime.stamp < node.timeTill &&
+                node.personIds.some((p: PersonDocument) => p._id.equals(story.personId)));  // FIXME: see geonodes model
+
+            const node = nodes[nodeNum]
+
+            let storyLoc = await geoLocationModel.findOne(
+                { expeditieId: node.expeditieId, personId: { $in: node.personIds }, 'dateTime.stamp': { $gte: story.dateTime.stamp } },
+                { _id: false, longitude: true, latitude: true }
+            ).sort({ 'dateTime.stamp': 1 }).exec();
+
             return {
                 id: story._id.toHexString(),
                 type: story.type,
-                nodeNum: nodes.findIndex((node) =>
-                    story.dateTime.stamp >= node.timeFrom && story.dateTime.stamp < node.timeTill &&
-                    node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))), // FIXME: see geonodes model
+                nodeNum: nodeNum,
                 dateTime: {
                     stamp: story.dateTime.stamp,
                     zone: story.dateTime.zone
                 },
                 title: (story as TextStoryElementDocument).title,
                 text: (story as TextStoryElementDocument).text,
-                name: (story as LocationStoryElementDocument).name
+                name: (story as LocationStoryElementDocument).name,
+                location: storyLoc
             };
-        })
+        }))
     };
 
     res.end(JSON.stringify(result));

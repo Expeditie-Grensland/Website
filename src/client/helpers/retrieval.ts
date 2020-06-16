@@ -2,9 +2,14 @@ import geoJson from 'geojson';
 
 
 export type GeoJsonResult = {
-    geoJson: geoJson.FeatureCollection<geoJson.LineString>,
+    geoJson: geoJson.FeatureCollection<geoJson.LineString, GeoJsonProperties>,
     minLon: number, maxLon: number,
     minLat: number, maxLat: number
+}
+
+export type GeoJsonProperties = {
+    nodeNum: number,
+    color: string
 }
 
 export interface Node {
@@ -22,6 +27,10 @@ interface BaseStoryElement {
     dateTime: {
         stamp: number,
         zone: string
+    },
+    location: {
+        longitude: number,
+        latitude: number
     }
 }
 
@@ -99,9 +108,9 @@ export namespace RetrievalHelper {
 
             offset += 4;
 
-            const feat: geoJson.Feature<geoJson.LineString> = {
+            const feat: geoJson.Feature<geoJson.LineString, GeoJsonProperties> = {
                 type: 'Feature',
-                properties: { color },
+                properties: { nodeNum, color },
                 geometry: { type: 'LineString', coordinates: [] }
             };
 

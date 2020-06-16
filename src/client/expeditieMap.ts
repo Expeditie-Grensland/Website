@@ -1,7 +1,8 @@
 import 'core-js/fn/promise';
 import mapboxgl from 'mapbox-gl';
 import $ from 'jquery';
-import { GeoJsonResult } from './helpers/retrieval';
+import geoJson from 'geojson';
+import {GeoJsonResult, StoryElement, Node, GeoJsonProperties, StoryResult} from './helpers/retrieval';
 import {StoryHandler} from "./story/storyHandler";
 
 declare var expeditieNameShort: string;
@@ -14,8 +15,10 @@ worker.onmessage = (event) => {
     switch (event.data[0]) {
         case 'geoJson':
             return setRoute(event.data[1]);
-        case 'story':
-            return StoryHandler.init(event.data[1]);
+        case 'story': {
+            StoryHandler.init(event.data[1]);
+            return addStories(event.data[1]);
+        }
     }
 };
 
@@ -29,6 +32,48 @@ const map = new mapboxgl.Map({
 });
 
 map.addControl(new mapboxgl.NavigationControl());
+
+const addStories = (result: StoryResult) => {
+    const collection: geoJson.FeatureCollection<geoJson.MultiPoint, GeoJsonProperties> = {
+        type: 'FeatureCollection',
+        features: []
+    };
+
+    for (const node of result.nodes) {
+        const elements = result.story.filter(element => element.nodeNum === node.nodeNum)
+
+        const feat: geoJson.Feature<geoJson.MultiPoint, GeoJsonProperties> = {
+            id: node.nodeNum,
+            type: 'Feature',
+            properties: {
+                color: node.color,
+                nodeNum: node.nodeNum
+            },
+            geometry: { type: 'MultiPoint', coordinates: [] }
+        };
+
+        for (const element of elements) {
+            feat.geometry.coordinates.push([element.location.longitude, element.location.latitude])
+        }
+
+        collection.features.push(feat)
+    }
+
+    map.addSource('exp-story', {type: 'geojson', data: collection} as any)
+
+    map.addLayer({
+        id: 'exp-story',
+        type: 'circle',
+        source: 'exp-story',
+        paint: {
+            'circle-radius': 3,
+            'circle-color': "#ffffff",
+            'circle-pitch-alignment': 'map',
+            'circle-stroke-width': 3,
+            'circle-stroke-color': ['get', 'color'],
+        }
+    })
+}
 
 const setRoute = (res: GeoJsonResult) => {
     map.fitBounds(new mapboxgl.LngLatBounds(
@@ -56,8 +101,13 @@ const setRoute = (res: GeoJsonResult) => {
             'line-color': ['get', 'color']
         }
     });
-};
 
+    // Move story layer to top
+    const storyLayer = map.getLayer('exp-story')
+
+    if (storyLayer != null)
+        map.moveLayer(storyLayer.id)
+};
 
 map.on('load', () => {
     console.info('Map load!');
