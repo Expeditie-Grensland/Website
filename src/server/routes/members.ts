@@ -133,7 +133,3 @@ router.get('/punten', async (req, res) => {
 
     res.render('members/points', { earnedPoints, score });
 });
-
-router.get('/premiere', (req, res, next) => res.render('members/premiere', {
-    getFileUrl: MediaFiles.getUrl,
-}))
