@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as passport from 'passport';
-import * as R from 'ramda';
 import * as mongoose from 'mongoose';
 
 import { AuthHelper } from '../helpers/authHelper';
@@ -34,11 +33,11 @@ router.post('/authenticate', (req, res, next) => {
 
 router.use((req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == 'Bearer')
-        AuthHelper.parseJwt(req.headers.authorization.split(' ')[1], (err, decoded: string | { id?: string }) => {
+        AuthHelper.parseJwt(req.headers.authorization.split(' ')[1], (err, decoded: string | { id?: string } | undefined) => {
             if (err)
                 next(err);
             else {
-                if (typeof decoded === 'string' || decoded.id == undefined)
+                if (typeof decoded === 'string' || decoded == undefined || decoded.id == undefined)
                     return next(new Error('Unexpected jwt format'));
                 People.getById(mongoose.Types.ObjectId(decoded.id))
                     .then(person => {
@@ -70,12 +69,12 @@ router.get('/expedities', (req, res) =>
         })
         .sort({ sequenceNumber: -1 })
         .exec()
-        .then(R.map(x => {
+        .then(x => x.map(ex => {
             return {
-                id: Documents.getStringId(x),
-                name: x.name,
-                subtitle: x.subtitle,
-                image: MediaFiles.getUrl(x.backgroundFile)
+                id: Documents.getStringId(ex),
+                name: ex.name,
+                subtitle: ex.subtitle,
+                image: MediaFiles.getUrl(ex.backgroundFile)
             };
         }))
         .then(x => res.status(200).json(x)));

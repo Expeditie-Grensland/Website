@@ -104,9 +104,12 @@ a, a *
 .midtitle
   font-size: 1.4rem
 
-.btn-map
-  margin-bottom: 1rem
+.sidebar-item:not(:last-child)
+  margin-bottom: 2rem
 
-.members > :not(:first-child)::before, .embed-responsive .h1::after
+.sidebar-item span:not(:first-child)::before, .embed-responsive .h1::after
   content: "\A"
   white-space: pre
+
+.sidebar-title
+  color: #a1a1a1

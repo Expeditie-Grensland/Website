@@ -11,7 +11,6 @@ import gulp from 'gulp';
 const componentTasks = {
     client: ['dev', 'prod', 'clean', 'watch'],
     copy: ['dev', 'prod', 'clean', 'watch'],
-    favicons: ['dev', 'prod', 'clean', 'watch'],
     server: ['dev', 'prod', 'clean', 'watch', 'run'],
     styles: ['dev', 'prod', 'clean', 'watch']
 };
@@ -33,7 +32,6 @@ gulp.task('build:dev',
     gulp.parallel(
         'client:dev',
         'copy:dev',
-        'favicons:dev',
         'server:dev',
         'styles:dev'
     )
@@ -45,7 +43,6 @@ gulp.task('build:prod',
         gulp.parallel(
             'client:prod',
             'styles:prod',
-            'favicons:prod',
             'server:prod',
         ),
         gulp.parallel(
@@ -62,14 +59,12 @@ gulp.task('watch',
         gulp.parallel(
             'client:watch',
             'copy:dev',
-            'favicons:dev',
             'server:dev',
             'styles:dev'
         ),
         'server:run',
         gulp.parallel(
             'copy:watch',
-            'favicons:watch',
             'server:watch',
             'styles:watch'
         )

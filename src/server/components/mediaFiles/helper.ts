@@ -53,6 +53,6 @@ export namespace MediaFileHelper {
         const fileFilter = (req: express.Request, file: Express.Multer.File, cb: ((error: Error | null, acceptFile: boolean) => void)) =>
             cb(null, mime2.getExtension(file.mimetype) != null);
 
-        export const settings = { storage: multer.diskStorage({ destination, filename }), fileFilter };
+        export const settings = { storage: multer.diskStorage({ destination, filename }), fileFilter } as multer.Options;
     }
 }
