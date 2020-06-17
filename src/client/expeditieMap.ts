@@ -1,8 +1,8 @@
 import 'core-js/fn/promise';
-import mapboxgl from 'mapbox-gl';
+import mapboxgl, {Point} from 'mapbox-gl';
 import $ from 'jquery';
 import geoJson from 'geojson';
-import {GeoJsonResult, StoryElement, Node, GeoJsonProperties, StoryResult} from './helpers/retrieval';
+import {GeoJsonProperties, GeoJsonResult, StoryResult} from './helpers/retrieval';
 import {StoryHandler} from "./story/storyHandler";
 
 declare var expeditieNameShort: string;
@@ -34,29 +34,28 @@ const map = new mapboxgl.Map({
 map.addControl(new mapboxgl.NavigationControl());
 
 const addStories = (result: StoryResult) => {
-    const collection: geoJson.FeatureCollection<geoJson.MultiPoint, GeoJsonProperties> = {
+    const collection: geoJson.FeatureCollection<geoJson.Point, GeoJsonProperties> = {
         type: 'FeatureCollection',
         features: []
     };
 
-    for (const node of result.nodes) {
-        const elements = result.story.filter(element => element.nodeNum === node.nodeNum)
+    let idx = 0       // FIXME does not work when stories arrive in multiple batches (which is technically supported but not used)
+    for (const element of result.story) {
+        const node = result.nodes.find(node => node.nodeNum === element.nodeNum)!
 
-        const feat: geoJson.Feature<geoJson.MultiPoint, GeoJsonProperties> = {
-            id: node.nodeNum,
+        collection.features.push({
+            id: idx,        // Can't be element.id because an id string should resolve to an integer
             type: 'Feature',
             properties: {
                 color: node.color,
-                nodeNum: node.nodeNum
+                nodeNum: element.nodeNum,
             },
-            geometry: { type: 'MultiPoint', coordinates: [] }
-        };
-
-        for (const element of elements) {
-            feat.geometry.coordinates.push([element.location.longitude, element.location.latitude])
-        }
-
-        collection.features.push(feat)
+            geometry: {
+                type: 'Point',
+                coordinates: [element.location.longitude, element.location.latitude]
+            }
+        })
+        ++idx
     }
 
     map.addSource('exp-story', {type: 'geojson', data: collection} as any)
@@ -66,10 +65,20 @@ const addStories = (result: StoryResult) => {
         type: 'circle',
         source: 'exp-story',
         paint: {
-            'circle-radius': 3,
+            'circle-radius': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                10,
+                3
+            ],
             'circle-color': "#ffffff",
             'circle-pitch-alignment': 'map',
-            'circle-stroke-width': 3,
+            'circle-stroke-width': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                5,
+                3
+            ],
             'circle-stroke-color': ['get', 'color'],
         }
     })
@@ -108,6 +117,77 @@ const setRoute = (res: GeoJsonResult) => {
     if (storyLayer != null)
         map.moveLayer(storyLayer.id)
 };
+
+let hoveredStoryElementId: string | number | undefined = undefined
+let selectedStoryElementId: string | number | undefined = undefined
+
+// When the user moves their mouse over the state-fill layer, we'll update the
+// feature state for the feature under the mouse.
+map.on('mousemove', 'exp-story', (e) => {
+    if (e.features && e.features.length > 0) {
+
+        if (e.features[0].id != null) {
+            const next = e.features[0].id
+            const prev = selectedStoryElementId == e.features[0].id ? undefined : hoveredStoryElementId
+
+            if (next !== hoveredStoryElementId) {
+                setHoverState(e.features[0].id, prev)
+                hoveredStoryElementId = e.features[0].id
+            }
+        }
+
+        map.getCanvas().style.cursor = e.features!.length ? 'pointer' : '';
+    }
+});
+
+// When the mouse leaves the state-fill layer, update the feature state of the
+// previously hovered feature.
+map.on('mouseleave', 'exp-story', () => {
+    if (hoveredStoryElementId && hoveredStoryElementId !== selectedStoryElementId) {
+        map.setFeatureState(
+            { source: 'exp-story', id: hoveredStoryElementId },
+            { hover: false }
+        );
+    }
+    hoveredStoryElementId = undefined;
+    map.getCanvas().style.cursor = '';
+});
+
+map.on('click', 'exp-story', (e) => {
+    if (e.features == null)
+        return
+    if (e.features.length > 0) {
+        const coordinates = (<geoJson.Point>e.features[0].geometry).coordinates.slice();
+
+        const zoomLevel = map.getZoom() > 12 ? map.getZoom() : 12
+
+        map.flyTo({center: [coordinates[0], coordinates[1]], zoom: zoomLevel, offset: [window.innerWidth / 6, 0]});
+
+        if (e.features.length == 1) {
+            if (e.features[0].id != null) {
+                setHoverState(e.features[0].id, selectedStoryElementId ?? undefined)
+                selectedStoryElementId = e.features[0].id
+            }
+        }
+    }
+
+})
+
+const setHoverState = (elementId: number | string, prevElementId?: number | string) => {
+    console.log("set ", elementId)
+    console.log("unset ", prevElementId)
+    if (prevElementId) {
+        map.setFeatureState(
+            { source: 'exp-story', id: prevElementId },
+            { hover: false }
+        );
+    }
+
+    map.setFeatureState(
+        { source: 'exp-story', id: elementId },
+        { hover: true }
+    );
+}
 
 map.on('load', () => {
     console.info('Map load!');
