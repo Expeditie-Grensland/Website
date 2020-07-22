@@ -34,6 +34,11 @@ block content
         .col-12.col-md-8.order-md-1
             if expeditie.movieFile && (!expeditie.movieFile.restricted || loggedIn)
                 .embed-responsive.embed-responsive-16by9
-                    video.embed-responsive-item(controls poster=getFileUrl(expeditie.movieCoverFile) preload="none")
-                        source(src=getFileUrl(expeditie.movieFile) type=expeditie.movieFile.mime)
+                    video#video.embed-responsive-item(controls poster=getFileUrl(expeditie.movieCoverFile) preload="none")
                         p Sorry, deze video wordt niet door je browser ondersteund.
+
+
+block scripts
+    script(src="//cdn.jsdelivr.net/npm/hls.js@latest")
+    script(src='/static/scripts/public.js')
+    script(src='/static/scripts/expeditie.js')

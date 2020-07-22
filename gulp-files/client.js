@@ -19,6 +19,7 @@ const entries = [
     `${src}/all.ts`,
     `${src}/public.ts`,
     `${src}/members.ts`,
+    `${src}/expeditie.ts`,
     `${src}/expeditieMap.ts`,
     `${src}/expeditieMapWorker.ts`,
     `${src}/worker/index.ts`
