@@ -9,6 +9,13 @@ if (Hls.isSupported() && video && videoSrc) {
     const hls = new Hls(hlsConfig);
     hls.loadSource(videoSrc);
     hls.attachMedia(video);
+
+            // fall back to mp4 video on error
+    hls.on(Hls.Events.ERROR, function (event, data) {
+        if (data.fatal) {
+            hls.destroy();
+        }
+    });
 }
     // hls.js is not supported on platforms that do not have Media Source
     // Extensions (MSE) enabled.
