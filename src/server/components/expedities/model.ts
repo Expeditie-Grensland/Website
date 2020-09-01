@@ -24,8 +24,8 @@ const schema = new mongoose.Schema({
     }],
     countries: [String],
     backgroundFile: mediaFileEmbeddedSchema,
-    movieCoverFile: mediaFileEmbeddedSchema,
-    movieFile: mediaFileEmbeddedSchema,
+    showMovie: Boolean,
+    movieRestricted: Boolean,
     movieEditorIds: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: PersonId
@@ -45,8 +45,8 @@ export interface Expeditie {
     personIds: PersonOrId[];
     countries: string[];
     backgroundFile: MediaFileEmbedded;
-    movieCoverFile: MediaFileEmbedded;
-    movieFile: MediaFileEmbedded;
+    showMovie: boolean;
+    movieRestricted: boolean;
     movieEditorIds: PersonOrId[];
 }
 

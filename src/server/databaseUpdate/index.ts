@@ -62,6 +62,10 @@ const UPDATES: {info: string, func: any}[] = [
     { // 14 -> 15
         info: 'Separate names into first and last names',
         func: require('./update014SetFirstLastNames')
+    },
+    { // 15 -> 16
+        info: 'Remove expeditie movie file names from database',
+        func: require('./update015UnsetExpeditieMovieFile')
     }
 ];
 

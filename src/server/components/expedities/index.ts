@@ -5,6 +5,7 @@ import { PersonDocument, PersonOrId } from '../people/model';
 import { Documents } from '../documents';
 import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
 import { GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
+import {MediaFileDocument, MediaFileEmbedded} from "../mediaFiles/model";
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -95,4 +96,10 @@ export namespace Expedities {
 
     export const getCurrentNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie), timeTill: Number.POSITIVE_INFINITY }).sort({ _id: 1 }).exec();
+
+    export const getMovieUrls = (expeditie: Expeditie) => ({
+        fallbackMP4: expeditie !== undefined ? `/media/${expeditie.nameShort}/progressive.mp4` : '',
+        manifest: expeditie !== undefined ? `/media/${expeditie.nameShort}/index.m3u8` : '',
+        poster: expeditie !== undefined ? `/media/${expeditie.nameShort}/poster.jpg` : '',
+    })
 }
