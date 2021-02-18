@@ -96,6 +96,20 @@ map.on('load', () => {
         }
     });
 
+    // Add hillshade layer
+    map.addLayer({
+            'id': 'hillshading',
+            'source': 'mapbox-dem',
+            'type': 'hillshade',
+            'paint': {
+                'hillshade-exaggeration': .2
+            }
+        },
+        // insert before waterway-river-canal-shadow;
+        // where hillshading sits in the Mapbox outdoors style
+        'waterway-river-canal-shadow'
+    );
+
 
     console.info('Map load!');
     worker.postMessage(['styleLoaded']);
