@@ -2,7 +2,6 @@ name: Build & Deploy
 
 on:
 - push
-- pull_request
 
 permissions:
   contents: read
@@ -22,16 +21,28 @@ jobs:
       run: npm ci
     - name: Build using gulp.js
       run: gulp build:prod
-    - name: Tar distribution folder
-      run: tar -cvf Distribution.tar dist
-    - name: Upload distribution folder artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Distribution-folder
-        path: dist
     - name: Upload distribution artifact
       uses: actions/upload-artifact@v2
       with:
         name: Distribution
-        path: Distribution.tar
+        path: dist
 
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment: deploy-release
+    steps:
+    - name: Download distribution artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Distribution
+        path: dist
+    - name: Install SSH configuration
+      key: ${{ secrets.SSH_PRIVATE_KEY }}
+      known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+      config: ${{ secrets.SSH_CONFIG }}
+    - name: Upload deployment
+      run: rsync -rp dist/. ${{ secrets.DEPLOYMENT_SERVER }}:${{ secrets.DEPLOYMENT_FOLDER }}
+    - name: Run deployment
+      run: ssh ${{ secrets.DEPLOYMENT_SERVER }} ${{ secrets.DEPLOYMENT_COMMAND }}
