@@ -1,4 +1,4 @@
-import 'core-js/fn/promise';
+import 'core-js/features/promise';
 import mapboxgl from 'mapbox-gl';
 // import $ from 'jquery'; TODO: Reactivate for Stories
 

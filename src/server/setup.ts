@@ -111,7 +111,8 @@ export namespace Setup {
             {
                 user: config.mongo.user,
                 pass: config.mongo.pass,
-                useNewUrlParser: true
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             }
         );
 
