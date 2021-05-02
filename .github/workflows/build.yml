@@ -27,9 +27,10 @@ jobs:
         name: Distribution
         path: dist
 
-  deploy:
-    name: Deploy
+  deploy-production:
+    name: Deploy production
     needs: build
+    if: ${{ github.ref == 'refs/heads/release' }}
     runs-on: ubuntu-latest
     environment: production
     steps:
