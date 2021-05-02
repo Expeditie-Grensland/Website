@@ -39,9 +39,11 @@ jobs:
         name: Distribution
         path: dist
     - name: Install SSH configuration
-      key: ${{ secrets.SSH_PRIVATE_KEY }}
-      known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-      config: ${{ secrets.SSH_CONFIG }}
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+        config: ${{ secrets.SSH_CONFIG }}
     - name: Upload deployment
       run: rsync -rp dist/. ${{ secrets.DEPLOYMENT_SERVER }}:${{ secrets.DEPLOYMENT_FOLDER }}
     - name: Run deployment
