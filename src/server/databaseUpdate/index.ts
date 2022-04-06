@@ -57,15 +57,15 @@ const UPDATES: {info: string, func: any}[] = [
     },
     { // 13 -> 14
         info: 'Unset color field for expedities',
-        func: require('./update013UnsetExpeditieColor')
+        func: {}
     },
     { // 14 -> 15
         info: 'Separate names into first and last names',
-        func: require('./update014SetFirstLastNames')
+        func: {}
     },
     { // 15 -> 16
         info: 'Remove expeditie movie file names from database',
-        func: require('./update015UnsetExpeditieMovieFile')
+        func: {}
     }
 ];
 

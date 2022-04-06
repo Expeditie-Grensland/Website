@@ -34,7 +34,7 @@ export namespace AuthHelper {
         next();
     };
 
-    export const loginRedirect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    export const loginRedirect = (req: express.Request & {session: any}, res: express.Response, next: express.NextFunction) => {
         if (!req.isAuthenticated()) {
             if (req.session && req.method == 'GET')
                 req.session.returnTo = req.originalUrl;

@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as passport from 'passport';
-import * as marked from 'marked';
+import { marked } from 'marked';
 
 import { AuthHelper } from '../helpers/authHelper';
 import { MemberLinks } from '../components/memberLinks';
@@ -13,7 +13,7 @@ import { EarnedPoints } from '../components/earnedPoints';
 
 export const router = express.Router();
 
-router.get('/login', (req, res, next) => {
+router.get('/login', (req: express.Request & {session: any}, res, next) => {
     if (req.isAuthenticated()) {
         if (req.session && req.session.returnTo) {
             res.redirect(req.session.returnTo);

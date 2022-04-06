@@ -72,10 +72,14 @@ export namespace Setup {
             saveUninitialized: false
         };
 
-        if (config.session.useRedis)
+        if (config.session.useRedis) {
+            const redisClient = redis.createClient(Object.assign(config.redis, {legacyMode: true}) as any);
+            redisClient.connect().catch(console.error);
+
             sessionOptions.store = new (redisConnect(session))({
-                client: redis.createClient(config.redis)
+                client: redisClient as any
             });
+        }
 
         app.use(session(sessionOptions));
 
@@ -88,7 +92,7 @@ export namespace Setup {
                 People.getByLdapId(user[config.ldap.idField]).then(p => p ? done(null, p) : done(null, false))
                 : done(new Error('LDAP user is unexpectedly null'))));
 
-        passport.serializeUser((user: PersonDocument, done) =>
+        passport.serializeUser((user: any, done) =>
             done(null, Documents.getObjectId(user)));
 
         passport.deserializeUser((userId: mongoose.Types.ObjectId, done) =>
@@ -103,16 +107,11 @@ export namespace Setup {
     export function setupDatabase(app: express.Express, dev: boolean) {
         mongoose.set('debug', dev);
 
-        mongoose.set('useCreateIndex', true);
-        mongoose.set('useFindAndModify', false);
-
         mongoose.connect(
             config.mongo.url,
             {
                 user: config.mongo.user,
                 pass: config.mongo.pass,
-                useNewUrlParser: true,
-                useUnifiedTopology: true
             }
         );
 

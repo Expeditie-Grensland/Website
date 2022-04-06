@@ -1,4 +1,5 @@
 import del from 'del';
+import { readFileSync } from 'fs';
 import newer from 'gulp-newer';
 import revRewrite from 'gulp-rev-rewrite';
 import terser from 'gulp-terser';
@@ -32,13 +33,13 @@ module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
             sources = [
                 gulp.src(['src/views/**/*', '!src/views/**/*.js'], { base: 'src/' })
                     .pipe(revRewrite({
-                        manifest: gulp.src('dist/static/styles/rev-manifest.json'),
+                        manifest: readFileSync('dist/static/styles/rev-manifest.json'),
                         modifyUnreved: (x) => 'styles/' + x,
                         modifyReved: (x) => 'styles/' + x,
                         replaceInExtensions: ['.pug']
                     }))
                     .pipe(revRewrite({
-                        manifest: gulp.src('dist/static/scripts/rev-manifest.json'),
+                        manifest: readFileSync('dist/static/scripts/rev-manifest.json'),
                         modifyUnreved: (x) => 'scripts/' + x,
                         modifyReved: (x) => 'scripts/' + x,
                         replaceInExtensions: ['.pug']

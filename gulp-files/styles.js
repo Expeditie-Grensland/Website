@@ -3,11 +3,11 @@ import del from 'del';
 import newer from 'gulp-newer';
 import postcss from 'gulp-postcss';
 import rev from 'gulp-rev';
-import sass from 'gulp-sass';
+import gulpSass from 'gulp-sass';
 import sourcemaps from 'gulp-sourcemaps';
 import sassCompiler from 'sass'
 
-sass.compiler = sassCompiler;
+const sass = gulpSass(sassCompiler);
 
 module.exports = (gulp, opts = { clean: false, prod: false, watch: false }) => {
 

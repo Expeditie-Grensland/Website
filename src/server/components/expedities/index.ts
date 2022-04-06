@@ -5,7 +5,6 @@ import { PersonDocument, PersonOrId } from '../people/model';
 import { Documents } from '../documents';
 import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
 import { GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
-import {MediaFileDocument, MediaFileEmbedded} from "../mediaFiles/model";
 
 const sprintf = require('sprintf-js').sprintf;
 
@@ -28,9 +27,8 @@ export namespace Expedities {
     export const getDocument = (expeditie: ExpeditieOrId): Promise<ExpeditieDocument | null> =>
         Documents.getDocument(getById)(expeditie);
 
-    export const create = (expeditie: Expeditie): Promise<ExpeditieDocument> =>
-        Promise.resolve(expeditie)
-            .then(ExpeditieModel.create);
+    export const create = (expeditie: Expeditie): Promise<ExpeditieDocument | void> =>
+        ExpeditieModel.create(expeditie);
 
     export const setFinished = (expeditie: ExpeditieOrId, finished: boolean): Promise<ExpeditieDocument | null> =>
         ExpeditieModel.findByIdAndUpdate(
@@ -91,7 +89,7 @@ export namespace Expedities {
     export const getNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>
         geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ _id: 1 }).exec();
 
-    export const getNodesWithPeople = (expeditie: ExpeditieOrId): Promise<(GeoNodeDocument & { personIds: PersonDocument[] })[]> => // FIXME: see geonodes model
+    export const getNodesWithPeople = (expeditie: ExpeditieOrId) => // FIXME: see geonodes model
         geoNodeModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ _id: 1 }).populate('personIds').exec() as Promise<(GeoNodeDocument & { personIds: PersonDocument[] })[]>;
 
     export const getCurrentNodes = (expeditie: ExpeditieOrId): Promise<GeoNodeDocument[]> =>

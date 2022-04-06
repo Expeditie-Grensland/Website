@@ -30,7 +30,7 @@ export namespace MediaFileHelper {
     export const getIdFromPath = (path: string): mongoose.Types.ObjectId => {
         const pathParts = path.split('/');
         const fileName = pathParts[pathParts.length - 1];
-        return mongoose.Types.ObjectId(fileName.split('.')[0]);
+        return new mongoose.Types.ObjectId(fileName.split('.')[0]);
     };
 
     const _mimeMap = {
@@ -45,7 +45,7 @@ export namespace MediaFileHelper {
         const destination: string = getFilesFolder();
 
         const filename = (req: express.Request, file: Express.Multer.File, cb: ((error: Error | null, filename: string) => void)) => {
-            let id = mongoose.Types.ObjectId();
+            let id = new mongoose.Types.ObjectId();
             let ext = mime2.getExtension(file.mimetype);
             cb(null, `${id}.${ext}`);
         };

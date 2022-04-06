@@ -31,7 +31,7 @@ const testAndGetFromId = async <T extends mongoose.Document>(stringId: string, g
     let id;
 
     try {
-        id = mongoose.Types.ObjectId(stringId);
+        id = new mongoose.Types.ObjectId(stringId);
     } catch {
         throw new Error(`${typeName} '${stringId}' heeft geen geldige Id.`);
     }
@@ -80,7 +80,7 @@ const testValidTimeZone = (zone: string) => {
 const tryCatchAndRedirect = async (req: any, res: any, destination: string, f: (() => Promise<string>)): Promise<void> => {
     try {
         req.flash('info', await f());
-    } catch (e) {
+    } catch (e: any) {
         req.flash('error', e.message);
     } finally {
         res.redirect(destination);
@@ -107,7 +107,7 @@ router.post('/bestanden/upload', multerUpload.array('files'), (req, res) =>
 
         for (let file of Object.values(req.files)) {
             mediaFiles.push({
-                _id: mongoose.Types.ObjectId(file.filename.split('.')[0]),
+                _id: new mongoose.Types.ObjectId(file.filename.split('.')[0]),
                 ext: file.filename.split('.')[1],
                 mime: file.mimetype,
                 restricted: !!req.body.restricted
@@ -343,8 +343,9 @@ router.post('/gpx/upload', multer({ storage: multer.memoryStorage() }).single('f
         let locs: GeoLocation[];
 
         try {
+            if (!req.file) throw new Error('Er is geen bestand');
             locs = await GpxHelper.generateLocations(req.file.buffer.toString(), expeditie, person, b.zone);
-        } catch (e) {
+        } catch (e: any) {
             throw new Error(`Bestand kan niet worden gelezen: ${e.message}`);
         }
 
