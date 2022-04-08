@@ -1,0 +1,4 @@
+# Build
+/.cache
+/build
+/public/build
