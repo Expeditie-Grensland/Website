@@ -1,0 +1,23 @@
+# Build
+/.cache
+/build
+/public/build
+*.log
+
+# Configuration
+.env
+
+# Package manager
+node_modules/
+yarn.lock
+pnpm-lock.yaml
+
+# Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Operating system
+.DS_Store
+Thumbs.db
