@@ -7,7 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import twStyle from "app/styles/generated/tailwind.css";
+import twStyle from "~/generated/styles/tailwind.css";
 
 const links: LinksFunction = () => [{ rel: "stylesheet", href: twStyle }];
 

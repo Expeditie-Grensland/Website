@@ -1,8 +1,8 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import db from "app/utils/db.server";
-import { getFileUrl } from "app/utils/mediaFile.server";
+import db from "~/utils/db.server";
+import { getFileUrl } from "~/utils/mediaFile.server";
 
 const loader: LoaderFunction = () =>
   db.expeditie

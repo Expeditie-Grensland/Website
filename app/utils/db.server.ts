@@ -1,4 +1,4 @@
-import { PrismaClient } from "db/generated/index.js";
+import { PrismaClient } from "~/generated/db/index.js";
 
 let db: PrismaClient;
 

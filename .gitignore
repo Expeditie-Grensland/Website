@@ -2,9 +2,8 @@
 /.cache
 /build
 /public/build
+/app/generated
 *.log
-/db/generated
-/app/styles/generated
 
 # Configuration
 .env

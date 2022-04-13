@@ -1,7 +1,7 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import db from "app/utils/db.server";
+import db from "~/utils/db.server";
 
 const loader: LoaderFunction = async ({ params }) => {
   const data = await db.expeditie.findUnique({

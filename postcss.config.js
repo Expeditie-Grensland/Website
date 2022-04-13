@@ -6,6 +6,6 @@ module.exports = {
   plugins: [
     tailwind,
     autoprefixer,
-    ...(process.env.NODE_ENV === 'production' ? [ cssnano ] : [])
+    ...(process.env.NODE_ENV === "production" ? [cssnano] : []),
   ],
 };
