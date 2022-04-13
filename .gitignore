@@ -3,6 +3,7 @@
 /build
 /public/build
 *.log
+/db/generated
 
 # Configuration
 .env

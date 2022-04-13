@@ -5,7 +5,6 @@
     "@remix-run/eslint-config",
     "@remix-run/eslint-config/node",
     "eslint:recommended",
-    "prettier",
-    "plugin:@typescript-eslint/recommended"
+    "prettier"
   ]
 }

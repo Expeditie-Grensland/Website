@@ -1,0 +1,130 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "./generated"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+model Expeditie {
+  id               Int       @id @default(autoincrement())
+  name             String
+  linkName         String    @unique
+  season           String
+  sequenceNumber   Int
+  isFinished       Boolean   @default(false)
+  showMap          Boolean   @default(false)
+  showMovie        Boolean   @default(false)
+  countries        String[]
+  people           Person[]  @relation("ExpeditieParticipant")
+  movieEditors     Person[]  @relation("ExpeditieMovieEditor")
+  backgroundFileId Int
+  backgroundFile   MediaFile @relation("ExpeditieBackground", fields: [backgroundFileId], references: [id])
+
+  geoNodes     GeoNode[]     @relation()
+  geoLocations GeoLocation[] @relation()
+
+  @@index([linkName])
+  @@index([sequenceNumber])
+}
+
+enum PersonTeam {
+  BLUE
+  RED
+}
+
+enum PersonType {
+  MEMBER
+  GUEST
+}
+
+model Person {
+  id           Int         @id @default(autoincrement())
+  username     String      @unique
+  firstName    String
+  lastName     String
+  initials     String
+  type         PersonType  @default(MEMBER)
+  team         PersonTeam?
+  ldapId       String?
+  isAdmin      Boolean     @default(false)
+  expedities   Expeditie[] @relation("ExpeditieParticipant")
+  editedMovies Expeditie[] @relation("ExpeditieMovieEditor")
+
+  geoNodes     GeoNode[]     @relation()
+  geoLocations GeoLocation[] @relation()
+
+  @@index([lastName, firstName])
+  @@index([lastName, initials])
+  @@index([username])
+}
+
+model MediaFile {
+  id         Int     @id @default(autoincrement())
+  name       String  @unique
+  extension  String
+  mime       String
+  restricted Boolean @default(false)
+
+  expeditiesUsedByAsBackground Expeditie[] @relation("ExpeditieBackground")
+  wordsUsedByAsAttachment      Word[]      @relation("WordAttachment")
+  quotesUsedByAsAttachment     Quote[]     @relation("QuoteAttachment")
+}
+
+model GeoNode {
+  id             Int       @id @default(autoincrement())
+  expeditieId    Int
+  expeditie      Expeditie @relation(fields: [expeditieId], references: [id])
+  people         Person[]  @relation()
+  beginTimestamp Int       @default(0)
+  endTimestamp   Int       @default(2147483647)
+
+  @@index([expeditieId, endTimestamp])
+}
+
+model GeoLocation {
+  id          Int       @id @default(autoincrement())
+  expeditieId Int
+  expeditie   Expeditie @relation(fields: [expeditieId], references: [id])
+  personId    Int
+  person      Person    @relation(fields: [personId], references: [id])
+  timestamp   Int
+  timezone    String    @default("Europe/Amsterdam")
+
+  latitude  Float
+  longitude Float
+  elevation Float?
+
+  @@unique([expeditieId, personId, timestamp])
+  @@index([expeditieId, id])
+  @@index([expeditieId, personId])
+  @@index([personId, timestamp])
+  @@index([timestamp])
+}
+
+model Word {
+  id           Int        @id @default(autoincrement())
+  word         String
+  definitions  String[]
+  phonetic     String?
+  attachmentId Int?
+  attachment   MediaFile? @relation("WordAttachment", fields: [attachmentId], references: [id])
+
+  @@index([word])
+}
+
+model Quote {
+  id           Int        @id @default(autoincrement())
+  quote        String
+  quotee       String
+  context      String
+  timestamp    Int
+  timezone     String     @default("Europe/Amsterdam")
+  attachmentId Int?
+  attachment   MediaFile? @relation("QuoteAttachment", fields: [attachmentId], references: [id])
+
+  @@index([timestamp])
+}
