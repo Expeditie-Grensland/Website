@@ -26,7 +26,7 @@ const HomePage = () => {
   const data = useLoaderData();
 
   return (
-    <div>
+    <div className="bg-slate-700">
       {data.map((expeditie: any) => (
         <div key={expeditie.slug}>
           <Link prefetch="intent" to={`/${expeditie.slug}`}>

@@ -12,7 +12,8 @@
     "baseUrl": ".",
     "paths": {
       "app/*": ["./app/*"],
-      "db/*": ["./db/*"]
+      "db/*": ["./db/*"],
+      "styles/*": ["./styles/*"],
     },
 
     // Remix takes care of building everything in `remix build`.

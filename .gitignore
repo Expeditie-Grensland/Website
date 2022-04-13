@@ -4,6 +4,7 @@
 /public/build
 *.log
 /db/generated
+/app/styles/generated
 
 # Configuration
 .env
