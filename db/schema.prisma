@@ -12,7 +12,7 @@ generator client {
 model Expeditie {
   id               Int       @id @default(autoincrement())
   name             String
-  linkName         String    @unique
+  slug             String    @unique
   season           String
   sequenceNumber   Int
   isFinished       Boolean   @default(false)
@@ -27,7 +27,7 @@ model Expeditie {
   geoNodes     GeoNode[]     @relation()
   geoLocations GeoLocation[] @relation()
 
-  @@index([linkName])
+  @@index([slug])
   @@index([sequenceNumber])
 }
 
