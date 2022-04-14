@@ -27,15 +27,16 @@
     "check:format": "prettier --check .",
     "check:eslint": "eslint .",
     "format": "prettier --write .",
+    "dev": "concurrently -c magenta -n 'd:' 'npm:dev:*'",
+    "dev:app": "remix dev",
+    "dev:db": "watch 'prisma generate' db/",
+    "dev:styles": "postcss --watch --verbose --env development -d app/generated/styles/ styles/**/*.css",
+    "clean": "rimraf .cache/ build/ public/build/ app/generated/",
     "build": "concurrently -c magenta -n 'b:' 'npm:build:*(!app)' && concurrently -c magenta -n 'b:app' 'npm:build:app'",
     "build:app": "remix build",
     "build:db": "prisma generate",
     "build:styles": "postcss --verbose --env production -d app/generated/styles/ styles/**/*.css",
-    "clean": "rimraf build/ public/build/ app/generated/",
-    "dev": "concurrently -c magenta -n 'd:' 'npm:dev:*'",
-    "dev:app": "remix dev",
-    "dev:db": "watch 'prisma generate' db/schema.prisma",
-    "dev:styles": "postcss --watch --verbose --env development -d app/generated/styles/ styles/**/*.css"
+    "serve": "remix-serve build"
   },
   "dependencies": {
     "@prisma/client": "^3.12.0",
