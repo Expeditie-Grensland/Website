@@ -2,8 +2,8 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import ContentImage from "~/components/public/ContentImage";
-import db from "~/utils/db.server";
-import { getFileUrl } from "~/utils/mediaFile.server";
+import db from "~/utils/database/db";
+import getFileUrl from "~/utils/fileStorage/getFileUrl";
 import { Prisma } from "~/generated/db/index";
 
 const loader: LoaderFunction = async () => {

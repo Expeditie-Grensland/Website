@@ -2,8 +2,8 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import ContentImage from "~/components/public/ContentImage";
-import db from "~/utils/db.server";
-import { getFileUrl } from "~/utils/mediaFile.server";
+import db from "~/utils/database/db";
+import getFileUrl from "~/utils/fileStorage/getFileUrl";
 
 const loader: LoaderFunction = async ({ params }) => {
   const expeditie = await db.expeditie.findUnique({
