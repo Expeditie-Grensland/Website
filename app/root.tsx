@@ -9,6 +9,7 @@ import {
   useMatches,
 } from "@remix-run/react";
 import twStyle from "~/generated/styles/tailwind.css";
+import cx from "./utils/classNames/cx";
 
 const links: LinksFunction = () => [
   { rel: "stylesheet", href: twStyle },
@@ -33,20 +34,13 @@ const meta: MetaFunction = () => ({
 const App = () => {
   const matches = useMatches();
 
-  const bodyClasses = matches
-    .reduce(
-      (classes, { handle }) => [...classes, ...(handle?.bodyClasses || [])],
-      [] as string[]
-    )
-    .join(" ");
-
   return (
     <html lang="en">
       <head>
         <Meta />
         <Links />
       </head>
-      <body className={bodyClasses}>
+      <body className={cx(matches.map(({ handle }) => handle?.bodyClasses))}>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
