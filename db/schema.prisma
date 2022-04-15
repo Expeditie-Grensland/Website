@@ -49,7 +49,7 @@ model Person {
   initials     String
   type         PersonType  @default(MEMBER)
   team         PersonTeam?
-  ldapId       String?
+  ldapId       String?     @unique
   isAdmin      Boolean     @default(false)
   expedities   Expeditie[] @relation("ExpeditieParticipant")
   editedMovies Expeditie[] @relation("ExpeditieMovieEditor")
