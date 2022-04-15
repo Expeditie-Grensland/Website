@@ -6,7 +6,7 @@ import db from "~/utils/database/db";
 import getFileUrl from "~/utils/fileStorage/getFileUrl";
 import { Prisma } from "~/generated/db/index";
 
-const loader: LoaderFunction = async () => {
+const loader: LoaderFunction = async ({ request }) => {
   const expedities = await db.expeditie.findMany({
     select: {
       name: true,

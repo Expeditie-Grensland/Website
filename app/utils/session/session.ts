@@ -1,6 +1,7 @@
 import type { SessionIdStorageStrategy } from "@remix-run/node";
 import { createSessionStorage } from "@remix-run/node";
 import { nanoid } from "nanoid";
+import db from "../database/db";
 import redis from "./redis";
 
 declare global {
@@ -16,6 +17,23 @@ type RedisSessionOptions = {
   cookie?: SessionIdStorageStrategy["cookie"];
 };
 
+const serialise = ({ user, ...data }: any) =>
+  JSON.stringify({
+    ...data,
+    ...(user ? { user: user.id } : {}),
+  });
+
+const deserialise = async (dbData: string) => {
+  const { user: userId, ...data } = JSON.parse(dbData);
+
+  return {
+    ...data,
+    ...(userId
+      ? { user: await db.person.findUnique({ where: { id: userId } }) }
+      : {}),
+  };
+};
+
 const createRedisSessionStorage = ({ cookie }: RedisSessionOptions) =>
   createSessionStorage({
     cookie,
@@ -25,7 +43,7 @@ const createRedisSessionStorage = ({ cookie }: RedisSessionOptions) =>
       do {
         id = nanoid();
 
-        result = await redis.set("exgrl-session:" + id, JSON.stringify(data), {
+        result = await redis.set("exgrl-session:" + id, serialise(data), {
           NX: true,
           PX: expires && expires.getTime() - Date.now(),
         });
@@ -35,10 +53,10 @@ const createRedisSessionStorage = ({ cookie }: RedisSessionOptions) =>
     },
     async readData(id) {
       const result = await redis.get("exgrl-session:" + id);
-      return result && JSON.parse(result);
+      return result && deserialise(result);
     },
     async updateData(id, data, expires) {
-      await redis.set("exgrl-session:" + id, JSON.stringify(data), {
+      await redis.set("exgrl-session:" + id, serialise(data), {
         PX: expires && expires.getTime() - Date.now(),
       });
     },
@@ -51,7 +69,7 @@ const { getSession, commitSession, destroySession } = createRedisSessionStorage(
   {
     cookie: {
       name: "exgrl-session",
-      maxAge: (parseInt(process.env.SESSION_TTL) || undefined),
+      maxAge: parseInt(process.env.SESSION_TTL) || undefined,
       secrets: [process.env.SESSION_SECRET || "not_so_secret"],
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
