@@ -6,15 +6,11 @@ declare global {
   var __db: PrismaClient | undefined;
 }
 
-if (process.env.NODE_ENV === "production") {
+if (!global.__db) {
   db = new PrismaClient();
   db.$connect();
-} else {
-  if (!global.__db) {
-    global.__db = new PrismaClient();
-    global.__db.$connect();
-  }
-  db = global.__db;
-}
+
+  if (process.env.NODE_ENV === "development") global.__db = db;
+} else db = global.__db;
 
 export default db;

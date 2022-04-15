@@ -3,7 +3,14 @@ import { createSessionStorage } from "@remix-run/node";
 import { nanoid } from "nanoid";
 import redis from "./redis";
 
-const prefix = process.env.SESSION_PREFIX || "";
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      SESSION_SECRET: string;
+      SESSION_TTL: string;
+    }
+  }
+}
 
 type RedisSessionOptions = {
   cookie?: SessionIdStorageStrategy["cookie"];
@@ -18,7 +25,7 @@ const createRedisSessionStorage = ({ cookie }: RedisSessionOptions) =>
       do {
         id = nanoid();
 
-        result = await redis.set(prefix + id, JSON.stringify(data), {
+        result = await redis.set("exgrl-session:" + id, JSON.stringify(data), {
           NX: true,
           PX: expires && expires.getTime() - Date.now(),
         });
@@ -27,16 +34,16 @@ const createRedisSessionStorage = ({ cookie }: RedisSessionOptions) =>
       return id;
     },
     async readData(id) {
-      const result = await redis.get(prefix + id);
+      const result = await redis.get("exgrl-session:" + id);
       return result && JSON.parse(result);
     },
     async updateData(id, data, expires) {
-      await redis.set(prefix + id, JSON.stringify(data), {
+      await redis.set("exgrl-session:" + id, JSON.stringify(data), {
         PX: expires && expires.getTime() - Date.now(),
       });
     },
     async deleteData(id) {
-      await redis.del(prefix + id);
+      await redis.del("exgrl-session:" + id);
     },
   });
 
@@ -44,7 +51,7 @@ const { getSession, commitSession, destroySession } = createRedisSessionStorage(
   {
     cookie: {
       name: "exgrl-session",
-      maxAge: (process.env.SESSION_TTL || undefined) as number | undefined,
+      maxAge: (parseInt(process.env.SESSION_TTL) || undefined),
       secrets: [process.env.SESSION_SECRET || "not_so_secret"],
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,

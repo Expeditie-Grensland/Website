@@ -1,21 +1,25 @@
 import type { RedisClientType } from "@node-redis/client";
 import { createClient } from "redis";
 
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      REDIS_URL: string;
+    }
+  }
+}
+
 let redis: RedisClientType;
 
 declare global {
   var __redis: RedisClientType | undefined;
 }
 
-if (process.env.NODE_ENV === "production") {
-  redis = createClient({ url: process.env.SESSION_URL as string });
+if (!global.__redis) {
+  redis = createClient({ url: process.env.REDIS_URL });
   redis.connect();
-} else {
-  if (!global.__redis) {
-    global.__redis = createClient({ url: process.env.SESSION_URL as string });
-    global.__redis.connect();
-  }
-  redis = global.__redis;
-}
+
+  if (process.env.NODE_ENV === "development") global.__redis = redis;
+} else redis = global.__redis;
 
 export default redis;
