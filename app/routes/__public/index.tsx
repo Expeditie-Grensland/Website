@@ -41,7 +41,7 @@ const HomePage = () => {
           src={expedities[0].backgroundFile}
         />
       </div>
-      <div className="container mx-auto">
+      <div className="container mx-auto mt-20 mb-36">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
           {expedities.slice(1).map((expeditie: any) => (
             <ContentImage

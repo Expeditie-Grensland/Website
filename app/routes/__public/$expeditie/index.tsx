@@ -1,9 +1,16 @@
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import ContentImage from "~/components/public/ContentImage";
 import db from "~/utils/database/db";
 import getFileUrl from "~/utils/fileStorage/getFileUrl";
+
+const handle = {
+  backLink: () => ({
+    to: "/",
+    text: "← Home"
+  })
+}
 
 const loader: LoaderFunction = async ({ params }) => {
   const expeditie = await db.expeditie.findUnique({
@@ -28,12 +35,15 @@ const loader: LoaderFunction = async ({ params }) => {
   return json(data);
 };
 
+const meta: MetaFunction = ({data}) => ({
+  title: `Expeditie ${data.name}`
+});
+
 const ExpeditiePage = () => {
   const expeditie = useLoaderData();
 
   return (
     <>
-      <Link to="/" prefetch="intent">Home</Link><br />
       <div className="container mx-auto my-5">
         <ContentImage
           size="big"
@@ -46,5 +56,5 @@ const ExpeditiePage = () => {
   );
 };
 
-export { loader };
+export { handle, meta, loader };
 export default ExpeditiePage;
