@@ -63,6 +63,7 @@
     "cssnano": "^5.1.7",
     "eslint": "^8.13.0",
     "eslint-config-prettier": "^8.5.0",
+    "hls.js": "^1.1.5",
     "postcss": "^8.4.12",
     "postcss-cli": "^9.1.0",
     "prettier": "^2.6.2",
