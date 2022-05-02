@@ -4,10 +4,9 @@ import { useLoaderData } from "@remix-run/react";
 import ContentImage from "~/components/public/ContentImage";
 import db from "~/utils/database/db";
 import getFileUrl from "~/utils/fileStorage/getFileUrl";
-import Hls from "hls.js";
-import { useEffect, useRef } from "react";
 import { Prisma } from "~/generated/db";
-import SidebarList from "~/components/public/SidebarList";
+import SidebarList from "~/components/public/expeditie/SidebarList";
+import ExpeditieMovie from "~/components/public/expeditie/ExpeditieMovie";
 
 const handle = {
   backLink: () => ({
@@ -33,6 +32,7 @@ type LoaderData = {
   movieFilePoster?: string;
   movieFileManifest?: string;
   movieFileProgressive?: string;
+  countries: string[];
 };
 
 const loader: LoaderFunction = async ({ params }) => {
@@ -77,23 +77,24 @@ const loader: LoaderFunction = async ({ params }) => {
           },
         ],
       },
+      countries: true,
     },
   });
 
   if (!expeditie) throw json("Expeditie niet gevonden!", { status: 404 });
 
+  // TODO: These files are not handled very nicely.
+  const _makeUrl = (filename: string) =>
+    expeditie.showMovie
+      ? `${process.env.MEDIAFILE_BASE_URL}/${expeditie.slug}/${filename}`
+      : undefined;
+
   const data: LoaderData = {
     ...expeditie,
     backgroundFile: getFileUrl(expeditie.backgroundFile),
-    movieFilePoster: expeditie.showMovie
-      ? `${process.env.MEDIAFILE_BASE_URL}/${expeditie.slug}/poster.jpg`
-      : undefined,
-    movieFileManifest: expeditie.showMovie
-      ? `${process.env.MEDIAFILE_BASE_URL}/${expeditie.slug}/index.m3u8`
-      : undefined,
-    movieFileProgressive: expeditie.showMovie
-      ? `${process.env.MEDIAFILE_BASE_URL}/${expeditie.slug}/progressive.mp4`
-      : undefined,
+    movieFilePoster: _makeUrl("poster.jpg"),
+    movieFileManifest: _makeUrl("index.m3u8"),
+    movieFileProgressive: _makeUrl("progressive.mp4"),
   };
 
   return json<LoaderData>(data);
@@ -104,27 +105,7 @@ const meta: MetaFunction = ({ data }) => ({
 });
 
 const ExpeditiePage = () => {
-  const video = useRef<HTMLVideoElement>(null);
   const expeditie = useLoaderData<LoaderData>();
-
-  useEffect(() => {
-    if (video.current && Hls.isSupported()) {
-      const hls = new Hls({
-        capLevelToPlayerSize: true,
-      });
-      hls.loadSource(expeditie.movieFileManifest!);
-      hls.attachMedia(video.current);
-
-      hls.on(Hls.Events.ERROR, (_, data) => {
-        if (data.fatal) hls.destroy();
-      });
-    } else if (
-      video.current &&
-      video.current.canPlayType("application/vnd.apple.mpegurl")
-    ) {
-      video.current.src = expeditie.movieFileManifest!;
-    }
-  });
 
   return (
     <>
@@ -140,17 +121,11 @@ const ExpeditiePage = () => {
       <div className="container mx-auto my-20 flex flex-row flex-wrap-reverse">
         <div className="flex-auto w-1 mb-10">
           {expeditie.showMovie && (
-            <video
-              className="aspect-video shadow-important"
-              controls
-              poster={expeditie.movieFilePoster}
-              ref={video}
-            >
-              <source src={expeditie.movieFileProgressive} type="video/mp4" />
-              <p>
-                Sorry, deze video kan niet door je browser worden afgespeeld.
-              </p>
-            </video>
+            <ExpeditieMovie
+              progressiveFile={expeditie.movieFileProgressive!}
+              manifestFile={expeditie.movieFileManifest!}
+              posterFile={expeditie.movieFilePoster!}
+            />
           )}
         </div>
 

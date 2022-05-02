@@ -6,6 +6,13 @@ import db from "~/utils/database/db";
 import getFileUrl from "~/utils/fileStorage/getFileUrl";
 import { Prisma } from "~/generated/db/index";
 
+type LoaderData = {
+  name: string;
+  season: string;
+  slug: string;
+  backgroundFile: string;
+}[];
+
 const loader: LoaderFunction = async ({ request }) => {
   const expedities = await db.expeditie.findMany({
     select: {
@@ -24,11 +31,11 @@ const loader: LoaderFunction = async ({ request }) => {
     backgroundFile: getFileUrl(expeditie.backgroundFile),
   }));
 
-  return json(data);
+  return json<LoaderData>(data);
 };
 
 const HomePage = () => {
-  const expedities = useLoaderData();
+  const expedities = useLoaderData<LoaderData>();
 
   return (
     <>
