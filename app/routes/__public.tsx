@@ -1,9 +1,9 @@
-import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import PublicNavBar from "~/components/public/PublicNavBar";
-import type { Person } from "~/generated/db";
 import { getSession } from "~/utils/session/session";
+import type { LoaderFunction } from "@remix-run/node";
+import type { Person } from "~/generated/db";
 
 const handle = {
   bodyClasses: "bg-back-gray text-white-ish min-h-screen",

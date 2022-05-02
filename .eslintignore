@@ -3,3 +3,9 @@
 /build
 /public/build
 /app/generated
+
+# Config
+/postcss.config.js
+/remix.config.js
+/tailwind.config.js
+/remix.env.d.ts

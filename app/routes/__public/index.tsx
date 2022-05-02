@@ -1,10 +1,10 @@
-import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import ContentImage from "~/components/public/ContentImage";
+import { Prisma } from "~/generated/db/index";
 import db from "~/utils/database/db";
 import getFileUrl from "~/utils/fileStorage/getFileUrl";
-import { Prisma } from "~/generated/db/index";
+import type { LoaderFunction } from "@remix-run/node";
 
 type LoaderData = {
   name: string;

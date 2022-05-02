@@ -1,8 +1,8 @@
-import type { SessionIdStorageStrategy } from "@remix-run/node";
 import { createSessionStorage } from "@remix-run/node";
 import { nanoid } from "nanoid";
 import db from "../database/db";
 import redis from "./redis";
+import type { SessionIdStorageStrategy } from "@remix-run/node";
 
 declare global {
   namespace NodeJS {

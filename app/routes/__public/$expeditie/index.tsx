@@ -1,12 +1,12 @@
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import ContentImage from "~/components/public/ContentImage";
+import ExpeditieMovie from "~/components/public/expeditie/ExpeditieMovie";
+import SidebarList from "~/components/public/expeditie/SidebarList";
+import { Prisma } from "~/generated/db";
 import db from "~/utils/database/db";
 import getFileUrl from "~/utils/fileStorage/getFileUrl";
-import { Prisma } from "~/generated/db";
-import SidebarList from "~/components/public/expeditie/SidebarList";
-import ExpeditieMovie from "~/components/public/expeditie/ExpeditieMovie";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 
 const handle = {
   backLink: () => ({

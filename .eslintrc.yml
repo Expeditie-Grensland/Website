@@ -1,0 +1,41 @@
+root: true
+plugins:
+  - "@typescript-eslint"
+  - import
+extends:
+  - "@remix-run/eslint-config"
+  - "@remix-run/eslint-config/node"
+  - eslint:recommended
+  - prettier
+rules:
+  import/unambiguous: warn
+  import/no-commonjs:
+    - warn
+    - allowConditionalRequire: false
+  import/no-amd: warn
+  import/no-dynamic-require: warn
+  import/first: warn
+  import/exports-last: warn
+  import/no-duplicates: warn
+  import/no-namespace: warn
+  import/extensions:
+    - warn
+    - never
+  import/newline-after-import: warn
+  import/prefer-default-export: warn
+  import/group-exports: warn
+  import/order:
+    - warn
+    - groups:
+        - builtin
+        - external
+        - internal
+        - parent
+        - sibling
+        - index
+        - object
+        - type
+      newlines-between: never
+      alphabetize:
+        order: asc
+      warnOnUnassignedImports: true

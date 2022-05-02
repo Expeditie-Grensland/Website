@@ -1,5 +1,5 @@
 type Falsy = false | 0 | 0n | "" | null | undefined;
-export type ClassArray = string | Falsy | ClassArray[];
+type ClassArray = string | Falsy | ClassArray[];
 
 const cx = (...classes: ClassArray[]) =>
   classes

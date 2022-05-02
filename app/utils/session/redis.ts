@@ -1,5 +1,5 @@
-import type { RedisClientType } from "@node-redis/client";
 import { createClient } from "redis";
+import type { RedisClientType } from "redis";
 
 declare global {
   namespace NodeJS {
