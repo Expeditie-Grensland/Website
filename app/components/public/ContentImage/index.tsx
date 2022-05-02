@@ -32,22 +32,22 @@ const ContentImage = ({
         style={{ backgroundImage: `url(${src})` }}
       />
       <div className="p-[5%] bg-overlay absolute inset-0 top-auto text-shadow leading-tight">
-        <span
+        <h1
           className={cx([
             "block text-[2rem]",
             size == "big" && "md:text-[3rem]",
           ])}
         >
           {title}
-        </span>
-        <span
+        </h1>
+        <h2
           className={cx([
             "block text-[1.2rem]",
             size == "big" && "md:text-[1.6rem]",
           ])}
         >
           {subtitle}
-        </span>
+        </h2>
       </div>
     </div>
   );
