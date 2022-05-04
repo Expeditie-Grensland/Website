@@ -1,5 +1,6 @@
 import { redirect, json } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { useActionData } from "@remix-run/react";
+import LoginForm from "~/components/members/LoginForm";
 import authenticate from "~/utils/authentication/authenticate";
 import { commitSession, getSession } from "~/utils/session/session";
 import type { ActionFunction } from "@remix-run/node";
@@ -29,22 +30,7 @@ const action: ActionFunction = async ({ request }) => {
 const LoginPage = () => {
   const actionData = useActionData();
 
-  return (
-    <Form method="post">
-      <p style={{ color: "red" }}>{actionData?.errorMsg}</p>
-      <label>
-        Username
-        <input name="username" type="text" />
-      </label>
-
-      <label>
-        Password
-        <input name="password" type="password" />
-      </label>
-
-      <input type="submit" />
-    </Form>
-  );
+  return <LoginForm errorMsg={actionData?.errorMsg} />;
 };
 
 export { action };
