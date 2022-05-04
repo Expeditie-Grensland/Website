@@ -2,6 +2,7 @@ root: true
 plugins:
   - "@typescript-eslint"
   - import
+  - unused-imports
 extends:
   - "@remix-run/eslint-config"
   - "@remix-run/eslint-config/node"

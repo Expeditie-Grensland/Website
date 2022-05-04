@@ -1,21 +1,27 @@
 import { redirect, json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
+import { useActionData, useTransition } from "@remix-run/react";
 import LoginForm from "~/components/members/LoginForm";
 import authenticate from "~/utils/authentication/authenticate";
+import { getUserFromRequest, requireUser } from "~/utils/authentication/sessionUser";
 import { commitSession, getSession } from "~/utils/session/session";
-import type { ActionFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+
+const loader: LoaderFunction = async ({ request }) => {
+  requireUser(await getUserFromRequest(request), "/leden", true);
+  return null;
+};
 
 const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const username = formData.get("username") as string | undefined;
-  const password = formData.get("password") as string | undefined;
+  const username = formData.get("username");
+  const password = formData.get("password");
 
   if (!username || !password)
-    return json({ errorMsg: "Please enter your username and password" });
+    return json({ error: "Gelieve uw gegevens in te voeren" });
 
-  const user = await authenticate(username, password);
+  const user = await authenticate(username as string, password as string);
 
-  if (!user) return json({ errorMsg: "Could not login" });
+  if (!user) return json({ error: "De ingevoerde gegevens zijn incorrect" });
 
   const session = await getSession(request.headers.get("Cookies"));
   session.set("user", user);
@@ -29,9 +35,10 @@ const action: ActionFunction = async ({ request }) => {
 
 const LoginPage = () => {
   const actionData = useActionData();
+  const { state } = useTransition();
 
-  return <LoginForm errorMsg={actionData?.errorMsg} />;
+  return <LoginForm error={actionData?.error} isWaiting={state === "submitting"} />;
 };
 
-export { action };
+export { loader, action };
 export default LoginPage;

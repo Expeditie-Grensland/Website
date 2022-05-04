@@ -78,4 +78,7 @@ const { getSession, commitSession, destroySession } = createRedisSessionStorage(
   }
 );
 
-export { getSession, commitSession, destroySession };
+const getSessionFromRequest = async (request: Request) =>
+  await getSession(request?.headers?.get("Cookie"));
+
+export { getSession, commitSession, destroySession, getSessionFromRequest };
