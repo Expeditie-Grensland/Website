@@ -23,13 +23,16 @@ module.exports = {
     },
     extend: {
       colors: {
-        white: "#fff",
-        "white-ish": "#fafafa",
-        "light-gray": "#c7c7c7",
-        "normal-gray": "#a1a1a1",
-        "back-gray": "#333",
-        "black-ish": "#111",
-        overlay: "rgba(0, 0, 0, .45)",
+        p: {
+          back: "#333",
+          text: "#fafafa",
+          gray: "#a1a1a1",
+          lgray: "#c7c7c7",
+        },
+        m: {
+          back: "#fff",
+          text: "#111",
+        },
       },
       boxShadow: {
         important: "0 0 30px -10px #000",

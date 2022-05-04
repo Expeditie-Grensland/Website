@@ -13,7 +13,7 @@ const PublicNavBar = ({ user }: Props) => {
     <div className="container mx-auto my-5 flex">
       {link && (
         <Link
-          className="text-normal-gray hover:text-light-gray focus:text-light-gray transition-all flex-none"
+          className="text-p-gray hover:text-p-lgray focus:text-light-gray transition-all flex-none"
           to={link.to}
           prefetch="render"
         >
@@ -21,7 +21,7 @@ const PublicNavBar = ({ user }: Props) => {
         </Link>
       )}
       <Link
-        className="text-normal-gray hover:text-light-gray focus:text-light-gray transition-all flex-none ml-auto"
+        className="text-p-gray hover:text-p-lgray focus:text-p-lgray transition-all flex-none ml-auto"
         to={user ? "/leden" : "/login"}
         prefetch="intent"
       >

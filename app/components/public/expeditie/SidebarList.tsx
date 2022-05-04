@@ -6,7 +6,7 @@ type Props = {
 const SidebarList = ({ title, items }: Props) =>
   !items.length ? null : (
     <div>
-      <h3 className="text-normal-gray">
+      <h3 className="text-p-gray">
         {typeof title === "string"
           ? title
           : items.length === 1

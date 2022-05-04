@@ -6,7 +6,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import type { Person } from "~/generated/db";
 
 const handle = {
-  bodyClasses: "bg-back-gray text-white-ish min-h-screen",
+  bodyClasses: "bg-p-back text-p-text min-h-screen",
 };
 
 const loader: LoaderFunction = async ({ request }) => {

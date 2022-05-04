@@ -31,7 +31,7 @@ const ContentImage = ({
         ])}
         style={{ backgroundImage: `url(${src})` }}
       />
-      <div className="p-[5%] bg-overlay absolute inset-0 top-auto text-shadow leading-tight">
+      <div className="p-[5%] bg-[rgba(0,0,0,.45)] absolute inset-0 top-auto text-shadow leading-tight">
         <h1
           className={cx([
             "block text-[2rem]",

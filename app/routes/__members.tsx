@@ -1,7 +1,7 @@
 import { Outlet } from "@remix-run/react";
 
 const handle = {
-  bodyClasses: "bg-white text-black-ish min-h-screen",
+  bodyClasses: "bg-m-back text-m-text min-h-screen",
 };
 
 const MembersPageHolder = () => <Outlet />;

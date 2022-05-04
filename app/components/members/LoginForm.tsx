@@ -26,7 +26,7 @@ const LoginForm = ({ errorMsg }: Props) => {
         </label>
       ))}
 
-      <button className="block w-full my-3 mt-6 rounded-md bg-blue-500 px-5 py-2 hover:bg-blue-600 text-white-ish">
+      <button className="block w-full my-3 mt-6 rounded-md bg-blue-500 px-5 py-2 hover:bg-blue-600 text-white">
         Log in
       </button>
     </Form>
