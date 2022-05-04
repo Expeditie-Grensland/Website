@@ -4,7 +4,7 @@ import LoginForm from "~/components/members/LoginForm";
 import authenticate from "~/utils/authentication/authenticate";
 import { getUserFromRequest, requireUser } from "~/utils/authentication/sessionUser";
 import { commitSession, getSession } from "~/utils/session/session";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction , MetaFunction } from "@remix-run/node";
 
 const loader: LoaderFunction = async ({ request }) => {
   requireUser(await getUserFromRequest(request), "/leden", true);
@@ -33,6 +33,10 @@ const action: ActionFunction = async ({ request }) => {
   });
 };
 
+const meta: MetaFunction = () => ({
+  title: `Log In - Expeditie Grensland`,
+});
+
 const LoginPage = () => {
   const actionData = useActionData();
   const { state } = useTransition();
@@ -40,5 +44,5 @@ const LoginPage = () => {
   return <LoginForm error={actionData?.error} isWaiting={state === "submitting"} />;
 };
 
-export { loader, action };
+export { loader, action, meta };
 export default LoginPage;

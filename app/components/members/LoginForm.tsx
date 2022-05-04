@@ -13,7 +13,7 @@ const LoginForm = ({ error, isWaiting }: Props) => {
 
   return (
     <Form method="post" className="py-20 px-5 max-w-md mx-auto">
-      <h1 className="text-3xl mb-3">Log in</h1>
+      <h1 className="text-3xl mb-3">Log In</h1>
 
       {error && <p className="text-red-500 my-3">{error}</p>}
 
@@ -28,8 +28,8 @@ const LoginForm = ({ error, isWaiting }: Props) => {
         </label>
       ))}
 
-      <button className="block w-full my-3 mt-6 rounded-md bg-blue-500 px-5 py-2 hover:bg-blue-600 text-white">
-        {isWaiting ? "..." : "Log in"}
+      <button className="block w-full my-3 mt-6 rounded-md bg-blue-500 px-5 py-2 hover:bg-blue-600 focus:bg-blue-600 text-white focus:outline-0">
+        {isWaiting ? "..." : "Log In"}
       </button>
     </Form>
   );

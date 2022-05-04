@@ -4,7 +4,9 @@ const handle = {
   bodyClasses: "bg-m-back text-m-text min-h-screen",
 };
 
-const MembersPageHolder = () => <Outlet />;
+const MembersPageHolder = () => {
+  return <Outlet />;
+};
 
 export { handle };
 export default MembersPageHolder;

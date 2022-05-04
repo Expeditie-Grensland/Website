@@ -128,3 +128,14 @@ model Quote {
 
   @@index([timestamp])
 }
+
+model MemberLink {
+  id        Int    @id @default(autoincrement())
+  index     Int
+  title     String
+  text      String
+  link      String?
+  adminLink String?
+
+  @@index([index])
+}

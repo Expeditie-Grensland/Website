@@ -26,12 +26,15 @@ module.exports = {
         p: {
           back: "#333",
           text: "#fafafa",
-          gray: "#a1a1a1",
           lgray: "#c7c7c7",
+          gray: "#a1a1a1",
         },
         m: {
           back: "#fff",
           text: "#111",
+          lgray: "#aaa",
+          gray: "#6a6a6a",
+          dgray: "#444",
         },
       },
       boxShadow: {

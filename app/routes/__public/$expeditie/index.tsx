@@ -109,7 +109,7 @@ const ExpeditiePage = () => {
 
   return (
     <>
-      <div className="container mx-auto my-5">
+      <div className="container mx-auto mb-5">
         <ContentImage
           size="big"
           title={expeditie.name}

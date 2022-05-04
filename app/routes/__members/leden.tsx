@@ -1,30 +1,36 @@
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import NavBar from "~/components/NavBar";
-import { getUserFromSession } from "~/utils/authentication/sessionUser";
+import { getUserFromSession, requireUser } from "~/utils/authentication/sessionUser";
 import { getSessionFromRequest } from "~/utils/session/session";
 import type { LoaderFunction } from "@remix-run/node";
+import type { Person } from "~/generated/db";
 
 const handle = {
-  bodyClasses: "bg-p-back text-p-text min-h-screen",
+  bodyClasses: "bg-m-back text-m-text min-h-screen",
+};
+
+type LoaderData = {
+  user: Person;
 };
 
 const loader: LoaderFunction = async ({ request }) => {
   const user = getUserFromSession(await getSessionFromRequest(request));
+  requireUser(user);
 
-  return json({ user });
+  return json<LoaderData>({ user: user! });
 };
 
-const PublicPageHolder = () => {
+const LedenPageHolder = () => {
   const { user } = useLoaderData();
 
   return (
     <>
-      <NavBar type="public" user={user} />
+      <NavBar type="member" user={user} />
       <Outlet />
     </>
   );
 };
 
 export { handle, loader };
-export default PublicPageHolder;
+export default LedenPageHolder;
