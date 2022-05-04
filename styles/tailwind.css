@@ -4,6 +4,6 @@
 
 @layer utilities {
   .text-shadow {
-    text-shadow: 0 0 .75em #000;
+    text-shadow: 0 0 0.75em #000;
   }
 }

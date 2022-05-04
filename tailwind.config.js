@@ -17,7 +17,7 @@ module.exports = {
       },
     },
     colors: {
-      "white": "#fff",
+      white: "#fff",
       "white-ish": "#fafafa",
       "light-gray": "#c7c7c7",
       "normal-gray": "#a1a1a1",
@@ -40,4 +40,3 @@ module.exports = {
   },
   plugins: [],
 };
-
