@@ -12,6 +12,10 @@ import cx from "./utils/classNames/cx";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 
 const links: LinksFunction = () => [
+  { rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+  { rel: "icon", href: "/icon.svg", sizes: "any" },
+  { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+  { rel: "manifest", href: "/manifest.webmanifest" },
   { rel: "stylesheet", href: twStyle },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
