@@ -19,7 +19,7 @@ const NavBar = ({ type, user }: Props) => {
             className={cx([
               "flex-none",
               type === "public" && "text-p-gray hover:text-p-lgray",
-              type === "member" && "text-black",
+              type === "member" && "text-m-gray hover:text-m-dgray",
             ])}
             to={link.to}
             prefetch="render"

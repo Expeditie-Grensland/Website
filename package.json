@@ -46,6 +46,7 @@
     "encoding": "^0.1.13",
     "hls.js": "^1.1.5",
     "ldapjs": "^2.3.2",
+    "marked-react": "^1.1.1",
     "nanoid": "^3.3.4",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",

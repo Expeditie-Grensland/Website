@@ -35,6 +35,8 @@ module.exports = {
           lgray: "#aaa",
           gray: "#6a6a6a",
           dgray: "#444",
+          blue: "#007bff",
+          dblue: "#0056b3",
         },
       },
       boxShadow: {
