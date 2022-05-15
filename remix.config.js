@@ -8,7 +8,5 @@ module.exports = {
   serverBuildPath: "build/index.js",
   publicPath: "/build/",
   cacheDirectory: ".cache/",
-  serverDependenciesToBundle: [
-    "marked-react"
-  ]
+  serverDependenciesToBundle: ["marked", "marked-react"],
 };

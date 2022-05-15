@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import ContentImage from "~/components/public/ContentImage";
-import { Prisma } from "~/generated/db/index";
+import { Prisma } from "~/generated/db";
 import db from "~/utils/database/db";
 import getFileUrl from "~/utils/fileStorage/getFileUrl";
 import type { LoaderFunction } from "@remix-run/node";
