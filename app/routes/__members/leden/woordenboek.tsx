@@ -1,4 +1,4 @@
-import { json, LoaderFunction } from "@remix-run/node";
+import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import WordOrQuote from "~/components/members/WordOrQuote";
 import { Prisma } from "~/generated/db";
@@ -15,6 +15,10 @@ const handle = {
     text: "← Leden",
   }),
 };
+
+const meta: MetaFunction = () => ({
+  title: `Woordenboek - Expeditie Grensland`,
+});
 
 type LoaderData = {
   items: {
@@ -83,5 +87,5 @@ const DictionaryPage = () => {
   );
 };
 
-export { handle, loader };
+export { handle, meta, loader };
 export default DictionaryPage;

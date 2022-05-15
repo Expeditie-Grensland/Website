@@ -13,6 +13,7 @@ type LinkItem = {
   text: string;
   link?: string;
   adminLink?: string;
+  external?: boolean;
 };
 
 type LoaderData = {
@@ -33,6 +34,7 @@ const loader: LoaderFunction = async ({ request }) => {
     text,
     link: link || undefined,
     adminLink: adminLink || undefined,
+    external: true,
   }));
 
   return json<LoaderData>({
@@ -87,7 +89,7 @@ const MembersHome = () => {
 
   return (
     <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-      {links.map(({ title, text, link, adminLink }) => (
+      {links.map(({ title, text, link, adminLink, external }) => (
         <div
           className="border border-gray-300 rounded p-5 flex flex-col space-y-3"
           key={title}
@@ -95,23 +97,41 @@ const MembersHome = () => {
           <h1 className="text-xl">{title}</h1>
           <p className="flex-auto">{text}</p>
           <div className="space-x-5">
-            {link && (
-              <Link
-                className="block text-blue-500 hover:text-blue-700 float-left"
-                to={link}
-              >
-                Open
-              </Link>
-            )}
+            {link &&
+              (!external ? (
+                <Link
+                  className="block text-blue-500 hover:text-blue-700 float-left"
+                  to={link}
+                >
+                  Open
+                </Link>
+              ) : (
+                <a
+                  className="block text-blue-500 hover:text-blue-700 float-left"
+                  href={link}
+                  target="_blank"
+                >
+                  Open
+                </a>
+              ))}
 
-            {adminLink && (
-              <Link
-                className="block text-blue-500 hover:text-blue-700 float-left"
-                to={adminLink}
-              >
-                Admin
-              </Link>
-            )}
+            {adminLink &&
+              (!external ? (
+                <Link
+                  className="block text-blue-500 hover:text-blue-700 float-left"
+                  to={adminLink}
+                >
+                  Admin
+                </Link>
+              ) : (
+                <a
+                  className="block text-blue-500 hover:text-blue-700 float-left"
+                  href={adminLink}
+                  target="_blank"
+                >
+                  Admin
+                </a>
+              ))}
           </div>
         </div>
       ))}
