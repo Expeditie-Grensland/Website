@@ -38,7 +38,7 @@
     "build:db": "prisma generate",
     "build:protobufs": "npx pbjs -t static-module -w es6 -o app/generated/protobufs/index.js protobufs/**/*.proto && npx pbts -o app/generated/protobufs/index.d.ts app/generated/protobufs/index.js",
     "build:styles": "postcss --verbose --env production -d app/generated/styles/ styles/**/*.css",
-    "serve": "remix-serve build"
+    "start": "remix-serve build"
   },
   "dependencies": {
     "@prisma/client": "^3.14.0",

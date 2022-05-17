@@ -1,6 +1,6 @@
 import { json } from "@remix-run/node";
 import { useParams } from "@remix-run/react";
-import mapboxgl, { LngLatBounds } from "mapbox-gl";
+import mapboxgl, { LngLatBounds, NavigationControl } from "mapbox-gl";
 import mapboxglStyle from "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useRef, useState } from "react";
 import db from "~/utils/database/db";
@@ -130,6 +130,7 @@ const ExpeditieMapPage = () => {
       zoom: 14,
     });
 
+    map.current.addControl(new NavigationControl());
     map.current.on("load", () => setMapHasLoaded(true));
   });
 
@@ -159,9 +160,10 @@ const ExpeditieMapPage = () => {
   }, [map, geoJson, boundaries, mapHasLoaded]);
 
   return (
-    <div>
-      <div className="w-full h-[600px]" ref={mapContainer}></div>
-    </div>
+    <div
+      className="w-full h-96 flex-auto bg-[#75cff0] shadow-important"
+      ref={mapContainer}
+    ></div>
   );
 };
 

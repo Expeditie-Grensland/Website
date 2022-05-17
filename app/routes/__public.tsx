@@ -19,10 +19,10 @@ const PublicPageHolder = () => {
   const { user } = useLoaderData();
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <NavBar type="public" user={user} />
       <Outlet />
-    </>
+    </div>
   );
 };
 
