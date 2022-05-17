@@ -1,15 +1,34 @@
 import { Link, useMatches } from "@remix-run/react";
 import cx from "~/utils/classNames/cx";
 import type { Person } from "~/generated/db";
+import { RouteData } from "@remix-run/react/routeData";
+import { Params } from "react-router";
 
 type Props = {
   type: "public" | "member";
   user: Person | undefined;
 };
 
+type Match = {
+  id: string;
+  pathname: string;
+  params: Params<string>;
+  data: RouteData;
+  handle: any;
+};
+
+type NavBarHandle = {
+  backLink: (props: Match & { matches: Match[] }) => {
+    to: string;
+    text: string;
+  };
+};
+
 const NavBar = ({ type, user }: Props) => {
-  const linkMatch = useMatches().find(({ handle }) => handle?.backLink);
-  const link = linkMatch && linkMatch.handle.backLink(linkMatch.data);
+  const matches = useMatches();
+  const linkMatch = matches.find(({ handle }) => handle?.backLink);
+  const link =
+    linkMatch && linkMatch.handle.backLink({ matches, ...linkMatch });
 
   return (
     <div className="container mx-auto py-6 space-x-3 flex">
@@ -54,4 +73,5 @@ const NavBar = ({ type, user }: Props) => {
   );
 };
 
+export type { NavBarHandle }
 export default NavBar;

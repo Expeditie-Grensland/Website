@@ -30,11 +30,13 @@
     "dev": "concurrently -c magenta -n 'd:' 'npm:dev:*'",
     "dev:app": "remix dev",
     "dev:db": "watch 'prisma generate' db/",
+    "dev:protobufs": "watch 'npx pbjs -t static-module -w es6 -o app/generated/protobufs/index.js protobufs/**/*.proto && npx pbts -o app/generated/protobufs/index.d.ts app/generated/protobufs/index.js' protobufs/",
     "dev:styles": "postcss --watch --verbose --env development -d app/generated/styles/ styles/**/*.css",
     "clean": "rimraf .cache/ build/ public/build/ app/generated/",
     "build": "concurrently -c magenta -n 'b:' 'npm:build:*(!app)' && concurrently -c magenta -n 'b:app' 'npm:build:app'",
     "build:app": "remix build",
     "build:db": "prisma generate",
+    "build:protobufs": "npx pbjs -t static-module -w es6 -o app/generated/protobufs/index.js protobufs/**/*.proto && npx pbts -o app/generated/protobufs/index.d.ts app/generated/protobufs/index.js",
     "build:styles": "postcss --verbose --env production -d app/generated/styles/ styles/**/*.css",
     "serve": "remix-serve build"
   },
@@ -48,6 +50,7 @@
     "ldapjs": "^2.3.2",
     "marked-react": "^1.1.1",
     "nanoid": "^3.3.4",
+    "protobufjs": "^6.11.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "redis": "^4.1.0"

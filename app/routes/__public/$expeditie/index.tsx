@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import ContentImage from "~/components/public/ContentImage";
 import ExpeditieMovie from "~/components/public/expeditie/ExpeditieMovie";
 import SidebarList from "~/components/public/expeditie/SidebarList";
@@ -130,6 +130,15 @@ const ExpeditiePage = () => {
         </div>
 
         <div className="flex-none w-full lg:w-72 pl-4 mb-10 text-center lg:text-right space-y-5">
+          <div>
+            <Link
+              className="inline-block px-3 py-1.5 border border-p-text rounded-md hover:bg-p-text hover:text-p-back transition-colors"
+              to={`/${expeditie.slug}/kaart`}
+            >
+              Open de kaart
+            </Link>
+          </div>
+
           <SidebarList
             title={["Filmmonteur", "Filmmonteurs"]}
             items={expeditie.movieEditors.map(

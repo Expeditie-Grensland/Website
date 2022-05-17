@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message GeoData {
+  repeated GeoNode nodes = 1;
+}
+
+message GeoNode {
+  uint32 id = 1;
+  repeated double latitudes = 2;
+  repeated double longitudes = 3;
+}
