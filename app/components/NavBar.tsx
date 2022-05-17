@@ -1,8 +1,8 @@
 import { Link, useMatches } from "@remix-run/react";
 import cx from "~/utils/classNames/cx";
+import type { RouteData } from "@remix-run/react/routeData";
+import type { Params } from "react-router";
 import type { Person } from "~/generated/db";
-import { RouteData } from "@remix-run/react/routeData";
-import { Params } from "react-router";
 
 type Props = {
   type: "public" | "member";
@@ -73,5 +73,5 @@ const NavBar = ({ type, user }: Props) => {
   );
 };
 
-export type { NavBarHandle }
+export type { NavBarHandle };
 export default NavBar;

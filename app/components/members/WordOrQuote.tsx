@@ -44,9 +44,7 @@ const WordOrQuote = ({ title, titleExtra, content, attachment }: Props) => (
       <div className="mb-2">
         <h2 className="inline text-2xl">{title}</h2>
         {titleExtra && (
-          <span className="text-m-gray text-lg ml-3">
-            {titleExtra}
-          </span>
+          <span className="text-m-gray text-lg ml-3">{titleExtra}</span>
         )}
       </div>
 

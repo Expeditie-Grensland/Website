@@ -8,5 +8,5 @@ module.exports = {
   serverBuildPath: "build/index.js",
   publicPath: "/build/",
   cacheDirectory: ".cache/",
-  serverDependenciesToBundle: ["marked", "marked-react"],
+  serverDependenciesToBundle: ["marked", "marked-react", "mapbox-gl"],
 };

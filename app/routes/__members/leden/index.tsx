@@ -110,6 +110,7 @@ const MembersHome = () => {
                   className="block text-blue-500 hover:text-blue-700 float-left"
                   href={link}
                   target="_blank"
+                  rel="noreferrer"
                 >
                   Open
                 </a>
@@ -128,6 +129,7 @@ const MembersHome = () => {
                   className="block text-blue-500 hover:text-blue-700 float-left"
                   href={adminLink}
                   target="_blank"
+                  rel="noreferrer"
                 >
                   Admin
                 </a>

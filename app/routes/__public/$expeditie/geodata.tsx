@@ -1,8 +1,8 @@
-import { json, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Prisma } from "~/generated/db";
-import { GeoNode } from "~/generated/protobufs";
-import { GeoData } from "~/generated/protobufs";
+import { GeoNode, GeoData } from "~/generated/protobufs";
 import db from "~/utils/database/db";
+import type { LoaderFunction } from "@remix-run/node";
 
 const loader: LoaderFunction = async ({ params }) => {
   const expeditie = await db.expeditie.findUnique({

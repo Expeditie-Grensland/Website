@@ -1,4 +1,4 @@
-import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import WordOrQuote from "~/components/members/WordOrQuote";
 import { Prisma } from "~/generated/db";
@@ -8,6 +8,7 @@ import {
 } from "~/utils/authentication/sessionUser";
 import db from "~/utils/database/db";
 import getFileUrl from "~/utils/fileStorage/getFileUrl";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 
 const handle = {
   backLink: () => ({

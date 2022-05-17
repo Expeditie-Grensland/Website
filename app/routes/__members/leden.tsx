@@ -1,7 +1,10 @@
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import NavBar from "~/components/NavBar";
-import { getUserFromSession, requireUser } from "~/utils/authentication/sessionUser";
+import {
+  getUserFromSession,
+  requireUser,
+} from "~/utils/authentication/sessionUser";
 import { getSessionFromRequest } from "~/utils/session/session";
 import type { LoaderFunction } from "@remix-run/node";
 import type { Person } from "~/generated/db";
