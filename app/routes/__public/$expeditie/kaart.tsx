@@ -59,8 +59,6 @@ const ExpeditieMapPage = () => {
   const [boundaries, setBoundaries] = useState<LngLatBounds>();
 
   useEffect(() => {
-    if (geoJson) return;
-
     (async () => {
       const geoData = await geoDataFetcher(params.expeditie!);
       if (!geoData) return;
@@ -113,7 +111,7 @@ const ExpeditieMapPage = () => {
         ])
       );
     })();
-  });
+  }, [params.expeditie]);
 
   useEffect(() => {
     if (map.current) return;
