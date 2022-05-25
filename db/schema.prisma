@@ -26,6 +26,7 @@ model Expeditie {
 
   geoNodes     GeoNode[]     @relation()
   geoLocations GeoLocation[] @relation()
+  earnedPoints EarnedPoint[] @relation()
 
   @@index([slug])
   @@index([sequenceNumber])
@@ -56,6 +57,7 @@ model Person {
 
   geoNodes     GeoNode[]     @relation()
   geoLocations GeoLocation[] @relation()
+  earnedPoints EarnedPoint[] @relation()
 
   @@index([lastName, firstName])
   @@index([lastName, initials])
@@ -130,7 +132,7 @@ model Quote {
 }
 
 model MemberLink {
-  id        Int    @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   index     Int
   title     String
   text      String
@@ -138,4 +140,17 @@ model MemberLink {
   adminLink String?
 
   @@index([index])
+}
+
+model EarnedPoint {
+  id          Int        @id @default(autoincrement())
+  amount      Int
+  timestamp   Int
+  timezone    String     @default("Europe/Amsterdam")
+  personId    Int
+  person      Person     @relation(fields: [personId], references: [id])
+  expeditieId Int?
+  expeditie   Expeditie? @relation(fields: [expeditieId], references: [id])
+
+  @@index([timestamp])
 }
