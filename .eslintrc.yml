@@ -40,3 +40,5 @@ rules:
       alphabetize:
         order: asc
       warnOnUnassignedImports: true
+globals:
+  JSX: "readonly"

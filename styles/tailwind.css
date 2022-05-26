@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .input-solid {
+    @apply block rounded border bg-gray-100 border-gray-100 py-3 px-4 text-gray-700 placeholder:text-gray-400;
+    @apply focus:border-gray-400 focus:ring-0 focus:outline-none focus:bg-white;
+  }
+
+  .button {
+    @apply block rounded py-3 px-4 focus:ring-0 focus:outline-none;
+  }
+}
+
 @layer utilities {
   .text-shadow {
     text-shadow: 0 0 0.75em #000;

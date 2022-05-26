@@ -21,14 +21,14 @@ const LoginForm = ({ error, isWaiting }: Props) => {
         <label className="block my-3" key={index}>
           <div className="mb-1">{label}</div>
           <input
-            className="block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-400 focus:ring-0"
+            className="w-full input-solid"
             disabled={isWaiting}
             {...{ name, type, placeholder }}
           />
         </label>
       ))}
 
-      <button className="block w-full my-3 mt-6 rounded-md bg-blue-500 px-5 py-2 hover:bg-blue-600 focus:bg-blue-600 text-white focus:outline-0">
+      <button className="w-full mb-3 mt-5 bg-blue-500 hover:bg-blue-600 focus:bg-blue-600 text-white button">
         {isWaiting ? "..." : "Log In"}
       </button>
     </Form>
