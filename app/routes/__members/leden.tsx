@@ -2,10 +2,9 @@ import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import NavBar from "~/components/NavBar";
 import {
-  getUserFromSession,
+  getUserFromRequest,
   requireUser,
 } from "~/utils/authentication/sessionUser";
-import { getSessionFromRequest } from "~/utils/session/session";
 import type { LoaderFunction } from "@remix-run/node";
 import type { Person } from "~/generated/db";
 
@@ -18,10 +17,9 @@ type LoaderData = {
 };
 
 const loader: LoaderFunction = async ({ request }) => {
-  const user = getUserFromSession(await getSessionFromRequest(request));
-  requireUser(user);
+  const user = requireUser(await getUserFromRequest(request));
 
-  return json<LoaderData>({ user: user! });
+  return json<LoaderData>({ user });
 };
 
 const LedenPageHolder = () => {

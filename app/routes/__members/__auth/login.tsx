@@ -4,7 +4,6 @@ import LoginForm from "~/components/members/LoginForm";
 import authenticate from "~/utils/authentication/authenticate";
 import {
   getUserFromRequest,
-  requireUser,
 } from "~/utils/authentication/sessionUser";
 import { commitSession, getSession } from "~/utils/session/session";
 import type {
@@ -14,7 +13,7 @@ import type {
 } from "@remix-run/node";
 
 const loader: LoaderFunction = async ({ request }) => {
-  requireUser(await getUserFromRequest(request), "/leden", true);
+  if (await getUserFromRequest(request)) throw redirect("/leden");
   return null;
 };
 
