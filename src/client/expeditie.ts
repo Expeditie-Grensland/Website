@@ -1,7 +1,9 @@
+import Hls, {HlsConfig} from "hls.js"
+
 const video = document.getElementById('video') as HTMLVideoElement | null;
 const videoSrc = video?.dataset?.manifestUrl
 
-const hlsConfig: Partial<Hls.Config> = {
+const hlsConfig: Partial<HlsConfig> = {
     capLevelToPlayerSize: true,
 }
 
