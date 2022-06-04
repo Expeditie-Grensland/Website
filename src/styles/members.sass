@@ -6,7 +6,7 @@
 $body-bg: #fff
 $light: #fafafa
 
-$dark: #111
+$dark: #111111
 $body-color: $dark
 
 $font-family-sans-serif: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
@@ -35,9 +35,12 @@ $h2-font-size: 1.5rem
 @import "../../node_modules/bootstrap/scss/functions"
 @import "../../node_modules/bootstrap/scss/variables"
 @import "../../node_modules/bootstrap/scss/mixins"
+@import "../../node_modules/bootstrap/scss/utilities"
 
+@import "../../node_modules/bootstrap/scss/root"
 @import "../../node_modules/bootstrap/scss/reboot"
 @import "../../node_modules/bootstrap/scss/type"
+@import "../../node_modules/bootstrap/scss/containers"
 @import "../../node_modules/bootstrap/scss/images"
 @import "../../node_modules/bootstrap/scss/grid"
 @import "../../node_modules/bootstrap/scss/buttons"
@@ -46,10 +49,22 @@ $h2-font-size: 1.5rem
 @import "../../node_modules/bootstrap/scss/utilities"
 @import "../../node_modules/bootstrap/scss/card"
 @import "../../node_modules/bootstrap/scss/forms"
-@import "../../node_modules/bootstrap/scss/input-group"
 @import "../../node_modules/bootstrap/scss/tables"
 @import "../../node_modules/bootstrap/scss/alert"
-@import "../../node_modules/bootstrap/scss/custom-forms"
+@import "../../node_modules/bootstrap/scss/forms/input-group"
+
+// Helpers
+@import "../../node_modules/bootstrap/scss/helpers"
+
+// Utilities
+@import "../../node_modules/bootstrap/scss/utilities/api"
+
+// Modify links to have no underline by default (which was changed when updating bootstrap to v5)
+a
+  text-decoration: none
+a:hover
+  text-decoration: underline
+
 
 .pnt-team > img
   width: 100%

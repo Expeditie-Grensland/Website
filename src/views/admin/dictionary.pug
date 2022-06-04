@@ -7,7 +7,7 @@ block title
 block content
     .row
         .col-12.mb-4
-            .h1 Woordenboek
+            .h1 Woordenboek Admin
 
         if errMsgs.length + infoMsgs.length
             .col-12.mb-4
@@ -17,19 +17,21 @@ block content
                     .alert.alert-info= msg
 
         .col-12.mb-4
+            hr
+            .h2.mb-3 Definitie toevoegen
             form(method='POST' action='/admin/woordenboek/add')
                 .form-row.align-items-center
-                    .col-12.mb-2
+                    .col-12.col-md-3.mb-2
                         input.form-control(type='text' name='word' placeholder='Woord' required)
-                    .col-12.mb-2
+                    .col-12.col-md-3.mb-2
                         .form-array
                             textarea.form-control.form-array-item.mb-2(placeholder='Definitie' name='definitions[]' rows='3' required)
                             textarea.form-control.form-array-proto.mb-2(placeholder='Definitie' name='definitions[]' rows='3' required hidden disabled)
-                            button.form-array-add.btn.btn-secondary.mr-2 +
+                            button.form-array-add.btn.btn-secondary.me-2 +
                             button.form-array-remove.btn.btn-secondary –
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='phonetic' placeholder='Phonetisch' size='30')
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='file' placeholder='Bijlage Id' size='30' minlength='24' maxlength='24')
                     .col-auto.mb-2
                         button.btn.btn-primary(type='submit') Toevoegen
@@ -37,6 +39,8 @@ block content
         // TODO: discription of link formats etc. (markdown)
 
         .col-12.mb-4
+            hr
+            .h2.mb-3 Bestaande definities aanpassen
             table.table.table-sticky-header
                 thead
                     tr
@@ -56,7 +60,7 @@ block content
                                     each def in word.definitions
                                         textarea.form-control.form-array-item.mb-2(form=`f-${i}` name='definitions[]' rows='3' required)= def
                                     textarea.form-control.form-array-proto.mb-2(form=`f-${i}` name='definitions[]' rows='3' required hidden disabled)
-                                    button.form-array-add.btn.btn-secondary.mr-2 +
+                                    button.form-array-add.btn.btn-secondary.me-2 +
                                     button.form-array-remove.btn.btn-secondary –
                             td
                                 input.form-control(type='text' form=`f-${i}` name='phonetic' value=word.phonetic)

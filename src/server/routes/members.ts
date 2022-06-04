@@ -35,9 +35,11 @@ router.post('/login', passport.authenticate('ldapauth', {
     failureFlash: true
 }));
 
-router.get('/loguit', (req, res) => {
-    req.logout();
-    res.redirect('/');
+router.get('/loguit', (req, res, next) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('/');
+    });
 });
 
 router.use(AuthHelper.loginRedirect);

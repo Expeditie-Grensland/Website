@@ -7,7 +7,7 @@ block title
 block content
     .row
         .col-12.mb-4
-            .h1 Citaten
+            .h1 Citaten Admin
 
         if errMsgs.length + infoMsgs.length
             .col-12.mb-4
@@ -17,24 +17,28 @@ block content
                     .alert.alert-info= msg
 
         .col-12.mb-4
+            hr
+            .h2.mb-3 Citaat toevoegen
             form(method='POST' action='/admin/citaten/add')
                 .form-row.align-items-center
-                    .col-12.mb-2
+                    .col-12.col-md-3.mb-2
                         textarea.form-control(rows='1' name='quote' placeholder='Citaat' required)
-                    .col-12.mb-2
+                    .col-12.col-md-3.mb-2
                         textarea.form-control(rows='3' name='context' placeholder='Context' required)
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='quotee' placeholder='Persoon' size='30' required)
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='datetime-local' name='time' placeholder='Lokale tijd' step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" size=30 required)
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='zone' placeholder='Tijdzone' size=30 required)
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='file' placeholder='Bijlage Id' size='30' minlength='24' maxlength='24')
-                    .col-auto.mb-2
+                    .col-auto.col-md-3.mb-2
                         button.btn.btn-primary(type='submit') Toevoegen
 
         .col-12.mb-4
+            hr
+            .h2.mb-3 Bestaande citaten aanpassen
             table.table.table-sticky-header
                 thead
                     tr

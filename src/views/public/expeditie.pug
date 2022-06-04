@@ -11,7 +11,7 @@ block title
 block content
     .row
         .col
-            .img-large.embed-responsive
+            .img-large.ratio
                 +innerImage(expeditie)
 
 
@@ -33,7 +33,7 @@ block content
 
         .col-12.col-md-8.order-md-1
             if expeditie.showMovie && (!expeditie.movieRestricted || loggedIn)
-                .embed-responsive.embed-responsive-16by9
+                .ratio.ratio-16x9
                     video#video.embed-responsive-item(controls poster=movieUrls.poster preload="none" data-manifest-url=movieUrls.manifest)
                         source(src=movieUrls.fallbackMP4 type="video/mp4")
                         p Sorry, deze video wordt niet door je browser ondersteund.

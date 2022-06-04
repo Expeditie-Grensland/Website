@@ -17,36 +17,43 @@ block content
                     .alert.alert-info= msg
 
         .col-12.mb-2
+            hr
+            .h2.mb-3 Nieuw bestand uploaden
             form(method='POST' action='/admin/bestanden/upload' enctype='multipart/form-data')
                 .form-row.align-items-center
-                    .col-12.col-md-6.mb-2.mr-md-2
-                        .custom-file
-                            input#files.custom-file-input(name='files' type='file' multiple accept='image/jpeg,audio/mpeg,video/mp4' required)
-                            label.custom-file-label(for='files') Kies bestanden
-                    .col-auto.mb-2.mr-2
-                        .custom-control.custom-checkbox
-                            input#filesRestrict.custom-control-input(name='restricted' type="checkbox")
-                            label.custom-control-label(for='filesRestrict') Beperk toegang
+                    .col-12.col-md-4.mb-2.me-md-2
+                        label.form-label(for='files') Kies bestanden
+                        input#files.form-control(name='files' type='file' multiple accept='image/jpeg,audio/mpeg,video/mp4' required)
+                    .col-auto.mb-2.me-2
+                        .form-check
+                            input#filesRestrict.form-check-input(name='restricted' type="checkbox")
+                            label.form-check-label(for='filesRestrict') Beperk toegang
                     .col-auto.mb-2
                         button.btn.btn-primary(type='submit') Uploaden
 
         .col-12.mb-4
+            hr
+            .h2.mb-3 Bestand aanmaken in database zonder uploaden
+            p Vereist handmatige upload van het bestand met de goede naam naar de webserver onder #[code '/mnt/expeditiegrensland-media/]'
             form(method='POST' action='/admin/bestanden/add')
                 .form-row.align-items-center
-                    .col-auto.mb-2.mr-2
-                        select.custom-select(name='mime' required)
+                    .col-auto.col-md-4.mb-2.me-2
+                        select.form-select(name='mime' required)
                             option(selected value='' disabled) Mime type
                             option(value="image/jpeg") image/jpeg
                             option(value="audio/mpeg") audio/mpeg
                             option(value="video/mp4") video/mp4
-                    .col-auto.mb-2.mr-2
-                        .custom-control.custom-checkbox
-                            input#mimeRestrict.custom-control-input(name='restricted' type="checkbox")
-                            label.custom-control-label(for='mimeRestrict') Beperk toegang
+                    .col-auto.mb-2.me-2
+                        .col-auto.mb-2.me-2
+                            .form-check
+                                input#mimeRestrict.form-check-input(name='restricted' type="checkbox")
+                                label.form-check-label(for='mimeRestrict') Beperk toegang
                     .col-auto.mb-2
                         button.btn.btn-primary(type='submit') Toevoegen
 
         .col-12.mb-4
+            hr
+            .h2.mb-3 Bestaande bestanden aanpassen
             table.table.table-sticky-header
                 thead
                     tr

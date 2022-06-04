@@ -30,17 +30,16 @@ block content
         .col-12.mb-4
             form(method='POST' action='/admin/gpx/upload' enctype='multipart/form-data')
                 .form-row.align-items-center
-                    .col-12.col-md-6.mb-2.mr-md-2
-                        .custom-file
-                            input#file.custom-file-input(name='file' type='file' accept='.gpx' required)
-                            label.custom-file-label(for='file') Kies bestand
-                    .col-auto.mb-2.mr-2
-                        select.custom-select(name='expeditie' required)
+                    .col-12.col-md-4.mb-2.me-md-2
+                        input.form-control(name='file' type='file' accept='.gpx' required)
+                    .col-auto.col-md-4.mb-2.me-2
+                        select.form-select(name='expeditie' required)
                             +expeditieOptions()
-                    .col-auto.mb-2.mr-2
-                        select.custom-select(name='person' required)
+                    .col-auto.col-md-4.mb-2.me-2
+                        select.form-select(name='person' required)
                             +personOptions(user)
-                    .col-auto.mb-2.mr-2
-                        input.form-control(type='text' name='zone' placeholder='Tijdzone' value='Europe/Amsterdam' size=30 required)
-                    .col-auto.mb-2
+                    .col-auto.col-md-4.mb-2.me-2
+                        label.form-label(for='timezone') Kies een geldige tijdzone uit de 'tz database'
+                        input#timezone.form-control(type='text' name='zone' placeholder='Tijdzone' value='Europe/Amsterdam' size=30 required)
+                    .col-auto.col-md-4.mb-2
                         button.btn.btn-primary(type='submit') Uploaden

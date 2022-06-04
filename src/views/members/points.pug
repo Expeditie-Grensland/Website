@@ -5,18 +5,18 @@ block title
 
 block content
     .row.align-items-start.d-flex.pb-4
-        .col-auto.mr-auto
+        .col-auto.me-auto
             figure.figure.pnt-team
                 img.figure-img.rounded(src='/static/images/KZ.png' alt='Team Blauw')
                 figcaption.figure-caption.text-center Team Blauw
 
-        .col-auto.ml-auto.mr-auto
+        .col-auto.ms-auto.me-auto
             h1.display-4
-                span.pnt-score.no-wrap.text-right #{score.Blauw}
+                span.pnt-score.no-wrap.text-end #{score.Blauw}
                 span.pnt-dash.text-center &ndash;
-                span.pnt-score.no-wrap-text-left #{score.Rood}
+                span.pnt-score.no-wrap-text-start #{score.Rood}
 
-        .col-auto.ml-auto
+        .col-auto.ms-auto
             figure.figure.pnt-team
                 img.figure-img.rounded(src='/static/images/KG.png' alt='Team Rood')
                 figcaption.figure-caption.text-center Team Rood
@@ -36,7 +36,7 @@ block content
                         span #{earnedPoint.name}&#32;
                         span.text-muted (#{earnedPoint.date})
             else if earnedPoint.team === 'Rood'
-                .col-12.text-right
+                .col-12.text-end
                     span
                         span.text-muted (#{earnedPoint.date})&#32;
                         span #{earnedPoint.name}&#32;

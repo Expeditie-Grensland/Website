@@ -28,25 +28,29 @@ block content
                     .alert.alert-info= msg
 
         .col-12.mb-4
+            hr
+            .h2.mb-3 Punt toevoegen
             form(method='POST' action='/admin/punten/add')
                 .form-row.align-items-center
-                    .col-auto.mb-2.mr-2
-                        select.custom-select(name='person' required)
+                    .col-auto.col-md-3.mb-2.me-2
+                        select.form-select(name='person' required)
                             +personOptions()
-                    .col-auto.mb-2.mr-2
-                        select.custom-select(name='expeditie' required)
+                    .col-auto.col-md-3.mb-2.me-2
+                        select.form-select(name='expeditie' required)
                             +expeditieOptions()
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='number' name='amount' placeholder="Aantal punten" size=30 required)
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='datetime-local' name='time' placeholder='Lokale tijd' step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" size=30 required)
-                    .col-auto.mb-2.mr-2
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='zone' placeholder='Tijdzone' size=30 required)
-                    .col-auto.mb-2
+                    .col-auto.col-md-3.mb-2
                         button.btn.btn-primary(type='submit') Toevoegen
 
 
         .col-12.mb-4
+            hr
+            .h2.mb-3 Bestaande punten aanpassen
             table.table.table-sticky-header
                 thead
                     tr
@@ -60,10 +64,10 @@ block content
                     each ps, i in earnedPoints
                         tr
                             td
-                                select.custom-select(form=`f-${i}` name='person' required)
+                                select.form-select(form=`f-${i}` name='person' required)
                                     +personOptions(ps.personId)
                             td
-                                select.custom-select(form=`f-${i}` name='expeditie' required)
+                                select.form-select(form=`f-${i}` name='expeditie' required)
                                     +expeditieOptions(ps.expeditieId || null)
                             td
                                 input.form-control(type='number' form=`f-${i}` name='amount' value=ps.amount required)
