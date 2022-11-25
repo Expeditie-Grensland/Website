@@ -29,9 +29,10 @@ const map = new mapboxgl.Map({
     projection: {
         name: 'globe'
     },
-    style: 'mapbox://styles/mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj?optimize=true',
+    style: 'mapbox://styles/mapbox/outdoors-v12',
     center: [7.048, 53.0545],
-    zoom: 2
+    zoom: 2,
+    antialias: true
 });
 
 map.addControl(new mapboxgl.NavigationControl());
@@ -82,6 +83,54 @@ const setRoute = (res: GeoJsonResult) => {
 
 
 map.on('load', () => {
+
+    // Insert the 3d building layer beneath any symbol layer.
+    const layers = map.getStyle().layers;
+    const labelLayerId = layers.find(
+        (layer) => layer.type === 'symbol' && layer.layout!['text-field']
+    )!.id;
+    
+    // The 'building' layer in the Mapbox Streets
+    // vector tileset contains building height data
+    // from OpenStreetMap.
+    map.addLayer(
+        {
+            'id': 'add-3d-buildings',
+            'source': 'composite',
+            'source-layer': 'building',
+            'filter': ['==', 'extrude', 'true'],
+            'type': 'fill-extrusion',
+            'minzoom': 15,
+            'paint': {
+                'fill-extrusion-color': '#aaa',
+
+                // Use an 'interpolate' expression to
+                // add a smooth transition effect to
+                // the buildings as the user zooms in.
+                'fill-extrusion-height': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    15,
+                    0,
+                    15.05,
+                    ['get', 'height']
+                ],
+                'fill-extrusion-base': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    15,
+                    0,
+                    15.05,
+                    ['get', 'min_height']
+                ],
+                'fill-extrusion-opacity': 0.6
+            }
+        },
+        labelLayerId
+    );
+
     map.addSource('mapbox-dem', {
         type: 'raster-dem',
         url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -108,7 +157,7 @@ map.on('load', () => {
         },
         // insert before waterway-river-canal-shadow;
         // where hillshading sits in the Mapbox outdoors style
-        'waterway-river-canal-shadow'
+        'land-structure-polygon'
     );
 
     // Add satellite layer
@@ -117,7 +166,7 @@ map.on('load', () => {
         source: {
             "type": "raster",
             "url": "mapbox://mapbox.satellite",
-            "tileSize": 256
+            "tileSize": 512
         },
         'layout': {
             // Make the layer invisible by default.
@@ -125,7 +174,6 @@ map.on('load', () => {
         },
         type: "raster"
     }, 'tunnel-street-low');
-
 
     console.info('Map load!');
     worker.postMessage(['styleLoaded']);
