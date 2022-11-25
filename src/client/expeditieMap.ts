@@ -25,6 +25,9 @@ mapboxgl.accessToken =
     'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw';
 const map = new mapboxgl.Map({
     container: 'map',
+    projection: {
+        name: 'globe'
+    },
     style: 'mapbox://styles/mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj?optimize=true',
     center: [7.048, 53.0545],
     zoom: 18
@@ -85,15 +88,10 @@ map.on('load', () => {
     // add the DEM source as a terrain layer with exaggerated height
     map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.25 });
 
-    // add a sky layer that will show when the map is highly pitched
-    map.addLayer({
-        'id': 'sky',
-        'type': 'sky',
-        'paint': {
-            'sky-type': 'atmosphere',
-            'sky-atmosphere-sun': [0.0, 0.0],
-            'sky-atmosphere-sun-intensity': 15
-        }
+    // add a star/fog layer for when zooming out or pitching map
+    map.setFog({
+        color: 'rgb(186, 210, 235)', // Lower atmosphere
+        'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
     });
 
     // Add hillshade layer
