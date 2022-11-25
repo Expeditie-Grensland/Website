@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 // import $ from 'jquery'; TODO: Reactivate for Stories
 
 import { GeoJsonResult } from './helpers/retrieval';
+import { ToggleLayerControl } from './map/ToggleLayerControl';
 // import { StoryHandler } from './story/storyHandler'; TODO: Reactivate for Stories
 
 declare var expeditieNameShort: string;
@@ -34,6 +35,8 @@ const map = new mapboxgl.Map({
 });
 
 map.addControl(new mapboxgl.NavigationControl());
+map.addControl(new mapboxgl.ScaleControl());
+map.addControl(new ToggleLayerControl('satellite'));
 
 const setRoute = (res: GeoJsonResult) => {
     map.fitBounds(new mapboxgl.LngLatBounds(
@@ -107,6 +110,21 @@ map.on('load', () => {
         // where hillshading sits in the Mapbox outdoors style
         'waterway-river-canal-shadow'
     );
+
+    // Add satellite layer
+    map.addLayer({
+        id: 'satellite',
+        source: {
+            "type": "raster",
+            "url": "mapbox://mapbox.satellite",
+            "tileSize": 256
+        },
+        'layout': {
+            // Make the layer invisible by default.
+            'visibility': 'none'
+        },
+        type: "raster"
+    }, 'tunnel-street-low');
 
 
     console.info('Map load!');
