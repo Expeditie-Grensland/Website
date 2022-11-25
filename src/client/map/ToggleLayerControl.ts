@@ -3,11 +3,13 @@ import mapboxgl, {IControl} from "mapbox-gl"
 
 export class ToggleLayerControl implements IControl {
     _map: mapboxgl.Map | undefined
-    _container: HTMLElement
+    _container: HTMLElement | undefined
     _layerId: string
 
     constructor(layerId: string) {
         this._layerId = layerId
+        this._map = undefined
+        this._container = undefined
     }
 
     onAdd(map: mapboxgl.Map) {
@@ -21,7 +23,7 @@ export class ToggleLayerControl implements IControl {
     }
 
     onRemove() {
-        this._container.remove();
+        this._container!.remove();
         this._map = undefined;
     }
 
@@ -35,7 +37,7 @@ export class ToggleLayerControl implements IControl {
         icon.setAttribute('aria-hidden', 'true')
         button.appendChild(icon)
 
-        this._container.appendChild(button)
+        this._container!.appendChild(button)
     }
 
     // This is an arrow function to avoid this binding to the click event
