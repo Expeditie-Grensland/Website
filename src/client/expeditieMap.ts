@@ -31,7 +31,7 @@ const map = new mapboxgl.Map({
     },
     style: 'mapbox://styles/mauricemeedendorp/cj9zhseph8lev2rqd3f6vsmkj?optimize=true',
     center: [7.048, 53.0545],
-    zoom: 18
+    zoom: 2
 });
 
 map.addControl(new mapboxgl.NavigationControl());
@@ -50,7 +50,7 @@ const setRoute = (res: GeoJsonResult) => {
             left: 20,
             right: 20
         },
-        animate: false
+        animate: true
     });
 
     map.addSource('exp-route', { type: 'geojson', data: res.geoJson } as any);
@@ -83,10 +83,10 @@ const setRoute = (res: GeoJsonResult) => {
 
 map.on('load', () => {
     map.addSource('mapbox-dem', {
-        'type': 'raster-dem',
-        'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
-        'tileSize': 512,
-        'maxzoom': 14
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        tileSize: 512,
+        maxzoom: 14
     });
     // add the DEM source as a terrain layer with exaggerated height
     map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.25 });
