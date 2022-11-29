@@ -4,7 +4,8 @@ import $ from 'jquery'; //TODO: Reactivate for Stories
 
 import {GeoJsonResult, StoryResult} from './helpers/retrieval';
 import { ToggleLayerControl } from './map/ToggleLayerControl';
-import { StoryHandler } from './story/storyHandler'; //TODO: Reactivate for Stories
+import { StoryHandler } from './story/storyHandler';
+import {Point} from "geojson" //TODO: Reactivate for Stories
 
 declare var expeditieNameShort: string;
 
@@ -151,7 +152,7 @@ const addStoryLayer = (res: StoryResult) => {
                 3, 2,
                 20, 5
             ],
-            'circle-pitch-alignment': 'map'
+            'circle-pitch-alignment': 'map',
             'circle-color': '#ffffff',
             'circle-stroke-color': [
                 'match',
@@ -172,8 +173,10 @@ const addStoryLayer = (res: StoryResult) => {
 
     // Center the map on the coordinates of any clicked circle from the 'circle' layer.
     map.on('click', 'story-points', (e) => {
+        const coords = (e.features![0].geometry as Point).coordinates
+
         map.flyTo({
-            center: e.features![0].geometry.coordinates,
+            center: [coords[0], coords[1]],
             zoom: 13
         });
     });
