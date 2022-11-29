@@ -2,6 +2,7 @@ import $ from 'jquery';
 import { GraphBuilder } from './graph/graphbuilder';
 import { LocationStoryElement, Node, StoryElement, StoryResult, TextStoryElement } from '../helpers/retrieval';
 import { DateTime } from 'luxon';
+import mapboxgl from "mapbox-gl"
 
 export namespace StoryHandler {
     const storyWrapperDiv = document.getElementById('storyWrapper')!;
@@ -9,7 +10,7 @@ export namespace StoryHandler {
 
     const graphBuilder = new GraphBuilder(document.getElementById('graph')!);
 
-    export function init(result: StoryResult, nodeColors: string[]) {
+    export function init(result: StoryResult, nodeColors: string[], map: mapboxgl.Map) {
         storyWrapperDiv.addEventListener('scroll', onStoryScroll);
 
         if (result.story.length == 0) return;
@@ -17,7 +18,7 @@ export namespace StoryHandler {
         result.story.forEach(el => appendStoryElement(el, result.nodes));
 
         graphBuilder.constructGraph(result.nodes, result.story);
-        graphBuilder.drawSVG(storyElementsDiv, nodeColors);
+        graphBuilder.drawSVG(storyElementsDiv, nodeColors, map);
     }
 
     function appendStoryElement(element: StoryElement, nodes: Node[]) {

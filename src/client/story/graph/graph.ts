@@ -1,5 +1,7 @@
 import { Vertex } from './vertex';
 import $ from 'jquery';
+import {StoryElement} from "../../helpers/retrieval"
+import mapboxgl from "mapbox-gl"
 
 export class Graph {
     private readonly roots: Vertex[];         // starting vertices
@@ -72,7 +74,7 @@ export class Graph {
         return nodes;
     }
 
-    public toSVGGraph(htmlStoryElements: HTMLElement, nodeColors: string[]): SVGElement {
+    public toSVGGraph(htmlStoryElements: HTMLElement, nodeColors: string[], map: mapboxgl.Map): SVGElement {
         const svg = this.svgElement('svg');
 
         const layers = this.getAllLayers();
@@ -145,7 +147,7 @@ export class Graph {
                     const x = Graph.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace);
                     const y = Graph.calculateY(header);
 
-                    svg.appendChild(this.generateCircle(x, y, nodeColors[node.nodeNum]));
+                    svg.appendChild(this.generateCircle(x, y, nodeColors[node.nodeNum], storyElement, map));
                 }
             }
         }
@@ -171,7 +173,7 @@ export class Graph {
 
     private svgElement = (type: string) => document.createElementNS('http://www.w3.org/2000/svg', type);
 
-    private generateCircle(x: number, y: number, color: string) {
+    private generateCircle(x: number, y: number, color: string, storyElem: StoryElement, map: mapboxgl.Map) {
         const circle = this.svgElement('circle');
         circle.setAttribute('cx', x.toString());
         circle.setAttribute('cy', y.toString());
@@ -179,6 +181,16 @@ export class Graph {
         circle.setAttribute('stroke', color);
         circle.setAttribute('fill', '#fff');
         circle.setAttribute('stroke-width', '5');
+        circle.setAttribute('style', 'cursor: pointer');
+
+        // zoom map when clicking on story element circle
+        circle.onclick = () => {
+            map.flyTo({
+                center: [storyElem.longitude, storyElem.latitude],
+                zoom: 13
+            })
+        }
+
         return circle;
     };
 

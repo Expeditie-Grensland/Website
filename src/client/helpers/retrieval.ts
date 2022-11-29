@@ -21,7 +21,9 @@ interface BaseStoryElement {
     dateTime: {
         stamp: number,
         zone: string
-    }
+    },
+    latitude: number,
+    longitude: number
 }
 
 export interface TextStoryElement extends BaseStoryElement {
@@ -39,7 +41,8 @@ export type StoryElement = TextStoryElement | LocationStoryElement;
 
 export interface StoryResult {
     nodes: Node[],
-    story: StoryElement[]
+    story: StoryElement[],
+    finished: boolean
 }
 
 export namespace RetrievalHelper {

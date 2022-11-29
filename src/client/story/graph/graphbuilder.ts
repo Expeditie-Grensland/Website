@@ -2,6 +2,7 @@ import $ from 'jquery';
 import { Vertex } from './vertex';
 import { Graph } from './graph';
 import { Node, StoryElement } from '../../helpers/retrieval';
+import mapboxgl from "mapbox-gl"
 
 export class GraphBuilder {
     private parentEl: HTMLElement;
@@ -25,11 +26,11 @@ export class GraphBuilder {
         this.graph = new Graph(roots);
     }
 
-    public drawSVG(storyElements: HTMLElement, nodeColors: string[]) {
+    public drawSVG(storyElements: HTMLElement, nodeColors: string[], map: mapboxgl.Map) {
         if (this.graph == null)
             return;
 
-        const svg = this.graph.toSVGGraph(storyElements, nodeColors);
+        const svg = this.graph.toSVGGraph(storyElements, nodeColors, map);
 
         $(this.parentEl).empty();
         this.parentEl.appendChild(svg);

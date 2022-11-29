@@ -11,12 +11,11 @@ import * as ldapauth from 'passport-ldapauth';
 import * as fs from 'fs';
 import * as net from 'net';
 
-import { config } from './helpers/configHelper';
-import { People } from './components/people';
-import { PersonDocument } from './components/people/model';
-import { router as appBackend } from './appBackend';
-import { Documents } from './components/documents';
-import flash = require('connect-flash');
+import {config} from './helpers/configHelper';
+import {People} from './components/people';
+import {router as appBackend} from './appBackend';
+import {Documents} from './components/documents';
+import flash = require('connect-flash')
 
 export namespace Setup {
     export function startServer(server: http.Server, port: number | string) {

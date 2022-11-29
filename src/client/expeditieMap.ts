@@ -1,10 +1,10 @@
 import 'core-js/features/promise';
 import mapboxgl from 'mapbox-gl';
-// import $ from 'jquery'; //TODO: Reactivate for Stories
+import $ from 'jquery'; //TODO: Reactivate for Stories
 
-import { GeoJsonResult } from './helpers/retrieval';
+import {GeoJsonResult, StoryResult} from './helpers/retrieval';
 import { ToggleLayerControl } from './map/ToggleLayerControl';
-// import { StoryHandler } from './story/storyHandler'; //TODO: Reactivate for Stories
+import { StoryHandler } from './story/storyHandler'; //TODO: Reactivate for Stories
 
 declare var expeditieNameShort: string;
 
@@ -29,8 +29,11 @@ worker.onmessage = (event) => {
         case 'geoJson':
             return setRoute(event.data[1]);
         // TODO: Reactivate for Stories
-        // case 'story':
-        //     return StoryHandler.init(event.data[1], nodeColors);
+        case 'story':
+            if (event.data[1].story.length > 0) {
+                StoryHandler.init(event.data[1], nodeColors, map);
+                addStoryLayer(event.data[1])
+            }
     }
 };
 
@@ -51,20 +54,31 @@ map.addControl(new mapboxgl.NavigationControl());
 map.addControl(new mapboxgl.ScaleControl());
 map.addControl(new ToggleLayerControl('satellite'));
 
+// Function to reset map to original route bounds, is set after receiving bounds from server
+let resetBounds: () => void = () => {};
+
+$('.zoomout').on('click', () => {
+    resetBounds()
+})
+
 const setRoute = (res: GeoJsonResult) => {
-    map.fitBounds(new mapboxgl.LngLatBounds(
-        new mapboxgl.LngLat(res.minLon, res.minLat),
-        new mapboxgl.LngLat(res.maxLon, res.maxLat)
-    ), {
-        padding: {
-            top: 20,
-            bottom: 20,
-            // left: $(window).width()! * 0.35 + 20,// TODO: Reactivate for Stories
-            left: 20,
-            right: 20
-        },
-        animate: true
-    });
+    resetBounds = () => {
+        map.fitBounds(new mapboxgl.LngLatBounds(
+            new mapboxgl.LngLat(res.minLon, res.minLat),
+            new mapboxgl.LngLat(res.maxLon, res.maxLat)
+        ), {
+            padding: {
+                top: 20,
+                bottom: 20,
+                left: $(window).width()! * 0.35 + 20,// TODO: Reactivate for Stories
+                // left: 20,
+                right: 20
+            },
+            animate: true
+        });
+    }
+
+    resetBounds()
 
     map.addSource('exp-route', { type: 'geojson', data: res.geoJson } as any);
 
@@ -93,6 +107,87 @@ const setRoute = (res: GeoJsonResult) => {
     });
 };
 
+const addStoryLayer = (res: StoryResult) => {
+    map.addSource('story-points', {
+        type: 'geojson',
+        data: {
+            type: 'FeatureCollection',
+            features: res.story.map(story => {
+                return ({
+                    type: "Feature",
+                    geometry: {
+                        type: "Point",
+                        coordinates: [story.longitude, story.latitude]
+                    },
+                    properties: {
+                        title: story.type === "text" ? story.title : story.name,
+                        nodeNum: story.nodeNum
+                    }
+                })
+            })
+        },
+        // https://docs.mapbox.com/mapbox-gl-js/example/cluster/
+        // cluster: true,
+        // clusterMaxZoom: 14, // Max zoom to cluster points on
+        // clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+    });
+
+    map.addLayer({
+        'id': 'story-points',
+        'type': 'circle',
+        'source': 'story-points',
+        'paint': {
+            'circle-radius': [  // interpolate circle radius based on zoom level
+                'interpolate',
+                ['exponential', 1],
+                ['zoom'],
+                3, 3,
+                20, 7
+            ],
+            'circle-stroke-width': [  // interpolate circle radius based on zoom level
+                'interpolate',
+                ['exponential', 1],
+                ['zoom'],
+                3, 2,
+                20, 5
+            ],
+            'circle-pitch-alignment': 'map'
+            'circle-color': '#ffffff',
+            'circle-stroke-color': [
+                'match',
+                ['get', 'nodeNum'],
+                0, nodeColors[0],
+                1, nodeColors[1],
+                2, nodeColors[2],
+                3, nodeColors[3],
+                4, nodeColors[4],
+                5, nodeColors[5],
+                6, nodeColors[6],
+                7, nodeColors[7],
+                8, nodeColors[8],
+                '#000'
+            ]
+        },
+    });
+
+    // Center the map on the coordinates of any clicked circle from the 'circle' layer.
+    map.on('click', 'story-points', (e) => {
+        map.flyTo({
+            center: e.features![0].geometry.coordinates,
+            zoom: 13
+        });
+    });
+
+    // Change the cursor to a pointer when it enters a feature in the 'circle' layer.
+    map.on('mouseenter', 'story-points', () => {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'story-points', () => {
+        map.getCanvas().style.cursor = '';
+    });
+}
 
 map.on('load', () => {
 

@@ -1,13 +1,17 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 
-import { Expedities } from '../components/expedities';
-import { MediaFiles } from '../components/mediaFiles';
-import { ExpeditieDocument } from '../components/expedities/model';
-import { geoLocationModel } from '../components/geoLocations/model';
-import { StoryElements } from '../components/storyElements';
-import { LocationStoryElementDocument, BaseStoryElementModel, TextStoryElementDocument } from '../components/storyElements/model';
-import { PersonDocument } from '../components/people/model';
+import {Expedities} from '../components/expedities';
+import {MediaFiles} from '../components/mediaFiles';
+import {ExpeditieDocument} from '../components/expedities/model';
+import {GeoLocation, GeoLocationDocument, geoLocationModel} from '../components/geoLocations/model';
+import {StoryElements} from '../components/storyElements';
+import {
+    BaseStoryElementModel,
+    LocationStoryElementDocument,
+    TextStoryElementDocument
+} from '../components/storyElements/model';
+import {PersonDocument} from '../components/people/model';
 
 export const router = express.Router({ mergeParams: true });
 
@@ -129,22 +133,31 @@ router.get('/kaart/story', async (req, res) => {
                 personNames: node.personIds.map((p: PersonDocument) => `${p.firstName} ${p.lastName}`) // FIXME: see geonodes model
             };
         }),
-        story: (await stories).map((story) => {
+        story: await Promise.all((await stories).map(async (story) => {
+            const nodeIdx = nodes.findIndex((node) =>
+                    story.dateTime.stamp >= node.timeFrom && story.dateTime.stamp < node.timeTill &&    // fixme: does this comparison take timezone into account for both sides?
+                    node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))) // FIXME: see geonodes model
+
+            const storyLocation = (await geoLocationModel.find(
+                { expeditieId: expeditie._id, personId: { $in: nodes[nodeIdx].personIds }, 'dateTime.stamp': { $gte: story.dateTime.stamp } },
+                { _id: false, longitude: true, latitude: true }).sort({ 'dateTime.stamp': 1 }).limit(1).exec())[0]
+
             return {
                 id: story._id.toHexString(),
                 type: story.type,
-                nodeNum: nodes.findIndex((node) =>
-                    story.dateTime.stamp >= node.timeFrom && story.dateTime.stamp < node.timeTill &&    // fixme: does this comparison take timezone into account for both sides?
-                    node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))), // FIXME: see geonodes model
+                nodeNum: nodeIdx,
                 dateTime: {
                     stamp: story.dateTime.stamp,
                     zone: story.dateTime.zone
                 },
                 title: (story as TextStoryElementDocument).title,
                 text: (story as TextStoryElementDocument).text,
-                name: (story as LocationStoryElementDocument).name
+                name: (story as LocationStoryElementDocument).name,
+                latitude: storyLocation.latitude,
+                longitude: storyLocation.longitude
             };
-        })
+        })),
+        finished: expeditie.finished
     };
 
     res.end(JSON.stringify(result));
