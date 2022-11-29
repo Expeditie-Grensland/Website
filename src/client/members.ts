@@ -57,7 +57,7 @@ $('.form-array').each(function () {
  * Form parts are shown/hidden based on the 'data-select-val' attribute on elements with a '.form-select-show' class.
  * See /leden/admin/story.pug for example.
  */
-function changingFormHandler() {
+function changingFormHandler(this: any) {
     const value = $(this).find(':selected').val()
     const dependants = $(this).parents('.form-boundary').find('.form-select-show')
 
