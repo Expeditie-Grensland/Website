@@ -50,3 +50,39 @@ $('.form-array').each(function () {
     if ($(this).find('.form-array-item').length < 2)
         $(this).find('.form-array-remove').attr('disabled', '');
 });
+
+/**
+ * Hides form fields based on the value of a 'select' tag.
+ * Select tag should have the '.form-select-change-form' class.
+ * Form parts are shown/hidden based on the 'data-select-val' attribute on elements with a '.form-select-show' class.
+ * See /leden/admin/story.pug for example.
+ */
+function changingFormHandler() {
+    const value = $(this).find(':selected').val()
+    const dependants = $(this).parents('.form-boundary').find('.form-select-show')
+
+    dependants.each(function () {
+        const attr = $(this).attr("data-select-val")
+
+        if (attr === value) {
+            $(this).show()
+
+            // Re-require required children
+            $(this).find("[data-was-required]").each(function () {
+                $(this).removeAttr("data-was-required")
+                $(this).attr("required", "true")
+            })
+        } else {
+            $(this).hide()
+
+            // Un-require required children
+            $(this).find("[required]").each(function () {
+                $(this).removeAttr("required")
+                $(this).attr("data-was-required", "true")
+            })
+        }
+    })
+}
+
+$('.form-select-change-form').on('change', changingFormHandler);
+$('.form-select-change-form').each(changingFormHandler);

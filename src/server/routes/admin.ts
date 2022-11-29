@@ -15,9 +15,16 @@ import { EarnedPoints } from '../components/earnedPoints';
 import { Expedities } from '../components/expedities';
 import { People } from '../components/people';
 import { EarnedPointModel } from '../components/earnedPoints/model';
+import {
+    LocationStoryElement,
+    LocationStoryElementModel,
+    TextStoryElement,
+    TextStoryElementModel
+} from '../components/storyElements/model';
 import { GeoLocation } from '../components/geoLocations/model';
 import { GpxHelper } from '../components/geoLocations/gpxHelper';
 import { GeoLocations } from '../components/geoLocations';
+import {StoryElements} from "../components/storyElements"
 
 
 export const router = express.Router();
@@ -53,10 +60,13 @@ const getDateTimeFromTimeAndZone = (time: string, zone: string): DateTime => {
     return dt;
 };
 
-const testValidAction = (action: string, ...validActions: string[]): void => {
-    if (!validActions.reduce((acc: boolean, cur) => acc || cur == action, false))
-        throw new Error('Er was geen geldige actie gespecificeerd.');
-};
+const testValidAction = (action: string, ...validActions: string[]): void =>
+    testValidOption('actie', action, ...validActions);
+
+const testValidOption = (name: string, option: string, ...validOptions: string[]): void => {
+    if (!validOptions.reduce((acc: boolean, cur) => acc || cur == option, false))
+        throw new Error(`Er was geen geldige ${name} geselecteerd.`);
+}
 
 const testRequiredFields = (...fields: any[]): void => {
     if (fields.reduce((acc: boolean, cur) => acc || !cur, false))
@@ -352,4 +362,101 @@ router.post('/gpx/upload', multer({ storage: multer.memoryStorage() }).single('f
         await GeoLocations.createMany(locs);
 
         return 'Locaties zijn succesvol geüpload';
+    })
+);
+
+router.get('/story', async (req, res) =>
+    res.render('admin/story', {
+        expedities: await Expedities.getAll(),
+        people: await People.getAll(),
+        stories: await StoryElements.getAll(),
+        infoMsgs: req.flash('info'),
+        errMsgs: req.flash('error')
+    })
+);
+
+router.post('/story/add', async (req, res) =>
+    tryCatchAndRedirect(req, res, '/admin/story', async () => {
+        const b = req.body;
+
+        testRequiredFields(b.type, b.expeditie, b.person, b.time, b.zone);
+
+        testValidOption("verhaaltype", b.type, 'text', 'location');
+
+        const expeditieId = (await testAndGetFromId(b.expeditie, Expedities.getById, 'Expeditie'))._id;
+        const personId = (await testAndGetFromId(b.person, People.getById, 'Persoon'))._id;
+        const dateTimeObj = getDateTimeFromTimeAndZone(b.time, b.zone);
+
+        if (b.type === "text") {
+            testRequiredFields(b.title, b.text);
+
+            const se = new TextStoryElementModel({
+                type: b.type,
+                expeditieId: expeditieId,
+                personId: personId,
+                title: b.title,
+                text: b.text
+            })
+
+            se.dateTime.object = dateTimeObj;
+
+            return `Tekstverhaalelement "${(await se.save())._id.toHexString()}" is succesvol toegevoegd.`;
+        }
+
+        if (b.type === "location") {
+            testRequiredFields(b.name);
+
+            const se = new LocationStoryElementModel({
+                type: b.type,
+                expeditieId: expeditieId,
+                personId: personId,
+                name: b.name,
+            })
+
+            se.dateTime.object = dateTimeObj;
+
+            return `Locatieverhaalelement "${(await se.save())._id.toHexString()}" is succesvol toegevoegd.`;
+        }
+
+        //TODO add case for gallery type
+
+        return "onmogelijk"
+    })
+);
+
+
+router.post('/story/edit', (req, res) =>
+    tryCatchAndRedirect(req, res, '/admin/story', async () => {
+        const b = req.body;
+
+        testValidAction(b.action, 'delete', 'change');
+
+        const se = await testAndGetFromId(b.id, StoryElements.getById, 'Verhaalelement');
+
+        if (b.action == 'delete')
+            return `Verhaalelement "${(await se.remove())._id.toHexString()}" is succesvol verwijderd.`;
+
+        testRequiredFields(b.type, b.expeditie, b.person, b.time, b.zone);
+        testValidOption("verhaaltype", b.type, 'text', 'location');
+
+        se.type = b.type;
+        se.personId = (await testAndGetFromId(b.person, People.getById, 'Persoon'))._id;
+        se.expeditieId = (await testAndGetFromId(b.expeditie, Expedities.getById, 'Expeditie'))._id;
+        se.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
+
+        if (se.type === 'text') {
+            testRequiredFields(b.title, b.text);
+
+            se.title = b.title;
+            se.text = b.text;
+        }
+
+        if (se.type === 'location') {
+            testRequiredFields(b.name);
+            se.name = b.name;
+        }
+
+        //TODO add case for gallery type
+
+        return `Verhaalelement "${(await se.save())._id.toHexString()}" is succesvol gewijzigd.`;
     }));

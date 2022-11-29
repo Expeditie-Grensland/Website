@@ -9,7 +9,7 @@ export namespace StoryHandler {
 
     const graphBuilder = new GraphBuilder(document.getElementById('graph')!);
 
-    export function init(result: StoryResult) {
+    export function init(result: StoryResult, nodeColors: string[]) {
         storyWrapperDiv.addEventListener('scroll', onStoryScroll);
 
         if (result.story.length == 0) return;
@@ -17,7 +17,7 @@ export namespace StoryHandler {
         result.story.forEach(el => appendStoryElement(el, result.nodes));
 
         graphBuilder.constructGraph(result.nodes, result.story);
-        graphBuilder.drawSVG(storyElementsDiv);
+        graphBuilder.drawSVG(storyElementsDiv, nodeColors);
     }
 
     function appendStoryElement(element: StoryElement, nodes: Node[]) {
@@ -32,6 +32,7 @@ export namespace StoryHandler {
                 el = createTextStoryElement(<TextStoryElement>element, nodes);
                 break;
             }
+            // TODO add gallery case
             // case 'gallery': {
             //     el = createGalleryStoryElement(<GalleryStoryElement>element);
             //     break;
@@ -73,13 +74,19 @@ export namespace StoryHandler {
     // }
 
     const getDisplayDate = (dt: DateTime): string => {
-        if (dt.diffNow('hours').hours > -6 && dt.endOf('day').diffNow().milliseconds > 0) // Today and less than 6 hours ago
+        // Today and less than 6 hours ago
+        if (dt.diffNow('hours').hours > -6 && dt.endOf('day').diffNow().milliseconds > 0)
             return dt.toRelative()!; // Relative time
 
-        if (dt.endOf('day').diff(DateTime.local().endOf('day'), 'days').days > -3) // Today, yesterday, or two days ago
+        // Today, yesterday or two days ago
+        if (dt.endOf('day').diff(DateTime.local().endOf('day'), 'days').days > -3)
             return dt.toRelativeCalendar() + ' om ' + dt.toLocaleString({ hour: 'numeric', minute: '2-digit' }); // Relative date, absolute time
 
-        return dt.toLocaleString({ day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }); // Absolute date
+        // Current year
+        if (dt.year === DateTime.local().year)
+            return dt.toLocaleString({ day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }); // Absolute date without year
+
+        return dt.toLocaleString({ year: 'numeric', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }); // Absolute date
     };
 
 

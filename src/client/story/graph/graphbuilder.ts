@@ -25,11 +25,11 @@ export class GraphBuilder {
         this.graph = new Graph(roots);
     }
 
-    public drawSVG(storyElements: HTMLElement) {
+    public drawSVG(storyElements: HTMLElement, nodeColors: string[]) {
         if (this.graph == null)
             return;
 
-        const svg = this.graph.toSVGGraph(storyElements);
+        const svg = this.graph.toSVGGraph(storyElements, nodeColors);
 
         $(this.parentEl).empty();
         this.parentEl.appendChild(svg);

@@ -1,17 +1,21 @@
-import { StoryElement, StoryElementDocument, storyElementModel } from './model';
-import { ExpeditieOrId } from '../expedities/model';
+import {BaseStoryElementModel, StoryElement, StoryElementDocument} from './model';
+import {ExpeditieDocument, ExpeditieModel, ExpeditieOrId} from '../expedities/model';
 import { Documents } from '../documents';
+import mongoose from "mongoose"
 
 export namespace StoryElements {
     export const create = (person: StoryElement): Promise<StoryElementDocument> =>
-        storyElementModel.create(person);
+        BaseStoryElementModel.create(person);
 
     export const getAll = (): Promise<StoryElementDocument[]> =>
-        storyElementModel.find({}).sort({ 'dateTime.stamp': 1, index: 1 }).exec();
+        BaseStoryElementModel.find({}).sort({ 'dateTime.stamp': 1, index: 1 }).exec();
+
+    export const getById = (id: mongoose.Types.ObjectId): Promise<StoryElementDocument | null> =>
+        BaseStoryElementModel.findById(id).exec();
 
     export const getByExpeditie = (expeditie: ExpeditieOrId): Promise<StoryElementDocument[]> =>
-        storyElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ 'dateTime.stamp': 1, index: 1 }).exec();
+        BaseStoryElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ 'dateTime.stamp': 1, index: 1 }).exec();
 
     export const getByExpeditieCount = (expeditie: ExpeditieOrId): Promise<number> =>
-        storyElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).count().exec();
+        BaseStoryElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).count().exec();
 }

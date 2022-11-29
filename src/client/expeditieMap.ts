@@ -1,15 +1,27 @@
 import 'core-js/features/promise';
 import mapboxgl from 'mapbox-gl';
-// import $ from 'jquery'; TODO: Reactivate for Stories
+// import $ from 'jquery'; //TODO: Reactivate for Stories
 
 import { GeoJsonResult } from './helpers/retrieval';
 import { ToggleLayerControl } from './map/ToggleLayerControl';
-// import { StoryHandler } from './story/storyHandler'; TODO: Reactivate for Stories
+// import { StoryHandler } from './story/storyHandler'; //TODO: Reactivate for Stories
 
 declare var expeditieNameShort: string;
 
 const worker: Worker = new Worker((document.getElementById('worker') as HTMLLinkElement).href);
 worker.postMessage(['retrieveAll', expeditieNameShort]);
+
+const nodeColors = [
+    '#2962ff',
+    '#d50000',
+    '#00c853',
+    '#ff6d00',
+    '#c51162',
+    '#aa00ff',
+    '#aeea00',
+    '#00bfa5',
+    '#00b8d4',
+]
 
 // @ts-ignore
 worker.onmessage = (event) => {
@@ -18,7 +30,7 @@ worker.onmessage = (event) => {
             return setRoute(event.data[1]);
         // TODO: Reactivate for Stories
         // case 'story':
-        //     return StoryHandler.init(event.data[1]);
+        //     return StoryHandler.init(event.data[1], nodeColors);
     }
 };
 
@@ -47,7 +59,7 @@ const setRoute = (res: GeoJsonResult) => {
         padding: {
             top: 20,
             bottom: 20,
-            // left: $(window).width()! * 0.35 + 20, TODO: Reactivate for Stories
+            // left: $(window).width()! * 0.35 + 20,// TODO: Reactivate for Stories
             left: 20,
             right: 20
         },
@@ -66,15 +78,15 @@ const setRoute = (res: GeoJsonResult) => {
             'line-color': [
                 'match',
                 ['get', 'nodeNum'],
-                0, '#2962ff',
-                1, '#d50000',
-                2, '#00c853',
-                3, '#ff6d00',
-                4, '#c51162',
-                5, '#aa00ff',
-                6, '#aeea00',
-                7, '#00bfa5',
-                8, '#00b8d4',
+                0, nodeColors[0],
+                1, nodeColors[1],
+                2, nodeColors[2],
+                3, nodeColors[3],
+                4, nodeColors[4],
+                5, nodeColors[5],
+                6, nodeColors[6],
+                7, nodeColors[7],
+                8, nodeColors[8],
                 '#000'
             ]
         }
@@ -89,7 +101,7 @@ map.on('load', () => {
     const labelLayerId = layers.find(
         (layer) => layer.type === 'symbol' && layer.layout!['text-field']
     )!.id;
-    
+
     // The 'building' layer in the Mapbox Streets
     // vector tileset contains building height data
     // from OpenStreetMap.

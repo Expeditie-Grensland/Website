@@ -6,7 +6,7 @@ import { MediaFiles } from '../components/mediaFiles';
 import { ExpeditieDocument } from '../components/expedities/model';
 import { geoLocationModel } from '../components/geoLocations/model';
 import { StoryElements } from '../components/storyElements';
-import { LocationStoryElementDocument, storyElementModel, TextStoryElementDocument } from '../components/storyElements/model';
+import { LocationStoryElementDocument, BaseStoryElementModel, TextStoryElementDocument } from '../components/storyElements/model';
 import { PersonDocument } from '../components/people/model';
 
 export const router = express.Router({ mergeParams: true });
@@ -101,7 +101,7 @@ router.get('/kaart/story', async (req, res) => {
     const storyCount = StoryElements.getByExpeditieCount(expeditie);
 
     const lastStory =
-        storyElementModel.find({ expeditieId: expeditie._id }).sort({ '_id': -1 }).limit(1).exec()
+        BaseStoryElementModel.find({ expeditieId: expeditie._id }).sort({ '_id': -1 }).limit(1).exec()
             .then(x => x.length > 0 ? x[0]._id : new mongoose.Types.ObjectId('000000000000000000000000'));
 
     res.setHeader('Content-Type', 'application/json');
@@ -134,7 +134,7 @@ router.get('/kaart/story', async (req, res) => {
                 id: story._id.toHexString(),
                 type: story.type,
                 nodeNum: nodes.findIndex((node) =>
-                    story.time >= node.timeFrom && story.time < node.timeTill &&
+                    story.dateTime.stamp >= node.timeFrom && story.dateTime.stamp < node.timeTill &&    // fixme: does this comparison take timezone into account for both sides?
                     node.personIds.some((p: PersonDocument) => p._id.equals(story.personId))), // FIXME: see geonodes model
                 dateTime: {
                     stamp: story.dateTime.stamp,
