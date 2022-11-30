@@ -1,11 +1,11 @@
 import 'core-js/features/promise';
 import mapboxgl from 'mapbox-gl';
-import $ from 'jquery'; //TODO: Reactivate for Stories
+import $ from 'jquery';
 
 import {GeoJsonResult, StoryResult} from './helpers/retrieval';
 import { ToggleLayerControl } from './map/ToggleLayerControl';
 import { StoryHandler } from './story/storyHandler';
-import {Point} from "geojson" //TODO: Reactivate for Stories
+import {Point} from "geojson"
 
 declare var expeditieNameShort: string;
 
@@ -29,12 +29,21 @@ worker.onmessage = (event) => {
     switch (event.data[0]) {
         case 'geoJson':
             return setRoute(event.data[1]);
-        // TODO: Reactivate for Stories
         case 'story':
-            if (event.data[1].story.length > 0) {
+            const hasStory = event.data[1].story.length > 0
+
+            if (hasStory) {
+                $('#storyWrapper').show();
+                const sheet = window.document.styleSheets[0];
+                sheet.insertRule('.mapboxgl-ctrl-bottom-left { left: 35vw; }', sheet.cssRules.length);
+
                 StoryHandler.init(event.data[1], nodeColors, map);
                 addStoryLayer(event.data[1])
             }
+
+            bottomPadding = hasStory ? $(window).width()! * 0.35 + 20 : 20;
+
+            resetBounds();
     }
 };
 
@@ -55,31 +64,34 @@ map.addControl(new mapboxgl.NavigationControl());
 map.addControl(new mapboxgl.ScaleControl());
 map.addControl(new ToggleLayerControl('satellite'));
 
+let latLngBounds: mapboxgl.LngLatBounds | null = null
+let bottomPadding: number | null = null
+
 // Function to reset map to original route bounds, is set after receiving bounds from server
-let resetBounds: () => void = () => {};
+const resetBounds = () => {
+    if (bottomPadding == null || latLngBounds == null)
+        return
+
+    map.fitBounds(latLngBounds, {
+        padding: {
+            top: 20,
+            bottom: bottomPadding,
+            left: 20,
+            right: 20
+        },
+        animate: true
+    });
+}
 
 $('.zoomout').on('click', () => {
     resetBounds()
 })
 
 const setRoute = (res: GeoJsonResult) => {
-    resetBounds = () => {
-        map.fitBounds(new mapboxgl.LngLatBounds(
-            new mapboxgl.LngLat(res.minLon, res.minLat),
-            new mapboxgl.LngLat(res.maxLon, res.maxLat)
-        ), {
-            padding: {
-                top: 20,
-                bottom: 20,
-                left: $(window).width()! * 0.35 + 20,// TODO: Reactivate for Stories
-                // left: 20,
-                right: 20
-            },
-            animate: true
-        });
-    }
-
-    resetBounds()
+    latLngBounds = new mapboxgl.LngLatBounds(
+        new mapboxgl.LngLat(res.minLon, res.minLat),
+        new mapboxgl.LngLat(res.maxLon, res.maxLat)
+    );
 
     map.addSource('exp-route', { type: 'geojson', data: res.geoJson } as any);
 
@@ -106,6 +118,8 @@ const setRoute = (res: GeoJsonResult) => {
             ]
         }
     });
+
+    resetBounds();
 };
 
 const addStoryLayer = (res: StoryResult) => {
