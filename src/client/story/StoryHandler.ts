@@ -33,7 +33,7 @@ export class StoryHandler {
     private init = () => {
         // Move mapbox controls out of the way
         const sheet = window.document.styleSheets[0];
-        sheet.insertRule('.mapboxgl-ctrl-bottom-left { left: 35vw; }', sheet.cssRules.length);
+        sheet.insertRule('.mapboxgl-ctrl-bottom-left { left: 35%; }', sheet.cssRules.length);
     }
 
     public renderStory = (result: StoryResult) => {
@@ -54,13 +54,15 @@ export class StoryHandler {
         const storyElements = $('#storyElements')
         result.story.forEach(el => storyElements.append(this.createStoryElement(el, result.nodes)));
 
+        this.graphBuilder.constructGraph(result.nodes, result.story, this.mapHandler);
+
         // This renders the graph only after all images and videos are loaded.
         // Media aspect ratios are not known beforehand so they have to be loaded before the graph can be created with the correct size
         // FIXME determine media aspect ratio on upload and put it in the database
         let mediaCount = result.story.reduce((acc, curr) => acc + (curr.type === 'media' ? curr.media.length : 0), 0)
 
         const onAllMediaLoaded = () => {
-            console.log("all media loaded!")
+            console.log("All media loaded!")
             this.graphBuilder.drawSVG(document.getElementById('storyElements')!, this.nodeColors);
         }
 
@@ -82,7 +84,6 @@ export class StoryHandler {
             if(this.readyState >= 1) $(this).trigger('loadedmetadata');
         });
 
-        this.graphBuilder.constructGraph(result.nodes, result.story, this.mapHandler);
     }
 
     public resetHoveringStory = () => {

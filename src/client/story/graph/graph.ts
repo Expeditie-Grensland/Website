@@ -208,7 +208,8 @@ export class Graph {
         circle.onclick = () => {
             this.mapHandler.map.flyTo({
                 center: [storyElem.longitude, storyElem.latitude],
-                zoom: 13
+                zoom: 13,
+                padding: this.mapHandler.cameraPadding
             })
         }
 

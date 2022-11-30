@@ -3,14 +3,19 @@ import mapboxgl from 'mapbox-gl';
 import {StoryHandler} from './story/StoryHandler';
 import {MapHandler} from "./map/MapHandler"
 
-declare var expeditieNameShort: string;
-declare var hasStory: boolean;
+declare const expeditieNameShort: string;
+declare let hasStory: boolean;
 
 const worker: Worker = new Worker((document.getElementById('worker') as HTMLLinkElement).href);
 worker.postMessage(['retrieveAll', expeditieNameShort]);
 
 mapboxgl.accessToken =
     'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw';
+
+// Crude way to disable stories features for small screen
+if (window.screen.availWidth < 1024 || window.screen.availHeight < 768) {
+    hasStory = false;
+}
 
 const nodeColors = [
     '#2962ff',

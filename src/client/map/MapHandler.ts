@@ -26,10 +26,17 @@ export class MapHandler {
 
     private hoveringFeatureId: string | null = null
 
+    public cameraPadding: mapboxgl.CameraOptions['padding'];
 
     constructor(hasStory: boolean, nodeColors: string[]) {
         this.hasStory = hasStory;
         this.nodeColors = nodeColors;
+        this.cameraPadding = {
+            top: 20,
+            bottom: 20,
+            left: this.hasStory ? $(window).width()! * 0.3 : 20,
+            right: 20
+        };
         this.initControls();
 
         this.map.on('load', this.onMapLoad);
@@ -304,7 +311,8 @@ export class MapHandler {
 
                     this.map.easeTo({
                         center: [coords[0], coords[1]],
-                        zoom: zoom
+                        zoom: zoom,
+                        padding: this.cameraPadding
                     });
                 }
             );
@@ -326,7 +334,8 @@ export class MapHandler {
 
             this.map.flyTo({
                 center: [coords[0], coords[1]],
-                zoom: 13
+                zoom: 13,
+                padding: this.cameraPadding
             });
         });
 
@@ -377,12 +386,7 @@ export class MapHandler {
             return
 
         this.map.fitBounds(this.latLngBounds, {
-            padding: {
-                top: 20,
-                bottom: 20,
-                left: this.hasStory ? $(window).width()! * 0.35 + 20 : 20,
-                right: 20
-            },
+            padding: this.cameraPadding,
             animate: true
         });
     }
