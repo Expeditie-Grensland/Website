@@ -5,7 +5,7 @@ import {DateTime, Info} from 'luxon';
 
 import {MediaFiles} from '../components/mediaFiles';
 import {AuthHelper} from '../helpers/authHelper';
-import {deleteEmbeddedFile, MediaFileHelper} from '../components/mediaFiles/helper';
+import {MediaFileHelper} from '../components/mediaFiles/helper';
 import {MediaFile, MediaFileEmbedded} from '../components/mediaFiles/model';
 import {Quotes} from '../components/quotes';
 import {QuoteModel} from '../components/quotes/model';
