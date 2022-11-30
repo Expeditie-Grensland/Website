@@ -4,15 +4,15 @@ import * as mongoose from 'mongoose';
 import {Expedities} from '../components/expedities';
 import {MediaFiles} from '../components/mediaFiles';
 import {ExpeditieDocument} from '../components/expedities/model';
-import {GeoLocation, GeoLocationDocument, geoLocationModel} from '../components/geoLocations/model';
+import {geoLocationModel} from '../components/geoLocations/model';
 import {StoryElements} from '../components/storyElements';
 import {
     BaseStoryElementModel,
-    LocationStoryElementDocument, MediaStoryElementDocument,
+    LocationStoryElementDocument,
+    MediaStoryElementDocument,
     TextStoryElementDocument
 } from '../components/storyElements/model';
 import {PersonDocument} from '../components/people/model';
-import {MediaFileHelper} from "../components/mediaFiles/helper"
 
 export const router = express.Router({ mergeParams: true });
 
@@ -39,7 +39,11 @@ router.use(async (req, res, next) => {
 });
 
 router.get('/kaart', async (req, res, next) => {
-    res.render('expeditieMap');
+    const expeditie: ExpeditieDocument = res.locals.expeditie;
+
+    const storyCount = await StoryElements.getByExpeditieCount(expeditie);
+
+    res.render('expeditieMap', {hasStory: storyCount > 0});
 });
 
 

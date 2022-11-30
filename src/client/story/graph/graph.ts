@@ -1,13 +1,17 @@
 import { Vertex } from './vertex';
-import $ from 'jquery';
+import $, {map} from 'jquery';
 import {StoryElement} from "../../helpers/retrieval"
 import mapboxgl from "mapbox-gl"
+import {MapHandler} from "../../map/MapHandler"
 
 export class Graph {
     private readonly roots: Vertex[];         // starting vertices
 
-    public constructor(roots: Vertex[]) {
+    private mapHandler: MapHandler;
+
+    public constructor(roots: Vertex[], mapHandler: MapHandler) {
         this.roots = roots;
+        this.mapHandler = mapHandler;
     }
 
     private static calculateY(header: HTMLElement): number {
@@ -74,7 +78,7 @@ export class Graph {
         return nodes;
     }
 
-    public toSVGGraph(htmlStoryElements: HTMLElement, nodeColors: string[], map: mapboxgl.Map): SVGElement {
+    public toSVGGraph(htmlStoryElements: HTMLElement, nodeColors: string[]): SVGElement {
         const svg = this.svgElement('svg');
 
         const layers = this.getAllLayers();
@@ -147,7 +151,7 @@ export class Graph {
                     const x = Graph.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace);
                     const y = Graph.calculateY(header);
 
-                    svg.appendChild(this.generateCircle(x, y, nodeColors[node.nodeNum], storyElement, map));
+                    svg.appendChild(this.generateCircle(x, y, nodeColors[node.nodeNum], storyElement));
                 }
             }
         }
@@ -173,8 +177,10 @@ export class Graph {
 
     private svgElement = (type: string) => document.createElementNS('http://www.w3.org/2000/svg', type);
 
-    private generateCircle(x: number, y: number, color: string, storyElem: StoryElement, map: mapboxgl.Map) {
+    private generateCircle(x: number, y: number, color: string, storyElem: StoryElement) {
         const circle = this.svgElement('circle');
+        circle.setAttribute('class', 'graph-circle');
+        circle.setAttribute('id', storyElem.id);
         circle.setAttribute('cx', x.toString());
         circle.setAttribute('cy', y.toString());
         circle.setAttribute('r', '8');
@@ -183,9 +189,24 @@ export class Graph {
         circle.setAttribute('stroke-width', '5');
         circle.setAttribute('style', 'cursor: pointer');
 
+        // increase radius on hover
+        circle.onmouseenter = () => {
+            circle.setAttribute('r', '12');
+            this.mapHandler.map.getCanvas().style.cursor = 'pointer';
+        }
+        circle.onmouseover = () => {
+            this.mapHandler.setHoveringFeature(storyElem.id);
+        }
+        circle.onmouseleave = () => {
+            circle.setAttribute('r', '8');
+            this.mapHandler.map.getCanvas().style.cursor = '';
+            this.mapHandler.resetHoveringFeature();
+        }
+
+
         // zoom map when clicking on story element circle
         circle.onclick = () => {
-            map.flyTo({
+            this.mapHandler.map.flyTo({
                 center: [storyElem.longitude, storyElem.latitude],
                 zoom: 13
             })

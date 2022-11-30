@@ -75,7 +75,7 @@ export namespace RetrievalHelper {
         req.send();
     };
 
-    export const retrieveStory = (expeditie: string, cb: (json: JSON) => void) => {
+    export const retrieveStory = (expeditie: string, cb: (json: StoryResult) => void) => {
         const req = new XMLHttpRequest();
         req.open('GET', '/' + expeditie + '/kaart/story', true);
         req.responseType = 'json';

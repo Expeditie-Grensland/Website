@@ -25,7 +25,6 @@ import {GeoLocation} from '../components/geoLocations/model';
 import {GpxHelper} from '../components/geoLocations/gpxHelper';
 import {GeoLocations} from '../components/geoLocations';
 import {StoryElements} from "../components/storyElements"
-import {LocationStoryElementId, MediaStoryElementId, TextStoryElementId} from "../components/storyElements/id"
 
 
 export const router = express.Router();

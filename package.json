@@ -76,7 +76,7 @@
     "gulp-terser": "^2.1.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "hls.js": "1.0.0",
-    "jquery": "^3.6.0",
+    "jquery": "^3.6.1",
     "mapbox-gl": "^2.11.0",
     "merge-stream": "^2.0.0",
     "popper.js": "^1.16.1",

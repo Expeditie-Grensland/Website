@@ -1,8 +1,9 @@
-import $ from 'jquery';
+import $, {map} from 'jquery';
 import { Vertex } from './vertex';
 import { Graph } from './graph';
 import { Node, StoryElement } from '../../helpers/retrieval';
 import mapboxgl from "mapbox-gl"
+import {MapHandler} from "../../map/MapHandler"
 
 export class GraphBuilder {
     private parentEl: HTMLElement;
@@ -13,7 +14,7 @@ export class GraphBuilder {
         this.graph = null;
     }
 
-    public constructGraph(nodes: Node[], elements: StoryElement[]) {
+    public constructGraph(nodes: Node[], elements: StoryElement[], mapHandler: MapHandler) {
         if (nodes.length === 0 || elements.length === 0)
             return;
 
@@ -23,14 +24,14 @@ export class GraphBuilder {
 
         this.populateChildren(roots, nodes, elements);
 
-        this.graph = new Graph(roots);
+        this.graph = new Graph(roots, mapHandler);
     }
 
-    public drawSVG(storyElements: HTMLElement, nodeColors: string[], map: mapboxgl.Map) {
+    public drawSVG(storyElements: HTMLElement, nodeColors: string[]) {
         if (this.graph == null)
             return;
 
-        const svg = this.graph.toSVGGraph(storyElements, nodeColors, map);
+        const svg = this.graph.toSVGGraph(storyElements, nodeColors);
 
         $(this.parentEl).empty();
         this.parentEl.appendChild(svg);
