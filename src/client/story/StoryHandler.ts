@@ -64,6 +64,9 @@ export class StoryHandler {
             this.graphBuilder.drawSVG(document.getElementById('storyElements')!, this.nodeColors);
         }
 
+        if (mediaCount === 0)
+            onAllMediaLoaded();
+
         storyWrapper.find('img').on('load', function() {
             if (--mediaCount === 0)
                 onAllMediaLoaded()
