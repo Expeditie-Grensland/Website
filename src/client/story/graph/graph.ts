@@ -3,15 +3,18 @@ import $, {map} from 'jquery';
 import {StoryElement} from "../../helpers/retrieval"
 import mapboxgl from "mapbox-gl"
 import {MapHandler} from "../../map/MapHandler"
+import {StoryHandler} from "../StoryHandler"
 
 export class Graph {
     private readonly roots: Vertex[];         // starting vertices
 
     private mapHandler: MapHandler;
+    private storyHandler: StoryHandler;
 
-    public constructor(roots: Vertex[], mapHandler: MapHandler) {
+    public constructor(roots: Vertex[], mapHandler: MapHandler, storyHandler: StoryHandler) {
         this.roots = roots;
         this.mapHandler = mapHandler;
+        this.storyHandler = storyHandler;
     }
 
     private static calculateY(header: HTMLElement): number {
@@ -180,7 +183,7 @@ export class Graph {
     private generateCircle(x: number, y: number, color: string, storyElem: StoryElement) {
         const circle = this.svgElement('circle');
         circle.setAttribute('class', 'graph-circle');
-        circle.setAttribute('id', storyElem.id);
+        circle.setAttribute('id', `circle-${storyElem.id}`);
         circle.setAttribute('cx', x.toString());
         circle.setAttribute('cy', y.toString());
         circle.setAttribute('r', '8');
@@ -210,7 +213,8 @@ export class Graph {
                 center: [storyElem.longitude, storyElem.latitude],
                 zoom: 13,
                 padding: this.mapHandler.cameraPadding
-            })
+            });
+            this.storyHandler.scrollToStoryElement(storyElem.id);
         }
 
         return circle;

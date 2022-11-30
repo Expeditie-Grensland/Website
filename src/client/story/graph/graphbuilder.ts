@@ -1,9 +1,9 @@
-import $, {map} from 'jquery';
-import { Vertex } from './vertex';
-import { Graph } from './graph';
-import { Node, StoryElement } from '../../helpers/retrieval';
-import mapboxgl from "mapbox-gl"
+import $ from 'jquery';
+import {Vertex} from './vertex';
+import {Graph} from './graph';
+import {Node, StoryElement} from '../../helpers/retrieval';
 import {MapHandler} from "../../map/MapHandler"
+import {StoryHandler} from "../StoryHandler"
 
 export class GraphBuilder {
     private parentEl: HTMLElement;
@@ -14,7 +14,7 @@ export class GraphBuilder {
         this.graph = null;
     }
 
-    public constructGraph(nodes: Node[], elements: StoryElement[], mapHandler: MapHandler) {
+    public constructGraph(nodes: Node[], elements: StoryElement[], mapHandler: MapHandler, storyHandler: StoryHandler) {
         if (nodes.length === 0 || elements.length === 0)
             return;
 
@@ -24,7 +24,7 @@ export class GraphBuilder {
 
         this.populateChildren(roots, nodes, elements);
 
-        this.graph = new Graph(roots, mapHandler);
+        this.graph = new Graph(roots, mapHandler, storyHandler);
     }
 
     public drawSVG(storyElements: HTMLElement, nodeColors: string[]) {

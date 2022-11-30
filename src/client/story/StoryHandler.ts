@@ -54,7 +54,7 @@ export class StoryHandler {
         const storyElements = $('#storyElements')
         result.story.forEach(el => storyElements.append(this.createStoryElement(el, result.nodes)));
 
-        this.graphBuilder.constructGraph(result.nodes, result.story, this.mapHandler);
+        this.graphBuilder.constructGraph(result.nodes, result.story, this.mapHandler, this);
 
         // This renders the graph only after all images and videos are loaded.
         // Media aspect ratios are not known beforehand so they have to be loaded before the graph can be created with the correct size
@@ -84,11 +84,15 @@ export class StoryHandler {
             if(this.readyState >= 1) $(this).trigger('loadedmetadata');
         });
 
+        // Set scroll margin for auto-scrolling
+        const sheet = window.document.styleSheets[0];
+        const scrollMargin = document.getElementById('storyTitle')!.getBoundingClientRect().height + 16;
+        sheet.insertRule(`.storyElement {scroll-margin: ${scrollMargin}px; }`, sheet.cssRules.length);
     }
 
     public resetHoveringStory = () => {
         if (this.hoveringStoryId != null) {
-            document.getElementById(this.hoveringStoryId)?.setAttribute('r', '8');
+            document.getElementById(`circle-${this.hoveringStoryId}`)?.setAttribute('r', '8');
             this.hoveringStoryId = null;
         }
     }
@@ -100,7 +104,11 @@ export class StoryHandler {
         this.resetHoveringStory();
         // set feature state to increase circle size on hover
         this.hoveringStoryId = featureId;
-        document.getElementById(this.hoveringStoryId)?.setAttribute('r', '12');
+        document.getElementById(`circle-${this.hoveringStoryId}`)?.setAttribute('r', '12');
+    }
+
+    public scrollToStoryElement = (storyId: string) => {
+        document.getElementById(storyId)?.scrollIntoView({block: "start", inline: "nearest", behavior: 'smooth'})
     }
 
     private createStoryElement = (element: StoryElement, nodes: Node[]): JQuery<HTMLElement> => {

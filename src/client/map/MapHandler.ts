@@ -34,7 +34,7 @@ export class MapHandler {
         this.cameraPadding = {
             top: 20,
             bottom: 20,
-            left: this.hasStory ? $(window).width()! * 0.3 : 20,
+            left: this.hasStory ? $(window).innerWidth()! * 0.35 : 20,
             right: 20
         };
         this.initControls();
@@ -331,12 +331,15 @@ export class MapHandler {
             // Center the map on the coordinates of any clicked circle from the 'circle' layer.
         this.map.on('click', 'story-points', (e) => {
             const coords = (e.features![0].geometry as Point).coordinates
+            const id = (e.features![0].id as string)
 
             this.map.flyTo({
                 center: [coords[0], coords[1]],
                 zoom: 13,
                 padding: this.cameraPadding
             });
+
+            this.storyHandler?.scrollToStoryElement(id);
         });
 
 
@@ -385,6 +388,7 @@ export class MapHandler {
         if (this.latLngBounds == null)
             return
 
+        console.log(this.cameraPadding)
         this.map.fitBounds(this.latLngBounds, {
             padding: this.cameraPadding,
             animate: true
