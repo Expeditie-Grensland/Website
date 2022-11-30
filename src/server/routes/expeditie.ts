@@ -8,10 +8,11 @@ import {GeoLocation, GeoLocationDocument, geoLocationModel} from '../components/
 import {StoryElements} from '../components/storyElements';
 import {
     BaseStoryElementModel,
-    LocationStoryElementDocument,
+    LocationStoryElementDocument, MediaStoryElementDocument,
     TextStoryElementDocument
 } from '../components/storyElements/model';
 import {PersonDocument} from '../components/people/model';
+import {MediaFileHelper} from "../components/mediaFiles/helper"
 
 export const router = express.Router({ mergeParams: true });
 
@@ -142,6 +143,8 @@ router.get('/kaart/story', async (req, res) => {
                 { expeditieId: expeditie._id, personId: { $in: nodes[nodeIdx].personIds }, 'dateTime.stamp': { $gte: story.dateTime.stamp } },
                 { _id: false, longitude: true, latitude: true }).sort({ 'dateTime.stamp': 1 }).limit(1).exec())[0]
 
+            const media = (story as MediaStoryElementDocument).media || []
+
             return {
                 id: story._id.toHexString(),
                 type: story.type,
@@ -153,8 +156,13 @@ router.get('/kaart/story', async (req, res) => {
                 title: (story as TextStoryElementDocument).title,
                 text: (story as TextStoryElementDocument).text,
                 name: (story as LocationStoryElementDocument).name,
-                latitude: storyLocation.latitude,
-                longitude: storyLocation.longitude
+                latitude: storyLocation?.latitude || 0,
+                longitude: storyLocation?.longitude || 0,
+                media: media.map(medium => ({
+                    fileUrl: MediaFiles.getUrl(medium.mediaFile),
+                    description: medium.description,
+                    mime: medium.mediaFile.mime
+                })),
             };
         })),
         finished: expeditie.finished

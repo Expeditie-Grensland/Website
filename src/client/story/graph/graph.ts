@@ -80,7 +80,7 @@ export class Graph {
         const layers = this.getAllLayers();
         const maxLayerSize = this.maxLayerSize(layers);
         const horizontalSpace = 70;
-        const svgWidth = Math.max(maxLayerSize * horizontalSpace, 150);
+        const svgWidth = Math.max(maxLayerSize * horizontalSpace, 100);
 
         for (let layer of layers) {
             // draw straight lines

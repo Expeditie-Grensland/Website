@@ -121,7 +121,7 @@ const addStoryLayer = (res: StoryResult) => {
                         coordinates: [story.longitude, story.latitude]
                     },
                     properties: {
-                        title: story.type === "text" ? story.title : story.name,
+                        title: story.type === "location" ? story.name : story.title,
                         nodeNum: story.nodeNum
                     }
                 })

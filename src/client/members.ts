@@ -21,12 +21,20 @@ $('.form-array-add').on('click', function () {
     const arr = $(this).parent('.form-array');
     const proto = arr.find('.form-array-proto');
 
-    proto.clone()
+    // Copy 'prototype' element from dom, enable and un-hide it.
+    const newElem = proto.clone()
         .removeAttr('hidden')
-        .removeAttr('disabled') // In the future, this may need to be updated to include children.
+        .removeAttr('disabled')
         .removeClass('form-array-proto')
-        .addClass('form-array-item')
-        .insertBefore(proto);
+        .addClass('form-array-item');
+
+    // Remove disabled from prototype children
+    newElem.find(':disabled').each(function () {
+        $(this).removeAttr("disabled");
+    })
+
+    // Insert newly created form element
+    newElem.insertBefore(proto);
 
     arr.find('.form-array-remove').removeAttr('disabled');
 
@@ -65,7 +73,18 @@ function changingFormHandler(this: any) {
         const attr = $(this).attr("data-select-val")
 
         if (attr === value) {
+            if ($(this).is(':visible'))
+                return
+
             $(this).show()
+
+            $(this).find(':input').each(function () {
+                $(this).removeAttr("hidden")
+                    .removeAttr("disabled")
+
+                if ($(this).attr("data-was-disabled"))
+                    $(this).attr("disabled", "true")
+            })
 
             // Re-require required children
             $(this).find("[data-was-required]").each(function () {
@@ -74,6 +93,14 @@ function changingFormHandler(this: any) {
             })
         } else {
             $(this).hide()
+
+            $(this).find(':input').each(function () {
+                if ($(this).attr("disabled"))
+                    $(this).attr("data-was-disabled", "true");
+
+                $(this).attr("hidden", "true")
+                    .attr("disabled", "true");
+            })
 
             // Un-require required children
             $(this).find("[required]").each(function () {

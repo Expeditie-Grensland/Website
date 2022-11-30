@@ -1,30 +1,31 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as multer from 'multer';
-import { DateTime, Info } from 'luxon';
+import {DateTime, Info} from 'luxon';
 
-import { MediaFiles } from '../components/mediaFiles';
-import { AuthHelper } from '../helpers/authHelper';
-import { MediaFileHelper } from '../components/mediaFiles/helper';
-import { MediaFile } from '../components/mediaFiles/model';
-import { Quotes } from '../components/quotes';
-import { QuoteModel } from '../components/quotes/model';
-import { Words } from '../components/words';
-import { Word } from '../components/words/model';
-import { EarnedPoints } from '../components/earnedPoints';
-import { Expedities } from '../components/expedities';
-import { People } from '../components/people';
-import { EarnedPointModel } from '../components/earnedPoints/model';
+import {MediaFiles} from '../components/mediaFiles';
+import {AuthHelper} from '../helpers/authHelper';
+import {MediaFileHelper} from '../components/mediaFiles/helper';
+import {MediaFile, MediaFileEmbedded} from '../components/mediaFiles/model';
+import {Quotes} from '../components/quotes';
+import {QuoteModel} from '../components/quotes/model';
+import {Words} from '../components/words';
+import {Word} from '../components/words/model';
+import {EarnedPoints} from '../components/earnedPoints';
+import {Expedities} from '../components/expedities';
+import {People} from '../components/people';
+import {EarnedPointModel} from '../components/earnedPoints/model';
 import {
-    LocationStoryElement,
+    BaseStoryElementModel,
     LocationStoryElementModel,
-    TextStoryElement,
+    MediaStoryElementModel,
     TextStoryElementModel
 } from '../components/storyElements/model';
-import { GeoLocation } from '../components/geoLocations/model';
-import { GpxHelper } from '../components/geoLocations/gpxHelper';
-import { GeoLocations } from '../components/geoLocations';
+import {GeoLocation} from '../components/geoLocations/model';
+import {GpxHelper} from '../components/geoLocations/gpxHelper';
+import {GeoLocations} from '../components/geoLocations';
 import {StoryElements} from "../components/storyElements"
+import {LocationStoryElementId, MediaStoryElementId, TextStoryElementId} from "../components/storyElements/id"
 
 
 export const router = express.Router();
@@ -370,18 +371,21 @@ router.get('/story', async (req, res) =>
         expedities: await Expedities.getAll(),
         people: await People.getAll(),
         stories: await StoryElements.getAll(),
+        getFileUrl: MediaFiles.getUrl,
         infoMsgs: req.flash('info'),
         errMsgs: req.flash('error')
     })
 );
 
-router.post('/story/add', async (req, res) =>
+router.post('/story/add', multerUpload.array('files[]'), async (req, res) =>
     tryCatchAndRedirect(req, res, '/admin/story', async () => {
         const b = req.body;
 
+        console.log(b)
+
         testRequiredFields(b.type, b.expeditie, b.person, b.time, b.zone);
 
-        testValidOption("verhaaltype", b.type, 'text', 'location');
+        testValidOption("verhaaltype", b.type, 'text', 'location', 'media');
 
         const expeditieId = (await testAndGetFromId(b.expeditie, Expedities.getById, 'Expeditie'))._id;
         const personId = (await testAndGetFromId(b.person, People.getById, 'Persoon'))._id;
@@ -418,7 +422,40 @@ router.post('/story/add', async (req, res) =>
             return `Locatieverhaalelement "${(await se.save())._id.toHexString()}" is succesvol toegevoegd.`;
         }
 
-        //TODO add case for gallery type
+        if (b.type === "media") {
+            testRequiredFields(b.title, req.files, b.descriptions);
+
+            if (!req.files) throw new Error('Bestanden zijn niet juist geüpload.');
+
+            let mediaFiles: MediaFileEmbedded[] = [];
+
+            for (let file of Object.values(req.files)) {
+                mediaFiles.push({
+                    id: new mongoose.Types.ObjectId(file.filename.split('.')[0]),
+                    ext: file.filename.split('.')[1],
+                    mime: file.mimetype,
+                    restricted: !!req.body.restricted
+                });
+            }
+
+            if (!mediaFiles.length) throw new Error('Er zijn geen geldige bestanden geüpload.');
+
+            const se = new MediaStoryElementModel({
+                type: b.type,
+                expeditieId: expeditieId,
+                personId: personId,
+                title: b.title,
+                text: b.text,
+                media: mediaFiles.map((file, idx) => ({
+                    mediaFile: file,
+                    description: b.descriptions[idx]
+                }))
+            });
+
+            se.dateTime.object = dateTimeObj;
+
+            return `Mediaverhaalelement "${(await se.save())._id.toHexString()}" is succesvol toegevoegd.`;
+        }
 
         return "onmogelijk"
     })
@@ -433,30 +470,81 @@ router.post('/story/edit', (req, res) =>
 
         const se = await testAndGetFromId(b.id, StoryElements.getById, 'Verhaalelement');
 
-        if (b.action == 'delete')
+        if (b.action == 'delete') {
+            if (se.type === 'media')
+                se.media.forEach(medium => MediaFileHelper.deleteFile(medium.mediaFile))
             return `Verhaalelement "${(await se.remove())._id.toHexString()}" is succesvol verwijderd.`;
+        }
 
         testRequiredFields(b.type, b.expeditie, b.person, b.time, b.zone);
-        testValidOption("verhaaltype", b.type, 'text', 'location');
+        testValidOption("verhaaltype", b.type, 'text', 'location', 'media');
 
-        se.type = b.type;
-        se.personId = (await testAndGetFromId(b.person, People.getById, 'Persoon'))._id;
-        se.expeditieId = (await testAndGetFromId(b.expeditie, Expedities.getById, 'Expeditie'))._id;
-        se.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
+        // Delete files if changing from media to non-media type
+        if (se.type === 'media' && b.type !== 'media') {
+            se.media.forEach(medium => MediaFileHelper.deleteFile(medium.mediaFile))
+        }
 
-        if (se.type === 'text') {
+        const dt = getDateTimeFromTimeAndZone(b.time, b.zone)
+
+        const update = {
+            type: b.type,
+            personId: (await testAndGetFromId(b.person, People.getById, 'Persoon'))._id,
+            expeditieId: (await testAndGetFromId(b.expeditie, Expedities.getById, 'Expeditie'))._id,
+            dateTime: {
+                stamp: dt.toSeconds(),
+                zone: dt.zoneName
+            }
+        }
+
+        if (b.type === 'text') {
             testRequiredFields(b.title, b.text);
 
-            se.title = b.title;
-            se.text = b.text;
+            const res = await BaseStoryElementModel.replaceOne({_id: b.id}, {
+                ...update,
+                title: b.title,
+                text: b.text
+            }).exec();
+
+            if (res.matchedCount === 0)
+                throw new Error ("update failed")
+
+            return `Verhaalelement "${se._id.toHexString()}" is succesvol gewijzigd.`;
         }
 
-        if (se.type === 'location') {
+        if (b.type === 'location') {
             testRequiredFields(b.name);
-            se.name = b.name;
+
+            const res = await BaseStoryElementModel.replaceOne({_id: b.id}, {
+                ...update,
+                name: b.name
+            }).exec();
+
+            if (res.matchedCount === 0)
+                throw new Error ("update failed")
+
+            return `Verhaalelement "${se._id.toHexString()}" is succesvol gewijzigd.`;
         }
 
-        //TODO add case for gallery type
+        if (b.type === 'media') {
+            if (se.type !== 'media')
+                throw new Error(`Kan een bestaand verhaalelement niet aanpassen naar type 'media'`);
 
-        return `Verhaalelement "${(await se.save())._id.toHexString()}" is succesvol gewijzigd.`;
+            testRequiredFields(b.title, b.descriptions);
+
+            const res = await BaseStoryElementModel.replaceOne({_id: b.id}, {
+                ...update,
+                title: b.title,
+                media: se.media.map((medium, idx) => ({
+                    description: b.descriptions[idx],
+                    mediaFile: medium.mediaFile
+                }))
+            }).exec();
+
+            if (res.matchedCount === 0)
+                throw new Error ("update failed")
+
+            return `Verhaalelement "${se._id.toHexString()}" is succesvol gewijzigd.`;
+        }
+
+        return 'onmogelijk';
     }));

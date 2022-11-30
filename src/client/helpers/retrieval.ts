@@ -37,7 +37,19 @@ export interface LocationStoryElement extends BaseStoryElement {
     name: string
 }
 
-export type StoryElement = TextStoryElement | LocationStoryElement;
+export type StoryMedia = {
+    description: string,
+    fileUrl: string,
+    mime: string
+}
+
+export interface MediaStoryElement extends BaseStoryElement {
+    type: 'media',
+    title: string,
+    media: StoryMedia[]
+}
+
+export type StoryElement = TextStoryElement | LocationStoryElement | MediaStoryElement;
 
 export interface StoryResult {
     nodes: Node[],

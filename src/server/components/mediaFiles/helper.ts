@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 import * as fs from 'fs';
 
 import { config } from '../../helpers/configHelper';
-import { MediaFile, MediaFileDocument } from './model';
+import {MediaFile, MediaFileDocument, MediaFileEmbedded} from './model';
 
 const Mime = require('mime/Mime');
 
@@ -17,7 +17,7 @@ export namespace MediaFileHelper {
     export const getFileLocation = (file: MediaFile | MediaFileDocument) =>
         path.join(getFilesFolder(), `${file._id}.${file.ext}`);
 
-    export const deleteFile = (file: MediaFileDocument): Promise<MediaFileDocument> =>
+    export const deleteFile = <File extends MediaFileEmbedded | MediaFileDocument>(file: File): Promise<File> =>
         new Promise((resolve, reject) => {
             fs.unlink(getFileLocation(file), (err) => {
                 if (err)

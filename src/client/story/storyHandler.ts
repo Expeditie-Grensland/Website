@@ -1,6 +1,13 @@
 import $ from 'jquery';
 import { GraphBuilder } from './graph/graphbuilder';
-import { LocationStoryElement, Node, StoryElement, StoryResult, TextStoryElement } from '../helpers/retrieval';
+import {
+    LocationStoryElement,
+    MediaStoryElement,
+    Node,
+    StoryElement, StoryMedia,
+    StoryResult,
+    TextStoryElement
+} from '../helpers/retrieval';
 import { DateTime } from 'luxon';
 import mapboxgl from "mapbox-gl"
 
@@ -33,11 +40,10 @@ export namespace StoryHandler {
                 el = createTextStoryElement(<TextStoryElement>element, nodes);
                 break;
             }
-            // TODO add gallery case
-            // case 'gallery': {
-            //     el = createGalleryStoryElement(<GalleryStoryElement>element);
-            //     break;
-            // }
+            case 'media': {
+                el = createMediaStoryElement(<MediaStoryElement>element, nodes);
+                break;
+            }
         }
 
         if (el != undefined)
@@ -65,14 +71,46 @@ export namespace StoryHandler {
             );
     }
 
-    // function createGalleryStoryElement(element: GalleryStoryElement): JQuery<HTMLElement> {
-    //     return $('<div>')
-    //         .attr('id', element.id)
-    //         .addClass('storyElement')
-    //         .addClass('card')
-    //         .addClass('gallery')
-    //         .append(createStoryElementHeader(element, 'Gallery'));
-    // }
+    function createMediaStoryElement(element: MediaStoryElement, nodes: Node[]): JQuery<HTMLElement> {
+        const base = $('<div>')
+            .attr('id', element.id)
+            .addClass('storyElement')
+            .addClass('card')
+            .addClass('media')
+            .append(createStoryElementHeader(element, element.title, nodes));
+
+        const content = element.media.map((medium) => {
+            const wrapper = $('<div>').addClass('media-wrapper').append(getMediaPlayer(medium));
+
+            if (medium.description)
+                wrapper.append($('<p>')
+                    .addClass('media-description')
+                    .text(medium.description)
+                );
+
+            return wrapper;
+        })
+
+        return base.append(content);
+    }
+
+    const getMediaPlayer = (media: StoryMedia) => {
+        if (media.mime === 'video/mp4')
+            return $('<video>')
+                .addClass('media-preview')
+                .attr('controls', '')
+                .append($('<source>')
+                    .attr("src", media.fileUrl)
+                    .attr("type", media.mime)
+                );
+
+        if (media.mime === "image/jpeg")
+            return $(`<img>`)
+                .addClass('media-preview')
+                .attr("src", media.fileUrl);
+
+        return $('<div>')
+    }
 
     const getDisplayDate = (dt: DateTime): string => {
         // Today and less than 6 hours ago
