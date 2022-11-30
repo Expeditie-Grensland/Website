@@ -68,7 +68,7 @@ $('.form-array').each(function () {
 function changingFormHandler(this: any) {
     const value = $(this).find(':selected').val()
     const dependants = $(this).parents('.form-boundary').find('.form-select-show')
-
+    
     dependants.each(function () {
         const attr = $(this).attr("data-select-val")
 
@@ -92,7 +92,8 @@ function changingFormHandler(this: any) {
                 $(this).attr("required", "true")
             })
         } else {
-            $(this).hide()
+            if ($(this).is(':hidden'))
+                return
 
             $(this).find(':input').each(function () {
                 if ($(this).attr("disabled"))
@@ -107,6 +108,7 @@ function changingFormHandler(this: any) {
                 $(this).removeAttr("required")
                 $(this).attr("data-was-required", "true")
             })
+            $(this).hide()
         }
     })
 }
