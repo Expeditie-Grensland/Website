@@ -14,12 +14,22 @@ export namespace MediaFileHelper {
         path.isAbsolute(config.filesFolder) ?
             path.normalize(config.filesFolder) : path.join(__dirname, '../..', config.filesFolder);
 
-    export const getFileLocation = (file: MediaFile | MediaFileDocument) =>
-        path.join(getFilesFolder(), `${file._id}.${file.ext}`);
+    export const getFileLocation = (id: string, ext: string) =>
+        path.join(getFilesFolder(), `${id}.${ext}`);
 
-    export const deleteFile = <File extends MediaFileEmbedded | MediaFileDocument>(file: File): Promise<File> =>
+    export const deleteFile = (file: MediaFileDocument): Promise<MediaFileDocument> =>
         new Promise((resolve, reject) => {
-            fs.unlink(getFileLocation(file), (err) => {
+            fs.unlink(getFileLocation(file._id, file.ext), (err) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(file);
+            });
+        });
+
+    export const deleteEmbeddedFile = (file: MediaFileEmbedded): Promise<MediaFileEmbedded> =>
+        new Promise((resolve, reject) => {
+            fs.unlink(getFileLocation(file.id.toHexString(), file.ext), (err) => {
                 if (err)
                     reject(err);
                 else

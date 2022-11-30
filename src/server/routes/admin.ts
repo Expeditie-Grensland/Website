@@ -5,7 +5,7 @@ import {DateTime, Info} from 'luxon';
 
 import {MediaFiles} from '../components/mediaFiles';
 import {AuthHelper} from '../helpers/authHelper';
-import {MediaFileHelper} from '../components/mediaFiles/helper';
+import {deleteEmbeddedFile, MediaFileHelper} from '../components/mediaFiles/helper';
 import {MediaFile, MediaFileEmbedded} from '../components/mediaFiles/model';
 import {Quotes} from '../components/quotes';
 import {QuoteModel} from '../components/quotes/model';
@@ -471,8 +471,10 @@ router.post('/story/edit', (req, res) =>
         const se = await testAndGetFromId(b.id, StoryElements.getById, 'Verhaalelement');
 
         if (b.action == 'delete') {
-            if (se.type === 'media')
-                se.media.forEach(medium => MediaFileHelper.deleteFile(medium.mediaFile))
+            if (se.type === 'media') {
+                console.log(se.media[0])
+                await Promise.all(se.media.map(async medium => await MediaFileHelper.deleteEmbeddedFile(medium.mediaFile)))
+            }
             return `Verhaalelement "${(await se.remove())._id.toHexString()}" is succesvol verwijderd.`;
         }
 
@@ -481,7 +483,7 @@ router.post('/story/edit', (req, res) =>
 
         // Delete files if changing from media to non-media type
         if (se.type === 'media' && b.type !== 'media') {
-            se.media.forEach(medium => MediaFileHelper.deleteFile(medium.mediaFile))
+            se.media.forEach(medium => MediaFileHelper.deleteEmbeddedFile(medium.mediaFile))
         }
 
         const dt = getDateTimeFromTimeAndZone(b.time, b.zone)

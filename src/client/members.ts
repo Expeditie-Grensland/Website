@@ -68,7 +68,7 @@ $('.form-array').each(function () {
 function changingFormHandler(this: any) {
     const value = $(this).find(':selected').val()
     const dependants = $(this).parents('.form-boundary').find('.form-select-show')
-    
+
     dependants.each(function () {
         const attr = $(this).attr("data-select-val")
 
