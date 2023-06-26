@@ -72,4 +72,4 @@ jobs:
           known_hosts: ${{ vars.DEPLOY_SSH_HOSTS }}
 
       - name: Deploy to server
-        run: echo "${{ fromJSON(steps.release.outputs.assets)[0].browser_download_url }}" | ssh -T ${{ secrets.DEPLOY_SERVER }}
+        run: echo "${{ fromJSON(steps.release.outputs.assets)[0].browser_download_url }}" | ssh -T ${{ vars.DEPLOY_SERVER }}
