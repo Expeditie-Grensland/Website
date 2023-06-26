@@ -29,9 +29,14 @@ jobs:
       - name: Create dist tarball
         run: tar -czf dist.tar.gz dist/
 
+      - name: Determine tag name
+        id: settag
+        if: github.ref == 'refs/heads/release'
+        run: echo "name=release-$(date +'%Y-%m-%d')-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Create release
         if: github.ref == 'refs/heads/release'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: Release
+          tag_name: ${{ steps.settag.outputs.name }}
           files: dist.tar.gz
