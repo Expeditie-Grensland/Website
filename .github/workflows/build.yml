@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/release'
     needs: build
-    environment: production
+    environment: release
 
     steps:
       - name: Checkout repository
@@ -51,7 +51,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
-          path: dist.tar.gz
 
       - name: Determine tag name
         id: settag
@@ -64,6 +63,7 @@ jobs:
           tag_name: ${{ steps.settag.outputs.name }}
           target_commitish: ${{ github.sha }}
           files: dist.tar.gz
+          fail_on_unmatched_files: true
 
       - name: Install SSH configuration
         uses: shimataro/ssh-key-action@v2
