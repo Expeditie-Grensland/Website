@@ -1,7 +1,6 @@
-name: Build & Deploy
+name: Build
 
-on:
-  - push
+on: push
 
 permissions:
   contents: write
@@ -28,19 +27,47 @@ jobs:
           NODE_OPTIONS: --no-experimental-fetch
         run: gulp build:prod
 
-      - name: Create dist tarball
-        if: github.ref == 'refs/heads/release'
+      - name: Create dist.tar.gz
         run: tar -czf dist.tar.gz dist/
+
+      - name: Upload dist.tar.gz artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist.tar.gz
+
+  deploy:
+    name: Release & Deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release'
+    needs: build
+    environment: production
+
+    steps:
+      - name: Download dist.tar.gz artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist.tar.gz
 
       - name: Determine tag name
         id: settag
-        if: github.ref == 'refs/heads/release'
         run: echo "name=release-$(date +'%Y%m%d')-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Create release
-        if: github.ref == 'refs/heads/release'
+        id: release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.settag.outputs.name }}
           target_commitish: ${{ github.sha }}
           files: dist.tar.gz
+          fail_on_unmatched_files: true
+
+      - name: Install SSH configuration
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known_hosts: ${{ vars.DEPLOY_SSH_HOSTS }}
+
+      - name: Deploy to server
+        run: echo "${{ fromJSON(steps.release.outputs.assets)[0].browser_download_url }}" | ssh -T ${{ secrets.DEPLOY_SERVER }}
