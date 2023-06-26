@@ -64,7 +64,6 @@ jobs:
           tag_name: ${{ steps.settag.outputs.name }}
           target_commitish: ${{ github.sha }}
           files: dist.tar.gz
-          fail_on_unmatched_files: true
 
       - name: Install SSH configuration
         uses: shimataro/ssh-key-action@v2
