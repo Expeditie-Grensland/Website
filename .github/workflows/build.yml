@@ -1,51 +1,37 @@
 name: Build & Deploy
 
 on:
-- push
+  - push
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Setup node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
-    - name: Install dependencies
-      run: npm ci
-    - name: Build using gulp.js
-      run: gulp build:prod
-    - name: Upload distribution artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Distribution
-        path: dist
 
-  deploy-production:
-    name: Deploy production
-    needs: build
-    if: ${{ github.ref == 'refs/heads/release' }}
-    runs-on: ubuntu-latest
-    environment: production
     steps:
-    - name: Download distribution artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: Distribution
-        path: dist
-    - name: Install SSH configuration
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-        config: ${{ secrets.SSH_CONFIG }}
-    - name: Upload deployment
-      run: rsync -rp dist/. ${{ secrets.DEPLOYMENT_SERVER }}:${{ secrets.DEPLOYMENT_FOLDER }}
-    - name: Run deployment
-      run: ssh ${{ secrets.DEPLOYMENT_SERVER }} ${{ secrets.DEPLOYMENT_COMMAND }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build using gulp.js
+        run: gulp build:prod
+
+      - name: Create dist tarball
+        run: tar -czf dist.tar.gz dist/
+
+      - name: Create release
+        if: github.ref == 'refs/heads/release'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: Release
+          files: dist.tar.gz
