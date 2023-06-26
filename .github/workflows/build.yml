@@ -44,6 +44,9 @@ jobs:
     environment: production
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Download dist.tar.gz artifact
         uses: actions/download-artifact@v3
         with:
