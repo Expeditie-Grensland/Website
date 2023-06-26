@@ -24,6 +24,8 @@ jobs:
         run: npm ci
 
       - name: Build using gulp.js
+        env:
+          NODE_OPTIONS: --no-experimental-fetch
         run: gulp build:prod
 
       - name: Create dist tarball

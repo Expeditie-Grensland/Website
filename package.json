@@ -88,10 +88,10 @@
     "watchify": "^4.0.0"
   },
   "scripts": {
-    "build:prod": "./node_modules/.bin/gulp build:prod",
-    "build:dev": "./node_modules/.bin/gulp build:dev",
-    "watch": "./node_modules/.bin/gulp watch",
-    "once": "./node_modules/.bin/gulp once",
-    "server": "./node_modules/.bin/gulp server:run"
+    "build:prod": "NODE_OPTIONS=--no-experimental-fetch ./node_modules/.bin/gulp build:prod",
+    "build:dev": "NODE_OPTIONS=--no-experimental-fetch ./node_modules/.bin/gulp build:dev",
+    "watch": "NODE_OPTIONS=--no-experimental-fetch ./node_modules/.bin/gulp watch",
+    "once": "NODE_OPTIONS=--no-experimental-fetch ./node_modules/.bin/gulp once",
+    "server": "NODE_OPTIONS=--no-experimental-fetch ./node_modules/.bin/gulp server:run"
   }
 }
