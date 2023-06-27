@@ -1,7 +1,7 @@
 {
   "port": 3000,
 
-  "filesFolder": "..\\..\\Files",
+  "filesFolder": "../../Files",
 
   "mongo": {
     "url": "mongodb://localhost:27017/expeditie-grensland?authSource=admin",
@@ -11,12 +11,15 @@
 
   "ldap": {
     "url": "ldap://localhost:389",
-    "bindDN": "uid=system,cn=sysaccounts,cn=etc,dc=example,dc=org",
+    "bindDN": "uid=system,cn=sysaccounts,dc=example,dc=org",
     "bindCredentials": "",
-    "searchBase": "cn=users,cn=accounts,dc=example,dc=org",
+    "searchBase": "cn=accounts,dc=example,dc=org",
     "searchScope": "one",
-    "searchFilter": "(mailAlternateAddress={{username}}@expeditiegrensland.nl)",
-    "idField": "ipaUniqueID"
+    "searchFilter": "(&(uid={{username}})(o=Expeditie Grensland))",
+    "idField": "uid",
+    "tlsOptions": {
+        "rejectUnauthorized": true
+    }
   },
 
   "session": {
@@ -28,6 +31,8 @@
   },
 
   "redis": {
-    "url": "redis://localhost:6379/7"
+    "url": "redis://localhost:6379/7",
+    "ttl": 864000,
+    "prefix": "exgrl:"
   }
 }

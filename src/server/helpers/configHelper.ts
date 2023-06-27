@@ -1,30 +1,34 @@
 import * as express from 'express';
-import * as ldapauth from 'ldapauth-fork';
 
 export const config: Config = require('../../config/config.json');
-if (config.ldap.searchAttributes == undefined) {
-    config.ldap.searchAttributes = [config.ldap.idField];
-} else {
-    config.ldap.searchAttributes.push(config.ldap.idField);
-}
 
 export type Config = {
     port: number;
+
     filesFolder: string;
+
     mongo: {
         url: string;
         user: string;
         pass: string;
     };
-    ldap: ldapauth.Options & {
+
+    ldap: {
+        url: string;
+        bindDN: string;
+        bindCredentials: string;
+        searchBase: string;
+        searchScope: 'base' | 'one' | 'sub';
+        searchFilter: string;
         idField: string;
     };
+
     session: {
         secret: string;
         cookie: express.CookieOptions;
-        useRedis: boolean;
     };
-    redis: {
+
+    redis?: {
         url: string;
         ttl?: number;
         prefix?: string;
