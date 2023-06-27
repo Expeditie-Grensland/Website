@@ -2,7 +2,7 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as session from 'express-session';
 import * as redis from 'redis';
-import * as redisConnect from 'connect-redis';
+import RedisStore from 'connect-redis';
 import * as http from 'http';
 import * as mongoose from 'mongoose';
 import * as path from 'path';
@@ -72,12 +72,16 @@ export namespace Setup {
         };
 
         if (config.session.useRedis) {
-            const redisClient = redis.createClient(Object.assign(config.redis, {legacyMode: true}) as any);
+            const redisClient = redis.createClient({
+                url: config.redis.url,
+            } as any);
             redisClient.connect().catch(console.error);
 
-            sessionOptions.store = new (redisConnect(session))({
-                client: redisClient as any
-            });
+            sessionOptions.store = new RedisStore({
+                client: redisClient,
+                prefix: config.redis.prefix,
+                ttl: config.redis.ttl,
+            })
         }
 
         app.use(session(sessionOptions));

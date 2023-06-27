@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as ldapauth from 'ldapauth-fork';
-import * as redisStore from 'connect-redis';
 
 export const config: Config = require('../../config/config.json');
 if (config.ldap.searchAttributes == undefined) {
@@ -24,8 +23,12 @@ export type Config = {
         secret: string;
         cookie: express.CookieOptions;
         useRedis: boolean;
-    },
-    redis: redisStore.RedisStoreOptions
+    };
+    redis: {
+        url: string;
+        ttl?: number;
+        prefix?: string;
+    };
 };
 
 // TODO: config validation

@@ -106,12 +106,18 @@ renderer.link = (href, title, text): string => {
 
 renderer.paragraph = (text): string => text;
 
+marked.use({
+    renderer,
+    mangle: false,
+    headerIds: false,
+})
+
 router.get('/woordenboek', async (req, res) => {
     res.render('members/dictionary', {
         dictionary: await Words.getAll(),
         getFileUrl: MediaFiles.getUrl,
         generateSimple,
-        marked: (s: string) => marked(s, { renderer })
+        marked: (s: string) => marked(s)
     });
 });
 
@@ -120,7 +126,7 @@ router.get('/citaten', async (req, res) => {
         quotes: await Quotes.getAll(),
         getFileUrl: MediaFiles.getUrl,
         generateSimple,
-        marked: (s: string) => marked(s, { renderer })
+        marked: (s: string) => marked(s)
     });
 });
 

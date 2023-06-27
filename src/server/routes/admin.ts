@@ -197,7 +197,7 @@ router.post('/citaten/edit', (req, res) =>
         const quote = await testAndGetFromId(b.id, Quotes.getById, 'Citaat');
 
         if (b.action == 'delete')
-            return `Citaat "${(await quote.remove()).quote}" is succesvol verwijderd.`;
+            return `Citaat "${(await quote.deleteOne()).quote}" is succesvol verwijderd.`;
 
         testRequiredFields(b.quote, b.context, b.quotee, b.time, b.zone);
 
@@ -250,7 +250,7 @@ router.post('/woordenboek/edit', (req, res) =>
         const word = await testAndGetFromId(b.id, Words.getById, 'Woord');
 
         if (b.action == 'delete')
-            return `Woord "${(await word.remove()).word}" is succesvol verwijderd.`;
+            return `Woord "${(await word.deleteOne()).word}" is succesvol verwijderd.`;
 
         testRequiredFields(b.word, b.definitions, b.definitions.filter((x: string) => x != '').length);
 
@@ -308,7 +308,7 @@ router.post('/punten/edit', (req, res) =>
         const ep = await testAndGetFromId(b.id, EarnedPoints.getById, 'Punt');
 
         if (b.action == 'delete')
-            return `Punt "${(await ep.remove())._id.toHexString()}" is succesvol verwijderd.`;
+            return `Punt "${(await ep.deleteOne())._id.toHexString()}" is succesvol verwijderd.`;
 
         testRequiredFields(b.person, b.expeditie, b.amount, b.time, b.zone);
 
@@ -474,7 +474,7 @@ router.post('/story/edit', (req, res) =>
                 console.log(se.media[0])
                 await Promise.all(se.media.map(async medium => await MediaFileHelper.deleteEmbeddedFile(medium.mediaFile)))
             }
-            return `Verhaalelement "${(await se.remove())._id.toHexString()}" is succesvol verwijderd.`;
+            return `Verhaalelement "${(await se.deleteOne())._id.toHexString()}" is succesvol verwijderd.`;
         }
 
         testRequiredFields(b.type, b.expeditie, b.person, b.time, b.zone);

@@ -34,5 +34,5 @@ dateTimeSchema.virtual('object')
     })
     .set(function (this: DateTimeInternal, value: DateTime) {
         this.stamp = value.toSeconds();
-        this.zone = value.zoneName;
+        this.zone = value.zoneName || dateTimeSchemaDefault.zone;
     });

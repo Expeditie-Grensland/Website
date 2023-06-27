@@ -46,7 +46,7 @@ export namespace Expedities {
     export const remove = (expeditie: ExpeditieOrId): Promise<void> =>
         getDocument(expeditie)
             .then(Documents.ensureNotNull)
-            .then(expeditie => expeditie.remove())
+            .then(expeditie => expeditie.deleteOne())
             .then(() => undefined);
 
     export const addPeople = (expeditie: ExpeditieOrId, people: PersonOrId[]): Promise<ExpeditieDocument> =>

@@ -11,7 +11,7 @@ export namespace MediaFiles {
     export const remove = (file: MediaFileOrId): Promise<MediaFileDocument> =>
         getDocument(file)
             .then(Documents.ensureNotNull)
-            .then((file: MediaFileDocument) => file.remove())
+            .then((file: MediaFileDocument) => file.deleteOne())
             .then(MediaFileHelper.deleteFile);
 
     export const createMany = (files: MediaFile[]): Promise<MediaFileDocument[]> =>
