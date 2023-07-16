@@ -23,11 +23,7 @@
   },
 
   "session": {
-    "secret": "something very secret",
-    "cookie": {
-      "secure": true
-    },
-    "useRedis": true
+    "secret": "something very secret"
   },
 
   "redis": {

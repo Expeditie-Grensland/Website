@@ -88,6 +88,9 @@ export namespace Setup {
     export function setupSession(app: express.Express) {
         const sessionOptions: session.SessionOptions = {
             secret: config.session.secret,
+            cookie: {
+                secure: app.get('env') !== 'development',
+            },
             resave: false,
             saveUninitialized: false,
         };
