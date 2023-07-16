@@ -6,8 +6,6 @@ import { Documents } from '../documents';
 import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
 import { GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
 
-const sprintf = require('sprintf-js').sprintf;
-
 export namespace Expedities {
     export const getByNameShort = (nameShort: string): Promise<ExpeditieDocument | null> =>
         ExpeditieModel.findOne({ nameShort }).exec();
@@ -39,7 +37,7 @@ export namespace Expedities {
 
     const _checkFinished = (expeditie: ExpeditieDocument): Promise<ExpeditieDocument> => {
         if (expeditie.finished)
-            throw sprintf('Sorry, de expeditie %s is gemarkeerd als beëindigd', expeditie.name);
+            throw `Sorry, de expeditie ${ expeditie.name } is gemarkeerd als beëindigd`;
         return Promise.resolve(expeditie);
     };
 
