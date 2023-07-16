@@ -89,8 +89,9 @@ export namespace Setup {
         const sessionOptions: session.SessionOptions = {
             secret: config.session.secret,
             cookie: {
-                secure: app.get('env') !== 'development',
+                secure: app.get('env') === 'production',
             },
+            proxy: app.get('env') === 'production',
             resave: false,
             saveUninitialized: false,
         };
