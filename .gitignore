@@ -1,7 +1,7 @@
 node_modules/
 
 /dist/
-/src/config/config.json
+.env
 
 .idea/
 .vscode/

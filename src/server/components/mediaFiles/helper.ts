@@ -11,8 +11,8 @@ const Mime = require('mime/Mime');
 
 export namespace MediaFileHelper {
     export const getFilesFolder = (): string =>
-        path.isAbsolute(config.filesFolder) ?
-            path.normalize(config.filesFolder) : path.join(__dirname, '../..', config.filesFolder);
+        path.isAbsolute(config.files.directory) ?
+            path.normalize(config.files.directory) : path.join(__dirname, '../..', config.files.directory);
 
     export const getFileLocation = (id: string, ext: string) =>
         path.join(getFilesFolder(), `${id}.${ext}`);

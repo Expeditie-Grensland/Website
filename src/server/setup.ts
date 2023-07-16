@@ -95,16 +95,16 @@ export namespace Setup {
             saveUninitialized: false,
         };
 
-        if (config.redis) {
+        if (config.redis.url) {
             const redisClient = redis.createClient({
-                url: config.redis!.url,
+                url: config.redis.url,
             } as any);
             redisClient.connect().catch(console.error);
 
             sessionOptions.store = new RedisStore({
                 client: redisClient,
-                prefix: config.redis!.prefix,
-                ttl: config.redis!.ttl,
+                prefix: config.redis.prefix,
+                ttl: 2592000,
             });
         }
 

@@ -1,38 +1,52 @@
-import * as express from 'express';
+const getEnv = (varName: string, defaultValue?: string): string => {
+    const value = process.env[varName] || defaultValue;
 
-export const config: Config = require('../../config/config.json');
+    if (value === undefined)
+        throw new Error(`Environment variable '${varName}' must be defined`);
 
-export type Config = {
-    port: number;
-
-    filesFolder: string;
-
-    mongo: {
-        url: string;
-        user: string;
-        pass: string;
-    };
-
-    ldap: {
-        url: string;
-        bindDN: string;
-        bindCredentials: string;
-        searchBase: string;
-        searchScope: 'base' | 'one' | 'sub';
-        searchFilter: string;
-        idField: string;
-    };
-
-    session: {
-        secret: string;
-        cookie: express.CookieOptions;
-    };
-
-    redis?: {
-        url: string;
-        ttl?: number;
-        prefix?: string;
-    };
+    return value;
 };
 
-// TODO: config validation
+const getEnvLdapScope = (varName: string): 'base' | 'one' | 'sub' => {
+    const value = getEnv(varName);
+
+    if (value !== 'base' && value !== 'one' && value !== 'sub')
+        throw new Error(
+            `Environment variable '${varName} must be 'base', 'one', or 'sub'`
+        );
+
+    return value;
+};
+
+export const config = {
+    port: getEnv('EG_PORT'),
+
+    files: {
+        directory: getEnv('EG_FILES_DIRECTORY'),
+    },
+
+    mongo: {
+        url: getEnv('EG_MONGO_URL'),
+        user: getEnv('EG_MONGO_USER'),
+        pass: getEnv('EG_MONGO_PASS'),
+    },
+
+    ldap: {
+        url: getEnv('EG_LDAP_URL'),
+        bindDN: getEnv('EG_LDAP_BIND_DN'),
+        bindCredentials: getEnv('EG_LDAP_BIND_CREDENTIALS'),
+        searchBase: getEnv('EG_LDAP_SEARCH_BASE'),
+        searchScope: getEnvLdapScope('EG_LDAP_SEARCH_SCOPE'),
+        searchFilter: getEnv('EG_LDAP_SEARCH_FILTER'),
+        idField: getEnv('EG_LDAP_ID_FIELD'),
+    },
+
+    redis: {
+        url: getEnv('EG_REDIS_URL', ''),
+        prefix: getEnv('EG_REDIS_PREFIX', 'expeditie-grensland:'),
+    },
+
+    session: {
+        secret: getEnv('EG_SESSION_SECRET'),
+    },
+};
