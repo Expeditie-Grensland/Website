@@ -1,4 +1,4 @@
-import {GeoJsonResult, RetrievalHelper, StoryResult} from './helpers/retrieval';
+import {GeoJsonResult, retrieveGeoJson, retrieveStory, StoryResult} from './helpers/retrieval';
 
 declare function postMessage(message: any): void;
 
@@ -15,11 +15,11 @@ onmessage = (event) => {
         if (storyResult != null) postMessage(['story', storyResult]);
     }
     else if (key == "retrieveAll") {
-        RetrievalHelper.retrieveGeoJson(event.data[1], (res: (GeoJsonResult)) => {
+        retrieveGeoJson(event.data[1], (res: (GeoJsonResult)) => {
             if (styleLoaded) return postMessage(['geoJson', res]);
             geoJsonResult = res;
         });
-        RetrievalHelper.retrieveStory(event.data[1], (res: StoryResult) => {
+        retrieveStory(event.data[1], (res: StoryResult) => {
             if (styleLoaded) return postMessage(['story', res]);
             storyResult = res;
         })

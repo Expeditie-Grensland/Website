@@ -2,14 +2,14 @@ import * as express from 'express';
 import * as passport from 'passport';
 import { marked } from 'marked';
 
-import { AuthHelper } from '../helpers/authHelper';
-import { MemberLinks } from '../components/memberLinks';
-import { Words } from '../components/words';
-import { MediaFiles } from '../components/mediaFiles';
-import { Quotes } from '../components/quotes';
+import * as AuthHelper from '../helpers/authHelper';
+import * as MemberLinks from '../components/memberLinks';
+import * as Words from '../components/words';
+import * as MediaFiles from '../components/mediaFiles';
+import * as Quotes from '../components/quotes';
 import { PersonDocument } from '../components/people/model';
 import { ExpeditieDocument } from '../components/expedities/model';
-import { EarnedPoints } from '../components/earnedPoints';
+import * as EarnedPoints from '../components/earnedPoints';
 
 export const router = express.Router();
 

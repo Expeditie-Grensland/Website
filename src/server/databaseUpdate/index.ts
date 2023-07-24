@@ -1,4 +1,4 @@
-import { Metadata } from '../components/metadata';
+import * as Metadata from '../components/metadata';
 
 const DATABASE_VERSION_KEY = 'database_version';
 

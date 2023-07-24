@@ -2,12 +2,12 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as mongoose from 'mongoose';
 
-import { AuthHelper } from '../helpers/authHelper';
-import { People } from '../components/people';
+import * as AuthHelper from '../helpers/authHelper';
+import * as People from '../components/people';
 import { PersonDocument, PersonOrId } from '../components/people/model';
 import { ExpeditieModel } from '../components/expedities/model';
-import { MediaFiles } from '../components/mediaFiles';
-import { Documents } from '../components/documents';
+import * as MediaFiles from '../components/mediaFiles';
+import * as Documents from '../components/documents';
 
 export const router = express.Router();
 

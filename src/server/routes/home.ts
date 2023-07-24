@@ -1,7 +1,7 @@
 import * as express from 'express';
 
-import { Expedities } from '../components/expedities';
-import { MediaFiles } from '../components/mediaFiles';
+import * as Expedities from '../components/expedities';
+import * as MediaFiles from '../components/mediaFiles';
 
 export const router = express.Router();
 

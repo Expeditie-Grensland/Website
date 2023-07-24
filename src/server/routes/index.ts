@@ -5,7 +5,7 @@ import { router as personRouter } from './person';
 import { router as homeRouter } from './home';
 import { router as membersRouter } from './members';
 import { router as adminRouter } from './admin';
-import { AuthHelper } from '../helpers/authHelper';
+import * as AuthHelper from '../helpers/authHelper';
 
 export function Router(): express.Router {
     const router = express.Router();

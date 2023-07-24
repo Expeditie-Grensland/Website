@@ -3,17 +3,17 @@ import * as mongoose from 'mongoose';
 import * as multer from 'multer';
 import {DateTime, Info} from 'luxon';
 
-import {MediaFiles} from '../components/mediaFiles';
-import {AuthHelper} from '../helpers/authHelper';
-import {MediaFileHelper} from '../components/mediaFiles/helper';
+import * as MediaFiles from '../components/mediaFiles';
+import * as AuthHelper from '../helpers/authHelper';
+import * as MediaFileHelper from '../components/mediaFiles/helper';
 import {MediaFile, MediaFileEmbedded} from '../components/mediaFiles/model';
-import {Quotes} from '../components/quotes';
+import * as Quotes from '../components/quotes';
 import {QuoteModel} from '../components/quotes/model';
-import {Words} from '../components/words';
+import * as Words from '../components/words';
 import {Word} from '../components/words/model';
-import {EarnedPoints} from '../components/earnedPoints';
-import {Expedities} from '../components/expedities';
-import {People} from '../components/people';
+import * as EarnedPoints from '../components/earnedPoints';
+import * as Expedities from '../components/expedities';
+import * as People from '../components/people';
 import {EarnedPointModel} from '../components/earnedPoints/model';
 import {
     BaseStoryElementModel,
@@ -22,9 +22,9 @@ import {
     TextStoryElementModel
 } from '../components/storyElements/model';
 import {GeoLocation} from '../components/geoLocations/model';
-import {GpxHelper} from '../components/geoLocations/gpxHelper';
-import {GeoLocations} from '../components/geoLocations';
-import {StoryElements} from "../components/storyElements"
+import * as GpxHelper from '../components/geoLocations/gpxHelper';
+import * as GeoLocations from '../components/geoLocations';
+import * as StoryElements from "../components/storyElements"
 
 
 export const router = express.Router();
@@ -107,7 +107,7 @@ router.get('/bestanden', async (req, res) =>
     })
 );
 
-const multerUpload = multer(MediaFileHelper.Multer.settings);
+const multerUpload = multer(MediaFileHelper.multerSettings);
 
 router.post('/bestanden/upload', multerUpload.array('files'), (req, res) =>
     tryCatchAndRedirect(req, res, '/admin/bestanden', async () => {

@@ -1,7 +1,13 @@
 import * as express from 'express';
 import * as http from 'http';
 
-import { Setup } from './setup';
+import {
+    setupExpress,
+    setupSession,
+    addAuthMiddleware,
+    setupDatabase,
+    startServer,
+} from './setup';
 import { Router } from './routes';
 import { config } from './helpers/configHelper';
 
@@ -12,18 +18,18 @@ Error.stackTraceLimit = Infinity;
 
 const app = express();
 const server = http.createServer(app);
-const dev = (app.get('env') == 'development');
+const dev = app.get('env') == 'development';
 
 // FIXME: if mongo can't reach models, server crashes
-Setup.setupExpress(app, __dirname + '/../', dev);
-Setup.setupSession(app);
-Setup.addAuthMiddleware(app);
-Setup.setupDatabase(app, dev);
+setupExpress(app, __dirname + '/../', dev);
+setupSession(app);
+addAuthMiddleware(app);
+setupDatabase(app, dev);
 
 app.use('/', Router());
 
 updateDatabase().then(() => {
-    Setup.startServer(server, config.port);
+    startServer(server, config.port);
 
     console.info('Server started on port: ' + config.port);
 });

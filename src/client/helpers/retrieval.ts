@@ -57,81 +57,79 @@ export interface StoryResult {
     finished: boolean
 }
 
-export namespace RetrievalHelper {
-    export const retrieveGeoJson = (expeditie: string, cb: (res: GeoJsonResult) => void) =>
-        retrieveBinary(expeditie, (buf) => cb(binaryToGeoJson(buf)));
+export const retrieveGeoJson = (expeditie: string, cb: (res: GeoJsonResult) => void) =>
+    retrieveBinary(expeditie, (buf) => cb(binaryToGeoJson(buf)));
 
-    const retrieveBinary = (expeditie: string, cb: (buf: ArrayBuffer) => void) => {
-        const req = new XMLHttpRequest();
-        req.open('GET', '/' + expeditie + '/kaart/binary', true);
-        req.responseType = 'arraybuffer';
+const retrieveBinary = (expeditie: string, cb: (buf: ArrayBuffer) => void) => {
+    const req = new XMLHttpRequest();
+    req.open('GET', '/' + expeditie + '/kaart/binary', true);
+    req.responseType = 'arraybuffer';
 
-        req.onload = () => {
-            const buf = req.response;
+    req.onload = () => {
+        const buf = req.response;
 
-            cb(buf);
-        };
-
-        req.send();
+        cb(buf);
     };
 
-    export const retrieveStory = (expeditie: string, cb: (json: StoryResult) => void) => {
-        const req = new XMLHttpRequest();
-        req.open('GET', '/' + expeditie + '/kaart/story', true);
-        req.responseType = 'json';
+    req.send();
+};
 
-        req.onload = () => {
-            const json = req.response;
+export const retrieveStory = (expeditie: string, cb: (json: StoryResult) => void) => {
+    const req = new XMLHttpRequest();
+    req.open('GET', '/' + expeditie + '/kaart/story', true);
+    req.responseType = 'json';
 
-            cb(json);
-        };
+    req.onload = () => {
+        const json = req.response;
 
-        req.send()
+        cb(json);
     };
 
-    const binaryToGeoJson = (buf: ArrayBuffer): GeoJsonResult => {
-        const res: GeoJsonResult = {
-            geoJson: {
-                type: 'FeatureCollection',
-                features: []
-            },
-            minLon: Infinity, maxLon: -Infinity,
-            minLat: Infinity, maxLat: -Infinity
+    req.send()
+};
+
+const binaryToGeoJson = (buf: ArrayBuffer): GeoJsonResult => {
+    const res: GeoJsonResult = {
+        geoJson: {
+            type: 'FeatureCollection',
+            features: []
+        },
+        minLon: Infinity, maxLon: -Infinity,
+        minLat: Infinity, maxLat: -Infinity
+    };
+
+    const view = new DataView(buf);
+
+    const nodeCount = view.getInt32(0);
+    let offset = 4;
+
+    for (let nodeNum = 0; nodeNum < nodeCount; nodeNum++) {
+        const locCount = view.getInt32(offset);
+
+        offset += 4;
+
+        const feat: geoJson.Feature<geoJson.LineString> = {
+            type: 'Feature',
+            properties: { nodeNum },
+            geometry: { type: 'LineString', coordinates: [] }
         };
 
-        const view = new DataView(buf);
+        for (let i = 0; i < locCount; ++i) {
+            const lon = view.getFloat64(offset);
+            const lat = view.getFloat64(offset + 8);
 
-        const nodeCount = view.getInt32(0);
-        let offset = 4;
+            offset += 16;
 
-        for (let nodeNum = 0; nodeNum < nodeCount; nodeNum++) {
-            const locCount = view.getInt32(offset);
+            feat.geometry.coordinates.push([lon, lat]);
 
-            offset += 4;
-
-            const feat: geoJson.Feature<geoJson.LineString> = {
-                type: 'Feature',
-                properties: { nodeNum },
-                geometry: { type: 'LineString', coordinates: [] }
-            };
-
-            for (let i = 0; i < locCount; ++i) {
-                const lon = view.getFloat64(offset);
-                const lat = view.getFloat64(offset + 8);
-
-                offset += 16;
-
-                feat.geometry.coordinates.push([lon, lat]);
-
-                if (lon < res.minLon) res.minLon = lon;
-                if (lon > res.maxLon) res.maxLon = lon;
-                if (lat < res.minLat) res.minLat = lat;
-                if (lat > res.maxLat) res.maxLat = lat;
-            }
-
-            res.geoJson.features.push(feat);
+            if (lon < res.minLon) res.minLon = lon;
+            if (lon > res.maxLon) res.maxLon = lon;
+            if (lat < res.minLat) res.minLat = lat;
+            if (lat > res.maxLat) res.maxLat = lat;
         }
 
-        return res;
-    };
-}
+        res.geoJson.features.push(feat);
+    }
+
+    return res;
+};

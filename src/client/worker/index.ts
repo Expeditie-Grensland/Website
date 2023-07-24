@@ -1,4 +1,4 @@
-import { RouteCache } from './routeCache';
+import * as RouteCache from './routeCache';
 
 declare const self: ServiceWorkerGlobalScope;
 

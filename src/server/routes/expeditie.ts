@@ -1,11 +1,11 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 
-import {Expedities} from '../components/expedities';
-import {MediaFiles} from '../components/mediaFiles';
+import * as Expedities from '../components/expedities';
+import * as MediaFiles from '../components/mediaFiles';
 import {ExpeditieDocument} from '../components/expedities/model';
 import {geoLocationModel} from '../components/geoLocations/model';
-import {StoryElements} from '../components/storyElements';
+import * as StoryElements from '../components/storyElements';
 import {
     BaseStoryElementModel,
     LocationStoryElementDocument,
