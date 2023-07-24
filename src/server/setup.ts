@@ -3,9 +3,7 @@ import RedisStore from 'connect-redis';
 import express from 'express';
 import session from 'express-session';
 import mongoose from 'mongoose';
-import fs from 'node:fs';
 import http from 'node:http';
-import net from 'node:net';
 import path from 'node:path';
 import passport from 'passport';
 import ldapauth from 'passport-ldapauth';
@@ -17,28 +15,8 @@ import * as Documents from './components/documents/index.js';
 import * as People from './components/people/index.js';
 import { config } from './helpers/configHelper.js';
 
-export function startServer(server: http.Server, port: number | string) {
+export function startServer(server: http.Server, port: string) {
     server.listen(port);
-
-    if (isNaN(parseInt(port as any))) {
-        // Server is listening on a socket
-
-        server.on('listening', () => fs.chmodSync(port as string, 0o777));
-
-        server.on('error', (e: any) => {
-            if (e.code !== 'EADDRINUSE') throw e;
-
-            net.connect({ path: port as string }, () => {
-                throw e;
-            }).on('error', function (e: any) {
-                if (e.code !== 'ECONNREFUSED') throw e;
-
-                // Socket is not really in use: delete and re-listen
-                fs.unlinkSync(port as string);
-                server.listen(port);
-            });
-        });
-    }
 }
 
 export function setupExpress(
@@ -98,7 +76,7 @@ export function setupSession(app: express.Express) {
     if (config.redis.url) {
         const redisClient = redis.createClient({
             url: config.redis.url,
-        } as any);
+        });
         redisClient.connect().catch(console.error);
 
         sessionOptions.store = new RedisStore({
