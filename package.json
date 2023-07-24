@@ -65,6 +65,7 @@
     "del": "^7.0.0",
     "dotenv-cli": "^7.2.1",
     "eslint": "^8.45.0",
+    "eslint-nibble": "^8.1.0",
     "fancy-log": "^2.0.0",
     "gulp": "^4.0.2",
     "gulp-filter": "^7.0.0",
@@ -91,6 +92,7 @@
   },
   "scripts": {
     "lint": "eslint . --ext ts,js,cjs,mjs",
+    "nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
     "build:prod": "gulp build:prod",
     "build:dev": "gulp build:dev",
     "watch": "gulp watch",
