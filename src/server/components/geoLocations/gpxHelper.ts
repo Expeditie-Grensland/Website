@@ -8,14 +8,14 @@ import { GeoLocation } from './model.js';
 import { ExpeditieOrId } from '../expedities/model.js';
 import * as Documents from '../documents/index.js';
 
-export const generateLocations = (gpx: any, expeditie: ExpeditieOrId, person: PersonOrId, timezone: string = 'Europe/Amsterdam'): Promise<GeoLocation[]> => {
+export const generateLocations = (gpx: any, expeditie: ExpeditieOrId, person: PersonOrId, timezone = 'Europe/Amsterdam'): Promise<GeoLocation[]> => {
     return new Promise((resolve, reject) =>
         gpxparse.parseGpx(gpx, (error: any, data: any) => {
             if (error) return reject(error);
 
             const [expeditieId, personId] = Documents.getObjectIds([expeditie, person]);
 
-            return resolve(data.tracks.map((track: any) => track.segments).flat(2).map((wpt: any) => <GeoLocation>{
+            return resolve(data.tracks.map((track: any) => track.segments).flat(2).map((wpt: any) => ({
                 expeditieId,
                 personId,
                 dateTime: {
@@ -25,7 +25,7 @@ export const generateLocations = (gpx: any, expeditie: ExpeditieOrId, person: Pe
                 latitude: wpt.lat,
                 longitude: wpt.lon,
                 altitude: wpt.elevation
-            }));
+            }) as GeoLocation));
         })
     );
 };

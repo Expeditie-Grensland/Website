@@ -6,10 +6,10 @@ import mongoose from 'mongoose';
 export type DocumentOrId<T extends mongoose.Document> = T | mongoose.Types.ObjectId;
 
 export const isDocument = <T extends mongoose.Document>(doc: DocumentOrId<T>): doc is T =>
-    (<T>doc).save !== undefined;
+    (doc as T).save !== undefined;
 
 export const isObjectId = <T extends mongoose.Document>(doc: DocumentOrId<T>): doc is mongoose.Types.ObjectId =>
-    (<mongoose.Types.ObjectId>doc).toHexString !== undefined;
+    (doc as mongoose.Types.ObjectId).toHexString !== undefined;
 
 export const getObjectId = <T extends mongoose.Document>(doc: DocumentOrId<T>): mongoose.Types.ObjectId =>
     isObjectId(doc) ? doc : doc._id;

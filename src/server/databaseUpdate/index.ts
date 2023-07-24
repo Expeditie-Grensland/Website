@@ -75,10 +75,10 @@ async function performUpdate(version: number, update: { info: string, func: any 
 }
 
 export default async function updateDatabase() {
-    let databaseVersion = <number | null>await Metadata.getValueByKey(DATABASE_VERSION_KEY);
+    let databaseVersion = await Metadata.getValueByKey(DATABASE_VERSION_KEY) as number | null;
 
     if (databaseVersion === null)
-        databaseVersion = <number>(await Metadata.createKeyValue(DATABASE_VERSION_KEY, UPDATES.length)).value;
+        databaseVersion = (await Metadata.createKeyValue(DATABASE_VERSION_KEY, UPDATES.length)).value as number;
 
     const updatesToPerform = UPDATES.slice(databaseVersion);
 

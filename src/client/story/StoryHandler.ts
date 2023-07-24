@@ -114,13 +114,13 @@ export class StoryHandler {
     private createStoryElement = (element: StoryElement, nodes: Node[]): JQuery<HTMLElement> => {
         switch (element.type) {
             case 'location': {
-                return this.createLocationStoryElement(<LocationStoryElement>element, nodes);
+                return this.createLocationStoryElement(element as LocationStoryElement, nodes);
             }
             case 'text': {
-                return this.createTextStoryElement(<TextStoryElement>element, nodes);
+                return this.createTextStoryElement(element as TextStoryElement, nodes);
             }
             case 'media': {
-                return this.createMediaStoryElement(<MediaStoryElement>element, nodes);
+                return this.createMediaStoryElement(element as MediaStoryElement, nodes);
             }
             default: return $('<p>').text('er is iets foutgegaan')
         }

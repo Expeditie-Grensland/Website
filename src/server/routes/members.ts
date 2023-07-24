@@ -135,14 +135,14 @@ router.get('/punten', async (req, res) => {
         return {
             date: ep.dateTime.object.toLocaleString({ month: '2-digit', day: '2-digit' }),
             amount: ep.amount,
-            name: `${(<PersonDocument>ep.personId).firstName} ${(<PersonDocument>ep.personId).lastName}`,
-            team: (<PersonDocument>ep.personId).team as string,
-            expeditie: ep.expeditieId ? `Expeditie ${(<ExpeditieDocument>ep.expeditieId).name}` : ''
+            name: `${(ep.personId as PersonDocument).firstName} ${(ep.personId as PersonDocument).lastName}`,
+            team: (ep.personId as PersonDocument).team as string,
+            expeditie: ep.expeditieId ? `Expeditie ${(ep.expeditieId as ExpeditieDocument).name}` : ''
         };
     });
 
     const score = earnedPoints.reduce((acc, cur) =>
-        Object.assign(acc, {[cur.team]: (acc[cur.team] || 0) + cur.amount}), {} as {[key: string]: number});
+        Object.assign(acc, {[cur.team]: (acc[cur.team] || 0) + cur.amount}), {} as Record<string, number>);
 
     res.render('members/points', { earnedPoints, score });
 });
