@@ -1,8 +1,8 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
-import { WordId } from './id';
-import { DocumentOrId } from '../documents';
+import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model.js';
+import { WordId } from './id.js';
+import { DocumentOrId } from '../documents/index.js';
 
 /**
  * FIXME: Add description

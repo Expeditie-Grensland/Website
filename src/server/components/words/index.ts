@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { Word, WordDocument, WordModel, WordOrId } from './model';
-import * as Documents from '../documents';
+import { Word, WordDocument, WordModel, WordOrId } from './model.js';
+import * as Documents from '../documents/index.js';
 
 export const create = (word: Word): Promise<WordDocument> =>
     WordModel.create(word);

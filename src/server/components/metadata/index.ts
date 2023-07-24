@@ -1,4 +1,4 @@
-import { Metadatum, MetadatumDocument, MetadatumModel } from './model';
+import { Metadatum, MetadatumDocument, MetadatumModel } from './model.js';
 
 export const create = (metadatum: Metadatum): Promise<MetadatumDocument> =>
     MetadatumModel.create(metadatum);

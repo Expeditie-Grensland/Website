@@ -1,5 +1,5 @@
-import { EarnedPoint, EarnedPointDocument, EarnedPointModel } from './model';
-import * as mongoose from 'mongoose';
+import { EarnedPoint, EarnedPointDocument, EarnedPointModel } from './model.js';
+import mongoose from 'mongoose';
 
 export const getById = (id: mongoose.Types.ObjectId): Promise<EarnedPointDocument | null> =>
     EarnedPointModel.findById(id).exec();

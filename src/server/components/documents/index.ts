@@ -1,4 +1,4 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 /**
  * The new DocumentOrId type, for use with ObjectIds instead of strings;

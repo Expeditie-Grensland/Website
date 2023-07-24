@@ -1,5 +1,5 @@
-import * as express from 'express';
-import * as People from '../components/people';
+import express from 'express';
+import * as People from '../components/people/index.js';
 
 export const router = express.Router({ mergeParams: true });
 

@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { MemberLinkId } from './id';
-import { DocumentOrId } from '../documents';
+import { MemberLinkId } from './id.js';
+import { DocumentOrId } from '../documents/index.js';
 
 const schema = new mongoose.Schema({
     title: {

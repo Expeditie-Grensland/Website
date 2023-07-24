@@ -1,11 +1,11 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { ExpeditieId } from '../expedities/id';
-import { PersonId } from '../people/id';
-import {BaseStoryElementId, LocationStoryElementId, MediaStoryElementId, TextStoryElementId} from './id';
-import { DocumentOrId } from '../documents';
-import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model';
-import {MediaFileEmbedded, mediaFileEmbeddedSchema} from "../mediaFiles/model"
+import { ExpeditieId } from '../expedities/id.js';
+import { PersonId } from '../people/id.js';
+import {BaseStoryElementId, LocationStoryElementId, MediaStoryElementId, TextStoryElementId} from './id.js';
+import { DocumentOrId } from '../documents/index.js';
+import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model.js';
+import {MediaFileEmbedded, mediaFileEmbeddedSchema} from "../mediaFiles/model.js"
 
 interface BaseStoryElement {
     expeditieId: mongoose.Types.ObjectId,

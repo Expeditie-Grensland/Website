@@ -1,5 +1,5 @@
-import * as mongoose from 'mongoose';
-import { MetadatumId } from './id';
+import mongoose from 'mongoose';
+import { MetadatumId } from './id.js';
 
 /**
  * A Metadatum describes a key-value relation that describes some property of the database itself.

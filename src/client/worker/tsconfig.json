@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "es2015",
+    "target": "ES2015",
+    "module": "ES2015",
     "moduleResolution": "node",
     "outDir": "../../../dist/static/client/worker/",
-    "lib": ["es2015", "webworker"],
+    "lib": ["ES2015", "WebWorker"],
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "strict": true,

@@ -1,10 +1,10 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrId } from './model';
-import { PersonDocument, PersonOrId } from '../people/model';
-import * as Documents from '../documents';
-import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model';
-import { GeoNodeDocument, geoNodeModel } from '../geoNodes/model';
+import { Expeditie, ExpeditieDocument, ExpeditieModel, ExpeditieOrId } from './model.js';
+import { PersonDocument, PersonOrId } from '../people/model.js';
+import * as Documents from '../documents/index.js';
+import { GeoLocationDocument, geoLocationModel } from '../geoLocations/model.js';
+import { GeoNodeDocument, geoNodeModel } from '../geoNodes/model.js';
 
 export const getByNameShort = (nameShort: string): Promise<ExpeditieDocument | null> =>
     ExpeditieModel.findOne({ nameShort }).exec();

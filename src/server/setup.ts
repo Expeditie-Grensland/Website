@@ -1,21 +1,21 @@
-import * as bodyParser from 'body-parser';
-import * as express from 'express';
-import * as session from 'express-session';
-import * as redis from 'redis';
+import bodyParser from 'body-parser';
 import RedisStore from 'connect-redis';
-import * as http from 'http';
-import * as mongoose from 'mongoose';
-import * as path from 'path';
-import * as passport from 'passport';
-import * as ldapauth from 'passport-ldapauth';
-import * as fs from 'fs';
-import * as net from 'net';
+import express from 'express';
+import session from 'express-session';
+import mongoose from 'mongoose';
+import fs from 'node:fs';
+import http from 'node:http';
+import net from 'node:net';
+import path from 'node:path';
+import passport from 'passport';
+import ldapauth from 'passport-ldapauth';
+import redis from 'redis';
 
-import { config } from './helpers/configHelper';
-import * as People from './components/people';
-import { router as appBackend } from './appBackend';
-import * as Documents from './components/documents';
-import flash = require('connect-flash');
+import flash from "connect-flash";
+import { router as appBackend } from './appBackend/index.js';
+import * as Documents from './components/documents/index.js';
+import * as People from './components/people/index.js';
+import { config } from './helpers/configHelper.js';
 
 export function startServer(server: http.Server, port: number | string) {
     server.listen(port);

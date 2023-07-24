@@ -1,18 +1,20 @@
-import * as express from 'express';
-import * as http from 'http';
+import express from 'express';
+import http from 'node:http';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+import { config } from './helpers/configHelper.js';
+import { Router } from './routes/index.js';
 import {
-    setupExpress,
-    setupSession,
     addAuthMiddleware,
     setupDatabase,
+    setupExpress,
+    setupSession,
     startServer,
-} from './setup';
-import { Router } from './routes';
-import { config } from './helpers/configHelper';
+} from './setup.js';
 
-import 'source-map-support/register';
-import updateDatabase from './databaseUpdate';
+import 'source-map-support/register.js';
+import updateDatabase from './databaseUpdate/index.js';
 
 Error.stackTraceLimit = Infinity;
 
@@ -21,15 +23,13 @@ const server = http.createServer(app);
 const dev = app.get('env') == 'development';
 
 // FIXME: if mongo can't reach models, server crashes
-setupExpress(app, __dirname + '/../', dev);
+setupExpress(app, dirname(fileURLToPath(import.meta.url)) + '/../', dev);
 setupSession(app);
 addAuthMiddleware(app);
 setupDatabase(app, dev);
 
 app.use('/', Router());
 
-updateDatabase().then(() => {
-    startServer(server, config.port);
-
-    console.info('Server started on port: ' + config.port);
-});
+await updateDatabase();
+startServer(server, config.port);
+console.info(`Server started on port: ${config.port}`);

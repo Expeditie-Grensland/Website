@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 
 export interface DateTimeInternal {

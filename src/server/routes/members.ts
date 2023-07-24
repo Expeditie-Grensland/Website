@@ -1,15 +1,15 @@
-import * as express from 'express';
-import * as passport from 'passport';
+import express from 'express';
+import passport from 'passport';
 import { marked } from 'marked';
 
-import * as AuthHelper from '../helpers/authHelper';
-import * as MemberLinks from '../components/memberLinks';
-import * as Words from '../components/words';
-import * as MediaFiles from '../components/mediaFiles';
-import * as Quotes from '../components/quotes';
-import { PersonDocument } from '../components/people/model';
-import { ExpeditieDocument } from '../components/expedities/model';
-import * as EarnedPoints from '../components/earnedPoints';
+import * as AuthHelper from '../helpers/authHelper.js';
+import * as MemberLinks from '../components/memberLinks/index.js';
+import * as Words from '../components/words/index.js';
+import * as MediaFiles from '../components/mediaFiles/index.js';
+import * as Quotes from '../components/quotes/index.js';
+import { PersonDocument } from '../components/people/model.js';
+import { ExpeditieDocument } from '../components/expedities/model.js';
+import * as EarnedPoints from '../components/earnedPoints/index.js';
 
 export const router = express.Router();
 

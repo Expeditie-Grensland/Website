@@ -1,13 +1,13 @@
-import * as path from 'path';
-import * as express from 'express';
-import * as multer from 'multer';
-import * as mongoose from 'mongoose';
-import * as fs from 'fs';
+import express from 'express';
+import mongoose from 'mongoose';
+import multer from 'multer';
+import fs from 'node:fs';
+import path from 'node:path';
 
-import { config } from '../../helpers/configHelper';
-import {MediaFileDocument, MediaFileEmbedded} from './model';
+import { config } from '../../helpers/configHelper.js';
+import { MediaFileDocument, MediaFileEmbedded } from './model.js';
 
-const Mime = require('mime/Mime');
+import Mime from "mime/Mime.js";
 
 export const getFilesFolder = (): string =>
     path.isAbsolute(config.files.directory) ?

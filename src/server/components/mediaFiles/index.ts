@@ -1,8 +1,8 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { MediaFile, MediaFileDocument, MediaFileEmbedded, mediaFileModel, MediaFileOrId } from './model';
-import * as MediaFileHelper from './helper';
-import * as Documents from '../documents';
+import { MediaFile, MediaFileDocument, MediaFileEmbedded, mediaFileModel, MediaFileOrId } from './model.js';
+import * as MediaFileHelper from './helper.js';
+import * as Documents from '../documents/index.js';
 
 export const create = (file: MediaFile): Promise<MediaFileDocument> =>
     mediaFileModel.create(file);

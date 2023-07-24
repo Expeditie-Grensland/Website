@@ -1,9 +1,9 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
-import { QuoteId } from './id';
-import { DocumentOrId } from '../documents';
-import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model';
+import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model.js';
+import { QuoteId } from './id.js';
+import { DocumentOrId } from '../documents/index.js';
+import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model.js';
 
 /**
  * Expeditie quotes.

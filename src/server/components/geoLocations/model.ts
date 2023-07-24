@@ -1,10 +1,10 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { GeoLocationId } from './id';
-import { DocumentOrId } from '../documents';
-import { ExpeditieId } from '../expedities/id';
-import { PersonId } from '../people/id';
-import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model';
+import { GeoLocationId } from './id.js';
+import { DocumentOrId } from '../documents/index.js';
+import { ExpeditieId } from '../expedities/id.js';
+import { PersonId } from '../people/id.js';
+import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model.js';
 
 export interface GeoLocation {
     expeditieId: mongoose.Types.ObjectId;

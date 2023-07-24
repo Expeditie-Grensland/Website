@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import {DocumentOrId} from '../documents';
-import {MediaFileId} from './id';
+import {DocumentOrId} from '../documents/index.js';
+import {MediaFileId} from './id.js';
 
 export interface MediaFile {
     _id?: mongoose.Types.ObjectId;

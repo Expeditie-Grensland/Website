@@ -1,8 +1,8 @@
-import * as mongoose from 'mongoose';
-import { GeoNodeId } from './id';
-import { DocumentOrId } from '../documents';
-import { ExpeditieId } from '../expedities/id';
-import { PersonId } from '../people/id';
+import mongoose from 'mongoose';
+import { GeoNodeId } from './id.js';
+import { DocumentOrId } from '../documents/index.js';
+import { ExpeditieId } from '../expedities/id.js';
+import { PersonId } from '../people/id.js';
 
 // FIXME: replace ObjectId with DocumentOrId<> types (in all models) OR union types as return type for functions
 export interface GeoNode {

@@ -1,6 +1,6 @@
-import {BaseStoryElementModel, StoryElement, StoryElementDocument} from './model';
-import {ExpeditieOrId} from '../expedities/model';
-import * as Documents from '../documents';
+import {BaseStoryElementModel, StoryElement, StoryElementDocument} from './model.js';
+import {ExpeditieOrId} from '../expedities/model.js';
+import * as Documents from '../documents/index.js';
 import mongoose from "mongoose"
 
 export const create = (person: StoryElement): Promise<StoryElementDocument> =>

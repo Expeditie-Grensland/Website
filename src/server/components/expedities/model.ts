@@ -1,10 +1,10 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { PersonId } from '../people/id';
-import { PersonOrId } from '../people/model';
-import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model';
-import { ExpeditieId } from './id';
-import { DocumentOrId } from '../documents';
+import { PersonId } from '../people/id.js';
+import { PersonOrId } from '../people/model.js';
+import { MediaFileEmbedded, mediaFileEmbeddedSchema } from '../mediaFiles/model.js';
+import { ExpeditieId } from './id.js';
+import { DocumentOrId } from '../documents/index.js';
 
 /**
  * The expeditie is the wrapping object for all data related to one trip. This is represented on the home page by

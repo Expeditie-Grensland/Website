@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { Person, PersonDocument, PersonModel, PersonOrId } from './model';
-import * as Documents from '../documents';
+import { Person, PersonDocument, PersonModel, PersonOrId } from './model.js';
+import * as Documents from '../documents/index.js';
 
 export const create = (person: Person): Promise<PersonDocument> =>
     PersonModel.create(person);

@@ -1,9 +1,9 @@
-import * as jwt from 'jsonwebtoken';
-import * as express from 'express';
+import jwt from 'jsonwebtoken';
+import express from 'express';
 
-import { config } from './configHelper';
-import { PersonDocument, PersonOrId } from '../components/people/model';
-import * as Documents from '../components/documents';
+import { config } from './configHelper.js';
+import { PersonDocument, PersonOrId } from '../components/people/model.js';
+import * as Documents from '../components/documents/index.js';
 
 export const generateJwt = (person: PersonOrId, callback: jwt.SignCallback): void => {
     jwt.sign(

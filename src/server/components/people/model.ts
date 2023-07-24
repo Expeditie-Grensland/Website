@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { PersonId } from './id';
-import { DocumentOrId } from '../documents';
+import { PersonId } from './id.js';
+import { DocumentOrId } from '../documents/index.js';
 
 /**
  * A Person describes a person who participates in an expeditie. They are guaranteed to have a name

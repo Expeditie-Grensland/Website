@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { Quote, QuoteDocument, QuoteModel, QuoteOrId } from './model';
-import * as Documents from '../documents';
+import { Quote, QuoteDocument, QuoteModel, QuoteOrId } from './model.js';
+import * as Documents from '../documents/index.js';
 
 export const create = (quote: Quote): Promise<QuoteDocument> =>
     QuoteModel.create(quote);

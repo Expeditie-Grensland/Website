@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-import { GeoLocation, GeoLocationDocument, geoLocationModel, GeoLocationOrId } from './model';
-import * as Documents from '../documents';
+import { GeoLocation, GeoLocationDocument, geoLocationModel, GeoLocationOrId } from './model.js';
+import * as Documents from '../documents/index.js';
 
 export const getById = (id: mongoose.Types.ObjectId): Promise<GeoLocationDocument | null> =>
     geoLocationModel.findById(id).exec();

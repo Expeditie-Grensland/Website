@@ -1,18 +1,18 @@
-import * as express from 'express';
-import * as mongoose from 'mongoose';
+import express from 'express';
+import mongoose from 'mongoose';
 
-import * as Expedities from '../components/expedities';
-import * as MediaFiles from '../components/mediaFiles';
-import {ExpeditieDocument} from '../components/expedities/model';
-import {geoLocationModel} from '../components/geoLocations/model';
-import * as StoryElements from '../components/storyElements';
+import * as Expedities from '../components/expedities/index.js';
+import * as MediaFiles from '../components/mediaFiles/index.js';
+import {ExpeditieDocument} from '../components/expedities/model.js';
+import {geoLocationModel} from '../components/geoLocations/model.js';
+import * as StoryElements from '../components/storyElements/index.js';
 import {
     BaseStoryElementModel,
     LocationStoryElementDocument,
     MediaStoryElementDocument,
     TextStoryElementDocument
-} from '../components/storyElements/model';
-import {PersonDocument} from '../components/people/model';
+} from '../components/storyElements/model.js';
+import {PersonDocument} from '../components/people/model.js';
 
 export const router = express.Router({ mergeParams: true });
 

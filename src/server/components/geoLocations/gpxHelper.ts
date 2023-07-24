@@ -1,12 +1,12 @@
 // @ts-ignore
 // TODO: Consider switching library (gpx-parse is old and not much-used and doesn't have typings).
 //       Or removing this functionality altogether.
-import * as gpxparse from 'gpx-parse';
+import gpxparse from 'gpx-parse';
 
-import { PersonOrId } from '../people/model';
-import { GeoLocation } from './model';
-import { ExpeditieOrId } from '../expedities/model';
-import * as Documents from '../documents';
+import { PersonOrId } from '../people/model.js';
+import { GeoLocation } from './model.js';
+import { ExpeditieOrId } from '../expedities/model.js';
+import * as Documents from '../documents/index.js';
 
 export const generateLocations = (gpx: any, expeditie: ExpeditieOrId, person: PersonOrId, timezone: string = 'Europe/Amsterdam'): Promise<GeoLocation[]> => {
     return new Promise((resolve, reject) =>

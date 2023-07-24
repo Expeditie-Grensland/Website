@@ -1,30 +1,30 @@
-import * as express from 'express';
-import * as mongoose from 'mongoose';
-import * as multer from 'multer';
+import express from 'express';
+import mongoose from 'mongoose';
+import multer from 'multer';
 import {DateTime, Info} from 'luxon';
 
-import * as MediaFiles from '../components/mediaFiles';
-import * as AuthHelper from '../helpers/authHelper';
-import * as MediaFileHelper from '../components/mediaFiles/helper';
-import {MediaFile, MediaFileEmbedded} from '../components/mediaFiles/model';
-import * as Quotes from '../components/quotes';
-import {QuoteModel} from '../components/quotes/model';
-import * as Words from '../components/words';
-import {Word} from '../components/words/model';
-import * as EarnedPoints from '../components/earnedPoints';
-import * as Expedities from '../components/expedities';
-import * as People from '../components/people';
-import {EarnedPointModel} from '../components/earnedPoints/model';
+import * as MediaFiles from '../components/mediaFiles/index.js';
+import * as AuthHelper from '../helpers/authHelper.js';
+import * as MediaFileHelper from '../components/mediaFiles/helper.js';
+import {MediaFile, MediaFileEmbedded} from '../components/mediaFiles/model.js';
+import * as Quotes from '../components/quotes/index.js';
+import {QuoteModel} from '../components/quotes/model.js';
+import * as Words from '../components/words/index.js';
+import {Word} from '../components/words/model.js';
+import * as EarnedPoints from '../components/earnedPoints/index.js';
+import * as Expedities from '../components/expedities/index.js';
+import * as People from '../components/people/index.js';
+import {EarnedPointModel} from '../components/earnedPoints/model.js';
 import {
     BaseStoryElementModel,
     LocationStoryElementModel,
     MediaStoryElementModel,
     TextStoryElementModel
-} from '../components/storyElements/model';
-import {GeoLocation} from '../components/geoLocations/model';
-import * as GpxHelper from '../components/geoLocations/gpxHelper';
-import * as GeoLocations from '../components/geoLocations';
-import * as StoryElements from "../components/storyElements"
+} from '../components/storyElements/model.js';
+import {GeoLocation} from '../components/geoLocations/model.js';
+import * as GpxHelper from '../components/geoLocations/gpxHelper.js';
+import * as GeoLocations from '../components/geoLocations/index.js';
+import * as StoryElements from "../components/storyElements/index.js"
 
 
 export const router = express.Router();
@@ -135,11 +135,16 @@ router.post('/bestanden/add', (req, res) =>
     tryCatchAndRedirect(req, res, '/admin/bestanden', async () => {
         const b = req.body;
 
-        if (!b.mime || MediaFileHelper.mime2.getExtension(b.mime) == null)
+        if (!b.mime)
+            throw new Error('Er was geen mime type geselecteerd.')
+
+        const ext = MediaFileHelper.mime2.getExtension(b.mime)
+
+        if (!ext)
             throw new Error('Er was geen geldig mime type geselecteerd.');
 
         const f = await MediaFiles.create({
-            ext: MediaFileHelper.mime2.getExtension(b.mime),
+            ext,
             mime: b.mime,
             restricted: !!b.restricted
         });

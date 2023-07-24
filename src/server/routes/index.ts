@@ -1,11 +1,11 @@
-import * as express from 'express';
+import express from 'express';
 
-import { router as expeditieRouter } from './expeditie';
-import { router as personRouter } from './person';
-import { router as homeRouter } from './home';
-import { router as membersRouter } from './members';
-import { router as adminRouter } from './admin';
-import * as AuthHelper from '../helpers/authHelper';
+import { router as expeditieRouter } from './expeditie.js';
+import { router as personRouter } from './person.js';
+import { router as homeRouter } from './home.js';
+import { router as membersRouter } from './members.js';
+import { router as adminRouter } from './admin.js';
+import * as AuthHelper from '../helpers/authHelper.js';
 
 export function Router(): express.Router {
     const router = express.Router();

@@ -1,13 +1,13 @@
-import * as express from 'express';
-import * as passport from 'passport';
-import * as mongoose from 'mongoose';
+import express from 'express';
+import mongoose from 'mongoose';
+import passport from 'passport';
 
-import * as AuthHelper from '../helpers/authHelper';
-import * as People from '../components/people';
-import { PersonDocument, PersonOrId } from '../components/people/model';
-import { ExpeditieModel } from '../components/expedities/model';
-import * as MediaFiles from '../components/mediaFiles';
-import * as Documents from '../components/documents';
+import * as Documents from '../components/documents/index.js';
+import { ExpeditieModel } from '../components/expedities/model.js';
+import * as MediaFiles from '../components/mediaFiles/index.js';
+import * as People from '../components/people/index.js';
+import { PersonDocument, PersonOrId } from '../components/people/model.js';
+import * as AuthHelper from '../helpers/authHelper.js';
 
 export const router = express.Router();
 
