@@ -1,4 +1,4 @@
-import mapboxgl, {FeatureIdentifier, GeoJSONSource} from "mapbox-gl"
+import mapboxgl, {GeoJSONSource} from "mapbox-gl"
 import {ToggleLayerControl} from "./ToggleLayerControl"
 import $ from "jquery"
 import {GeoJsonResult, StoryResult} from "../helpers/retrieval"

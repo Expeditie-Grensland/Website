@@ -27,7 +27,7 @@ router.use(async (req, res, next) => {
     }
 });
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
     res.render('public/expeditie', { getFileUrl: MediaFiles.getUrl, movieUrls: Expedities.getMovieUrls(res.locals.expeditie) });
 });
 
@@ -38,7 +38,7 @@ router.use(async (req, res, next) => {
         next('router');
 });
 
-router.get('/kaart', async (req, res, next) => {
+router.get('/kaart', async (req, res) => {
     const expeditie: ExpeditieDocument = res.locals.expeditie;
 
     const storyCount = await StoryElements.getByExpeditieCount(expeditie);
@@ -79,7 +79,7 @@ router.get('/kaart/binary', async (req, res) => {
     res.write(buf, 'binary');
 
 
-    for (let node of await nodes) {
+    for (const node of await nodes) {
         const nodeLocs = await geoLocationModel.find(
             { expeditieId: node.expeditieId, personId: { $in: node.personIds }, 'dateTime.stamp': { $gte: node.timeFrom, $lt: node.timeTill } },
             { _id: false, longitude: true, latitude: true }

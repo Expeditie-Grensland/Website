@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 import * as fs from 'fs';
 
 import { config } from '../../helpers/configHelper';
-import {MediaFile, MediaFileDocument, MediaFileEmbedded} from './model';
+import {MediaFileDocument, MediaFileEmbedded} from './model';
 
 const Mime = require('mime/Mime');
 
@@ -55,8 +55,8 @@ export namespace MediaFileHelper {
         const destination: string = getFilesFolder();
 
         const filename = (req: express.Request, file: Express.Multer.File, cb: ((error: Error | null, filename: string) => void)) => {
-            let id = new mongoose.Types.ObjectId();
-            let ext = mime2.getExtension(file.mimetype);
+            const id = new mongoose.Types.ObjectId();
+            const ext = mime2.getExtension(file.mimetype);
             cb(null, `${id}.${ext}`);
         };
 

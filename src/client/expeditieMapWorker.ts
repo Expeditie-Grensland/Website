@@ -7,7 +7,7 @@ let geoJsonResult: (GeoJsonResult | null) = null;
 let storyResult: (StoryResult | null) = null;
 
 onmessage = (event) => {
-    let key = event.data[0] as string;
+    const key = event.data[0] as string;
 
     if (key == "styleLoaded") {
         styleLoaded = true;

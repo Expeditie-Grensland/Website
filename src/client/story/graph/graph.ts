@@ -1,7 +1,6 @@
 import { Vertex } from './vertex';
-import $, {map} from 'jquery';
+import $ from 'jquery';
 import {StoryElement} from "../../helpers/retrieval"
-import mapboxgl from "mapbox-gl"
 import {MapHandler} from "../../map/MapHandler"
 import {StoryHandler} from "../StoryHandler"
 
@@ -47,13 +46,13 @@ export class Graph {
      * of vertices at that level (ordered by StoryNode timestamp).
      */
     public getAllLayers(): Vertex[][] {
-        let nodes = [this.roots];
+        const nodes = [this.roots];
 
         let level = 0;
         while (true) {
-            let nextLevel: Vertex[] = [];
+            const nextLevel: Vertex[] = [];
 
-            for (let node of nodes[level]) {
+            for (const node of nodes[level]) {
                 const children = node.getChildren();
 
                 if (children != null)
@@ -68,7 +67,7 @@ export class Graph {
 
             // deduplicate
             const uniqueNextLevel: Vertex[] = [];
-            for (let vertex of nextLevel) {
+            for (const vertex of nextLevel) {
                 if (uniqueNextLevel.some(v => v.getStoryNode().id === vertex.getStoryNode().id))
                     continue;
                 uniqueNextLevel.push(vertex);
@@ -89,9 +88,9 @@ export class Graph {
         const horizontalSpace = 70;
         const svgWidth = Math.max(maxLayerSize * horizontalSpace, 100);
 
-        for (let layer of layers) {
+        for (const layer of layers) {
             // draw straight lines
-            for (let vertex of layer) {
+            for (const vertex of layer) {
                 const node = vertex.getStoryNode();
                 const storyElements = vertex.getStoryElements();
 
@@ -110,7 +109,7 @@ export class Graph {
             }
 
             // draw corners
-            for (let parent of layer) {
+            for (const parent of layer) {
                 if (parent.getChildren() == null)
                     continue;
 
@@ -127,7 +126,7 @@ export class Graph {
 
                 const children = parent.getChildren()!;
 
-                for (let child of children) {
+                for (const child of children) {
                     const childStoryElements = child.getStoryElements().sort((a, b) => a.dateTime.stamp - b.dateTime.stamp);
                     const childIdx = childLayer.indexOf(child);
                     const childStart = childStoryElements[0];
@@ -143,10 +142,10 @@ export class Graph {
             }
 
             // draw circles
-            for (let vertex of layer) {
+            for (const vertex of layer) {
                 const storyElements = vertex.getStoryElements();
 
-                for (let storyElement of storyElements) {
+                for (const storyElement of storyElements) {
                     const node = vertex.getStoryNode();
                     const header = $('#' + storyElement.id + ' h1')![0];
 
@@ -171,7 +170,7 @@ export class Graph {
     private maxLayerSize(layers: Vertex[][] = this.getAllLayers()): number {
         let max = 0;
 
-        for (let layer of layers)
+        for (const layer of layers)
             if (layer.length > max)
                 max = layer.length;
 
@@ -218,7 +217,7 @@ export class Graph {
         }
 
         return circle;
-    };
+    }
 
     private generateLine(xA: number, yA: number, xB: number, yB: number, color: string, curve: 'none' | 'begin' | 'end') {
         const path = this.svgElement('path');
@@ -243,5 +242,5 @@ export class Graph {
 
         path.setAttribute('d', pathProps);
         return path;
-    };
+    }
 }

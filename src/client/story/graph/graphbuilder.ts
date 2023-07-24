@@ -45,7 +45,7 @@ export class GraphBuilder {
         nodes.sort((a, b) => a.timeFrom < b.timeFrom ? -1 : 1);
 
         // only nodes with people we haven't seen before can be root nodes.
-        for (let node of nodes) {
+        for (const node of nodes) {
             if (node.personNames.some(name => knownPeople.includes(name)))
                 continue;
 
@@ -70,11 +70,11 @@ export class GraphBuilder {
 
         const allChildren: Vertex[] = [];
 
-        for (let parent of parents) {
+        for (const parent of parents) {
             const parentNode = parent.getStoryNode();
             const children: Node[] = [];
 
-            for (let child of candidates)
+            for (const child of candidates)
                 if (child.personNames.some(name => parentNode.personNames.includes(name)))
                     children.push(child);
 
@@ -104,7 +104,7 @@ export class GraphBuilder {
         nodes.sort((a, b) => a.timeFrom < b.timeFrom ? -1 : 1);
 
         // find all nodes that contain the same people as vertex.
-        for (let node of nodes) {
+        for (const node of nodes) {
             if (parent.nodeNum === node.nodeNum)
                 continue;
 

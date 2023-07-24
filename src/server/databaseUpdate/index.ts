@@ -82,7 +82,7 @@ export default async function updateDatabase() {
 
     const updatesToPerform = UPDATES.slice(databaseVersion);
 
-    for (let update of updatesToPerform)
+    for (const update of updatesToPerform)
         await performUpdate(databaseVersion++, update);
 
     console.log(`Database version: ${databaseVersion}`);

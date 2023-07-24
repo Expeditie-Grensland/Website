@@ -1,6 +1,5 @@
 import * as express from 'express';
 import { People } from '../components/people';
-import { MediaFiles } from '../components/mediaFiles';
 
 export const router = express.Router({ mergeParams: true });
 
@@ -15,6 +14,6 @@ router.use(async (req, res, next) => {
     }
 });
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
     res.render('public/person');
 });

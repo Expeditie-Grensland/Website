@@ -9,9 +9,9 @@ $('.custom-file-input').on('change', function () {
     // @ts-ignore
     const files = $(this)[0].files;
 
-    let fileNames = [];
+    const fileNames = [];
 
-    for (let file of files)
+    for (const file of files)
         fileNames.push(file.name);
 
     $(this).siblings('.custom-file-label').addClass('selected').html(fileNames.length ? fileNames.join(', ') : 'Kies bestanden');

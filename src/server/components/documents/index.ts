@@ -40,10 +40,10 @@ export namespace Documents {
             if (docs.length < 1)
                 return Promise.resolve([]);
 
-            let docPart: T[] = [];
-            let idPart: mongoose.Types.ObjectId[] = [];
+            const docPart: T[] = [];
+            const idPart: mongoose.Types.ObjectId[] = [];
 
-            for (let doc of docs)
+            for (const doc of docs)
                 isObjectId(doc) ? idPart.push(doc) : docPart.push(doc);
 
             return getByIds(idPart)

@@ -1,5 +1,5 @@
 import {BaseStoryElementModel, StoryElement, StoryElementDocument} from './model';
-import {ExpeditieDocument, ExpeditieModel, ExpeditieOrId} from '../expedities/model';
+import {ExpeditieOrId} from '../expedities/model';
 import { Documents } from '../documents';
 import mongoose from "mongoose"
 

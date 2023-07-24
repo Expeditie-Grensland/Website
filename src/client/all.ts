@@ -1,6 +1,6 @@
 import { ready } from './helpers/ready';
 
-declare var _paq: any;
+declare let _paq: any;
 
 ready(() => {
     /*

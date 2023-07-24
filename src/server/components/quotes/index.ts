@@ -1,7 +1,5 @@
 import * as mongoose from 'mongoose';
 
-import { MediaFiles } from '../mediaFiles';
-import { MediaFileOrId } from '../mediaFiles/model';
 import { Quote, QuoteDocument, QuoteModel, QuoteOrId } from './model';
 import { Documents } from '../documents';
 

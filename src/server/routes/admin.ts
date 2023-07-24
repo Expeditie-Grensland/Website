@@ -113,9 +113,9 @@ router.post('/bestanden/upload', multerUpload.array('files'), (req, res) =>
     tryCatchAndRedirect(req, res, '/admin/bestanden', async () => {
         if (!req.files) throw new Error('Bestanden zijn niet juist geüpload.');
 
-        let mediaFiles: MediaFile[] = [];
+        const mediaFiles: MediaFile[] = [];
 
-        for (let file of Object.values(req.files)) {
+        for (const file of Object.values(req.files)) {
             mediaFiles.push({
                 _id: new mongoose.Types.ObjectId(file.filename.split('.')[0]),
                 ext: file.filename.split('.')[1],
@@ -426,9 +426,9 @@ router.post('/story/add', multerUpload.array('files[]'), async (req, res) =>
 
             if (!req.files) throw new Error('Bestanden zijn niet juist geüpload.');
 
-            let mediaFiles: MediaFileEmbedded[] = [];
+            const mediaFiles: MediaFileEmbedded[] = [];
 
-            for (let file of Object.values(req.files)) {
+            for (const file of Object.values(req.files)) {
                 mediaFiles.push({
                     id: new mongoose.Types.ObjectId(file.filename.split('.')[0]),
                     ext: file.filename.split('.')[1],
