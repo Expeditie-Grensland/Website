@@ -7,4 +7,9 @@ module.exports = {
   env: {
     node: true,
   },
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    'no-constant-condition': ['error', { checkLoops: false }],
+  },
 };
