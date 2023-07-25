@@ -34,7 +34,6 @@ const storyHandler = new StoryHandler(hasStory, nodeColors, mapHandler);
 
 mapHandler.setStoryHandler(storyHandler);
 
-// @ts-ignore
 worker.onmessage = (event) => {
     switch (event.data[0]) {
         case 'geoJson':

@@ -5,18 +5,6 @@ $('.form-confirm').on('submit', () => {
     return confirm('Weet je het zeker?');
 });
 
-$('.custom-file-input').on('change', function () {
-    // @ts-ignore
-    const files = $(this)[0].files;
-
-    const fileNames = [];
-
-    for (const file of files)
-        fileNames.push(file.name);
-
-    $(this).siblings('.custom-file-label').addClass('selected').html(fileNames.length ? fileNames.join(', ') : 'Kies bestanden');
-});
-
 $('.form-array-add').on('click', function () {
     const arr = $(this).parent('.form-array');
     const proto = arr.find('.form-array-proto');

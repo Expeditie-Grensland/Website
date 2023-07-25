@@ -18,6 +18,3 @@ export const getDocuments: (nodes: GeoNodeOrId[]) => Promise<GeoNodeDocument[]> 
 
 export const create = async (node: GeoNode): Promise<GeoNodeDocument> =>
     geoNodeModel.create(node);
-
-export const createMany = async (nodes: GeoNode[]): Promise<GeoNodeDocument[]> => // @ts-ignore
-    geoNodeModel.insertMany(nodes);

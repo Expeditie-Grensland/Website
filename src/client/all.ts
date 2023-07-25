@@ -1,13 +1,16 @@
 import { ready } from './helpers/ready';
 
-declare let _paq: any;
+declare global {
+    interface Window {
+        _paq: string[][];
+    }
+}
 
 ready(() => {
     /*
      * Setup tracking
      */
-    // @ts-ignore
-    global._paq = '_paq' in global ? _paq : [];
+    const _paq = window._paq = window._paq || [];
 
     _paq.push(['disableCookies']);
     _paq.push(['trackPageView']);
