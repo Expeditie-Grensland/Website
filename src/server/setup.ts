@@ -10,7 +10,6 @@ import ldapauth from 'passport-ldapauth';
 import redis from 'redis';
 
 import flash from "connect-flash";
-import { router as appBackend } from './appBackend/index.js';
 import * as Documents from './components/documents/index.js';
 import * as People from './components/people/index.js';
 import { config } from './helpers/configHelper.js';
@@ -32,8 +31,6 @@ export function setupExpress(
 
     app.use(bodyParser.json({ limit: '80MB' })); //TODO change this to something more sensible after importing.
     app.use(bodyParser.urlencoded({ extended: true }));
-
-    app.use('/app-backend', appBackend);
 
     if (dev) {
         app.use('/media', (req, res) =>
@@ -60,6 +57,12 @@ export function setupExpress(
             res.sendFile(path.join(staticDir, '/scripts/worker.js'))
         );
     }
+}
+
+declare module "express-session" {
+  export interface SessionData {
+    returnTo: string;
+  }
 }
 
 export function setupSession(app: express.Express) {
