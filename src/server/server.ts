@@ -14,7 +14,6 @@ import {
 } from './setup.js';
 
 import 'source-map-support/register.js';
-import updateDatabase from './databaseUpdate/index.js';
 
 Error.stackTraceLimit = Infinity;
 
@@ -30,6 +29,5 @@ setupDatabase(app, dev);
 
 app.use('/', Router());
 
-await updateDatabase();
 startServer(server, config.port);
 console.info(`Server started on port: ${config.port}`);

@@ -27,8 +27,6 @@ export const config = {
 
     mongo: {
         url: getEnv('EG_MONGO_URL'),
-        user: getEnv('EG_MONGO_USER'),
-        pass: getEnv('EG_MONGO_PASS'),
     },
 
     ldap: {

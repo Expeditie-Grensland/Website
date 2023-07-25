@@ -134,10 +134,7 @@ export function addAuthMiddleware(app: express.Express) {
 export function setupDatabase(app: express.Express, dev: boolean) {
     mongoose.set('debug', dev);
 
-    mongoose.connect(config.mongo.url, {
-        user: config.mongo.user,
-        pass: config.mongo.pass,
-    });
+    mongoose.connect(config.mongo.url);
 
     mongoose.connection
         .on('error', console.error.bind(console, 'connection error:'))

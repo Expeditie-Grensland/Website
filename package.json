@@ -84,6 +84,7 @@
     "jquery": "^3.7.0",
     "mapbox-gl": "^2.15.0",
     "merge-stream": "^2.0.0",
+    "migrate-mongo": "^10.0.0",
     "popper.js": "^1.16.1",
     "postcss": "^8.4.26",
     "sass": "^1.63.6",
