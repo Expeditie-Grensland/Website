@@ -22,7 +22,7 @@ import {
     TextStoryElementModel
 } from '../components/storyElements/model.js';
 import {GeoLocation} from '../components/geoLocations/model.js';
-import * as GpxHelper from '../components/geoLocations/gpxHelper.js';
+import { generateLocations } from '../components/geoLocations/gpxHelper.js';
 import * as GeoLocations from '../components/geoLocations/index.js';
 import * as StoryElements from "../components/storyElements/index.js"
 
@@ -359,7 +359,7 @@ router.post('/gpx/upload', multer({ storage: multer.memoryStorage() }).single('f
 
         try {
             if (!req.file) throw new Error('Er is geen bestand');
-            locs = await GpxHelper.generateLocations(req.file.buffer.toString(), expeditie, person, b.zone);
+            locs = await generateLocations(req.file.buffer, expeditie, person, b.zone);
         } catch (e: any) {
             throw new Error(`Bestand kan niet worden gelezen: ${e.message}`);
         }

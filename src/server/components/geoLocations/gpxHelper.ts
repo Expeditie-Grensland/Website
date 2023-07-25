@@ -1,31 +1,66 @@
-// @ts-ignore
-// TODO: Consider switching library (gpx-parse is old and not much-used and doesn't have typings).
-//       Or removing this functionality altogether.
-import gpxparse from 'gpx-parse';
+import { XMLParser } from "fast-xml-parser";
+import { z } from "zod";
+import { DateTimeInternal } from "../dateTime/model.js";
+import { getObjectId } from "../documents/index.js";
+import { ExpeditieOrId } from "../expedities/model.js";
+import { PersonOrId } from "../people/model.js";
+import { GeoLocation } from "./model.js";
 
-import { PersonOrId } from '../people/model.js';
-import { GeoLocation } from './model.js';
-import { ExpeditieOrId } from '../expedities/model.js';
-import * as Documents from '../documents/index.js';
+const gpxSchema = z.object({
+  gpx: z.object({
+    trk: z.array(
+      z.object({
+        trkseg: z.array(
+          z.object({
+            trkpt: z.array(
+              z.object({
+                time: z.string().datetime(),
+                __lat: z.number(),
+                __lon: z.number(),
+                ele: z.number().optional(),
+              })
+            ),
+          })
+        ),
+      })
+    ),
+  }),
+});
 
-export const generateLocations = (gpx: any, expeditie: ExpeditieOrId, person: PersonOrId, timezone = 'Europe/Amsterdam'): Promise<GeoLocation[]> => {
-    return new Promise((resolve, reject) =>
-        gpxparse.parseGpx(gpx, (error: any, data: any) => {
-            if (error) return reject(error);
+export const generateLocations = async (
+  gpx: Buffer | string,
+  expeditie: ExpeditieOrId,
+  person: PersonOrId,
+  timezone = "Europe/Amsterdam"
+): Promise<GeoLocation[]> => {
+  const data = gpxSchema.parse(
+    new XMLParser({
+      ignoreDeclaration: true,
+      ignoreAttributes: false,
+      attributeNamePrefix: "__",
+      trimValues: true,
+      parseAttributeValue: true,
+      parseTagValue: true,
+      isArray: (name, jpath) =>
+        ["gpx.trk", "gpx.trk.trkseg", "gpx.trk.trkseg.trkpt"].includes(jpath),
+    }).parse(gpx)
+  );
 
-            const [expeditieId, personId] = Documents.getObjectIds([expeditie, person]);
+  const expeditieId = getObjectId(expeditie);
+  const personId = getObjectId(person);
 
-            return resolve(data.tracks.map((track: any) => track.segments).flat(2).map((wpt: any) => ({
-                expeditieId,
-                personId,
-                dateTime: {
-                    stamp: Date.parse(wpt.time) / 1000,
-                    zone: timezone
-                },
-                latitude: wpt.lat,
-                longitude: wpt.lon,
-                altitude: wpt.elevation
-            }) as GeoLocation));
-        })
-    );
+  return data.gpx.trk
+    .flatMap((trk) => trk.trkseg)
+    .flatMap((seg) => seg.trkpt)
+    .map((point) => ({
+      expeditieId,
+      personId,
+      dateTime: {
+        stamp: Math.round(Date.parse(point.time) / 1000),
+        zone: timezone,
+      } as DateTimeInternal,
+      latitude: point.__lat,
+      longitude: point.__lon,
+      altitude: point.ele,
+    }));
 };
