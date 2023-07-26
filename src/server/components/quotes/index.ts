@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
 
-import { QuoteDocument, QuoteModel } from "./model.js";
+import { QuoteModel } from "./model.js";
 
-export const getAll = (): Promise<QuoteDocument[]> =>
-  QuoteModel.find({})
+export const getAll = async () =>
+  await QuoteModel.find({})
     .collation({ locale: "nl", strength: 1 })
-    .sort({ "dateTime.stamp": 1 })
-    .exec();
+    .sort({ "dateTime.stamp": 1 });
 
-export const getById = (
-  id: mongoose.Types.ObjectId
-): Promise<QuoteDocument | null> => QuoteModel.findById(id).exec();
+export const getById = async (id: mongoose.Types.ObjectId) =>
+  await QuoteModel.findById(id);

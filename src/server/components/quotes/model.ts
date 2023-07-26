@@ -1,40 +1,21 @@
-import mongoose from "mongoose";
+import mongoose, { InferSchemaType } from "mongoose";
 
-import {
-  DateTimeInternal,
-  dateTimeSchema,
-  dateTimeSchemaDefault,
-} from "../dateTime/model.js";
-import { DocumentOrId } from "../documents/index.js";
+import { dateTimeSchema, dateTimeSchemaDefault } from "../dateTime/model.js";
 import { QuoteId } from "./id.js";
 
-/**
- * Expeditie quotes.
- */
-
-const schema = new mongoose.Schema({
-  quote: String,
-  quotee: String,
+const quoteSchema = new mongoose.Schema({
+  quote: { type: String, required: true },
+  quotee: { type: String, required: true },
   dateTime: {
     type: dateTimeSchema,
     default: dateTimeSchemaDefault,
   },
-  context: String,
+  context: { type: String, required: true },
   attachmentFile: String,
 });
 
-schema.index({ "dateTime.stamp": 1 });
+quoteSchema.index({ "dateTime.stamp": 1 });
 
-export interface Quote {
-  quote: string;
-  quotee: string;
-  dateTime: DateTimeInternal;
-  context: string;
-  attachmentFile?: string;
-}
+export type Quote = InferSchemaType<typeof quoteSchema>;
 
-export interface QuoteDocument extends Quote, mongoose.Document {}
-
-export const QuoteModel = mongoose.model<QuoteDocument>(QuoteId, schema);
-
-export type QuoteOrId = DocumentOrId<QuoteDocument>;
+export const QuoteModel = mongoose.model(QuoteId, quoteSchema);

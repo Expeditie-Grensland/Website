@@ -7,6 +7,7 @@ import * as MemberLinks from '../components/memberLinks/index.js';
 import * as Words from '../components/words/index.js';
 import * as Quotes from '../components/quotes/index.js';
 import * as EarnedPoints from '../components/earnedPoints/index.js';
+import { getLuxonDate } from '../components/dateTime/dateHelpers.js';
 
 export const router = express.Router();
 
@@ -123,7 +124,7 @@ router.get('/citaten', async (req, res) => {
 router.get('/punten', async (req, res) => {
     const earnedPoints = (await EarnedPoints.getAllPopulated()).map(ep => {
         return {
-            date: ep.dateTime.object.toLocaleString({ month: '2-digit', day: '2-digit' }),
+            date: getLuxonDate(ep.dateTime).toLocaleString({ month: '2-digit', day: '2-digit' }),
             amount: ep.amount,
             name: `${ep.personId.firstName} ${ep.personId.lastName}`,
             team: ep.personId.team as string,

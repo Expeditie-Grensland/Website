@@ -1,16 +1,13 @@
 import mongoose from "mongoose";
 
-import { Word, WordDocument, WordModel } from "./model.js";
+import { Word, WordModel } from "./model.js";
 
-export const create = (word: Word): Promise<WordDocument> =>
-  WordModel.create(word);
+export const create = async (word: Word) => await WordModel.create(word);
 
-export const getAll = (): Promise<WordDocument[]> =>
-  WordModel.find({})
+export const getAll = async () =>
+  await WordModel.find({})
     .collation({ locale: "nl", strength: 1 })
-    .sort({ word: 1 })
-    .exec();
+    .sort({ word: 1 });
 
-export const getById = (
-  id: mongoose.Types.ObjectId
-): Promise<WordDocument | null> => WordModel.findById(id).exec();
+export const getById = async (id: mongoose.Types.ObjectId) =>
+  await WordModel.findById(id);

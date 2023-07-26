@@ -22,6 +22,10 @@ import { GeoLocation } from "../components/geoLocations/model.js";
 import { generateLocations } from "../components/geoLocations/gpxHelper.js";
 import * as GeoLocations from "../components/geoLocations/index.js";
 import * as StoryElements from "../components/storyElements/index.js";
+import {
+  getISODate,
+  getInternalDate,
+} from "../components/dateTime/dateHelpers.js";
 
 export const router = express.Router();
 
@@ -108,6 +112,7 @@ router.get("/citaten", async (req, res) =>
     quotes: await Quotes.getAll(),
     infoMsgs: req.flash("info"),
     errMsgs: req.flash("error"),
+    getISODate,
   })
 );
 
@@ -122,9 +127,8 @@ router.post("/citaten/add", async (req, res) =>
       quotee: b.quotee,
       context: b.context,
       attachmentFile: b.file || undefined,
+      dateTime: getInternalDate(getDateTimeFromTimeAndZone(b.time, b.zone)),
     });
-
-    q.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
 
     return `Citaat "${(await q.save()).quote}" is succesvol toegevoegd.`;
   })
@@ -148,7 +152,9 @@ router.post("/citaten/edit", (req, res) =>
     quote.quote = b.quote;
     quote.context = b.context;
     quote.quotee = b.quotee;
-    quote.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
+    quote.dateTime = getInternalDate(
+      getDateTimeFromTimeAndZone(b.time, b.zone)
+    );
     quote.attachmentFile = b.file || undefined;
 
     return `Citaat "${(await quote.save()).quote}" is succesvol gewijzigd.`;
@@ -221,6 +227,7 @@ router.get("/punten", async (req, res) =>
     people: await People.getAll(),
     infoMsgs: req.flash("info"),
     errMsgs: req.flash("error"),
+    getISODate,
   })
 );
 
@@ -234,9 +241,8 @@ router.post("/punten/add", async (req, res) =>
       amount: testAndGetNumber(b.amount, "Hoeveelheid"),
       personId: (await testAndGetFromId(b.person, People.getById, "Persoon"))
         ._id,
+      dateTime: getInternalDate(getDateTimeFromTimeAndZone(b.time, b.zone)),
     });
-
-    ep.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
 
     if (b.expeditie != "none")
       ep.expeditieId = (
@@ -279,7 +285,7 @@ router.post("/punten/edit", (req, res) =>
       )._id;
     else ep.expeditieId = undefined;
 
-    ep.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
+    ep.dateTime = getInternalDate(getDateTimeFromTimeAndZone(b.time, b.zone));
 
     return `Punt "${(
       await ep.save()
@@ -349,6 +355,7 @@ router.get("/story", async (req, res) =>
     stories: await StoryElements.getAll(),
     infoMsgs: req.flash("info"),
     errMsgs: req.flash("error"),
+    getISODate,
   })
 );
 
@@ -377,9 +384,8 @@ router.post("/story/add", async (req, res) =>
         personId: personId,
         title: b.title,
         text: b.text,
+        dateTime: getInternalDate(dateTimeObj),
       });
-
-      se.dateTime.object = dateTimeObj;
 
       return `Tekstverhaalelement "${(
         await se.save()
@@ -394,9 +400,8 @@ router.post("/story/add", async (req, res) =>
         expeditieId: expeditieId,
         personId: personId,
         name: b.name,
+        dateTime: getInternalDate(dateTimeObj),
       });
-
-      se.dateTime.object = dateTimeObj;
 
       return `Locatieverhaalelement "${(
         await se.save()
@@ -423,9 +428,8 @@ router.post("/story/add", async (req, res) =>
           file: file[0],
           description: file[1],
         })),
+        dateTime: getInternalDate(dateTimeObj),
       });
-
-      se.dateTime.object = dateTimeObj;
 
       return `Mediaverhaalelement "${(
         await se.save()
