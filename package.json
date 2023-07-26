@@ -102,6 +102,10 @@
     "watch": "gulp watch",
     "once": "dotenv -- gulp once",
     "server": "dotenv -- gulp server:run",
-    "clean": "gulp clean"
+    "clean": "gulp clean",
+    "migrate-status": "dotenv -- migrate-mongo status",
+    "migrate-create": "dotenv -- migrate-mongo create",
+    "migrate-up": "dotenv -- migrate-mongo up",
+    "migrate-down": "dotenv -- migrate-mongo down"
   }
 }
