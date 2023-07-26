@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { InferSchemaType, Schema } from "mongoose";
 
 import { ExpeditieId } from "../expedities/id.js";
 import { PersonId } from "../people/id.js";
@@ -8,68 +8,11 @@ import {
   MediaStoryElementId,
   TextStoryElementId,
 } from "./id.js";
-import { DocumentOrId } from "../documents/index.js";
-import {
-  DateTimeInternal,
-  dateTimeSchema,
-  dateTimeSchemaDefault,
-} from "../dateTime/model.js";
+import { dateTimeSchema, dateTimeSchemaDefault } from "../dateTime/model.js";
 
-interface BaseStoryElement {
-  expeditieId: mongoose.Types.ObjectId;
-  personId: mongoose.Types.ObjectId;
-  dateTime: DateTimeInternal;
-  index?: number;
-}
-
-export interface TextStoryElement extends BaseStoryElement {
-  type: "text";
-  title: string;
-  text: string;
-}
-
-export interface LocationStoryElement extends BaseStoryElement {
-  type: "location";
-  name: string;
-}
-
-export type StoryMedia = {
-  description: string;
-  file: string;
-};
-
-export interface MediaStoryElement extends BaseStoryElement {
-  type: "media";
-  title: string;
-  media: StoryMedia[];
-}
-
-export type StoryElement =
-  | TextStoryElement
-  | LocationStoryElement
-  | MediaStoryElement;
-
-export interface TextStoryElementDocument
-  extends TextStoryElement,
-    mongoose.Document {}
-
-export interface LocationStoryElementDocument
-  extends LocationStoryElement,
-    mongoose.Document {}
-
-export interface MediaStoryElementDocument
-  extends MediaStoryElement,
-    mongoose.Document {}
-
-export type StoryElementDocument =
-  | TextStoryElementDocument
-  | LocationStoryElementDocument
-  | MediaStoryElementDocument;
-
-// This uses discriminators (https://mongoosejs.com/docs/discriminators.html) to distinguish between the different types of story elements
 const options = { discriminatorKey: "type" };
 
-const baseStoryElementSchema = new mongoose.Schema(
+const baseStoryElementSchema = new Schema(
   {
     type: {
       type: String,
@@ -95,58 +38,75 @@ const baseStoryElementSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  options
+  { discriminatorKey: "type" }
 );
 
-const textStoryElementSchema = new mongoose.Schema(
+export type BaseStoryElement = InferSchemaType<typeof baseStoryElementSchema>;
+
+const textStoryElementSchema = new Schema(
   {
-    title: String,
+    title: { type: String, required: true },
     text: String,
   },
   options
 );
 
-const locationStoryElementSchema = new mongoose.Schema(
+export type TextStoryElement = BaseStoryElement &
+  InferSchemaType<typeof textStoryElementSchema>;
+
+const locationStoryElementSchema = new Schema(
   {
-    name: String,
+    name: { type: String, required: true },
   },
   options
 );
 
-const mediaStoryElementSchema = new mongoose.Schema(
+export type LocationStoryElement = BaseStoryElement &
+  InferSchemaType<typeof locationStoryElementSchema>;
+
+const mediaStoryElementSchema = new Schema(
   {
     title: String,
     media: [
       {
+        file: { type: String, required: true },
         description: String,
-        file: String,
       },
     ],
   },
   options
 );
 
-export const BaseStoryElementModel = mongoose.model<StoryElementDocument>(
+export type MediaStoryElement = BaseStoryElement &
+  InferSchemaType<typeof mediaStoryElementSchema>;
+
+export type StoryElement =
+  | TextStoryElement
+  | LocationStoryElement
+  | MediaStoryElement;
+
+export const BaseStoryElementModel = mongoose.model(
   BaseStoryElementId,
   baseStoryElementSchema
 );
+
 export const TextStoryElementModel =
-  BaseStoryElementModel.discriminator<TextStoryElementDocument>(
+  BaseStoryElementModel.discriminator<TextStoryElement>(
     TextStoryElementId,
     textStoryElementSchema,
     "text"
   );
+
 export const LocationStoryElementModel =
-  BaseStoryElementModel.discriminator<LocationStoryElementDocument>(
+  BaseStoryElementModel.discriminator<LocationStoryElement>(
     LocationStoryElementId,
     locationStoryElementSchema,
     "location"
   );
+
 export const MediaStoryElementModel =
-  BaseStoryElementModel.discriminator<MediaStoryElementDocument>(
+  BaseStoryElementModel.discriminator<MediaStoryElement>(
     MediaStoryElementId,
     mediaStoryElementSchema,
     "media"
   );
-
-export type StoryElementOrId = DocumentOrId<StoryElementDocument>;

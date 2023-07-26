@@ -1,15 +1,10 @@
 import express from "express";
-import mongoose from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 
 import * as Expedities from "../components/expedities/index.js";
 import { geoLocationModel } from "../components/geoLocations/model.js";
 import * as StoryElements from "../components/storyElements/index.js";
-import {
-  BaseStoryElementModel,
-  LocationStoryElementDocument,
-  MediaStoryElementDocument,
-  TextStoryElementDocument,
-} from "../components/storyElements/model.js";
+import { BaseStoryElementModel, LocationStoryElement, MediaStoryElement, TextStoryElement } from "../components/storyElements/model.js";
 
 export const router = express.Router({ mergeParams: true });
 
@@ -156,9 +151,7 @@ router.get("/kaart/story", async (req, res) => {
         nodeNum: index,
         timeFrom: node.timeFrom,
         timeTill: node.timeTill,
-        personNames: node.personIds.map(
-          (p) => `${p.firstName} ${p.lastName}`
-        ), // FIXME: see geonodes model
+        personNames: node.personIds.map((p) => `${p.firstName} ${p.lastName}`), // FIXME: see geonodes model
       };
     }),
     story: await Promise.all(
@@ -169,9 +162,7 @@ router.get("/kaart/story", async (req, res) => {
           (node) =>
             story.dateTime.stamp >= node.timeFrom &&
             story.dateTime.stamp < node.timeTill && // fixme: does this comparison take timezone into account for both sides?
-            node.personIds.some((p) =>
-              p._id.equals(story.personId)
-            )
+            node.personIds.some((p) => p._id.equals(story.personId))
         ); // FIXME: see geonodes model
 
         const storyLocation = (
@@ -189,7 +180,7 @@ router.get("/kaart/story", async (req, res) => {
             .exec()
         )[0];
 
-        const media = (story as MediaStoryElementDocument).media || [];
+        const media = (story as HydratedDocument<MediaStoryElement>).media || [];
 
         return {
           id: story._id.toHexString(),
@@ -199,9 +190,9 @@ router.get("/kaart/story", async (req, res) => {
             stamp: story.dateTime.stamp,
             zone: story.dateTime.zone,
           },
-          title: (story as TextStoryElementDocument).title,
-          text: (story as TextStoryElementDocument).text,
-          name: (story as LocationStoryElementDocument).name,
+          title: (story as HydratedDocument<TextStoryElement>).title,
+          text: (story as HydratedDocument<TextStoryElement>).text,
+          name: (story as HydratedDocument<LocationStoryElement>).name,
           latitude: storyLocation?.latitude || 0,
           longitude: storyLocation?.longitude || 0,
           media: media.map((medium) => ({
