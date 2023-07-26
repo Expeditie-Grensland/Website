@@ -182,13 +182,11 @@ router.post('/citaten/add', async (req, res) =>
         const q = new QuoteModel({
             quote: b.quote,
             quotee: b.quotee,
-            context: b.context
+            context: b.context,
+            attachmentFile: b.file || undefined
         });
 
         q.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
-
-        if (b.file)
-            q.mediaFile = await MediaFiles.getEmbed(await testAndGetFromId(b.file, MediaFiles.getDocument, 'Bestand'));
 
         return `Citaat "${(await q.save()).quote}" is succesvol toegevoegd.`;
     }));
@@ -210,11 +208,7 @@ router.post('/citaten/edit', (req, res) =>
         quote.context = b.context;
         quote.quotee = b.quotee;
         quote.dateTime.object = getDateTimeFromTimeAndZone(b.time, b.zone);
-
-        if (b.file)
-            quote.mediaFile = await MediaFiles.getEmbed(await testAndGetFromId(b.file, MediaFiles.getDocument, 'Bestand'));
-        else
-            quote.mediaFile = undefined;
+        quote.attachmentFile = b.file || undefined;
 
         return `Citaat "${(await quote.save()).quote}" is succesvol gewijzigd.`;
     }));
@@ -237,11 +231,9 @@ router.post('/woordenboek/add', async (req, res) =>
         const w: Word = {
             word: b.word,
             definitions: b.definitions.filter((x: string) => x != ''),
-            phonetic: b.phonetic || undefined
+            phonetic: b.phonetic || undefined,
+            attachmentFile: b.file || undefined
         };
-
-        if (b.file)
-            w.mediaFile = await MediaFiles.getEmbed(await testAndGetFromId(b.file, MediaFiles.getById, 'Bestand'));
 
         return `Woord "${(await Words.create(w)).word}" is succesvol toegevoegd.`;
     }));
@@ -262,11 +254,7 @@ router.post('/woordenboek/edit', (req, res) =>
         word.word = b.word;
         word.definitions = b.definitions.filter((x: string) => x != '');
         word.phonetic = b.phonetic || undefined;
-
-        if (b.file)
-            word.mediaFile = await MediaFiles.getEmbed(await testAndGetFromId(b.file, MediaFiles.getById, 'Bestand'));
-        else
-            word.mediaFile = undefined;
+        word.attachmentFile = b.file || undefined;
 
         return `Woord "${(await word.save()).word}" is succesvol gewijzigd.`;
     }));

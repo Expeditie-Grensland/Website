@@ -32,7 +32,7 @@ block content
                     .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='phonetic' placeholder='Phonetisch' size='30')
                     .col-auto.col-md-3.mb-2.me-2
-                        input.form-control(type='text' name='file' placeholder='Bijlage Id' size='30' minlength='24' maxlength='24')
+                        input.form-control(type='text' name='file' placeholder='Bijlage Naam' size='30')
                     .col-auto.mb-2
                         button.btn.btn-primary(type='submit') Toevoegen
 
@@ -65,7 +65,7 @@ block content
                             td
                                 input.form-control(type='text' form=`f-${i}` name='phonetic' value=word.phonetic)
                             td
-                                input.form-control(type='text' form=`f-${i}` name='file' value=(word.mediaFile ? word.mediaFile.id : '') minlength='24' maxlength='24')
+                                input.form-control(type='text' form=`f-${i}` name='file' value=word.attachmentFile)
                             td
                                 form.form-confirm(id=`f-${i}` method='POST' action=`/admin/woordenboek/edit`)
                                     input(type='hidden' name='id' value=word._id.toHexString())

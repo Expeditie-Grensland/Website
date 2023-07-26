@@ -4,6 +4,18 @@ mixin innerImage(expeditie)
         span.h1= expeditie.name
         span.h2= expeditie.subtitle
 
+mixin filePlayer(file)
+    if file
+        case file.split('.').pop()
+            when "mp3"
+                audio.mw-100(controls preload="none")
+                    source(src=`/media/${file}` type="audio/mpeg")
+            when "mp4"
+                video.mw-100(controls preload="none")
+                    source(src=`/media/${file}` type="video/mp4")
+            when "jpg"
+                img(src=`/media/${file}`)
+
 mixin mediaFilePlayer(mediaFile)
     if(mediaFile)
         if(mediaFile.mime === 'audio/mpeg')

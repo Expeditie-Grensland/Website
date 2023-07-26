@@ -5,7 +5,6 @@ import { marked } from 'marked';
 import * as AuthHelper from '../helpers/authHelper.js';
 import * as MemberLinks from '../components/memberLinks/index.js';
 import * as Words from '../components/words/index.js';
-import * as MediaFiles from '../components/mediaFiles/index.js';
 import * as Quotes from '../components/quotes/index.js';
 import { PersonDocument } from '../components/people/model.js';
 import { ExpeditieDocument } from '../components/expedities/model.js';
@@ -115,7 +114,6 @@ marked.use({
 router.get('/woordenboek', async (req, res) => {
     res.render('members/dictionary', {
         dictionary: await Words.getAll(),
-        getFileUrl: MediaFiles.getUrl,
         generateSimple,
         marked: (s: string) => marked(s)
     });
@@ -124,7 +122,6 @@ router.get('/woordenboek', async (req, res) => {
 router.get('/citaten', async (req, res) => {
     res.render('members/quotes', {
         quotes: await Quotes.getAll(),
-        getFileUrl: MediaFiles.getUrl,
         generateSimple,
         marked: (s: string) => marked(s)
     });
