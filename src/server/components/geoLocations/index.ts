@@ -1,6 +1,4 @@
-import { GeoLocation, GeoLocationDocument, geoLocationModel } from "./model.js";
+import { GeoLocation, geoLocationModel } from "./model.js";
 
-export const createMany = (
-  locs: GeoLocation[]
-): Promise<GeoLocationDocument[]> =>
-  geoLocationModel.insertMany(locs, { ordered: false });
+export const createMany = async (locs: GeoLocation[]) =>
+  await geoLocationModel.insertMany(locs, { ordered: false });

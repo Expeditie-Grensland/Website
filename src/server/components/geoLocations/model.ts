@@ -1,79 +1,73 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType, Schema } from "mongoose";
 
-import { GeoLocationId } from './id.js';
-import { DocumentOrId } from '../documents/index.js';
-import { ExpeditieId } from '../expedities/id.js';
-import { PersonId } from '../people/id.js';
-import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model.js';
+import { dateTimeSchema, dateTimeSchemaDefault } from "../dateTime/model.js";
+import { ExpeditieId } from "../expedities/id.js";
+import { PersonId } from "../people/id.js";
+import { GeoLocationId } from "./id.js";
 
-export interface GeoLocation {
-    expeditieId: mongoose.Types.ObjectId;
-    personId: mongoose.Types.ObjectId;
-    dateTime: DateTimeInternal;
-    latitude: number;
-    longitude: number;
-    altitude?: number;
-    horizontalAccuracy?: number;
-    verticalAccuracy?: number;
-    speed?: number;
-    speedAccuracy?: number;
-    bearing?: number;
-    bearingAccuracy?: number;
-}
+const geoLocationSchema = new Schema({
+  expeditieId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: ExpeditieId,
+    required: true,
+  },
+  personId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: PersonId,
+    required: true,
+  },
+  dateTime: {
+    type: dateTimeSchema,
+    default: dateTimeSchemaDefault,
+  },
+  latitude: {
+    type: Number,
+    required: true,
+  },
+  longitude: {
+    type: Number,
+    required: true,
+  },
+  altitude: Number,
+  horizontalAccuracy: Number,
+  verticalAccuracy: Number,
+  speed: Number,
+  speedAccuracy: Number,
+  bearing: Number,
+  bearingAccuracy: Number,
+});
 
-export interface GeoLocationDocument extends GeoLocation, mongoose.Document {
-}
+geoLocationSchema.index({
+  expeditieId: 1,
+  _id: -1,
+});
 
-const geoLocationSchema = new mongoose.Schema({
-    expeditieId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: ExpeditieId
-    },
-    personId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: PersonId
-    },
-    dateTime: {
-        type: dateTimeSchema,
-        default: dateTimeSchemaDefault
-    },
-    latitude: {
-        type: Number,
-        required: true
-    },
-    longitude: {
-        type: Number,
-        required: true
-    },
-    altitude: Number,
-    horizontalAccuracy: Number,
-    verticalAccuracy: Number,
-    speed: Number,
-    speedAccuracy: Number,
-    bearing: Number,
-    bearingAccuracy: Number
-})
-    .index({
-        expeditieId: 1,
-        _id: -1
-    })
-    .index({
-        expeditieId: 1,
-        personId: 1
-    })
-    .index({
-        personId: 1,
-        'dateTime.stamp': 1
-    })
-    .index({
-        'dateTime.stamp': 1
-    })
-    .index({
-        expeditieId: 1,
-        personId: 1,
-        'dateTime.stamp': 1
-    }, { unique: true });
+geoLocationSchema.index({
+  expeditieId: 1,
+  personId: 1,
+});
 
-export const geoLocationModel = mongoose.model<GeoLocationDocument>(GeoLocationId, geoLocationSchema);
+geoLocationSchema.index({
+  personId: 1,
+  "dateTime.stamp": 1,
+});
 
-export type GeoLocationOrId = DocumentOrId<GeoLocationDocument>;
+geoLocationSchema.index({
+  "dateTime.stamp": 1,
+});
+
+geoLocationSchema.index(
+  {
+    expeditieId: 1,
+    personId: 1,
+    "dateTime.stamp": 1,
+  },
+  { unique: true }
+);
+
+export type GeoLocation = InferSchemaType<typeof geoLocationSchema>;
+
+export const geoLocationModel = mongoose.model(
+  GeoLocationId,
+  geoLocationSchema
+);
