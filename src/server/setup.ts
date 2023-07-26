@@ -10,7 +10,6 @@ import ldapauth from 'passport-ldapauth';
 import redis from 'redis';
 
 import flash from "connect-flash";
-import * as Documents from './components/documents/index.js';
 import * as People from './components/people/index.js';
 import { config } from './helpers/configHelper.js';
 
@@ -112,7 +111,7 @@ export function addAuthMiddleware(app: express.Express) {
     );
 
     passport.serializeUser((user: any, done) =>
-        done(null, Documents.getObjectId(user))
+        done(null, user._id)
     );
 
     passport.deserializeUser((userId: mongoose.Types.ObjectId, done) =>
