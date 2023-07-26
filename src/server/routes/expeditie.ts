@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 
 import * as Expedities from "../components/expedities/index.js";
-import { ExpeditieDocument } from "../components/expedities/model.js";
 import { geoLocationModel } from "../components/geoLocations/model.js";
 import * as StoryElements from "../components/storyElements/index.js";
 import {
@@ -40,9 +39,9 @@ router.use(async (req, res, next) => {
 });
 
 router.get("/kaart", async (req, res) => {
-  const expeditie: ExpeditieDocument = res.locals.expeditie;
+  const expeditie = res.locals.expeditie;
 
-  const storyCount = await StoryElements.getByExpeditieCount(expeditie);
+  const storyCount = await StoryElements.getCountByExpeditie(expeditie._id);
 
   res.render("expeditieMap", { hasStory: storyCount > 0 });
 });
@@ -51,9 +50,9 @@ const H_LC = "X-Location-Count";
 const H_LL = "X-Last-Location";
 
 router.get("/kaart/binary", async (req, res) => {
-  const expeditie: ExpeditieDocument = res.locals.expeditie;
+  const expeditie = res.locals.expeditie;
 
-  const locationCount = Expedities.getLocationCount(expeditie);
+  const locationCount = Expedities.getLocationCount(expeditie._id);
 
   const lastLocation = geoLocationModel
     .find({ expeditieId: expeditie._id })
@@ -76,7 +75,7 @@ router.get("/kaart/binary", async (req, res) => {
   )
     return res.sendStatus(304);
 
-  const nodes = Expedities.getNodes(expeditie);
+  const nodes = Expedities.getNodes(expeditie._id);
 
   let buf = Buffer.allocUnsafe(4);
 
@@ -120,9 +119,9 @@ const H_SC = "X-Story-Count";
 const H_LS = "X-Last-Story";
 
 router.get("/kaart/story", async (req, res) => {
-  const expeditie: ExpeditieDocument = res.locals.expeditie;
+  const expeditie = res.locals.expeditie;
 
-  const storyCount = StoryElements.getByExpeditieCount(expeditie);
+  const storyCount = StoryElements.getCountByExpeditie(expeditie._id);
 
   const lastStory = BaseStoryElementModel.find({ expeditieId: expeditie._id })
     .sort({ _id: -1 })
@@ -145,8 +144,8 @@ router.get("/kaart/story", async (req, res) => {
   )
     return res.sendStatus(304);
 
-  const stories = StoryElements.getByExpeditie(expeditie);
-  const nodes = await Expedities.getNodesWithPeople(expeditie);
+  const stories = StoryElements.getByExpeditie(expeditie._id);
+  const nodes = await Expedities.getNodesWithPeople(expeditie._id);
 
   res.setHeader(H_SC, (await storyCount).toString(16));
   res.setHeader(H_LS, (await lastStory).toHexString());

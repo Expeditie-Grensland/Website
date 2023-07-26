@@ -1,63 +1,36 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, InferSchemaType } from "mongoose";
 
-import { DocumentOrId } from "../documents/index.js";
 import { PersonId } from "../people/id.js";
-import { PersonOrId } from "../people/model.js";
 import { ExpeditieId } from "./id.js";
 
-/**
- * The expeditie is the wrapping object for all data related to one trip. This is represented on the home page by
- * one column.
- */
-
-const schema = new mongoose.Schema({
-  sequenceNumber: Number,
-  name: String,
-  nameShort: String,
-  subtitle: String,
-  showMap: Boolean,
+const expeditieSchema = new Schema({
+  sequenceNumber: { type: Number, required: true },
+  name: { type: String, required: true },
+  nameShort: { type: String, required: true },
+  subtitle: { type: String, required: true },
+  showMap: { type: Boolean, default: false },
   finished: { type: Boolean, default: false },
   personIds: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: PersonId,
     },
   ],
   countries: [String],
-  backgroundFile: String,
-  showMovie: Boolean,
-  movieRestricted: Boolean,
+  backgroundFile: { type: String, required: true },
+  showMovie: { type: Boolean, default: false },
+  movieRestricted: { type: Boolean, default: false },
   movieEditorIds: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: PersonId,
     },
   ],
 });
 
-schema.index({ nameShort: 1 });
-schema.index({ sequenceNumber: -1 });
+expeditieSchema.index({ nameShort: 1 });
+expeditieSchema.index({ sequenceNumber: -1 });
 
-export interface Expeditie {
-  sequenceNumber: number;
-  name: string;
-  nameShort: string;
-  subtitle: string;
-  showMap: boolean;
-  finished?: boolean;
-  personIds: PersonOrId[];
-  countries: string[];
-  backgroundFile: string;
-  showMovie: boolean;
-  movieRestricted: boolean;
-  movieEditorIds: PersonOrId[];
-}
+export type Expeditie = InferSchemaType<typeof expeditieSchema>;
 
-export interface ExpeditieDocument extends Expeditie, mongoose.Document {}
-
-export const ExpeditieModel = mongoose.model<ExpeditieDocument>(
-  ExpeditieId,
-  schema
-);
-
-export type ExpeditieOrId = DocumentOrId<ExpeditieDocument>;
+export const ExpeditieModel = mongoose.model(ExpeditieId, expeditieSchema);

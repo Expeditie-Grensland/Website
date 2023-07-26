@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import { DocumentOrId } from '../documents/index.js';
 import { PersonId } from '../people/id.js';
 import { ExpeditieId } from '../expedities/id.js';
-import { ExpeditieOrId } from '../expedities/model.js';
 import { EarnedPointId } from './id.js';
 import { PersonOrId } from '../people/model.js';
 import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model.js';
@@ -34,7 +33,7 @@ export interface EarnedPoint {
     dateTime: DateTimeInternal;
     amount: number;
     personId: PersonOrId;
-    expeditieId?: ExpeditieOrId;
+    expeditieId?: mongoose.Types.ObjectId;
 }
 
 export interface EarnedPointDocument extends EarnedPoint, mongoose.Document {

@@ -2,9 +2,9 @@ import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
 import { DateTimeInternal } from "../dateTime/model.js";
 import { getObjectId } from "../documents/index.js";
-import { ExpeditieOrId } from "../expedities/model.js";
 import { PersonOrId } from "../people/model.js";
 import { GeoLocation } from "./model.js";
+import mongoose from "mongoose";
 
 const gpxSchema = z.object({
   gpx: z.object({
@@ -29,7 +29,7 @@ const gpxSchema = z.object({
 
 export const generateLocations = async (
   gpx: Buffer | string,
-  expeditie: ExpeditieOrId,
+  expeditieId: mongoose.Types.ObjectId,
   person: PersonOrId,
   timezone = "Europe/Amsterdam"
 ): Promise<GeoLocation[]> => {
@@ -46,7 +46,6 @@ export const generateLocations = async (
     }).parse(gpx)
   );
 
-  const expeditieId = getObjectId(expeditie);
   const personId = getObjectId(person);
 
   return data.gpx.trk

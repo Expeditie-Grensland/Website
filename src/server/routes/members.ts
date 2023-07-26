@@ -7,7 +7,6 @@ import * as MemberLinks from '../components/memberLinks/index.js';
 import * as Words from '../components/words/index.js';
 import * as Quotes from '../components/quotes/index.js';
 import { PersonDocument } from '../components/people/model.js';
-import { ExpeditieDocument } from '../components/expedities/model.js';
 import * as EarnedPoints from '../components/earnedPoints/index.js';
 
 export const router = express.Router();
@@ -129,7 +128,7 @@ router.get('/punten', async (req, res) => {
             amount: ep.amount,
             name: `${(ep.personId as PersonDocument).firstName} ${(ep.personId as PersonDocument).lastName}`,
             team: (ep.personId as PersonDocument).team as string,
-            expeditie: ep.expeditieId ? `Expeditie ${(ep.expeditieId as ExpeditieDocument).name}` : ''
+            expeditie: ep.expeditieId ? `Expeditie ${(ep.expeditieId).name}` : ''
         };
     });
 

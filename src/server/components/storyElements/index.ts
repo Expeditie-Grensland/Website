@@ -1,6 +1,4 @@
 import {BaseStoryElementModel, StoryElement, StoryElementDocument} from './model.js';
-import {ExpeditieOrId} from '../expedities/model.js';
-import * as Documents from '../documents/index.js';
 import mongoose from "mongoose"
 
 export const create = (person: StoryElement): Promise<StoryElementDocument> =>
@@ -12,8 +10,8 @@ export const getAll = (): Promise<StoryElementDocument[]> =>
 export const getById = (id: mongoose.Types.ObjectId): Promise<StoryElementDocument | null> =>
     BaseStoryElementModel.findById(id).exec() as any;
 
-export const getByExpeditie = (expeditie: ExpeditieOrId): Promise<StoryElementDocument[]> =>
-    BaseStoryElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).sort({ 'dateTime.stamp': 1, index: 1 }).exec() as any;
+export const getByExpeditie = (expeditieId: mongoose.Types.ObjectId): Promise<StoryElementDocument[]> =>
+    BaseStoryElementModel.find({ expeditieId }).sort({ 'dateTime.stamp': 1, index: 1 }).exec() as any;
 
-export const getByExpeditieCount = (expeditie: ExpeditieOrId): Promise<number> =>
-    BaseStoryElementModel.find({ expeditieId: Documents.getObjectId(expeditie) }).count().exec();
+export const getCountByExpeditie = (expeditieId: mongoose.Types.ObjectId): Promise<number> =>
+    BaseStoryElementModel.find({ expeditieId }).count().exec();

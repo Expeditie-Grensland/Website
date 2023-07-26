@@ -1,50 +1,34 @@
 import mongoose from "mongoose";
 
-import {
-  Expeditie,
-  ExpeditieDocument,
-  ExpeditieModel,
-  ExpeditieOrId,
-} from "./model.js";
+import { Expeditie, ExpeditieModel } from "./model.js";
 import { PersonDocument } from "../people/model.js";
-import { getObjectId } from "../documents/index.js";
 import { geoLocationModel } from "../geoLocations/model.js";
-import { GeoNodeDocument, geoNodeModel } from "../geoNodes/model.js";
+import { geoNodeModel } from "../geoNodes/model.js";
 
-export const getByNameShortPopulated = (
-  nameShort: string
-): Promise<ExpeditieDocument | null> =>
+export const getByNameShortPopulated = (nameShort: string) =>
   ExpeditieModel.findOne({ nameShort })
-    .populate("personIds")
-    .populate("movieEditorIds")
+    .populate<{ personIds: PersonDocument[] }>("personIds")
+    .populate<{ movieEditorIds: PersonDocument[] }>("movieEditorIds")
     .exec();
 
-export const getAll = (): Promise<ExpeditieDocument[]> =>
+export const getAll = () =>
   ExpeditieModel.find({}).sort({ sequenceNumber: -1 }).exec();
 
-export const getById = (
-  id: mongoose.Types.ObjectId
-): Promise<ExpeditieDocument | null> => ExpeditieModel.findById(id).exec();
+export const getById = (id: mongoose.Types.ObjectId) =>
+  ExpeditieModel.findById(id).exec();
 
-export const getLocationCount = (expeditie: ExpeditieOrId): Promise<number> =>
-  geoLocationModel.count({ expeditieId: getObjectId(expeditie) }).exec();
+export const getLocationCount = (expeditieId: mongoose.Types.ObjectId) =>
+  geoLocationModel.count({ expeditieId }).exec();
 
-export const getNodes = (
-  expeditie: ExpeditieOrId
-): Promise<GeoNodeDocument[]> =>
+export const getNodes = (expeditieId: mongoose.Types.ObjectId) =>
+  geoNodeModel.find({ expeditieId }).sort({ _id: 1 }).exec();
+
+export const getNodesWithPeople = (expeditieId: mongoose.Types.ObjectId) =>
   geoNodeModel
-    .find({ expeditieId: getObjectId(expeditie) })
+    .find({ expeditieId })
     .sort({ _id: 1 })
+    .populate<{ personIds: PersonDocument[] }>("personIds")
     .exec();
-
-export const getNodesWithPeople = (
-  expeditie: ExpeditieOrId // FIXME: see geonodes model
-) =>
-  geoNodeModel
-    .find({ expeditieId: getObjectId(expeditie) })
-    .sort({ _id: 1 })
-    .populate("personIds")
-    .exec() as Promise<(GeoNodeDocument & { personIds: PersonDocument[] })[]>;
 
 export const getMovieUrls = (expeditie: Expeditie) => ({
   fallbackMP4:

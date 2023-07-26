@@ -327,7 +327,7 @@ router.post(
         if (!req.file) throw new Error("Er is geen bestand");
         locs = await generateLocations(
           req.file.buffer,
-          expeditie,
+          expeditie._id,
           person,
           b.zone
         );

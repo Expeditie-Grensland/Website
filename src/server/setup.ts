@@ -59,12 +59,6 @@ export function setupExpress(
     }
 }
 
-declare module "express-session" {
-  export interface SessionData {
-    returnTo: string;
-  }
-}
-
 export function setupSession(app: express.Express) {
     const sessionOptions: session.SessionOptions = {
         secret: config.session.secret,

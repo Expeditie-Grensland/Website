@@ -1,3 +1,5 @@
+import { Expeditie } from '../expedities/model.js';
+import { Person } from '../people/model.js';
 import { EarnedPointDocument, EarnedPointModel } from './model.js';
 import mongoose from 'mongoose';
 
@@ -7,8 +9,8 @@ export const getById = (id: mongoose.Types.ObjectId): Promise<EarnedPointDocumen
 export const getAll = (): Promise<EarnedPointDocument[]> =>
     EarnedPointModel.find().sort({ 'dateTime.stamp': -1 }).exec();
 
-export const getAllPopulated = (): Promise<EarnedPointDocument[]> =>
+export const getAllPopulated = () =>
     EarnedPointModel.find().sort({ 'dateTime.stamp': -1 })
-        .populate('personId', 'firstName lastName team')
-        .populate('expeditieId', 'name')
+        .populate<{ personId: Person }>('personId', 'firstName lastName team')
+        .populate<{ expeditieId: Expeditie }>('expeditieId', 'name')
         .exec();
