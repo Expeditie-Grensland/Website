@@ -1,4 +1,4 @@
-import { MemberLinkDocument, memberLinkModel } from './model.js';
+import { memberLinkModel } from "./model.js";
 
-export const getAll = (): Promise<MemberLinkDocument[]> =>
-    memberLinkModel.find().sort({ index: 1 }).exec();
+export const getAll = async () =>
+  await memberLinkModel.find().sort({ index: 1 });

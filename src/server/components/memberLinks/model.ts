@@ -1,36 +1,25 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType, Schema } from "mongoose";
 
-import { MemberLinkId } from './id.js';
-import { DocumentOrId } from '../documents/index.js';
+import { MemberLinkId } from "./id.js";
 
-const schema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    text: String,
-    href: {
-        type: String,
-        required: true
-    },
-    index: {
-        type: Number,
-        required: true
-    }
-})
-    .index({ index: 1 });
+const memberLinksSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  text: String,
+  href: {
+    type: String,
+    required: true,
+  },
+  index: {
+    type: Number,
+    required: true,
+  },
+});
 
-export interface MemberLink {
-    title: string,
-    text?: string,
-    href: string,
-    index: number
-}
+memberLinksSchema.index({ index: 1 });
 
-export interface MemberLinkDocument extends MemberLink, mongoose.Document {
-}
+export type MemberLink = InferSchemaType<typeof memberLinksSchema>;
 
-export const memberLinkModel = mongoose.model<MemberLinkDocument>(MemberLinkId, schema);
-
-export type MemberLinkOrId = DocumentOrId<MemberLinkDocument>;
-
+export const memberLinkModel = mongoose.model(MemberLinkId, memberLinksSchema);
