@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 
 import { Word, WordModel } from "./model.js";
 
-export const create = async (word: Word) => await WordModel.create(word);
+export const createWord = async (word: Word) => await WordModel.create(word);
 
-export const getAll = async () =>
+export const getAllWords = async () =>
   await WordModel.find({})
     .collation({ locale: "nl", strength: 1 })
     .sort({ word: 1 });
 
-export const getById = async (id: mongoose.Types.ObjectId) =>
+export const getWordById = async (id: mongoose.Types.ObjectId) =>
   await WordModel.findById(id);

@@ -1,4 +1,4 @@
-import * as RouteCache from './routeCache';
+import { onFetch } from './routeCache';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -13,5 +13,5 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
 });
 
 self.addEventListener('fetch', (event: FetchEvent) => {
-    RouteCache.onFetch(event);
+    onFetch(event);
 });

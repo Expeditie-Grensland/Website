@@ -1,17 +1,31 @@
 import express from "express";
 import mongoose, { HydratedDocument } from "mongoose";
 
-import * as Expedities from "../components/expedities/index.js";
+import {
+  getMovieUrlsFromExpeditie,
+  getPopulatedExpeditieByName,
+} from "../components/expedities/index.js";
+import { getLocationCountByExpeditie } from "../components/geoLocations/index.js";
 import { geoLocationModel } from "../components/geoLocations/model.js";
-import * as StoryElements from "../components/storyElements/index.js";
-import { BaseStoryElementModel, LocationStoryElement, MediaStoryElement, TextStoryElement } from "../components/storyElements/model.js";
+import {
+  getNodesByExpeditie,
+  getPopulatedNodesByExpeditie,
+} from "../components/geoNodes/index.js";
+import {
+  getStoryByExpeditie,
+  getStoryCountByExpeditie,
+} from "../components/storyElements/index.js";
+import {
+  BaseStoryElementModel,
+  LocationStoryElement,
+  MediaStoryElement,
+  TextStoryElement,
+} from "../components/storyElements/model.js";
 
 export const router = express.Router({ mergeParams: true });
 
 router.use(async (req, res, next) => {
-  const expeditie = await Expedities.getByNameShortPopulated(
-    req.params.expeditie
-  );
+  const expeditie = await getPopulatedExpeditieByName(req.params.expeditie);
 
   if (expeditie != null) {
     res.locals.expeditie = expeditie;
@@ -23,7 +37,7 @@ router.use(async (req, res, next) => {
 
 router.get("/", async (req, res) => {
   res.render("public/expeditie", {
-    movieUrls: Expedities.getMovieUrls(res.locals.expeditie),
+    movieUrls: getMovieUrlsFromExpeditie(res.locals.expeditie),
   });
 });
 
@@ -35,7 +49,7 @@ router.use(async (req, res, next) => {
 router.get("/kaart", async (req, res) => {
   const expeditie = res.locals.expeditie;
 
-  const storyCount = await StoryElements.getCountByExpeditie(expeditie._id);
+  const storyCount = await getStoryCountByExpeditie(expeditie._id);
 
   res.render("expeditieMap", { hasStory: storyCount > 0 });
 });
@@ -46,7 +60,7 @@ const H_LL = "X-Last-Location";
 router.get("/kaart/binary", async (req, res) => {
   const expeditie = res.locals.expeditie;
 
-  const locationCount = Expedities.getLocationCount(expeditie._id);
+  const locationCount = getLocationCountByExpeditie(expeditie._id);
 
   const lastLocation = geoLocationModel
     .find({ expeditieId: expeditie._id })
@@ -69,7 +83,7 @@ router.get("/kaart/binary", async (req, res) => {
   )
     return res.sendStatus(304);
 
-  const nodes = Expedities.getNodes(expeditie._id);
+  const nodes = getNodesByExpeditie(expeditie._id);
 
   let buf = Buffer.allocUnsafe(4);
 
@@ -115,7 +129,7 @@ const H_LS = "X-Last-Story";
 router.get("/kaart/story", async (req, res) => {
   const expeditie = res.locals.expeditie;
 
-  const storyCount = StoryElements.getCountByExpeditie(expeditie._id);
+  const storyCount = getStoryCountByExpeditie(expeditie._id);
 
   const lastStory = BaseStoryElementModel.find({ expeditieId: expeditie._id })
     .sort({ _id: -1 })
@@ -138,8 +152,8 @@ router.get("/kaart/story", async (req, res) => {
   )
     return res.sendStatus(304);
 
-  const stories = StoryElements.getByExpeditie(expeditie._id);
-  const nodes = await Expedities.getNodesWithPeople(expeditie._id);
+  const stories = getStoryByExpeditie(expeditie._id);
+  const nodes = await getPopulatedNodesByExpeditie(expeditie._id);
 
   res.setHeader(H_SC, (await storyCount).toString(16));
   res.setHeader(H_LS, (await lastStory).toHexString());
@@ -180,7 +194,8 @@ router.get("/kaart/story", async (req, res) => {
             .exec()
         )[0];
 
-        const media = (story as HydratedDocument<MediaStoryElement>).media || [];
+        const media =
+          (story as HydratedDocument<MediaStoryElement>).media || [];
 
         return {
           id: story._id.toHexString(),

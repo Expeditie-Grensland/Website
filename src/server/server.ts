@@ -25,9 +25,8 @@ const dev = app.get('env') == 'development';
 setupExpress(app, dirname(fileURLToPath(import.meta.url)) + '/../', dev);
 setupSession(app);
 addAuthMiddleware(app);
-setupDatabase(app, dev);
+setupDatabase(dev);
 
 app.use('/', Router());
 
 startServer(server, config.port);
-console.info(`Server started on port: ${config.port}`);

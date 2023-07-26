@@ -105,6 +105,9 @@
     "migrate-status": "dotenv -- migrate-mongo status",
     "migrate-create": "dotenv -- migrate-mongo create",
     "migrate-up": "dotenv -- migrate-mongo up",
-    "migrate-down": "dotenv -- migrate-mongo down"
+    "migrate-down": "dotenv -- migrate-mongo down",
+    "unused-server": "ts-unused-exports src/server/tsconfig.json",
+    "unused-client": "ts-unused-exports src/client/tsconfig.json",
+    "unused-worker": "ts-unused-exports src/client/worker/tsconfig.json"
   }
 }

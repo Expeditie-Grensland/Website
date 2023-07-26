@@ -1,4 +1,4 @@
 import { memberLinkModel } from "./model.js";
 
-export const getAll = async () =>
+export const getAllMemberLinks = async () =>
   await memberLinkModel.find().sort({ index: 1 });

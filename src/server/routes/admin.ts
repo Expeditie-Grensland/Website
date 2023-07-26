@@ -1,36 +1,49 @@
 import express from "express";
+import { DateTime, Info } from "luxon";
 import mongoose from "mongoose";
 import multer from "multer";
-import { DateTime, Info } from "luxon";
 
-import * as AuthHelper from "../helpers/authHelper.js";
-import * as Quotes from "../components/quotes/index.js";
-import { QuoteModel } from "../components/quotes/model.js";
-import * as Words from "../components/words/index.js";
-import { Word } from "../components/words/model.js";
-import * as EarnedPoints from "../components/earnedPoints/index.js";
-import * as Expedities from "../components/expedities/index.js";
-import * as People from "../components/people/index.js";
+import {
+  getISODate,
+  getInternalDate,
+} from "../components/dateTime/dateHelpers.js";
+import {
+  getAllPoints,
+  getPointsById,
+} from "../components/earnedPoints/index.js";
 import { EarnedPointModel } from "../components/earnedPoints/model.js";
+import {
+  getAllExpedities,
+  getExpeditieById,
+} from "../components/expedities/index.js";
+import { generateLocations } from "../components/geoLocations/gpxHelper.js";
+import { createManyLocations } from "../components/geoLocations/index.js";
+import { GeoLocation } from "../components/geoLocations/model.js";
+import { getAllPeople, getPersonById } from "../components/people/index.js";
+import { getAllQuotes, getQuoteById } from "../components/quotes/index.js";
+import { QuoteModel } from "../components/quotes/model.js";
+import {
+  getAllStories,
+  getStoryById,
+} from "../components/storyElements/index.js";
 import {
   BaseStoryElementModel,
   LocationStoryElementModel,
   MediaStoryElementModel,
   TextStoryElementModel,
 } from "../components/storyElements/model.js";
-import { GeoLocation } from "../components/geoLocations/model.js";
-import { generateLocations } from "../components/geoLocations/gpxHelper.js";
-import * as GeoLocations from "../components/geoLocations/index.js";
-import * as StoryElements from "../components/storyElements/index.js";
 import {
-  getISODate,
-  getInternalDate,
-} from "../components/dateTime/dateHelpers.js";
+  createWord,
+  getAllWords,
+  getWordById,
+} from "../components/words/index.js";
+import { Word } from "../components/words/model.js";
+import { loginRedirect, noAdminRedirect } from "../helpers/authHelper.js";
 
 export const router = express.Router();
 
-router.use(AuthHelper.loginRedirect);
-router.use(AuthHelper.noAdminRedirect);
+router.use(loginRedirect);
+router.use(noAdminRedirect);
 
 const testAndGetFromId = async <T extends mongoose.Document>(
   stringId: string,
@@ -109,7 +122,7 @@ const tryCatchAndRedirect = async (
 router.get("/citaten", async (req, res) =>
   res.render("admin/quotes", {
     fluidContainer: true,
-    quotes: await Quotes.getAll(),
+    quotes: await getAllQuotes(),
     infoMsgs: req.flash("info"),
     errMsgs: req.flash("error"),
     getISODate,
@@ -140,7 +153,7 @@ router.post("/citaten/edit", (req, res) =>
 
     testValidAction(b.action, "delete", "change");
 
-    const quote = await testAndGetFromId(b.id, Quotes.getById, "Citaat");
+    const quote = await testAndGetFromId(b.id, getQuoteById, "Citaat");
 
     if (b.action == "delete")
       return `Citaat "${
@@ -164,7 +177,7 @@ router.post("/citaten/edit", (req, res) =>
 router.get("/woordenboek", async (req, res) =>
   res.render("admin/dictionary", {
     fluidContainer: true,
-    words: await Words.getAll(),
+    words: await getAllWords(),
     infoMsgs: req.flash("info"),
     errMsgs: req.flash("error"),
   })
@@ -187,7 +200,7 @@ router.post("/woordenboek/add", async (req, res) =>
       attachmentFile: b.file || undefined,
     };
 
-    return `Woord "${(await Words.create(w)).word}" is succesvol toegevoegd.`;
+    return `Woord "${(await createWord(w)).word}" is succesvol toegevoegd.`;
   })
 );
 
@@ -197,7 +210,7 @@ router.post("/woordenboek/edit", (req, res) =>
 
     testValidAction(b.action, "delete", "change");
 
-    const word = await testAndGetFromId(b.id, Words.getById, "Woord");
+    const word = await testAndGetFromId(b.id, getWordById, "Woord");
 
     if (b.action == "delete")
       return `Woord "${
@@ -222,9 +235,9 @@ router.post("/woordenboek/edit", (req, res) =>
 router.get("/punten", async (req, res) =>
   res.render("admin/earnedPoints", {
     fluidContainer: true,
-    earnedPoints: await EarnedPoints.getAll(),
-    expedities: await Expedities.getAll(),
-    people: await People.getAll(),
+    earnedPoints: await getAllPoints(),
+    expedities: await getAllExpedities(),
+    people: await getAllPeople(),
     infoMsgs: req.flash("info"),
     errMsgs: req.flash("error"),
     getISODate,
@@ -239,14 +252,14 @@ router.post("/punten/add", async (req, res) =>
 
     const ep = new EarnedPointModel({
       amount: testAndGetNumber(b.amount, "Hoeveelheid"),
-      personId: (await testAndGetFromId(b.person, People.getById, "Persoon"))
+      personId: (await testAndGetFromId(b.person, getPersonById, "Persoon"))
         ._id,
       dateTime: getInternalDate(getDateTimeFromTimeAndZone(b.time, b.zone)),
     });
 
     if (b.expeditie != "none")
       ep.expeditieId = (
-        await testAndGetFromId(b.expeditie, Expedities.getById, "Expeditie")
+        await testAndGetFromId(b.expeditie, getExpeditieById, "Expeditie")
       )._id;
     else ep.expeditieId = undefined;
 
@@ -262,7 +275,7 @@ router.post("/punten/edit", (req, res) =>
 
     testValidAction(b.action, "delete", "change");
 
-    const ep = await testAndGetFromId(b.id, EarnedPoints.getById, "Punt");
+    const ep = await testAndGetFromId(b.id, getPointsById, "Punt");
 
     if (b.action == "delete")
       return `Punt "${(
@@ -276,12 +289,12 @@ router.post("/punten/edit", (req, res) =>
     ep.amount = parseInt(b.amount);
 
     ep.personId = (
-      await testAndGetFromId(b.person, People.getById, "Persoon")
+      await testAndGetFromId(b.person, getPersonById, "Persoon")
     )._id;
 
     if (b.expeditie != "none")
       ep.expeditieId = (
-        await testAndGetFromId(b.expeditie, Expedities.getById, "Expeditie")
+        await testAndGetFromId(b.expeditie, getExpeditieById, "Expeditie")
       )._id;
     else ep.expeditieId = undefined;
 
@@ -295,8 +308,8 @@ router.post("/punten/edit", (req, res) =>
 
 router.get("/gpx", async (req, res) =>
   res.render("admin/gpx", {
-    expedities: await Expedities.getAll(),
-    people: await People.getAll(),
+    expedities: await getAllExpedities(),
+    people: await getAllPeople(),
     infoMsgs: req.flash("info"),
     errMsgs: req.flash("error"),
   })
@@ -311,14 +324,10 @@ router.post(
 
       testRequiredFields(b.person, b.expeditie, req.file, b.zone);
 
-      const person = await testAndGetFromId(
-        b.person,
-        People.getById,
-        "Persoon"
-      );
+      const person = await testAndGetFromId(b.person, getPersonById, "Persoon");
       const expeditie = await testAndGetFromId(
         b.expeditie,
-        Expedities.getById,
+        getExpeditieById,
         "Expeditie"
       );
 
@@ -341,7 +350,7 @@ router.post(
         throw new Error(`Bestand kan niet worden gelezen: ${e.message}`);
       }
 
-      await GeoLocations.createMany(locs);
+      await createManyLocations(locs);
 
       return "Locaties zijn succesvol geüpload";
     })
@@ -350,9 +359,9 @@ router.post(
 router.get("/story", async (req, res) =>
   res.render("admin/story", {
     fluidContainer: true,
-    expedities: await Expedities.getAll(),
-    people: await People.getAll(),
-    stories: await StoryElements.getAll(),
+    expedities: await getAllExpedities(),
+    people: await getAllPeople(),
+    stories: await getAllStories(),
     infoMsgs: req.flash("info"),
     errMsgs: req.flash("error"),
     getISODate,
@@ -368,10 +377,10 @@ router.post("/story/add", async (req, res) =>
     testValidOption("verhaaltype", b.type, "text", "location", "media");
 
     const expeditieId = (
-      await testAndGetFromId(b.expeditie, Expedities.getById, "Expeditie")
+      await testAndGetFromId(b.expeditie, getExpeditieById, "Expeditie")
     )._id;
     const personId = (
-      await testAndGetFromId(b.person, People.getById, "Persoon")
+      await testAndGetFromId(b.person, getPersonById, "Persoon")
     )._id;
     const dateTimeObj = getDateTimeFromTimeAndZone(b.time, b.zone);
 
@@ -446,11 +455,7 @@ router.post("/story/edit", (req, res) =>
 
     testValidAction(b.action, "delete", "change");
 
-    const se = await testAndGetFromId(
-      b.id,
-      StoryElements.getById,
-      "Verhaalelement"
-    );
+    const se = await testAndGetFromId(b.id, getStoryById, "Verhaalelement");
 
     if (b.action == "delete") {
       return `Verhaalelement "${(
@@ -464,10 +469,10 @@ router.post("/story/edit", (req, res) =>
 
     const update = {
       type: se.type,
-      personId: (await testAndGetFromId(b.person, People.getById, "Persoon"))
+      personId: (await testAndGetFromId(b.person, getPersonById, "Persoon"))
         ._id,
       expeditieId: (
-        await testAndGetFromId(b.expeditie, Expedities.getById, "Expeditie")
+        await testAndGetFromId(b.expeditie, getExpeditieById, "Expeditie")
       )._id,
       dateTime: {
         stamp: dt.toSeconds(),
