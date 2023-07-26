@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, Schema } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
 
 import { MemberLinkId } from "./id.js";
 
@@ -22,4 +22,4 @@ memberLinksSchema.index({ index: 1 });
 
 export type MemberLink = InferSchemaType<typeof memberLinksSchema>;
 
-export const memberLinkModel = mongoose.model(MemberLinkId, memberLinksSchema);
+export const memberLinkModel = model(MemberLinkId, memberLinksSchema);

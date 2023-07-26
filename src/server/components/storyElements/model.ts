@@ -1,5 +1,6 @@
-import mongoose, { InferSchemaType, Schema } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
 
+import { dateTimeSchema, dateTimeSchemaDefault } from "../dateTime/model.js";
 import { ExpeditieId } from "../expedities/id.js";
 import { PersonId } from "../people/id.js";
 import {
@@ -8,7 +9,6 @@ import {
   MediaStoryElementId,
   TextStoryElementId,
 } from "./id.js";
-import { dateTimeSchema, dateTimeSchemaDefault } from "../dateTime/model.js";
 
 const options = { discriminatorKey: "type" };
 
@@ -20,12 +20,12 @@ const baseStoryElementSchema = new Schema(
       required: true,
     },
     expeditieId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: ExpeditieId,
       required: true,
     },
     personId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: PersonId,
       required: true,
     },
@@ -85,7 +85,7 @@ export type StoryElement =
   | LocationStoryElement
   | MediaStoryElement;
 
-export const BaseStoryElementModel = mongoose.model(
+export const BaseStoryElementModel = model(
   BaseStoryElementId,
   baseStoryElementSchema
 );

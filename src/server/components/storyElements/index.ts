@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 import { BaseStoryElementModel, StoryElement } from "./model.js";
 
 export const create = async (person: StoryElement) =>
@@ -8,7 +9,7 @@ export const getAll = async () =>
   await BaseStoryElementModel.find({}).sort({ "dateTime.stamp": 1, index: 1 });
 
 export const getById = async (id: mongoose.Types.ObjectId) =>
-  await BaseStoryElementModel.findById(id).exec();
+  await BaseStoryElementModel.findById(id);
 
 export const getByExpeditie = async (expeditieId: mongoose.Types.ObjectId) =>
   await BaseStoryElementModel.find({ expeditieId }).sort({
@@ -18,4 +19,4 @@ export const getByExpeditie = async (expeditieId: mongoose.Types.ObjectId) =>
 
 export const getCountByExpeditie = async (
   expeditieId: mongoose.Types.ObjectId
-) => await BaseStoryElementModel.find({ expeditieId }).count().exec();
+) => await BaseStoryElementModel.find({ expeditieId }).count();

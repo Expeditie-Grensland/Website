@@ -1,9 +1,9 @@
-import mongoose, { InferSchemaType } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
 
 import { dateTimeSchema, dateTimeSchemaDefault } from "../dateTime/model.js";
 import { QuoteId } from "./id.js";
 
-const quoteSchema = new mongoose.Schema({
+const quoteSchema = new Schema({
   quote: { type: String, required: true },
   quotee: { type: String, required: true },
   dateTime: {
@@ -18,4 +18,4 @@ quoteSchema.index({ "dateTime.stamp": 1 });
 
 export type Quote = InferSchemaType<typeof quoteSchema>;
 
-export const QuoteModel = mongoose.model(QuoteId, quoteSchema);
+export const QuoteModel = model(QuoteId, quoteSchema);

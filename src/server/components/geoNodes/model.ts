@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, Schema } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
 
 import { ExpeditieId } from "../expedities/id.js";
 import { PersonId } from "../people/id.js";
@@ -6,13 +6,13 @@ import { GeoNodeId } from "./id.js";
 
 const geoNodeSchema = new Schema({
   expeditieId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: ExpeditieId,
     required: true,
   },
   personIds: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: PersonId,
       required: true,
     },
@@ -36,4 +36,4 @@ geoNodeSchema.index({
 
 export type GeoNode = InferSchemaType<typeof geoNodeSchema>;
 
-export const geoNodeModel = mongoose.model(GeoNodeId, geoNodeSchema);
+export const geoNodeModel = model(GeoNodeId, geoNodeSchema);

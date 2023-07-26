@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, Schema } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
 
 import { dateTimeSchema, dateTimeSchemaDefault } from "../dateTime/model.js";
 import { ExpeditieId } from "../expedities/id.js";
@@ -15,12 +15,12 @@ const earnedPointsSchema = new Schema({
     required: true,
   },
   personId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: PersonId,
     required: true,
   },
   expeditieId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: ExpeditieId,
   },
 });
@@ -29,7 +29,4 @@ earnedPointsSchema.index({ "dateTime.stamp": -1 });
 
 export type EarnedPoint = InferSchemaType<typeof earnedPointsSchema>;
 
-export const EarnedPointModel = mongoose.model(
-  EarnedPointId,
-  earnedPointsSchema
-);
+export const EarnedPointModel = model(EarnedPointId, earnedPointsSchema);

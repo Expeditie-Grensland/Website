@@ -1,4 +1,4 @@
-import mongoose, { Schema, InferSchemaType } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
 
 import { PersonId } from "./id.js";
 
@@ -20,4 +20,4 @@ personSchema.index({ userName: 1 });
 
 export type Person = InferSchemaType<typeof personSchema>;
 
-export const PersonModel = mongoose.model(PersonId, personSchema);
+export const PersonModel = model(PersonId, personSchema);

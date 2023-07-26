@@ -1,4 +1,4 @@
-import mongoose, { Schema, InferSchemaType } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
 
 import { PersonId } from "../people/id.js";
 import { ExpeditieId } from "./id.js";
@@ -33,4 +33,4 @@ expeditieSchema.index({ sequenceNumber: -1 });
 
 export type Expeditie = InferSchemaType<typeof expeditieSchema>;
 
-export const ExpeditieModel = mongoose.model(ExpeditieId, expeditieSchema);
+export const ExpeditieModel = model(ExpeditieId, expeditieSchema);
