@@ -99,7 +99,7 @@
     "nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
     "build:prod": "gulp build:prod",
     "build:dev": "gulp build:dev",
-    "watch": "gulp watch",
+    "watch": "dotenv -- gulp watch",
     "once": "dotenv -- gulp once",
     "server": "dotenv -- gulp server:run",
     "clean": "gulp clean",

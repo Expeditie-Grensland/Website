@@ -39,8 +39,7 @@ export interface LocationStoryElement extends BaseStoryElement {
 
 export type StoryMedia = {
     description: string,
-    fileUrl: string,
-    mime: string
+    file: string
 }
 
 export interface MediaStoryElement extends BaseStoryElement {

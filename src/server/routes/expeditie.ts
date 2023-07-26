@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 
 import * as Expedities from "../components/expedities/index.js";
-import * as MediaFiles from "../components/mediaFiles/index.js";
 import { ExpeditieDocument } from "../components/expedities/model.js";
 import { geoLocationModel } from "../components/geoLocations/model.js";
 import * as StoryElements from "../components/storyElements/index.js";
@@ -208,9 +207,8 @@ router.get("/kaart/story", async (req, res) => {
           latitude: storyLocation?.latitude || 0,
           longitude: storyLocation?.longitude || 0,
           media: media.map((medium) => ({
-            fileUrl: MediaFiles.getUrl(medium.mediaFile),
+            file: `/media/${medium.file}`,
             description: medium.description,
-            mime: medium.mediaFile.mime,
           })),
         };
       })

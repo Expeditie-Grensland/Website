@@ -66,11 +66,6 @@ router.get('/', async (req, res) => res.render('members/index', {
             adminHref: '/admin/punten'
         },
         {
-            title: 'Bestanden',
-            text: 'Laad ze op, of laad ze neer',
-            adminHref: '/admin/bestanden'
-        },
-        {
             title: 'GPX Upload',
             text: 'Omdat we nog steeds geen app hebben',
             adminHref: '/admin/gpx'

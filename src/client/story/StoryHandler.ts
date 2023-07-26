@@ -171,21 +171,24 @@ export class StoryHandler {
     }
 
     private getMediaPlayer = (media: StoryMedia) => {
-        if (media.mime === 'video/mp4')
-            return $('<video>')
-                .addClass('media-preview')
-                .attr('controls', '')
-                .append($('<source>')
-                    .attr("src", media.fileUrl)
-                    .attr("type", media.mime)
-                );
+        switch (media.file.split('.').pop()) {
+            case "mp4":
+                return $('<video>')
+                    .addClass('media-preview')
+                    .attr('controls', '')
+                    .append($('<source>')
+                        .attr("src", media.file)
+                        .attr("type", "video/mp4")
+                    );
 
-        if (media.mime === "image/jpeg")
-            return $(`<img>`)
-                .addClass('media-preview')
-                .attr("src", media.fileUrl);
+            case "jpg":
+                return $(`<img>`)
+                    .addClass('media-preview')
+                    .attr("src", media.file);
 
-        return $('<div>')
+            default:
+                return $("<div>")
+        }
     }
 
     private getDisplayDate = (dt: DateTime): string => {
