@@ -24,6 +24,8 @@ import {
 
 export const router = express.Router({ mergeParams: true });
 
+const HEADER_REV = "X-Revision-Id";
+
 router.use(async (req, res, next) => {
   const expeditie = await getPopulatedExpeditieByName(req.params.expeditie);
 
@@ -54,9 +56,6 @@ router.get("/kaart", async (req, res) => {
   res.render("expeditieMap", { hasStory: storyCount > 0 });
 });
 
-const H_LC = "X-Location-Count";
-const H_LL = "X-Last-Location";
-
 router.get("/kaart/binary", async (req, res) => {
   const expeditie = res.locals.expeditie;
 
@@ -75,12 +74,10 @@ router.get("/kaart/binary", async (req, res) => {
 
   res.setHeader("Content-Type", "application/octet-stream");
 
-  if (
-    req.header(H_LC) != undefined &&
-    req.header(H_LL) != undefined &&
-    req.header(H_LC) == (await locationCount).toString(16) &&
-    req.header(H_LL) == (await lastLocation).toHexString()
-  )
+  const newHeader = (async () =>
+    `v1-${await locationCount}-${(await lastLocation).toHexString()}`)();
+
+  if (req.header(HEADER_REV) && req.header(HEADER_REV) === (await newHeader))
     return res.sendStatus(304);
 
   const nodes = getNodesByExpeditie(expeditie._id);
@@ -89,8 +86,7 @@ router.get("/kaart/binary", async (req, res) => {
 
   buf.writeUInt32BE((await nodes).length, 0);
 
-  res.setHeader(H_LC, (await locationCount).toString(16));
-  res.setHeader(H_LL, (await lastLocation).toHexString());
+  res.setHeader(HEADER_REV, await newHeader);
 
   res.write(buf, "binary");
 
@@ -122,10 +118,6 @@ router.get("/kaart/binary", async (req, res) => {
   res.end(null, "binary");
 });
 
-// TODO: one X-Revision-Id header instead of separate
-const H_SC = "X-Story-Count";
-const H_LS = "X-Last-Story";
-
 router.get("/kaart/story", async (req, res) => {
   const expeditie = res.locals.expeditie;
 
@@ -144,19 +136,16 @@ router.get("/kaart/story", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Charset", "utf-8");
 
-  if (
-    req.header(H_SC) != undefined &&
-    req.header(H_LS) != undefined &&
-    req.header(H_SC) == (await storyCount).toString(16) &&
-    req.header(H_LS) == (await lastStory).toHexString()
-  )
+  const newHeader = (async () =>
+    `v1-${await storyCount}-${(await lastStory).toHexString()}`)();
+
+  if (req.header(HEADER_REV) && req.header(HEADER_REV) === (await newHeader))
     return res.sendStatus(304);
 
   const stories = getStoryByExpeditie(expeditie._id);
   const nodes = await getPopulatedNodesByExpeditie(expeditie._id);
 
-  res.setHeader(H_SC, (await storyCount).toString(16));
-  res.setHeader(H_LS, (await lastStory).toHexString());
+  res.setHeader(HEADER_REV, await newHeader);
 
   const result = {
     nodes: nodes.map((node, index) => {
@@ -165,7 +154,7 @@ router.get("/kaart/story", async (req, res) => {
         nodeNum: index,
         timeFrom: node.timeFrom,
         timeTill: node.timeTill,
-        personNames: node.personIds.map((p) => `${p.firstName} ${p.lastName}`), // FIXME: see geonodes model
+        personNames: node.personIds.map((p) => `${p.firstName} ${p.lastName}`),
       };
     }),
     story: await Promise.all(
@@ -175,9 +164,9 @@ router.get("/kaart/story", async (req, res) => {
         const nodeIdx = nodes.findIndex(
           (node) =>
             story.dateTime.stamp >= node.timeFrom &&
-            story.dateTime.stamp < node.timeTill && // fixme: does this comparison take timezone into account for both sides?
+            story.dateTime.stamp < node.timeTill &&
             node.personIds.some((p) => p._id.equals(story.personId))
-        ); // FIXME: see geonodes model
+        );
 
         const storyLocation = (
           await geoLocationModel

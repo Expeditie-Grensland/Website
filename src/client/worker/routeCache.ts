@@ -1,11 +1,6 @@
 export const onFetch = (event: FetchEvent): boolean => {
-    if (/^https?:\/\/.*\/(.*)\/kaart\/binary$/u.exec(event.request.url)) {
-        event.respondWith(getFromCacheAndRequest(event, 'X-Location-Count', 'X-Last-Location'));
-        return true;
-    }
-
-    if (/^https?:\/\/.*\/(.*)\/kaart\/story$/u.exec(event.request.url)) {
-        event.respondWith(getFromCacheAndRequest(event, 'X-Story-Count', 'X-Last-Story'));
+    if (/^https?:\/\/.*\/.*\/kaart\/(?:binary|story)$/u.exec(event.request.url)) {
+        event.respondWith(getFromCacheAndRequest(event, 'X-Revision-Id'));
         return true;
     }
 
