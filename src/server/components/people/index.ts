@@ -1,17 +1,15 @@
 import mongoose from "mongoose";
 
-import { PersonDocument, PersonModel } from "./model.js";
+import { PersonModel } from "./model.js";
 
-export const getAll = (): Promise<PersonDocument[]> =>
-  PersonModel.find({}).sort({ lastName: 1 }).exec();
+export const getAll = async () =>
+  await PersonModel.find({}).sort({ lastName: 1 });
 
-export const getById = (
-  id: mongoose.Types.ObjectId
-): Promise<PersonDocument | null> => PersonModel.findById(id).exec();
+export const getById = async (id: mongoose.Types.ObjectId) =>
+  await PersonModel.findById(id);
 
-export const getByUserName = (
-  userName: string
-): Promise<PersonDocument | null> => PersonModel.findOne({ userName }).exec();
+export const getByUserName = async (userName: string) =>
+  await PersonModel.findOne({ userName });
 
-export const getByLdapId = (id: string): Promise<PersonDocument | null> =>
-  PersonModel.findOne({ ldapId: id }).exec();
+export const getByLdapId = async (id: string) =>
+  await PersonModel.findOne({ ldapId: id });

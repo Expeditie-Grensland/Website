@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 
 import { Expeditie, ExpeditieModel } from "./model.js";
-import { PersonDocument } from "../people/model.js";
 import { geoLocationModel } from "../geoLocations/model.js";
 import { geoNodeModel } from "../geoNodes/model.js";
+import { Person } from "../people/model.js";
 
 export const getByNameShortPopulated = (nameShort: string) =>
   ExpeditieModel.findOne({ nameShort })
-    .populate<{ personIds: PersonDocument[] }>("personIds")
-    .populate<{ movieEditorIds: PersonDocument[] }>("movieEditorIds")
+    .populate<{ personIds: Person[] }>("personIds")
+    .populate<{ movieEditorIds: Person[] }>("movieEditorIds")
     .exec();
 
 export const getAll = () =>
@@ -27,7 +27,7 @@ export const getNodesWithPeople = (expeditieId: mongoose.Types.ObjectId) =>
   geoNodeModel
     .find({ expeditieId })
     .sort({ _id: 1 })
-    .populate<{ personIds: PersonDocument[] }>("personIds")
+    .populate<{ personIds: HydratedDocument<Person>[] }>("personIds")
     .exec();
 
 export const getMovieUrls = (expeditie: Expeditie) => ({

@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-
-import { PersonDocument } from "../components/people/model.js";
+import { Person } from "../components/people/model.js";
 
 export const setAuthLocals = (
   req: Request,
@@ -32,7 +31,7 @@ export const noAdminRedirect = (
   res: Response,
   next: NextFunction
 ) => {
-  if (!(req.user as PersonDocument).isAdmin) {
+  if (!(req.user as Person).isAdmin) {
     res.redirect("/leden");
   } else next();
 };

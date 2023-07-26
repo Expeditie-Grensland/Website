@@ -4,7 +4,6 @@ import { DocumentOrId } from '../documents/index.js';
 import { PersonId } from '../people/id.js';
 import { ExpeditieId } from '../expedities/id.js';
 import { EarnedPointId } from './id.js';
-import { PersonOrId } from '../people/model.js';
 import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model.js';
 
 const schema = new mongoose.Schema({
@@ -32,7 +31,7 @@ schema.index({ 'dateTime.stamp': -1 });
 export interface EarnedPoint {
     dateTime: DateTimeInternal;
     amount: number;
-    personId: PersonOrId;
+    personId: mongoose.Types.ObjectId;
     expeditieId?: mongoose.Types.ObjectId;
 }
 

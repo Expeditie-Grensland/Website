@@ -1,42 +1,23 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, InferSchemaType } from "mongoose";
 
-import { PersonId } from './id.js';
-import { DocumentOrId } from '../documents/index.js';
+import { PersonId } from "./id.js";
 
-/**
- * A Person describes a person who participates in an expeditie. They are guaranteed to have a name
- * and a list of expedities in which they participate (can be empty).
- */
-
-const schema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
-    initials: String,
-    userName: String,
-    ldapId: String,
-    isAdmin: Boolean,
-    team: {
-        type: String,
-        enum: ['Blauw', 'Rood']
-    }
+const personSchema = new Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  initials: { type: String, required: true },
+  userName: { type: String, required: true },
+  ldapId: { type: String, required: true },
+  isAdmin: { type: Boolean, default: false },
+  team: {
+    type: String,
+    enum: ["Blauw", "Rood"],
+  },
 });
 
-schema.index({ lastName: 1, firstName: 1 });
-schema.index({ userName: 1 });
+personSchema.index({ lastName: 1, firstName: 1 });
+personSchema.index({ userName: 1 });
 
-export interface Person {
-    firstName: string;
-    lastName: string;
-    initials: string;
-    userName: string;
-    ldapId?: string;
-    isAdmin?: boolean;
-    team?: 'Blauw' | 'Rood';
-}
+export type Person = InferSchemaType<typeof personSchema>;
 
-export interface PersonDocument extends Person, mongoose.Document {
-}
-
-export const PersonModel = mongoose.model<PersonDocument>(PersonId, schema);
-
-export type PersonOrId = DocumentOrId<PersonDocument>;
+export const PersonModel = mongoose.model(PersonId, personSchema);

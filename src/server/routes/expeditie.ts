@@ -10,7 +10,6 @@ import {
   MediaStoryElementDocument,
   TextStoryElementDocument,
 } from "../components/storyElements/model.js";
-import { PersonDocument } from "../components/people/model.js";
 
 export const router = express.Router({ mergeParams: true });
 
@@ -158,7 +157,7 @@ router.get("/kaart/story", async (req, res) => {
         timeFrom: node.timeFrom,
         timeTill: node.timeTill,
         personNames: node.personIds.map(
-          (p: PersonDocument) => `${p.firstName} ${p.lastName}`
+          (p) => `${p.firstName} ${p.lastName}`
         ), // FIXME: see geonodes model
       };
     }),
@@ -170,7 +169,7 @@ router.get("/kaart/story", async (req, res) => {
           (node) =>
             story.dateTime.stamp >= node.timeFrom &&
             story.dateTime.stamp < node.timeTill && // fixme: does this comparison take timezone into account for both sides?
-            node.personIds.some((p: PersonDocument) =>
+            node.personIds.some((p) =>
               p._id.equals(story.personId)
             )
         ); // FIXME: see geonodes model

@@ -6,7 +6,6 @@ import * as AuthHelper from '../helpers/authHelper.js';
 import * as MemberLinks from '../components/memberLinks/index.js';
 import * as Words from '../components/words/index.js';
 import * as Quotes from '../components/quotes/index.js';
-import { PersonDocument } from '../components/people/model.js';
 import * as EarnedPoints from '../components/earnedPoints/index.js';
 
 export const router = express.Router();
@@ -126,8 +125,8 @@ router.get('/punten', async (req, res) => {
         return {
             date: ep.dateTime.object.toLocaleString({ month: '2-digit', day: '2-digit' }),
             amount: ep.amount,
-            name: `${(ep.personId as PersonDocument).firstName} ${(ep.personId as PersonDocument).lastName}`,
-            team: (ep.personId as PersonDocument).team as string,
+            name: `${ep.personId.firstName} ${ep.personId.lastName}`,
+            team: ep.personId.team as string,
             expeditie: ep.expeditieId ? `Expeditie ${(ep.expeditieId).name}` : ''
         };
     });

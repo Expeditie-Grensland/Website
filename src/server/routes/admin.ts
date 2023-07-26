@@ -328,7 +328,7 @@ router.post(
         locs = await generateLocations(
           req.file.buffer,
           expeditie._id,
-          person,
+          person._id,
           b.zone
         );
       } catch (e: any) {
