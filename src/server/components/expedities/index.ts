@@ -5,30 +5,30 @@ import { geoLocationModel } from "../geoLocations/model.js";
 import { geoNodeModel } from "../geoNodes/model.js";
 import { Person } from "../people/model.js";
 
-export const getByNameShortPopulated = (nameShort: string) =>
-  ExpeditieModel.findOne({ nameShort })
+export const getByNameShortPopulated = async (nameShort: string) =>
+  await ExpeditieModel.findOne({ nameShort })
     .populate<{ personIds: Person[] }>("personIds")
-    .populate<{ movieEditorIds: Person[] }>("movieEditorIds")
-    .exec();
+    .populate<{ movieEditorIds: Person[] }>("movieEditorIds");
 
-export const getAll = () =>
-  ExpeditieModel.find({}).sort({ sequenceNumber: -1 }).exec();
+export const getAll = async () =>
+  await ExpeditieModel.find({}).sort({ sequenceNumber: -1 });
 
-export const getById = (id: mongoose.Types.ObjectId) =>
-  ExpeditieModel.findById(id).exec();
+export const getById = async (id: mongoose.Types.ObjectId) =>
+  await ExpeditieModel.findById(id);
 
-export const getLocationCount = (expeditieId: mongoose.Types.ObjectId) =>
-  geoLocationModel.count({ expeditieId }).exec();
+export const getLocationCount = async (expeditieId: mongoose.Types.ObjectId) =>
+  await geoLocationModel.count({ expeditieId });
 
-export const getNodes = (expeditieId: mongoose.Types.ObjectId) =>
-  geoNodeModel.find({ expeditieId }).sort({ _id: 1 }).exec();
+export const getNodes = async (expeditieId: mongoose.Types.ObjectId) =>
+  await geoNodeModel.find({ expeditieId }).sort({ _id: 1 });
 
-export const getNodesWithPeople = (expeditieId: mongoose.Types.ObjectId) =>
-  geoNodeModel
+export const getNodesWithPeople = async (
+  expeditieId: mongoose.Types.ObjectId
+) =>
+  await geoNodeModel
     .find({ expeditieId })
     .sort({ _id: 1 })
-    .populate<{ personIds: HydratedDocument<Person>[] }>("personIds")
-    .exec();
+    .populate<{ personIds: HydratedDocument<Person>[] }>("personIds");
 
 export const getMovieUrls = (expeditie: Expeditie) => ({
   fallbackMP4:
