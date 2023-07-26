@@ -1,21 +1,20 @@
-import { Expeditie } from "../expedities/model.js";
-import { Person } from "../people/model.js";
-import { EarnedPointDocument, EarnedPointModel } from "./model.js";
 import mongoose from "mongoose";
 
-export const getById = (
-  id: mongoose.Types.ObjectId
-): Promise<EarnedPointDocument | null> => EarnedPointModel.findById(id).exec();
+import { Expeditie } from "../expedities/model.js";
+import { Person } from "../people/model.js";
+import { EarnedPointModel } from "./model.js";
 
-export const getAll = (): Promise<EarnedPointDocument[]> =>
-  EarnedPointModel.find().sort({ "dateTime.stamp": -1 }).exec();
+export const getById = async (id: mongoose.Types.ObjectId) =>
+  await EarnedPointModel.findById(id);
 
-export const getAllPopulated = () =>
-  EarnedPointModel.find()
+export const getAll = async () =>
+  await EarnedPointModel.find().sort({ "dateTime.stamp": -1 });
+
+export const getAllPopulated = async () =>
+  await EarnedPointModel.find()
     .sort({ "dateTime.stamp": -1 })
     .populate<{ personId: Pick<Person, "firstName" | "lastName" | "team"> }>(
       "personId",
       "firstName lastName team"
     )
-    .populate<{ expeditieId: Pick<Expeditie, "name"> }>("expeditieId", "name")
-    .exec();
+    .populate<{ expeditieId: Pick<Expeditie, "name"> }>("expeditieId", "name");

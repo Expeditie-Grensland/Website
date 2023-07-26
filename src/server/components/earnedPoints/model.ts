@@ -1,43 +1,35 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType, Schema } from "mongoose";
 
-import { DocumentOrId } from '../documents/index.js';
-import { PersonId } from '../people/id.js';
-import { ExpeditieId } from '../expedities/id.js';
-import { EarnedPointId } from './id.js';
-import { DateTimeInternal, dateTimeSchema, dateTimeSchemaDefault } from '../dateTime/model.js';
+import { dateTimeSchema, dateTimeSchemaDefault } from "../dateTime/model.js";
+import { ExpeditieId } from "../expedities/id.js";
+import { PersonId } from "../people/id.js";
+import { EarnedPointId } from "./id.js";
 
-const schema = new mongoose.Schema({
-    dateTime: {
-        type: dateTimeSchema,
-        default: dateTimeSchemaDefault
-    },
-    amount: {
-        type: Number,
-        required: true
-    },
-    personId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: PersonId,
-        required: true
-    },
-    expeditieId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: ExpeditieId
-    }
+const earnedPointsSchema = new Schema({
+  dateTime: {
+    type: dateTimeSchema,
+    default: dateTimeSchemaDefault,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+  personId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: PersonId,
+    required: true,
+  },
+  expeditieId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: ExpeditieId,
+  },
 });
 
-schema.index({ 'dateTime.stamp': -1 });
+earnedPointsSchema.index({ "dateTime.stamp": -1 });
 
-export interface EarnedPoint {
-    dateTime: DateTimeInternal;
-    amount: number;
-    personId: mongoose.Types.ObjectId;
-    expeditieId?: mongoose.Types.ObjectId;
-}
+export type EarnedPoint = InferSchemaType<typeof earnedPointsSchema>;
 
-export interface EarnedPointDocument extends EarnedPoint, mongoose.Document {
-}
-
-export const EarnedPointModel = mongoose.model<EarnedPointDocument>(EarnedPointId, schema);
-
-export type EarnedPointOrId = DocumentOrId<EarnedPointDocument>;
+export const EarnedPointModel = mongoose.model(
+  EarnedPointId,
+  earnedPointsSchema
+);
