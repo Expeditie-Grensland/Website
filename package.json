@@ -94,6 +94,12 @@
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^4.0.0"
   },
+  "files": [
+    "npm-shrinkwrap.json",
+    "dist",
+    "migrate-mongo-config.js",
+    "migrations"
+  ],
   "scripts": {
     "lint": "eslint . --ext ts,js,cjs,mjs",
     "nibble": "eslint-nibble . --ext ts,js,cjs,mjs",

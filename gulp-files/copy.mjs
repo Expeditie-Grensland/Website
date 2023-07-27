@@ -71,11 +71,6 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
           ],
           { base: 'src/' }
         ),
-
-        gulp.src(
-          ['LICENSE', 'package.json', 'package-lock.json', 'README.md'],
-          { base: './' }
-        ),
       ];
     else
       sources = [
