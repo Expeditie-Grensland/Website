@@ -1,11 +1,13 @@
 import express from "express";
-import { DateTime, Info } from "luxon";
-import mongoose from "mongoose";
+import { Info } from "luxon";
+import mongoose, { HydratedDocument } from "mongoose";
 import multer from "multer";
 
+import { ZodError, z } from "zod";
+import { fromZodError } from "zod-validation-error";
 import {
   getISODate,
-  getInternalDate,
+  getInternalFromISODate,
 } from "../components/dateTime/dateHelpers.js";
 import {
   getAllPoints,
@@ -21,7 +23,7 @@ import { createManyLocations } from "../components/geoLocations/index.js";
 import { GeoLocation } from "../components/geoLocations/model.js";
 import { getAllPeople, getPersonById } from "../components/people/index.js";
 import { getAllQuotes, getQuoteById } from "../components/quotes/index.js";
-import { QuoteModel } from "../components/quotes/model.js";
+import { Quote, QuoteModel } from "../components/quotes/model.js";
 import {
   getAllStories,
   getStoryById,
@@ -32,18 +34,27 @@ import {
   MediaStoryElementModel,
   TextStoryElementModel,
 } from "../components/storyElements/model.js";
-import {
-  createWord,
-  getAllWords,
-  getWordById,
-} from "../components/words/index.js";
-import { Word } from "../components/words/model.js";
+import { getAllWords, getWordById } from "../components/words/index.js";
+import { Word, WordModel } from "../components/words/model.js";
 import { loginRedirect, noAdminRedirect } from "../helpers/authHelper.js";
 
 export const router = express.Router();
 
 router.use(loginRedirect);
 router.use(noAdminRedirect);
+
+const zNonEmptyArray = z
+  .array(z.string())
+  .transform((arr) => arr.filter((val) => val != ""))
+  .refine((val) => val.length > 0, { message: "Lijst mag niet leeg zijn" });
+
+const zObjectId = z
+  .string()
+  .length(24)
+  .refine(mongoose.Types.ObjectId.isValid, {
+    message: "Moet een Mongo ObjectId zijn",
+  })
+  .transform((val) => new mongoose.Types.ObjectId(val));
 
 const testAndGetFromId = async <T extends mongoose.Document>(
   stringId: string,
@@ -63,15 +74,6 @@ const testAndGetFromId = async <T extends mongoose.Document>(
   if (!result) throw new Error(`${typeName} '${stringId}' bestaat niet.`);
 
   return result;
-};
-
-const getDateTimeFromTimeAndZone = (time: string, zone: string): DateTime => {
-  const dt = DateTime.fromISO(time, { zone, locale: "nl-NL" });
-
-  if (dt.invalidExplanation)
-    throw new Error("Tijd/zone is incorrect: " + dt.invalidExplanation);
-
-  return dt;
 };
 
 const testValidAction = (action: string, ...validActions: string[]): void =>
@@ -105,15 +107,21 @@ const testValidTimeZone = (zone: string) => {
 };
 
 const tryCatchAndRedirect = async (
-  req: any,
-  res: any,
+  req: express.Request,
+  res: express.Response,
   destination: string,
-  f: () => Promise<string>
-): Promise<void> => {
+  func: () => Promise<string>
+) => {
   try {
-    req.flash("info", await f());
-  } catch (e: any) {
-    req.flash("error", e.message);
+    req.flash("info", await func());
+  } catch (e) {
+    let errorMsg = "Error!";
+
+    if (typeof e === "string") errorMsg = e;
+    else if (e instanceof ZodError) errorMsg = fromZodError(e).message;
+    else if (e instanceof Error) errorMsg = e.message;
+
+    req.flash("error", errorMsg);
   } finally {
     res.redirect(destination);
   }
@@ -129,49 +137,59 @@ router.get("/citaten", async (req, res) =>
   })
 );
 
-router.post("/citaten/add", async (req, res) =>
-  tryCatchAndRedirect(req, res, "/admin/citaten", async () => {
-    const b = req.body;
+const quoteSchema = z.object({
+  quote: z.string(),
+  quotee: z.string(),
+  context: z.string(),
+  file: z.string().optional(),
+  time: z.string(),
+  zone: z.string(),
+});
 
-    testRequiredFields(b.quote, b.context, b.quotee, b.time, b.zone);
+const quoteId = z.object({
+  id: zObjectId
+    .transform(async (id) => await getQuoteById(id))
+    .refine((quote): quote is HydratedDocument<Quote> => !!quote, {
+      message: "Quote bestaat niet",
+    }),
+});
 
-    const q = new QuoteModel({
-      quote: b.quote,
-      quotee: b.quotee,
-      context: b.context,
-      attachmentFile: b.file || undefined,
-      dateTime: getInternalDate(getDateTimeFromTimeAndZone(b.time, b.zone)),
-    });
+const quotePostSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("add") }).merge(quoteSchema),
+  z
+    .object({ action: z.literal("change") })
+    .merge(quoteSchema)
+    .merge(quoteId),
+  z.object({ action: z.literal("delete") }).merge(quoteId),
+]);
 
-    return `Citaat "${(await q.save()).quote}" is succesvol toegevoegd.`;
-  })
-);
+router.post(
+  "/citaten",
+  async (req, res) =>
+    await tryCatchAndRedirect(req, res, "/admin/citaten", async () => {
+      const input = await quotePostSchema.parseAsync(req.body);
 
-router.post("/citaten/edit", (req, res) =>
-  tryCatchAndRedirect(req, res, "/admin/citaten", async () => {
-    const b = req.body;
+      if (input.action === "delete") {
+        const result = await input.id.deleteOne();
+        return `Citaat "${result.quote}" is succesvol verwijderd`;
+      }
 
-    testValidAction(b.action, "delete", "change");
+      const quote: Quote = {
+        quote: input.quote,
+        quotee: input.quotee,
+        context: input.context,
+        attachmentFile: input.file || undefined,
+        dateTime: getInternalFromISODate(input.time, input.zone),
+      };
 
-    const quote = await testAndGetFromId(b.id, getQuoteById, "Citaat");
+      if (input.action === "change") {
+        const result = await input.id.overwrite(quote).save();
+        return `Citaat "${result.quote}" is succesvol gewijzigd`;
+      }
 
-    if (b.action == "delete")
-      return `Citaat "${
-        (await quote.deleteOne()).quote
-      }" is succesvol verwijderd.`;
-
-    testRequiredFields(b.quote, b.context, b.quotee, b.time, b.zone);
-
-    quote.quote = b.quote;
-    quote.context = b.context;
-    quote.quotee = b.quotee;
-    quote.dateTime = getInternalDate(
-      getDateTimeFromTimeAndZone(b.time, b.zone)
-    );
-    quote.attachmentFile = b.file || undefined;
-
-    return `Citaat "${(await quote.save()).quote}" is succesvol gewijzigd.`;
-  })
+      const result = await new QuoteModel(quote).save();
+      return `Citaat "${result.quote}" is successvol toegevoegd`;
+    })
 );
 
 router.get("/woordenboek", async (req, res) =>
@@ -183,53 +201,56 @@ router.get("/woordenboek", async (req, res) =>
   })
 );
 
-router.post("/woordenboek/add", async (req, res) =>
-  tryCatchAndRedirect(req, res, "/admin/woordenboek", async () => {
-    const b = req.body;
+const wordSchema = z.object({
+  word: z.string(),
+  definitions: zNonEmptyArray,
+  phonetic: z.string().optional(),
+  file: z.string().optional(),
+});
 
-    testRequiredFields(
-      b.word,
-      b.definitions,
-      b.definitions.filter((x: string) => x != "").length
-    );
+const wordId = z.object({
+  id: zObjectId
+    .transform(async (id) => await getWordById(id))
+    .refine((word): word is HydratedDocument<Word> => !!word, {
+      message: "Woord bestaat niet",
+    }),
+});
 
-    const w: Word = {
-      word: b.word,
-      definitions: b.definitions.filter((x: string) => x != ""),
-      phonetic: b.phonetic || undefined,
-      attachmentFile: b.file || undefined,
-    };
+const wordPostSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("add") }).merge(wordSchema),
+  z
+    .object({ action: z.literal("change") })
+    .merge(wordSchema)
+    .merge(wordId),
+  z.object({ action: z.literal("delete") }).merge(wordId),
+]);
 
-    return `Woord "${(await createWord(w)).word}" is succesvol toegevoegd.`;
-  })
-);
+router.post(
+  "/woordenboek",
+  async (req, res) =>
+    await tryCatchAndRedirect(req, res, "/admin/woordenboek", async () => {
+      const input = await wordPostSchema.parseAsync(req.body);
 
-router.post("/woordenboek/edit", (req, res) =>
-  tryCatchAndRedirect(req, res, "/admin/woordenboek", async () => {
-    const b = req.body;
+      if (input.action === "delete") {
+        const result = await input.id.deleteOne();
+        return `Citaat "${result.word}" is succesvol verwijderd`;
+      }
 
-    testValidAction(b.action, "delete", "change");
+      const word: Word = {
+        word: input.word,
+        definitions: input.definitions,
+        phonetic: input.phonetic || undefined,
+        attachmentFile: input.file || undefined,
+      };
 
-    const word = await testAndGetFromId(b.id, getWordById, "Woord");
+      if (input.action === "change") {
+        const result = await input.id.overwrite(word).save();
+        return `Woord "${result.word}" is succesvol gewijzigd`;
+      }
 
-    if (b.action == "delete")
-      return `Woord "${
-        (await word.deleteOne()).word
-      }" is succesvol verwijderd.`;
-
-    testRequiredFields(
-      b.word,
-      b.definitions,
-      b.definitions.filter((x: string) => x != "").length
-    );
-
-    word.word = b.word;
-    word.definitions = b.definitions.filter((x: string) => x != "");
-    word.phonetic = b.phonetic || undefined;
-    word.attachmentFile = b.file || undefined;
-
-    return `Woord "${(await word.save()).word}" is succesvol gewijzigd.`;
-  })
+      const result = await new WordModel(word).save();
+      return `Citaat "${result.word}" is successvol toegevoegd`;
+    })
 );
 
 router.get("/punten", async (req, res) =>
@@ -254,7 +275,7 @@ router.post("/punten/add", async (req, res) =>
       amount: testAndGetNumber(b.amount, "Hoeveelheid"),
       personId: (await testAndGetFromId(b.person, getPersonById, "Persoon"))
         ._id,
-      dateTime: getInternalDate(getDateTimeFromTimeAndZone(b.time, b.zone)),
+      dateTime: getInternalFromISODate(b.time, b.zone),
     });
 
     if (b.expeditie != "none")
@@ -298,7 +319,7 @@ router.post("/punten/edit", (req, res) =>
       )._id;
     else ep.expeditieId = undefined;
 
-    ep.dateTime = getInternalDate(getDateTimeFromTimeAndZone(b.time, b.zone));
+    ep.dateTime = getInternalFromISODate(b.time, b.zone);
 
     return `Punt "${(
       await ep.save()
@@ -382,7 +403,6 @@ router.post("/story/add", async (req, res) =>
     const personId = (
       await testAndGetFromId(b.person, getPersonById, "Persoon")
     )._id;
-    const dateTimeObj = getDateTimeFromTimeAndZone(b.time, b.zone);
 
     if (b.type === "text") {
       testRequiredFields(b.title, b.text);
@@ -393,7 +413,7 @@ router.post("/story/add", async (req, res) =>
         personId: personId,
         title: b.title,
         text: b.text,
-        dateTime: getInternalDate(dateTimeObj),
+        dateTime: getInternalFromISODate(b.time, b.zone),
       });
 
       return `Tekstverhaalelement "${(
@@ -409,7 +429,7 @@ router.post("/story/add", async (req, res) =>
         expeditieId: expeditieId,
         personId: personId,
         name: b.name,
-        dateTime: getInternalDate(dateTimeObj),
+        dateTime: getInternalFromISODate(b.time, b.zone),
       });
 
       return `Locatieverhaalelement "${(
@@ -437,7 +457,7 @@ router.post("/story/add", async (req, res) =>
           file: file[0],
           description: file[1],
         })),
-        dateTime: getInternalDate(dateTimeObj),
+        dateTime: getInternalFromISODate(b.time, b.zone),
       });
 
       return `Mediaverhaalelement "${(
@@ -465,8 +485,6 @@ router.post("/story/edit", (req, res) =>
 
     testRequiredFields(b.expeditie, b.person, b.time, b.zone);
 
-    const dt = getDateTimeFromTimeAndZone(b.time, b.zone);
-
     const update = {
       type: se.type,
       personId: (await testAndGetFromId(b.person, getPersonById, "Persoon"))
@@ -474,10 +492,7 @@ router.post("/story/edit", (req, res) =>
       expeditieId: (
         await testAndGetFromId(b.expeditie, getExpeditieById, "Expeditie")
       )._id,
-      dateTime: {
-        stamp: dt.toSeconds(),
-        zone: dt.zoneName,
-      },
+      dateTime: getInternalFromISODate(b.time, b.zone),
     };
 
     if (se.type === "text") {

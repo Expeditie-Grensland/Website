@@ -19,7 +19,7 @@ block content
         .col-12.mb-4
             hr
             .h2.mb-3 Definitie toevoegen
-            form(method='POST' action='/admin/woordenboek/add')
+            form(method='POST' action='/admin/woordenboek')
                 .form-row.align-items-center
                     .col-12.col-md-3.mb-2
                         input.form-control(type='text' name='word' placeholder='Woord' required)
@@ -34,7 +34,7 @@ block content
                     .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='file' placeholder='Bijlage Naam' size='30')
                     .col-auto.mb-2
-                        button.btn.btn-primary(type='submit') Toevoegen
+                        button.btn.btn-primary(type='submit' name="action" value="add") Toevoegen
 
         // TODO: discription of link formats etc. (markdown)
 
@@ -67,7 +67,7 @@ block content
                             td
                                 input.form-control(type='text' form=`f-${i}` name='file' value=word.attachmentFile)
                             td
-                                form.form-confirm(id=`f-${i}` method='POST' action=`/admin/woordenboek/edit`)
+                                form.form-confirm(id=`f-${i}` method='POST' action=`/admin/woordenboek`)
                                     input(type='hidden' name='id' value=word._id.toHexString())
                                     button.btn.btn-info.mb-2(type='submit' name='action' value='change') Wijzigen
                                     br

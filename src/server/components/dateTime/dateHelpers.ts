@@ -14,3 +14,15 @@ export const getLuxonDate = (date: DateTimeInternal) =>
 
 export const getISODate = (date: DateTimeInternal) =>
   getLuxonDate(date).startOf("second").toISO({ includeOffset: false });
+
+export const getLuxonFromISODate = (isoDate: string, zone: string) => {
+  const date = DateTime.fromISO(isoDate, { zone, locale: "nl-NL" });
+
+  if (date.invalidExplanation)
+    throw new Error(`Error: ${date.invalidExplanation}`);
+
+  return date;
+};
+
+export const getInternalFromISODate = (isoDate: string, zone: string) =>
+  getInternalDate(getLuxonFromISODate(isoDate, zone));

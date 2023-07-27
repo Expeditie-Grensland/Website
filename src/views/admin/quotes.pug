@@ -19,7 +19,7 @@ block content
         .col-12.mb-4
             hr
             .h2.mb-3 Citaat toevoegen
-            form(method='POST' action='/admin/citaten/add')
+            form(method='POST' action='/admin/citaten')
                 .form-row.align-items-center
                     .col-12.col-md-3.mb-2
                         textarea.form-control(rows='1' name='quote' placeholder='Citaat' required)
@@ -34,7 +34,7 @@ block content
                     .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='file' placeholder='Bijlage Naam' size='30')
                     .col-auto.col-md-3.mb-2
-                        button.btn.btn-primary(type='submit') Toevoegen
+                        button.btn.btn-primary(type='submit' name="action" value="add") Toevoegen
 
         .col-12.mb-4
             hr
@@ -64,7 +64,7 @@ block content
                             td
                                 input.form-control(type='text' form=`f-${i}` name='file' value=quote.attachmentFile)
                             td
-                                form.form-confirm(id=`f-${i}` method='POST' action=`/admin/citaten/edit`)
+                                form.form-confirm(id=`f-${i}` method='POST' action=`/admin/citaten`)
                                     input(type='hidden' name='id' value=quote._id.toHexString())
                                     button.btn.btn-info.mb-2(type='submit' name='action' value='change') Wijzigen
                                     br
