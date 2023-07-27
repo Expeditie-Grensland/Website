@@ -29,4 +29,4 @@ setupDatabase(dev);
 
 app.use('/', Router());
 
-startServer(server, config.port);
+startServer(server, config.EG_PORT);

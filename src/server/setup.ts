@@ -47,7 +47,7 @@ export function setupExpress(app: express.Express, root: string, dev: boolean) {
 
 export function setupSession(app: express.Express) {
   const sessionOptions: session.SessionOptions = {
-    secret: config.session.secret,
+    secret: config.EG_SESSION_SECRET,
     cookie: {
       secure: app.get("env") === "production",
     },
@@ -56,15 +56,15 @@ export function setupSession(app: express.Express) {
     saveUninitialized: false,
   };
 
-  if (config.redis.url) {
+  if (config.EG_REDIS_URL) {
     const redisClient = redis.createClient({
-      url: config.redis.url,
+      url: config.EG_REDIS_URL,
     });
     redisClient.connect().catch(console.error);
 
     sessionOptions.store = new RedisStore({
       client: redisClient,
-      prefix: config.redis.prefix,
+      prefix: config.EG_REDIS_PREFIX,
       ttl: 2592000,
     });
   }
@@ -81,18 +81,18 @@ export function addAuthMiddleware(app: express.Express) {
     new ldapauth(
       {
         server: {
-          url: config.ldap.url,
-          bindDN: config.ldap.bindDN,
-          bindCredentials: config.ldap.bindCredentials,
-          searchBase: config.ldap.searchBase,
-          searchFilter: config.ldap.searchFilter,
-          searchScope: config.ldap.searchScope,
-          searchAttributes: [config.ldap.idField],
+          url: config.EG_LDAP_URL,
+          bindDN: config.EG_LDAP_BIND_DN,
+          bindCredentials: config.EG_LDAP_BIND_CREDENTIALS,
+          searchBase: config.EG_LDAP_SEARCH_BASE,
+          searchFilter: config.EG_LDAP_SEARCH_FILTER,
+          searchScope: config.EG_LDAP_SEARCH_SCOPE,
+          searchAttributes: [config.EG_LDAP_ID_FIELD],
         },
       },
       (user: any, done: ldapauth.VerifyDoneCallback) =>
-        user && user[config.ldap.idField]
-          ? getPersonByLdapId(user[config.ldap.idField]).then((p) =>
+        user && user[config.EG_LDAP_ID_FIELD]
+          ? getPersonByLdapId(user[config.EG_LDAP_ID_FIELD]).then((p) =>
               p ? done(null, p) : done(null, false)
             )
           : done(new Error("LDAP user is unexpectedly null"))
@@ -114,7 +114,7 @@ export function addAuthMiddleware(app: express.Express) {
 export function setupDatabase(dev: boolean) {
   mongoose.set("debug", dev);
 
-  mongoose.connect(config.mongo.url);
+  mongoose.connect(config.EG_MONGO_URL);
 
   mongoose.connection
     .on("error", console.error.bind(console, "connection error:"))
