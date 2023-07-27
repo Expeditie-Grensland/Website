@@ -25,8 +25,53 @@ jobs:
       - name: Build using gulp.js
         run: gulp build:prod
 
-      - name: Release & Deploy
-        uses: ./.github/workflows/deploy.yml
-        if: github.env == 'refs/heads/release'
+      - name: Create package
+        id: npm_pack
+        run: echo "package_name=$(npm pack)" >> $GITHUB_OUTPUT
+
+      - name: Rename package
+        run: mv "${{ steps.npm_pack.outputs.package_name }}" expeditiegrensland-website.tar.gz
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v3
         with:
-          secrets: inherit
+          name: expeditiegrensland-website
+          path: expeditiegrensland-website.tar.gz
+
+  deploy:
+    name: Release & Deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release'
+    needs: build
+    environment: release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download package artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: expeditiegrensland-website
+
+      - name: Determine tag name
+        id: settag
+        run: echo "name=release-$(date +'%Y%m%d')-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.settag.outputs.name }}
+          target_commitish: ${{ github.sha }}
+          files: expeditiegrensland-website.tar.gz
+          fail_on_unmatched_files: true
+
+      - name: Install SSH configuration
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known_hosts: ${{ vars.DEPLOY_SSH_HOSTS }}
+
+      - name: Deploy to server
+        run: echo "${{ fromJSON(steps.release.outputs.assets)[0].browser_download_url }}" | ssh -T ${{ vars.DEPLOY_SERVER }}
