@@ -6,7 +6,7 @@ block title
 
     meta(property="og:title" content=`Expeditie ${expeditie.name}`)
     meta(property="og:description" content=expeditie.subtitle)
-    meta(property="og:image" content=`/media/${expeditie.backgroundFile}`)
+    meta(property="og:image" content=getFileUrl(expeditie.backgroundFile))
 
 block content
     .row

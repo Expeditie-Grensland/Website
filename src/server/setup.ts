@@ -12,6 +12,7 @@ import redis from "redis";
 import flash from "connect-flash";
 import { getPersonById, getPersonByLdapId } from "./components/people/index.js";
 import { config } from "./helpers/configHelper.js";
+import { fileUrlMiddleware } from "./helpers/files.js";
 
 export function startServer(server: http.Server, port: string) {
   server.listen(port);
@@ -29,10 +30,6 @@ export function setupExpress(app: express.Express, root: string, dev: boolean) {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   if (dev) {
-    app.use("/media", (req, res) =>
-      res.redirect("https://expeditiegrensland.nl/media/" + req.path)
-    );
-
     app.use("/static", express.static(staticDir, { fallthrough: false }));
 
     Object.entries({
@@ -75,6 +72,8 @@ export function setupSession(app: express.Express) {
   app.use(session(sessionOptions));
 
   app.use(flash());
+
+  app.use(fileUrlMiddleware);
 }
 
 export function addAuthMiddleware(app: express.Express) {

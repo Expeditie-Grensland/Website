@@ -1,5 +1,6 @@
 import { HydratedDocument } from "mongoose";
 import { Expeditie } from "./components/expedities/model.ts";
+import { getFileUrl } from "./helpers/files.ts";
 
 declare module "express-session" {
   export interface SessionData {
@@ -14,6 +15,8 @@ declare global {
         HydratedDocument<Expeditie>,
         "personIds" | "movieEditorIds"
       > & { personIds: PersonDocument[]; movieEditorIds: PersonDocument[] };
+
+      getFileUrl: typeof getFileUrl;
     }
   }
 }

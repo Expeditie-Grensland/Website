@@ -22,7 +22,7 @@ export const config = {
   port: getEnv("EG_PORT"),
 
   files: {
-    directory: getEnv("EG_FILES_DIRECTORY"),
+    baseUrl: getEnv("EG_FILES_BASE_URL"),
   },
 
   mongo: {

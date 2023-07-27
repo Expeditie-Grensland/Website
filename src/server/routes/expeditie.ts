@@ -21,6 +21,7 @@ import {
   MediaStoryElement,
   TextStoryElement,
 } from "../components/storyElements/model.js";
+import { getFileUrl } from "../helpers/files.js";
 
 export const router = express.Router({ mergeParams: true });
 
@@ -200,7 +201,7 @@ router.get("/kaart/story", async (req, res) => {
           latitude: storyLocation?.latitude || 0,
           longitude: storyLocation?.longitude || 0,
           media: media.map((medium) => ({
-            file: `/media/${medium.file}`,
+            file: getFileUrl(medium.file),
             description: medium.description,
           })),
         };
