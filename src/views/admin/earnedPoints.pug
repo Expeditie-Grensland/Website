@@ -5,13 +5,13 @@ block title
     title Expeditie - Admin - Punten
 
 mixin expeditieOptions(e)
-    option(selected=(e === undefined) value='' disabled) Expeditie
+    option(selected=(e === undefined) disabled) Expeditie
     option(selected=(e === null) value='none') Geen
     each expeditie in expedities
         option(selected=(e && e.equals(expeditie._id)) value=expeditie._id.toHexString())= expeditie.name
 
 mixin personOptions(p)
-    option(selected=(p === undefined) value='' disabled) Persoon
+    option(selected=(p === undefined) disabled) Persoon
     each person in people
         option(selected=(p && p.equals(person._id)) value=person._id.toHexString())= `${person.firstName} ${person.lastName}`
 

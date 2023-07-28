@@ -19,7 +19,7 @@ export const getLuxonFromISODate = (isoDate: string, zone: string) => {
   const date = DateTime.fromISO(isoDate, { zone, locale: "nl-NL" });
 
   if (date.invalidExplanation)
-    throw new Error(`Error: ${date.invalidExplanation}`);
+    throw new Error(`${date.invalidExplanation}`);
 
   return date;
 };

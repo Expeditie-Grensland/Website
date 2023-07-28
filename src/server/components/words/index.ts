@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-import { Word, WordModel } from "./model.js";
-
-export const createWord = async (word: Word) => await WordModel.create(word);
+import { WordModel } from "./model.js";
 
 export const getAllWords = async () =>
   await WordModel.find({})
