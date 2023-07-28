@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime, Info } from "luxon";
 import { DateTimeInternal, dateTimeSchemaDefault } from "./model.js";
 
 export const getInternalDate = (date: DateTime) => ({
@@ -26,3 +26,6 @@ export const getLuxonFromISODate = (isoDate: string, zone: string) => {
 
 export const getInternalFromISODate = (isoDate: string, zone: string) =>
   getInternalDate(getLuxonFromISODate(isoDate, zone));
+
+export const isValidTimeZone = (zone: string) =>
+  Info.isValidIANAZone(zone);

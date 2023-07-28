@@ -1,5 +1,4 @@
 import express from "express";
-import { Info } from "luxon";
 import mongoose, { HydratedDocument } from "mongoose";
 import multer from "multer";
 
@@ -8,20 +7,22 @@ import { fromZodError } from "zod-validation-error";
 import {
   getISODate,
   getInternalFromISODate,
+  isValidTimeZone,
 } from "../components/dateTime/dateHelpers.js";
 import {
   getAllPoints,
   getPointsById,
 } from "../components/earnedPoints/index.js";
-import { EarnedPointModel } from "../components/earnedPoints/model.js";
+import { EarnedPoint, EarnedPointModel } from "../components/earnedPoints/model.js";
 import {
   getAllExpedities,
   getExpeditieById,
 } from "../components/expedities/index.js";
+import { Expeditie } from "../components/expedities/model.js";
 import { generateLocations } from "../components/geoLocations/gpxHelper.js";
 import { createManyLocations } from "../components/geoLocations/index.js";
-import { GeoLocation } from "../components/geoLocations/model.js";
 import { getAllPeople, getPersonById } from "../components/people/index.js";
+import { Person } from "../components/people/model.js";
 import { getAllQuotes, getQuoteById } from "../components/quotes/index.js";
 import { Quote, QuoteModel } from "../components/quotes/model.js";
 import {
@@ -55,6 +56,10 @@ const zObjectId = z
     message: "Moet een Mongo ObjectId zijn",
   })
   .transform((val) => new mongoose.Types.ObjectId(val));
+
+const zTimeZone = z
+  .string()
+  .refine(isValidTimeZone, { message: "Geen geldige tijdzone" });
 
 const testAndGetFromId = async <T extends mongoose.Document>(
   stringId: string,
@@ -91,19 +96,6 @@ const testValidOption = (
 const testRequiredFields = (...fields: any[]): void => {
   if (fields.reduce((acc: boolean, cur) => acc || !cur, false))
     throw new Error("Niet alle verplichte velden waren ingevuld.");
-};
-
-const testAndGetNumber = (num: any, typeName: string): number => {
-  const number = parseInt(num);
-
-  if (isNaN(num)) throw new Error(`${typeName} is niet een nummer.`);
-
-  return number;
-};
-
-const testValidTimeZone = (zone: string) => {
-  if (!Info.isValidIANAZone(zone))
-    throw new Error(`Tijdzone ${zone} is niet geldig.`);
 };
 
 const tryCatchAndRedirect = async (
@@ -146,21 +138,19 @@ const quoteSchema = z.object({
   zone: z.string(),
 });
 
-const quoteId = z.object({
-  id: zObjectId
-    .transform(async (id) => await getQuoteById(id))
-    .refine((quote): quote is HydratedDocument<Quote> => !!quote, {
-      message: "Quote bestaat niet",
-    }),
-});
+const zQuote = zObjectId
+  .transform(async (id) => await getQuoteById(id))
+  .refine((quote): quote is HydratedDocument<Quote> => !!quote, {
+    message: "Quote bestaat niet",
+  });
 
 const quotePostSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("add") }).merge(quoteSchema),
   z
     .object({ action: z.literal("change") })
     .merge(quoteSchema)
-    .merge(quoteId),
-  z.object({ action: z.literal("delete") }).merge(quoteId),
+    .extend({ id: zQuote }),
+  z.object({ action: z.literal("delete") }).extend({ id: zQuote }),
 ]);
 
 router.post(
@@ -208,21 +198,19 @@ const wordSchema = z.object({
   file: z.string().optional(),
 });
 
-const wordId = z.object({
-  id: zObjectId
-    .transform(async (id) => await getWordById(id))
-    .refine((word): word is HydratedDocument<Word> => !!word, {
-      message: "Woord bestaat niet",
-    }),
-});
+const zWord = zObjectId
+  .transform(async (id) => await getWordById(id))
+  .refine((word): word is HydratedDocument<Word> => !!word, {
+    message: "Woord bestaat niet",
+  });
 
 const wordPostSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("add") }).merge(wordSchema),
   z
     .object({ action: z.literal("change") })
     .merge(wordSchema)
-    .merge(wordId),
-  z.object({ action: z.literal("delete") }).merge(wordId),
+    .extend({ id: zWord }),
+  z.object({ action: z.literal("delete") }).extend({ id: zWord }),
 ]);
 
 router.post(
@@ -233,7 +221,7 @@ router.post(
 
       if (input.action === "delete") {
         const result = await input.id.deleteOne();
-        return `Citaat "${result.word}" is succesvol verwijderd`;
+        return `Woord "${result.word}" is succesvol verwijderd`;
       }
 
       const word: Word = {
@@ -249,7 +237,7 @@ router.post(
       }
 
       const result = await new WordModel(word).save();
-      return `Citaat "${result.word}" is successvol toegevoegd`;
+      return `Woord "${result.word}" is successvol toegevoegd`;
     })
 );
 
@@ -265,66 +253,72 @@ router.get("/punten", async (req, res) =>
   })
 );
 
-router.post("/punten/add", async (req, res) =>
-  tryCatchAndRedirect(req, res, "/admin/punten", async () => {
-    const b = req.body;
+const zPerson = zObjectId
+  .transform(async (id) => await getPersonById(id))
+  .refine((person): person is HydratedDocument<Person> => !!person, {
+    message: "Persoon bestaat niet",
+  });
 
-    testRequiredFields(b.person, b.expeditie, b.amount, b.time, b.zone);
+const zExpeditie = zObjectId
+  .transform(async (id) => await getExpeditieById(id))
+  .refine((exp): exp is HydratedDocument<Expeditie> => !!exp, {
+    message: "Expeditie bestaat niet",
+  });
 
-    const ep = new EarnedPointModel({
-      amount: testAndGetNumber(b.amount, "Hoeveelheid"),
-      personId: (await testAndGetFromId(b.person, getPersonById, "Persoon"))
-        ._id,
-      dateTime: getInternalFromISODate(b.time, b.zone),
-    });
+const zExpeditieOptional = z.union([
+  z.literal("none").transform(() => undefined),
+  zExpeditie,
+]);
 
-    if (b.expeditie != "none")
-      ep.expeditieId = (
-        await testAndGetFromId(b.expeditie, getExpeditieById, "Expeditie")
-      )._id;
-    else ep.expeditieId = undefined;
+const pointSchema = z.object({
+  person: zPerson,
+  expeditie: zExpeditieOptional,
+  amount: z.coerce.number().int(),
+  time: z.string(),
+  zone: z.string(),
+});
 
-    return `Punt "${(
-      await ep.save()
-    )._id.toHexString()}" is succesvol toegevoegd.`;
-  })
-);
+const zPoint = zObjectId
+  .transform(async (id) => await getPointsById(id))
+  .refine((pnt): pnt is HydratedDocument<EarnedPoint> => !!pnt, {
+    message: "Punt bestaat niet",
+  });
 
-router.post("/punten/edit", (req, res) =>
-  tryCatchAndRedirect(req, res, "/admin/punten", async () => {
-    const b = req.body;
+const pointPostSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("add") }).merge(pointSchema),
+  z
+    .object({ action: z.literal("change") })
+    .merge(pointSchema)
+    .extend({ id: zPoint }),
+  z.object({ action: z.literal("delete") }).extend({ id: zPoint }),
+]);
 
-    testValidAction(b.action, "delete", "change");
+router.post(
+  "/punten",
+  async (req, res) =>
+    await tryCatchAndRedirect(req, res, "/admin/punten", async () => {
+      const input = await pointPostSchema.parseAsync(req.body);
 
-    const ep = await testAndGetFromId(b.id, getPointsById, "Punt");
+      if (input.action === "delete") {
+        const result = await input.id.deleteOne();
+        return `Punt "${result._id.toHexString()}" is succesvol verwijderd`;
+      }
 
-    if (b.action == "delete")
-      return `Punt "${(
-        await ep.deleteOne()
-      )._id.toHexString()}" is succesvol verwijderd.`;
+      const point: EarnedPoint = {
+        personId: input.person._id,
+        expeditieId: input.expeditie?._id,
+        amount: input.amount,
+        dateTime: getInternalFromISODate(input.time, input.zone),
+      };
 
-    testRequiredFields(b.person, b.expeditie, b.amount, b.time, b.zone);
+      if (input.action === "change") {
+        const result = await input.id.overwrite(point).save();
+        return `Punt "${result._id.toHexString()}" is succesvol gewijzigd`;
+      }
 
-    testAndGetNumber(b.amount, "Hoeveelheid");
-
-    ep.amount = parseInt(b.amount);
-
-    ep.personId = (
-      await testAndGetFromId(b.person, getPersonById, "Persoon")
-    )._id;
-
-    if (b.expeditie != "none")
-      ep.expeditieId = (
-        await testAndGetFromId(b.expeditie, getExpeditieById, "Expeditie")
-      )._id;
-    else ep.expeditieId = undefined;
-
-    ep.dateTime = getInternalFromISODate(b.time, b.zone);
-
-    return `Punt "${(
-      await ep.save()
-    )._id.toHexString()}" is succesvol gewijzigd.`;
-  })
+      const result = await new EarnedPointModel(point).save();
+      return `Punt "${result._id.toHexString()}" is successvol toegevoegd`;
+    })
 );
 
 router.get("/gpx", async (req, res) =>
@@ -336,42 +330,31 @@ router.get("/gpx", async (req, res) =>
   })
 );
 
+const gpxUploadPostSchema = z.object({
+  person: zPerson,
+  expeditie: zExpeditie.refine((exp) => !exp.finished, {
+    message: "Expeditie is beëindigd",
+  }),
+  zone: zTimeZone,
+});
+
 router.post(
   "/gpx/upload",
   multer({ storage: multer.memoryStorage() }).single("file"),
   (req, res) =>
     tryCatchAndRedirect(req, res, "/admin/gpx", async () => {
-      const b = req.body;
+      const input = await gpxUploadPostSchema.parseAsync(req.body);
 
-      testRequiredFields(b.person, b.expeditie, req.file, b.zone);
+      if (!req.file) throw new Error("Geen bestand gevonden");
 
-      const person = await testAndGetFromId(b.person, getPersonById, "Persoon");
-      const expeditie = await testAndGetFromId(
-        b.expeditie,
-        getExpeditieById,
-        "Expeditie"
-      );
-
-      if (expeditie.finished)
-        throw new Error(`Expeditie '${expeditie.name}' is beëindigd.`);
-
-      testValidTimeZone(b.zone);
-
-      let locs: GeoLocation[];
-
-      try {
-        if (!req.file) throw new Error("Er is geen bestand");
-        locs = await generateLocations(
+      void (await createManyLocations(
+        await generateLocations(
           req.file.buffer,
-          expeditie._id,
-          person._id,
-          b.zone
-        );
-      } catch (e: any) {
-        throw new Error(`Bestand kan niet worden gelezen: ${e.message}`);
-      }
-
-      await createManyLocations(locs);
+          input.expeditie._id,
+          input.person._id,
+          input.zone
+        )
+      ));
 
       return "Locaties zijn succesvol geüpload";
     })
