@@ -14,12 +14,12 @@ block body
                     li.nav-item
                         a.nav-link(href="/") &larr;&nbsp;Home
 
-            if !loggedIn
+            if !user
                 ul.navbar-nav.ms-auto
                     li.nav-item
                         a.nav-link(href="/leden/login") Log In
 
-            if loggedIn
+            if user
                 ul.navbar-nav.ms-auto
                     li.nav-item
                         a.nav-link(href="/leden")= `${user.firstName} ${user.lastName}`

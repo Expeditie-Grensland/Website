@@ -1,6 +1,6 @@
 import express from "express";
 
-import { setAuthLocals } from "../helpers/authHelper.js";
+import { setAuthLocals } from "../helpers/auth.js";
 import { router as adminRouter } from "./admin.js";
 import { router as expeditieRouter } from "./expeditie.js";
 import { router as homeRouter } from "./home.js";

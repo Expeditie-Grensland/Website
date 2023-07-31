@@ -37,7 +37,7 @@ import {
 } from "../components/storyElements/model.js";
 import { getAllWords, getWordById } from "../components/words/index.js";
 import { Word, WordModel } from "../components/words/model.js";
-import { loginRedirect, noAdminRedirect } from "../helpers/authHelper.js";
+import { loginRedirect, noAdminRedirect } from "../helpers/auth.js";
 
 export const router = express.Router();
 

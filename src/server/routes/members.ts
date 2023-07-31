@@ -1,20 +1,19 @@
 import express from "express";
 import { marked } from "marked";
-import passport from "passport";
 
 import { getLuxonDate } from "../components/dateTime/dateHelpers.js";
 import { getAllPopulatedPoints } from "../components/earnedPoints/index.js";
 import { getAllMemberLinks } from "../components/memberLinks/index.js";
 import { getAllQuotes } from "../components/quotes/index.js";
 import { getAllWords } from "../components/words/index.js";
-import { loginRedirect } from "../helpers/authHelper.js";
+import { login, loginRedirect, logout } from "../helpers/auth.js";
 
 export const router = express.Router();
 
 router.get(
   "/login",
-  (req: express.Request & { session: any }, res, next) => {
-    if (req.isAuthenticated()) {
+  (req, res, next) => {
+    if (res.locals.user) {
       if (req.session && req.session.returnTo) {
         res.redirect(req.session.returnTo);
         delete req.session.returnTo;
@@ -34,23 +33,8 @@ router.get(
   }
 );
 
-router.post(
-  "/login",
-  passport.authenticate("ldapauth", {
-    successReturnToOrRedirect: "/leden",
-    failureRedirect: "/leden/login",
-    failureFlash: true,
-  })
-);
-
-router.get("/loguit", (req, res, next) => {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect("/");
-  });
-});
+router.post("/login", login);
+router.get("/loguit", logout);
 
 router.use(loginRedirect);
 
