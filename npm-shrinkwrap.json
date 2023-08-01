@@ -15,6 +15,7 @@
         "@fastify/session": "^10.4.0",
         "@fastify/static": "^6.10.2",
         "@fastify/view": "^8.0.0",
+        "@types/qs": "^6.9.7",
         "connect-redis": "^7.1.0",
         "fast-xml-parser": "^4.2.6",
         "fastify": "^4.21.0",
@@ -2451,6 +2452,11 @@
       "version": "2.0.6",
       "dev": true,
       "license": "MIT"
+    },
+    "node_modules/@types/qs": {
+      "version": "6.9.7",
+      "resolved": "https://registry.npmjs.org/@types/qs/-/qs-6.9.7.tgz",
+      "integrity": "sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw=="
     },
     "node_modules/@types/semver": {
       "version": "7.5.0",

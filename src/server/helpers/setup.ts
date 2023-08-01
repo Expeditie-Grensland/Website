@@ -59,16 +59,15 @@ const setupStaticRoutes = async (app: FastifyInstance) => {
       prefix: "/static/",
     });
 
-    Object.entries({
-      "favicon.ico": "favicons/favicon.ico",
-      "browserconfig.xml": "favicons/browserconfig.xml",
-      "manifest.webmanifest": "favicons/manifest.webmanifest",
-      "worker.js": "scripts/worker.js",
-    }).forEach(([name, location]) => {
-      app.get(`/${name}`, (request, reply) => {
-        return reply.sendFile(join(global.rootDir, "static", location));
-      });
-    });
+    const staticFiles = [
+      { path: "/favicon.ico", file: "favicons/favicon.ico" },
+      { path: "/browserconfig.xml", file: "favicons/favicon.ico" },
+      { path: "/manifest.webmanifest", file: "favicons/manifest.webmanifest" },
+      { path: "/worker.js", file: "scripts/worker.js" },
+    ];
+
+    for (const { path, file } of staticFiles)
+      app.get(path, (_, reply) => reply.sendFile(file));
   }
 };
 

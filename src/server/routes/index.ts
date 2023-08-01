@@ -5,11 +5,14 @@ import expeditieRoutes from "./expeditie.js";
 import memberRoutes from "./members.js";
 
 const routes: FastifyPluginAsync = async (app) => {
-  app.get("/login", (_, reply) => reply.redirect(301, "/leden/login"));
-  app.get("/woordenboek", (_, reply) =>
-    reply.redirect(301, "/leden/woordenboek")
-  );
-  app.get("/citaten", (_, reply) => reply.redirect(301, "/leden/citaten"));
+  const redirects = [
+    { from: "/login", to: "/leden/login" },
+    { from: "/woordenboek", to: "/leden/woordenboek" },
+    { from: "/citaten", to: "/leden/citaten" },
+  ];
+
+  for (const { from, to } of redirects)
+    app.get(from, (_, reply) => reply.redirect(301, to));
 
   await app.register(memberRoutes, { prefix: "/leden" });
 
