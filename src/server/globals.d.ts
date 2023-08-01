@@ -1,27 +1,31 @@
-import mongoose, { HydratedDocument } from "mongoose";
+import mongoose from "mongoose";
 
-import { Expeditie } from "./components/expedities/model.ts";
-import { Person } from "./components/people/model.ts";
+import { getPopulatedExpeditieByName } from "./components/expedities/index.ts";
+import {
+  getPersonByLdapId,
+  getPersonByUserName,
+} from "./components/people/index.ts";
 import { getFileUrl } from "./helpers/files.ts";
 
-declare module "express-session" {
-  export interface SessionData {
-    returnTo: string;
-    userId: mongoose.Types.ObjectId;
+declare module "fastify" {
+  export interface FastifyReply {
+    locals: {
+      getFileUrl: typeof getFileUrl;
+      user?: Awaited<ReturnType<typeof getPersonByLdapId>>;
+      person?: Awaited<ReturnType<typeof getPersonByUserName>>;
+      expeditie?: Awaited<ReturnType<typeof getPopulatedExpeditieByName>>;
+    };
+  }
+
+  interface Session {
+    userId?: mongoose.Types.ObjectId;
+    returnTo?: string;
+    infoMsg: string[];
+    errorMsg: string[];
   }
 }
 
 declare global {
-  declare namespace Express {
-    export interface Locals {
-      user?: HydratedDocument<Person>;
-
-      expeditie: Omit<
-        HydratedDocument<Expeditie>,
-        "personIds" | "movieEditorIds"
-      > & { personIds: PersonDocument[]; movieEditorIds: PersonDocument[] };
-
-      getFileUrl: typeof getFileUrl;
-    }
-  }
+  // eslint-disable-next-line no-var
+  var rootDir: string;
 }

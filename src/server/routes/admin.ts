@@ -1,6 +1,4 @@
-import express from "express";
 import mongoose, { HydratedDocument } from "mongoose";
-import multer from "multer";
 
 import { ZodError, ZodTypeAny, z } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -37,12 +35,14 @@ import {
 } from "../components/storyElements/model.js";
 import { getAllWords, getWordById } from "../components/words/index.js";
 import { Word, WordModel } from "../components/words/model.js";
-import { loginRedirect, noAdminRedirect } from "../helpers/auth.js";
+import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
+import { getMessages, setMessage } from "../helpers/flash.js";
+import multer from "fastify-multer";
 
-export const router = express.Router();
+// export const router = express.Router();
 
-router.use(loginRedirect);
-router.use(noAdminRedirect);
+// router.use(loginRedirect);
+// router.use(noAdminRedirect);
 
 type GetById<T> = (
   id: mongoose.Types.ObjectId
@@ -81,10 +81,10 @@ const zTimeZone = z
   .refine(isValidTimeZone, { message: "Geen geldige tijdzone" });
 
 const tryCatchAndRedirect =
-  (func: (req: express.Request, res: express.Response) => Promise<string>) =>
-  async (req: express.Request, res: express.Response) => {
+  (func: (request: FastifyRequest, reply: FastifyReply) => Promise<string>) =>
+  async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      req.flash("info", await func(req, res));
+      setMessage(request.session, "infoMsg", await func(request, reply));
     } catch (e) {
       let errorMsg = "Error!";
 
@@ -92,310 +92,321 @@ const tryCatchAndRedirect =
       else if (e instanceof ZodError) errorMsg = fromZodError(e).message;
       else if (e instanceof Error) errorMsg = e.message;
 
-      req.flash("error", errorMsg);
-    } finally {
-      res.redirect(req.originalUrl);
+      setMessage(request.session, "errorMsg", errorMsg);
     }
+    reply.redirect(302, request.url);
   };
 
-router.get("/citaten", async (req, res) =>
-  res.render("admin/quotes", {
-    fluidContainer: true,
-    quotes: await getAllQuotes(),
-    infoMsgs: req.flash("info"),
-    errMsgs: req.flash("error"),
-    getISODate,
-  })
-);
+const adminRoutes: FastifyPluginAsync = async (app) => {
+  app.addHook("onRequest", async (request, reply) => {
+    if (!reply.locals.user?.isAdmin) reply.redirect(302, "/leden");
+  });
 
-const quoteSchema = z.object({
-  quote: z.string(),
-  quotee: z.string(),
-  context: z.string(),
-  file: z.string().optional(),
-  time: z.string(),
-  zone: zTimeZone,
-});
-
-const quoteDocSchema = zDocumentFromBodyId<Quote>(getQuoteById);
-
-router.post(
-  "/citaten",
-  tryCatchAndRedirect(async (req) => {
-    const action = zActionFromBody.parse(req.body);
-
-    if (action === "delete") {
-      const doc = await quoteDocSchema.parseAsync(req.body);
-      const result = await doc.deleteOne();
-      return `Citaat "${result.quote}" is succesvol verwijderd`;
-    }
-
-    const input = await quoteSchema.parseAsync(req.body);
-
-    const quote: Quote = {
-      quote: input.quote,
-      quotee: input.quotee,
-      context: input.context,
-      attachmentFile: input.file || undefined,
-      dateTime: getInternalFromISODate(input.time, input.zone),
-    };
-
-    if (action === "change") {
-      const doc = await quoteDocSchema.parseAsync(req.body);
-      const result = await doc.overwrite(quote).save();
-      return `Citaat "${result.quote}" is succesvol gewijzigd`;
-    }
-
-    const result = await new QuoteModel(quote).save();
-    return `Citaat "${result.quote}" is successvol toegevoegd`;
-  })
-);
-
-router.get("/woordenboek", async (req, res) =>
-  res.render("admin/dictionary", {
-    fluidContainer: true,
-    words: await getAllWords(),
-    infoMsgs: req.flash("info"),
-    errMsgs: req.flash("error"),
-  })
-);
-
-const wordSchema = z.object({
-  word: z.string(),
-  definitions: z.array(z.string().nonempty()).nonempty(),
-  phonetic: z.string().optional(),
-  file: z.string().optional(),
-});
-
-const wordDocSchema = zDocumentFromBodyId<Word>(getWordById);
-
-router.post(
-  "/woordenboek",
-  tryCatchAndRedirect(async (req) => {
-    const action = zActionFromBody.parse(req.body);
-
-    if (action === "delete") {
-      const doc = await wordDocSchema.parseAsync(req.body);
-      const result = await doc.deleteOne();
-      return `Woord "${result.word}" is succesvol verwijderd`;
-    }
-
-    const input = await wordSchema.parseAsync(req.body);
-
-    const word: Word = {
-      word: input.word,
-      definitions: input.definitions,
-      phonetic: input.phonetic || undefined,
-      attachmentFile: input.file || undefined,
-    };
-
-    if (action === "change") {
-      const doc = await wordDocSchema.parseAsync(req.body);
-      const result = await doc.overwrite(word).save();
-      return `Woord "${result.word}" is succesvol gewijzigd`;
-    }
-
-    const result = await new WordModel(word).save();
-    return `Woord "${result.word}" is successvol toegevoegd`;
-  })
-);
-
-router.get("/punten", async (req, res) =>
-  res.render("admin/earnedPoints", {
-    fluidContainer: true,
-    earnedPoints: await getAllPoints(),
-    expedities: await getAllExpedities(),
-    people: await getAllPeople(),
-    infoMsgs: req.flash("info"),
-    errMsgs: req.flash("error"),
-    getISODate,
-  })
-);
-
-const pointSchema = z.object({
-  person: zDocument(getPersonById),
-  expeditie: zOptionalWithNone(zDocument(getExpeditieById)),
-  amount: z.coerce.number().int(),
-  time: z.string(),
-  zone: zTimeZone,
-});
-
-const pointDocSchema = zDocumentFromBodyId(getPointsById);
-
-router.post(
-  "/punten",
-  tryCatchAndRedirect(async (req) => {
-    const action = zActionFromBody.parse(req.body);
-
-    if (action === "delete") {
-      const doc = await pointDocSchema.parseAsync(req.body);
-      const result = await doc.deleteOne();
-      return `Punt "${result._id.toHexString()}" is succesvol verwijderd`;
-    }
-
-    const input = await pointSchema.parseAsync(req.body);
-
-    const point: EarnedPoint = {
-      personId: input.person._id,
-      expeditieId: input.expeditie?._id,
-      amount: input.amount,
-      dateTime: getInternalFromISODate(input.time, input.zone),
-    };
-
-    if (action === "change") {
-      const doc = await pointDocSchema.parseAsync(req.body);
-      const result = await doc.overwrite(point).save();
-      return `Punt "${result._id.toHexString()}" is succesvol gewijzigd`;
-    }
-
-    const result = await new EarnedPointModel(point).save();
-    return `Punt "${result._id.toHexString()}" is successvol toegevoegd`;
-  })
-);
-
-router.get("/gpx", async (req, res) =>
-  res.render("admin/gpx", {
-    expedities: await getAllExpedities(),
-    people: await getAllPeople(),
-    infoMsgs: req.flash("info"),
-    errMsgs: req.flash("error"),
-  })
-);
-
-const gpxUploadSchema = z.object({
-  person: zDocument(getPersonById),
-  expeditie: zDocument(getExpeditieById).refine((exp) => !exp.finished, {
-    message: "Expeditie is beëindigd",
-  }),
-  zone: zTimeZone,
-});
-
-router.post(
-  "/gpx",
-  multer({ storage: multer.memoryStorage() }).single("file"),
-  tryCatchAndRedirect(async (req) => {
-    const input = await gpxUploadSchema.parseAsync(req.body);
-
-    if (!req.file) throw new Error("Geen bestand gevonden");
-
-    void (await createManyLocations(
-      await generateLocations(
-        req.file.buffer,
-        input.expeditie._id,
-        input.person._id,
-        input.zone
-      )
-    ));
-
-    return "Locaties zijn succesvol geüpload";
-  })
-);
-
-router.get("/story", async (req, res) =>
-  res.render("admin/story", {
-    fluidContainer: true,
-    expedities: await getAllExpedities(),
-    people: await getAllPeople(),
-    stories: await getAllStories(),
-    infoMsgs: req.flash("info"),
-    errMsgs: req.flash("error"),
-    getISODate,
-  })
-);
-
-const storySchema = z
-  .discriminatedUnion("type", [
-    z.object({
-      type: z.literal("text"),
-      expeditie: zDocument(getExpeditieById),
-      person: zDocument(getPersonById),
-      time: z.string(),
-      zone: zTimeZone,
-      title: z.string().nonempty(),
-      text: z.string().nonempty(),
-    }),
-    z.object({
-      type: z.literal("location"),
-      expeditie: zDocument(getExpeditieById),
-      person: zDocument(getPersonById),
-      time: z.string(),
-      zone: zTimeZone,
-      name: z.string().nonempty(),
-    }),
-    z.object({
-      type: z.literal("media"),
-      expeditie: zDocument(getExpeditieById),
-      person: zDocument(getPersonById),
-      time: z.string(),
-      zone: zTimeZone,
-      title: z.string(),
-      files: z.array(z.string().nonempty()),
-      descriptions: z.array(z.string()),
-    }),
-  ])
-  .refine(
-    (story) =>
-      story.type !== "media" ||
-      story.files.length === story.descriptions.length,
-    {
-      message: "Aantal bestanden en beschrijvingen is niet gelijk",
-      path: ["descriptions"],
-    }
+  app.get("/citaten", async (request, reply) =>
+    reply.view("admin/quotes", {
+      fluidContainer: true,
+      quotes: await getAllQuotes(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+      getISODate,
+    })
   );
 
-const storyDocSchema = zDocumentFromBodyId<BaseStoryElement>(getStoryById);
+  const quoteSchema = z.object({
+    quote: z.string(),
+    quotee: z.string(),
+    context: z.string(),
+    file: z.string().optional(),
+    time: z.string(),
+    zone: zTimeZone,
+  });
 
-router.post(
-  "/story",
-  tryCatchAndRedirect(async (req) => {
-    const action = zActionFromBody.parse(req.body);
+  const quoteDocSchema = zDocumentFromBodyId<Quote>(getQuoteById);
 
-    if (action === "delete") {
-      const doc = await storyDocSchema.parseAsync(req.body);
-      const result = await doc.deleteOne();
-      return `Verhaal "${result._id.toHexString()}" is succesvol verwijderd`;
-    }
+  app.post(
+    "/citaten",
+    tryCatchAndRedirect(async (request) => {
+      const action = zActionFromBody.parse(request.body);
 
-    const input = await storySchema.parseAsync(req.body);
+      if (action === "delete") {
+        const doc = await quoteDocSchema.parseAsync(request.body);
+        const result = await doc.deleteOne();
+        return `Citaat "${result.quote}" is succesvol verwijderd`;
+      }
 
-    const baseStory = {
-      type: input.type,
-      expeditieId: input.expeditie._id,
-      personId: input.person._id,
-      dateTime: getInternalFromISODate(input.time, input.zone),
-      index: 0,
-    };
+      const input = await quoteSchema.parseAsync(request.body);
 
-    let story: StoryElement;
-
-    if (input.type === "text")
-      story = {
-        ...baseStory,
-        title: input.title,
-        text: input.text,
-      };
-    else if (input.type === "location")
-      story = {
-        ...baseStory,
-        name: input.name,
-      };
-    else
-      story = {
-        ...baseStory,
-        title: input.title,
-        media: input.files.map((file, i) => ({
-          file,
-          description: input.descriptions[i],
-        })),
+      const quote: Quote = {
+        quote: input.quote,
+        quotee: input.quotee,
+        context: input.context,
+        attachmentFile: input.file || undefined,
+        dateTime: getInternalFromISODate(input.time, input.zone),
       };
 
-    if (action === "change") {
-      const doc = await storyDocSchema.parseAsync(req.body);
-      const result = await doc.overwrite(story).save();
-      return `Verhaal "${result._id.toHexString()}" is succesvol gewijzigd`;
-    }
+      if (action === "change") {
+        const doc = await quoteDocSchema.parseAsync(request.body);
+        const result = await doc.overwrite(quote).save();
+        return `Citaat "${result.quote}" is succesvol gewijzigd`;
+      }
 
-    const result = await new BaseStoryElementModel(story).save();
-    return `Verhaal "${result._id.toHexString()}" is successvol toegevoegd`;
-  })
-);
+      const result = await new QuoteModel(quote).save();
+      return `Citaat "${result.quote}" is successvol toegevoegd`;
+    })
+  );
+
+  app.get("/woordenboek", async (request, reply) =>
+    reply.view("admin/dictionary", {
+      fluidContainer: true,
+      words: await getAllWords(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+    })
+  );
+
+  const wordSchema = z.object({
+    word: z.string(),
+    definitions: z.array(z.string().nonempty()).nonempty(),
+    phonetic: z.string().optional(),
+    file: z.string().optional(),
+  });
+
+  const wordDocSchema = zDocumentFromBodyId<Word>(getWordById);
+
+  app.post(
+    "/woordenboek",
+    tryCatchAndRedirect(async (request) => {
+      const action = zActionFromBody.parse(request.body);
+
+      if (action === "delete") {
+        const doc = await wordDocSchema.parseAsync(request.body);
+        const result = await doc.deleteOne();
+        return `Woord "${result.word}" is succesvol verwijderd`;
+      }
+
+      const input = await wordSchema.parseAsync(request.body);
+
+      const word: Word = {
+        word: input.word,
+        definitions: input.definitions,
+        phonetic: input.phonetic || undefined,
+        attachmentFile: input.file || undefined,
+      };
+
+      if (action === "change") {
+        const doc = await wordDocSchema.parseAsync(request.body);
+        const result = await doc.overwrite(word).save();
+        return `Woord "${result.word}" is succesvol gewijzigd`;
+      }
+
+      const result = await new WordModel(word).save();
+      return `Woord "${result.word}" is successvol toegevoegd`;
+    })
+  );
+
+  app.get("/punten", async (request, reply) =>
+    reply.view("admin/earnedPoints", {
+      fluidContainer: true,
+      earnedPoints: await getAllPoints(),
+      expedities: await getAllExpedities(),
+      people: await getAllPeople(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+      getISODate,
+    })
+  );
+
+  const pointSchema = z.object({
+    person: zDocument(getPersonById),
+    expeditie: zOptionalWithNone(zDocument(getExpeditieById)),
+    amount: z.coerce.number().int(),
+    time: z.string(),
+    zone: zTimeZone,
+  });
+
+  const pointDocSchema = zDocumentFromBodyId(getPointsById);
+
+  app.post(
+    "/punten",
+    tryCatchAndRedirect(async (request) => {
+      const action = zActionFromBody.parse(request.body);
+
+      if (action === "delete") {
+        const doc = await pointDocSchema.parseAsync(request.body);
+        const result = await doc.deleteOne();
+        return `Punt "${result._id.toHexString()}" is succesvol verwijderd`;
+      }
+
+      const input = await pointSchema.parseAsync(request.body);
+
+      const point: EarnedPoint = {
+        personId: input.person._id,
+        expeditieId: input.expeditie?._id,
+        amount: input.amount,
+        dateTime: getInternalFromISODate(input.time, input.zone),
+      };
+
+      if (action === "change") {
+        const doc = await pointDocSchema.parseAsync(request.body);
+        const result = await doc.overwrite(point).save();
+        return `Punt "${result._id.toHexString()}" is succesvol gewijzigd`;
+      }
+
+      const result = await new EarnedPointModel(point).save();
+      return `Punt "${result._id.toHexString()}" is successvol toegevoegd`;
+    })
+  );
+
+  app.get("/gpx", async (request, reply) =>
+    reply.view("admin/gpx", {
+      expedities: await getAllExpedities(),
+      people: await getAllPeople(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+    })
+  );
+
+  const gpxUploadSchema = z.object({
+    person: zDocument(getPersonById),
+    expeditie: zDocument(getExpeditieById).refine((exp) => !exp.finished, {
+      message: "Expeditie is beëindigd",
+    }),
+    zone: zTimeZone,
+  });
+
+  app.post(
+    "/gpx",
+    {
+      preHandler: multer({ storage: multer.memoryStorage() }).single("file"),
+    },
+    tryCatchAndRedirect(async (request) => {
+      const input = await gpxUploadSchema.parseAsync(request.body);
+      const file = ("file" in request && request.file) || undefined;
+
+      if (!file || typeof file != "object" || !("buffer" in file))
+        throw new Error("Geen bestand gevonden");
+
+      void (await createManyLocations(
+        await generateLocations(
+          file.buffer as Buffer,
+          input.expeditie._id,
+          input.person._id,
+          input.zone
+        )
+      ));
+
+      return "Locaties zijn succesvol geüpload";
+    })
+  );
+
+  app.get("/story", async (request, reply) =>
+    reply.view("admin/story", {
+      fluidContainer: true,
+      expedities: await getAllExpedities(),
+      people: await getAllPeople(),
+      stories: await getAllStories(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+      getISODate,
+    })
+  );
+
+  const storySchema = z
+    .discriminatedUnion("type", [
+      z.object({
+        type: z.literal("text"),
+        expeditie: zDocument(getExpeditieById),
+        person: zDocument(getPersonById),
+        time: z.string(),
+        zone: zTimeZone,
+        title: z.string().nonempty(),
+        text: z.string().nonempty(),
+      }),
+      z.object({
+        type: z.literal("location"),
+        expeditie: zDocument(getExpeditieById),
+        person: zDocument(getPersonById),
+        time: z.string(),
+        zone: zTimeZone,
+        name: z.string().nonempty(),
+      }),
+      z.object({
+        type: z.literal("media"),
+        expeditie: zDocument(getExpeditieById),
+        person: zDocument(getPersonById),
+        time: z.string(),
+        zone: zTimeZone,
+        title: z.string(),
+        files: z.array(z.string().nonempty()),
+        descriptions: z.array(z.string()),
+      }),
+    ])
+    .refine(
+      (story) =>
+        story.type !== "media" ||
+        story.files.length === story.descriptions.length,
+      {
+        message: "Aantal bestanden en beschrijvingen is niet gelijk",
+        path: ["descriptions"],
+      }
+    );
+
+  const storyDocSchema = zDocumentFromBodyId<BaseStoryElement>(getStoryById);
+
+  app.post(
+    "/story",
+    tryCatchAndRedirect(async (request) => {
+      const action = zActionFromBody.parse(request.body);
+
+      if (action === "delete") {
+        const doc = await storyDocSchema.parseAsync(request.body);
+        const result = await doc.deleteOne();
+        return `Verhaal "${result._id.toHexString()}" is succesvol verwijderd`;
+      }
+
+      const input = await storySchema.parseAsync(request.body);
+
+      const baseStory = {
+        type: input.type,
+        expeditieId: input.expeditie._id,
+        personId: input.person._id,
+        dateTime: getInternalFromISODate(input.time, input.zone),
+        index: 0,
+      };
+
+      let story: StoryElement;
+
+      if (input.type === "text")
+        story = {
+          ...baseStory,
+          title: input.title,
+          text: input.text,
+        };
+      else if (input.type === "location")
+        story = {
+          ...baseStory,
+          name: input.name,
+        };
+      else
+        story = {
+          ...baseStory,
+          title: input.title,
+          media: input.files.map((file, i) => ({
+            file,
+            description: input.descriptions[i],
+          })),
+        };
+
+      if (action === "change") {
+        const doc = await storyDocSchema.parseAsync(request.body);
+        const result = await doc.overwrite(story).save();
+        return `Verhaal "${result._id.toHexString()}" is succesvol gewijzigd`;
+      }
+
+      const result = await new BaseStoryElementModel(story).save();
+      return `Verhaal "${result._id.toHexString()}" is successvol toegevoegd`;
+    })
+  );
+};
+
+export default adminRoutes;

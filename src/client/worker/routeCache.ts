@@ -1,6 +1,6 @@
 export const onFetch = (event: FetchEvent): boolean => {
     if (/^https?:\/\/.*\/.*\/kaart\/(?:binary|story)$/u.exec(event.request.url)) {
-        event.respondWith(getFromCacheAndRequest(event, 'X-Revision-Id'));
+        event.respondWith(getFromCacheAndRequest(event, 'x-revision-id'));
         return true;
     }
 

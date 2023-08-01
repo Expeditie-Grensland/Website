@@ -1,14 +1,11 @@
-import express from "express";
-
+import { FastifyPluginAsync } from "fastify";
 import { getAllExpedities } from "../components/expedities/index.js";
 
-export const router = express.Router();
-
-router.get("/", (req, res) => {
-  getAllExpedities().then((expedities) => {
-    res.render("public/home", {
-      isHome: true,
-      expedities,
-    });
+const homeRoutes: FastifyPluginAsync = async (app) => {
+  app.get("/", async (request, reply) => {
+    const expedities = await getAllExpedities();
+    return reply.view("public/home", { isHome: true, expedities });
   });
-});
+};
+
+export default homeRoutes;

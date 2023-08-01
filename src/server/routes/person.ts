@@ -1,20 +1,17 @@
-import express from "express";
-
+import { FastifyPluginAsync } from "fastify";
 import { getPersonByUserName } from "../components/people/index.js";
 
-export const router = express.Router({ mergeParams: true });
+const personRoutes: FastifyPluginAsync = async (app) => {
+  app.addHook("onRequest", async (request, reply) => {
+    const { personId } = request.params as { personId: string };
+    const person = await getPersonByUserName(personId);
 
-router.use(async (req, res, next) => {
-  const person = await getPersonByUserName(req.params.person);
+    if (!person) return reply.callNotFound();
+    
+    reply.locals.person = person;
+  });
 
-  if (person != null) {
-    res.locals.person = person;
-    next();
-  } else {
-    next("router");
-  }
-});
+  app.get("/", async (request, reply) => reply.view("public/person"));
+};
 
-router.get("/", async (req, res) => {
-  res.render("public/person");
-});
+export default personRoutes;
