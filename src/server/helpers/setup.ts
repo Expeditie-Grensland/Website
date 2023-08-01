@@ -14,7 +14,6 @@ import routes from "../routes/index.js";
 import { config } from "./configHelper.js";
 import { getFileUrl } from "./files.js";
 import qs from "qs";
-import multer from "fastify-multer";
 
 export const setupMongooose = async () => {
   mongoose.set("debug", config.NODE_ENV === "development");
@@ -84,8 +83,7 @@ export const setupFastify = async () => {
 
   await setupStaticRoutes(app);
 
-  await app.register(fastifyFormbody, { parser: str => qs.parse(str) });
-  await app.register(multer.contentParser);
+  await app.register(fastifyFormbody, { parser: (str) => qs.parse(str) });
 
   await setupSession(app);
 

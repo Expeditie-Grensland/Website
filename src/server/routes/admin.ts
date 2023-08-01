@@ -37,12 +37,7 @@ import { getAllWords, getWordById } from "../components/words/index.js";
 import { Word, WordModel } from "../components/words/model.js";
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { getMessages, setMessage } from "../helpers/flash.js";
-import multer from "fastify-multer";
-
-// export const router = express.Router();
-
-// router.use(loginRedirect);
-// router.use(noAdminRedirect);
+import fastifyMultipart from "@fastify/multipart";
 
 type GetById<T> = (
   id: mongoose.Types.ObjectId
@@ -100,6 +95,13 @@ const tryCatchAndRedirect =
 const adminRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
     if (!reply.locals.user?.isAdmin) reply.redirect(302, "/leden");
+  });
+
+  await app.register(fastifyMultipart, {
+    attachFieldsToBody: 'keyValues',
+    limits: {
+      fileSize: 25000000,
+    },
   });
 
   app.get("/citaten", async (request, reply) =>
@@ -272,23 +274,20 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       message: "Expeditie is beëindigd",
     }),
     zone: zTimeZone,
+    file: z.string(),
   });
 
   app.post(
     "/gpx",
-    {
-      preHandler: multer({ storage: multer.memoryStorage() }).single("file"),
-    },
     tryCatchAndRedirect(async (request) => {
       const input = await gpxUploadSchema.parseAsync(request.body);
-      const file = ("file" in request && request.file) || undefined;
 
-      if (!file || typeof file != "object" || !("buffer" in file))
-        throw new Error("Geen bestand gevonden");
+      // if (!file || typeof file != "object" || !("buffer" in file))
+      //   throw new Error("Geen bestand gevonden");
 
       void (await createManyLocations(
         await generateLocations(
-          file.buffer as Buffer,
+          input.file,
           input.expeditie._id,
           input.person._id,
           input.zone
