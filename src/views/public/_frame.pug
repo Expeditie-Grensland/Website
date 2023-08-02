@@ -14,14 +14,15 @@ block body
                     li.nav-item
                         a.nav-link(href="/") &larr;&nbsp;Home
 
-            if !user
-                ul.navbar-nav.ms-auto
-                    li.nav-item
-                        a.nav-link(href="/leden/login") Log In
+            if !noLoginLink
+                if !user
+                    ul.navbar-nav.ms-auto
+                        li.nav-item
+                            a.nav-link(href="/leden/login") Log In
 
-            if user
-                ul.navbar-nav.ms-auto
-                    li.nav-item
-                        a.nav-link(href="/leden")= `${user.firstName} ${user.lastName}`
+                if user
+                    ul.navbar-nav.ms-auto
+                        li.nav-item
+                            a.nav-link(href="/leden")= `${user.firstName} ${user.lastName}`
 
         block content

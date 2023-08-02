@@ -29,6 +29,12 @@ gulp.task('styles:prod', stylesTask(gulp, { prod: true }));
 gulp.task('styles:clean', stylesTask(gulp, { clean: true }));
 gulp.task('styles:watch', stylesTask(gulp, { watch: true }));
 
+import errorPagesTask from './gulp-files/errorpages.mjs';
+gulp.task('errorpages:dev', errorPagesTask(gulp, { dev: true }));
+gulp.task('errorpages:prod', errorPagesTask(gulp, { prod: true }));
+gulp.task('errorpages:clean', errorPagesTask(gulp, { clean: true }));
+gulp.task('errorpages:watch', errorPagesTask(gulp, { watch: true }));
+
 /*
  * Load tasks that apply to multiple components
  * Mostly tasks composed of the individual tasks
@@ -38,14 +44,14 @@ gulp.task('clean', () => deleteAsync('dist/**'));
 
 gulp.task(
   'build:dev',
-  gulp.parallel('client:dev', 'copy:dev', 'server:dev', 'styles:dev')
+  gulp.parallel('client:dev', 'copy:dev', 'server:dev', 'styles:dev', 'errorpages:dev')
 );
 
 gulp.task(
   'build:prod',
   gulp.series(
     'clean',
-    gulp.parallel('client:prod', 'styles:prod', 'server:prod'),
+    gulp.parallel('client:prod', 'styles:prod', 'server:prod', 'errorpages:prod'),
     gulp.parallel('copy:prod')
   )
 );
@@ -55,8 +61,8 @@ gulp.task('once', gulp.series('build:dev', 'server:run'));
 gulp.task(
   'watch',
   gulp.series(
-    gulp.parallel('client:watch', 'copy:dev', 'server:dev', 'styles:dev'),
+    gulp.parallel('client:watch', 'copy:dev', 'server:dev', 'styles:dev', 'errorpages:dev'),
     'server:run',
-    gulp.parallel('copy:watch', 'server:watch', 'styles:watch')
+    gulp.parallel('copy:watch', 'server:watch', 'styles:watch', 'errorpages:watch')
   )
 );
