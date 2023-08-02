@@ -51,8 +51,8 @@ gulp.task(
   'build:prod',
   gulp.series(
     'clean',
-    gulp.parallel('client:prod', 'styles:prod', 'server:prod', 'errorpages:prod'),
-    gulp.parallel('copy:prod')
+    gulp.parallel('client:prod', 'styles:prod', 'server:prod'),
+    gulp.parallel('copy:prod', 'errorpages:prod')
   )
 );
 

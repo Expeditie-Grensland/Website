@@ -2,6 +2,8 @@ import { deleteAsync } from "del";
 import pug from "gulp-pug";
 import rename from "gulp-rename";
 import mergeStream from "merge-stream";
+import revRewrite from "gulp-rev-rewrite";
+import { readFileSync } from "node:fs";
 
 const httpCodes = Object.entries({
   400: "Foute aanvraag",
@@ -28,12 +30,31 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
 
   // errorpages:dev and errorpages:prod
   return () => {
-    const errorPages = httpCodes.map(([code, message]) =>
+    let errorPages = httpCodes.map(([code, message]) =>
       gulp
         .src("src/views/public/error.pug")
         .pipe(pug({ data: { code, message, noLoginLink: true } }))
         .pipe(rename(`${code}.html`))
     );
+
+    if (opts.prod)
+      errorPages = errorPages.map((page) =>
+        page
+          .pipe(
+            revRewrite({
+              manifest: readFileSync("dist/static/styles/rev-manifest.json"),
+              modifyUnreved: (x) => "styles/" + x,
+              modifyReved: (x) => "styles/" + x,
+            })
+          )
+          .pipe(
+            revRewrite({
+              manifest: readFileSync("dist/static/scripts/rev-manifest.json"),
+              modifyUnreved: (x) => "scripts/" + x,
+              modifyReved: (x) => "scripts/" + x,
+            })
+          )
+      );
 
     return mergeStream(...errorPages).pipe(
       gulp.dest("dist/static/errorpages/")
