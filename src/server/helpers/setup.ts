@@ -17,13 +17,7 @@ import qs from "qs";
 
 export const setupMongooose = async () => {
   mongoose.set("debug", config.NODE_ENV === "development");
-
-  try {
-    void (await mongoose.connect(config.EG_MONGO_URL));
-    console.info("Connected to database");
-  } catch (e) {
-    console.error(`Connection error: ${e}`);
-  }
+  await mongoose.connect(config.EG_MONGO_URL);
 };
 
 const setupSession = async (app: FastifyInstance) => {
@@ -73,7 +67,21 @@ const setupStaticRoutes = async (app: FastifyInstance) => {
 
 export const setupFastify = async () => {
   const app = fastify({
-    logger: true,
+    logger:
+      config.NODE_ENV === "development"
+        ? {
+            level: "debug",
+            transport: {
+              target: "pino-pretty",
+              options: {
+                translateTime: "SYS:HH:MM:ss",
+                ignore: "pid,hostname",
+              },
+            },
+          }
+        : {
+            level: "info",
+          },
     trustProxy: config.NODE_ENV === "production",
   });
 
@@ -108,5 +116,4 @@ export const setupFastify = async () => {
       ? { port: config.EG_PORT }
       : { path: config.EG_PORT }
   );
-  console.info(`Server started on: ${config.EG_PORT}`);
 };
