@@ -1,0 +1,24 @@
+extends _frame
+include ../_expeditieMedia
+
+block title
+    title Expeditie Grensland - Kapot!
+
+block content
+    .row
+        .col
+            .img-large.ratio
+              .img-bg(style=`background-color:#f00`)
+              .img-inner
+                  span.h1 Het is kapot!
+                  span.h2 Code #{ code }: #{ message }
+
+
+    .row
+        .col
+            span.error-details #{ details }
+
+
+block scripts
+    script(src='/static/scripts/public.js')
+    script(src='/static/scripts/expeditie.js')

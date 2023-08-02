@@ -14,6 +14,7 @@ import routes from "../routes/index.js";
 import { config } from "./configHelper.js";
 import { getFileUrl } from "./files.js";
 import qs from "qs";
+import { getHttpMessage } from "./errorCodes.js";
 
 export const setupMongooose = async () => {
   mongoose.set("debug", config.NODE_ENV === "development");
@@ -65,6 +66,25 @@ const setupStaticRoutes = async (app: FastifyInstance) => {
   }
 };
 
+const setupErrors = (app: FastifyInstance) => {
+  app.setErrorHandler(async (error, request, reply) => {
+    reply.log.error(error);
+
+    return reply.code(error.statusCode || 500).view("public/error", {
+      code: error.statusCode || 500,
+      message: getHttpMessage(error.statusCode),
+      details: error.message,
+    });
+  });
+
+  app.setNotFoundHandler(async (request, reply) =>
+    reply.code(404).view("public/error", {
+      code: 404,
+      message: getHttpMessage(404),
+    })
+  );
+};
+
 export const setupFastify = async () => {
   const app = fastify({
     logger:
@@ -96,6 +116,8 @@ export const setupFastify = async () => {
   await app.register(fastifyFormbody, { parser: (str) => qs.parse(str) });
 
   await setupSession(app);
+
+  setupErrors(app);
 
   app.addHook("onRequest", async (request, reply) => {
     reply.locals = {
