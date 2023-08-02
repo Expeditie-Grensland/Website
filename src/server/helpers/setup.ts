@@ -72,7 +72,10 @@ const setupStaticRoutes = async (app: FastifyInstance) => {
 };
 
 export const setupFastify = async () => {
-  const app = fastify({ logger: true });
+  const app = fastify({
+    logger: true,
+    trustProxy: config.NODE_ENV === "production",
+  });
 
   await app.register(fastifyView, {
     engine: { pug },
