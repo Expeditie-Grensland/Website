@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+
+      prerelease:
+        type: boolean
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download package artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: package
+
+      - name: Determine tag name
+        id: settag
+        run: echo "name=release-$(date +'%Y%m%d-%H%M%S')-$(git rev-parse --short HEAD)${{ inputs.prerelease && '-pre'|| '' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: ${{ inputs.prerelease }}
+          tag_name: ${{ steps.settag.outputs.name }}
+          target_commitish: ${{ github.sha }}
+          files: expeditiegrensland-website.tar.gz
+          fail_on_unmatched_files: true
+
+      - name: Install SSH configuration
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known_hosts: ${{ vars.DEPLOY_SSH_HOSTS }}
+
+      - name: Deploy to server
+        run: echo "${{ fromJSON(steps.release.outputs.assets)[0].browser_download_url }}" | ssh -T ${{ vars.DEPLOY_SERVER }}

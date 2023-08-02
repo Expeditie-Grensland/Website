@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -36,43 +36,19 @@ jobs:
       - name: Upload package artifact
         uses: actions/upload-artifact@v3
         with:
-          name: expeditiegrensland-website
+          name: package
           path: expeditiegrensland-website.tar.gz
 
   deploy:
-    name: Release & Deploy
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/release'
-    needs: build
-    environment: release
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Download package artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: expeditiegrensland-website
-
-      - name: Determine tag name
-        id: settag
-        run: echo "name=release-$(date +'%Y%m%d')-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Create release
-        id: release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.settag.outputs.name }}
-          target_commitish: ${{ github.sha }}
-          files: expeditiegrensland-website.tar.gz
-          fail_on_unmatched_files: true
-
-      - name: Install SSH configuration
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          known_hosts: ${{ vars.DEPLOY_SSH_HOSTS }}
-
-      - name: Deploy to server
-        run: echo "${{ fromJSON(steps.release.outputs.assets)[0].browser_download_url }}" | ssh -T ${{ vars.DEPLOY_SERVER }}
+    strategy:
+      matrix:
+        include:
+          - environment: production
+            prerelease: false
+          - environment: staging
+            prerelease: true
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: ${{ matrix.environment }}
+      prerelease: ${{ matrix.prerelease }}
+    secrets: inherit
