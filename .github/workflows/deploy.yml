@@ -27,9 +27,6 @@ jobs:
       package_url: ${{ fromJSON(steps.release.outputs.assets)[0].browser_download_url }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
       - name: Download package artifact
         uses: actions/download-artifact@v3
         with:
@@ -37,7 +34,7 @@ jobs:
 
       - name: Determine tag name
         id: settag
-        run: echo "name=release-$(date +'%Y%m%d-%H%M%S')-$(git rev-parse --short HEAD)${{ inputs.prerelease && '-pre'|| '' }}" >> "$GITHUB_OUTPUT"
+        run: echo "name=$(date +'%Y%m%d-%H%M%S')${{ inputs.prerelease && '-pre'|| '' }}" >> "$GITHUB_OUTPUT"
 
       - name: Create release
         id: release
