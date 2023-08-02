@@ -1,29 +1,24 @@
-import express from "express";
+import { FastifyPluginAsync } from "fastify";
+import homeRoutes from "./home.js";
+import personRoutes from "./person.js";
+import expeditieRoutes from "./expeditie.js";
+import memberRoutes from "./members.js";
 
-import { setAuthLocals } from "../helpers/authHelper.js";
-import { router as adminRouter } from "./admin.js";
-import { router as expeditieRouter } from "./expeditie.js";
-import { router as homeRouter } from "./home.js";
-import { router as membersRouter } from "./members.js";
-import { router as personRouter } from "./person.js";
+const routes: FastifyPluginAsync = async (app) => {
+  const redirects = [
+    { from: "/login", to: "/leden/login" },
+    { from: "/woordenboek", to: "/leden/woordenboek" },
+    { from: "/citaten", to: "/leden/citaten" },
+  ];
 
-export function Router(): express.Router {
-  const router = express.Router();
+  for (const { from, to } of redirects)
+    app.get(from, (_, reply) => reply.redirect(301, to));
 
-  router.use(setAuthLocals);
+  await app.register(memberRoutes, { prefix: "/leden" });
 
-  router.use("/leden", membersRouter);
-  router.use("/admin", adminRouter);
+  await app.register(homeRoutes);
+  await app.register(personRoutes, { prefix: "/lid/:personId" });
+  await app.register(expeditieRoutes, { prefix: "/:expeditieId" });
+};
 
-  router.get("/login", (req, res) => res.redirect(301, "/leden/login"));
-  router.get("/woordenboek", (req, res) =>
-    res.redirect(301, "/leden/woordenboek")
-  );
-  router.get("/citaten", (req, res) => res.redirect(301, "/leden/citaten"));
-
-  router.use("/", homeRouter);
-  router.use("/:expeditie", expeditieRouter);
-  router.use("/:person", personRouter);
-
-  return router;
-}
+export default routes;

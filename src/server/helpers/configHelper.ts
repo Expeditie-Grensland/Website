@@ -2,7 +2,9 @@ import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
 const envSchema = z.object({
-  EG_PORT: z.string(),
+  NODE_ENV: z.enum(["production", "development"]).default("development"),
+
+  EG_PORT: z.union([z.coerce.number().int(), z.string()]),
 
   EG_FILES_BASE_URL: z.string(),
 
