@@ -1,4 +1,4 @@
-name: Build
+name: Build & Check
 
 on: push
 
@@ -39,10 +39,32 @@ jobs:
           name: package
           path: expeditiegrensland-website.tar.gz
 
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
   deploy_production:
     name: Deploy to production
     if: github.ref == 'refs/heads/release'
-    needs: build
+    needs:
+      - build
+      - check
     uses: ./.github/workflows/deploy.yml
     with:
       environment: production
@@ -53,7 +75,9 @@ jobs:
   deploy_staging:
     name: Deploy to staging
     if: github.ref == 'refs/heads/master'
-    needs: build
+    needs:
+      - build
+      - check
     uses: ./.github/workflows/deploy.yml
     with:
       environment: staging
