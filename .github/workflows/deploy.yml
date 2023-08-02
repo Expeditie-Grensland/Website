@@ -7,6 +7,10 @@ on:
         type: string
         required: true
 
+      environment_url:
+        type: string
+        required: true
+
       prerelease:
         type: boolean
         required: true
@@ -16,9 +20,10 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ inputs.environment_url }}
 
     steps:
       - name: Checkout repository

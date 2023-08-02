@@ -39,16 +39,24 @@ jobs:
           name: package
           path: expeditiegrensland-website.tar.gz
 
-  deploy:
-    strategy:
-      matrix:
-        include:
-          - environment: production
-            prerelease: false
-          - environment: staging
-            prerelease: true
+  deploy_production:
+    name: Deploy to production
+    if: github.ref == 'refs/heads/release'
+    needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      environment: ${{ matrix.environment }}
-      prerelease: ${{ matrix.prerelease }}
+      environment: production
+      environment_url: https://expeditiegrensland.nl
+      prerelease: false
+    secrets: inherit
+
+  deploy_staging:
+    name: Deploy to staging
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: staging
+      environment_url: https://staging.expeditiegrensland.nl
+      prerelease: true
     secrets: inherit
