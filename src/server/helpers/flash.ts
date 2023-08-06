@@ -4,7 +4,7 @@ import { Session } from "fastify";
 type MessageType = keyof {
   [P in keyof Session as Session[P] extends string[] | undefined
     ? P
-    : never]: any;
+    : never]: unknown;
 };
 
 export const getMessages = (

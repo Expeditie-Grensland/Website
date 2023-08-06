@@ -12,7 +12,6 @@ module.exports = {
     node: true,
   },
   rules: {
-    '@typescript-eslint/no-explicit-any': 'off',
     'no-constant-condition': ['error', { checkLoops: false }],
     '@typescript-eslint/consistent-type-definitions': 'off',
   },

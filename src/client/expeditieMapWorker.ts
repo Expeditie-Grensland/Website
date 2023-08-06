@@ -1,6 +1,6 @@
 import {GeoJsonResult, retrieveGeoJson, retrieveStory, StoryResult} from './helpers/retrieval';
 
-declare function postMessage(message: any): void;
+declare function postMessage(message: unknown): void;
 
 let styleLoaded = false;
 let geoJsonResult: (GeoJsonResult | null) = null;

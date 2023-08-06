@@ -40,7 +40,7 @@ export class MapHandler {
         this.initControls();
 
         this.map.on('load', this.onMapLoad);
-        this.map.on('error', (e: any) => {
+        this.map.on('error', (e: mapboxgl.ErrorEvent) => {
             console.error('Map error: ' + e.error);
         });
     }
@@ -401,7 +401,7 @@ export class MapHandler {
             new mapboxgl.LngLat(res.maxLon, res.maxLat)
         );
 
-        this.map.addSource('exp-route', { type: 'geojson', data: res.geoJson } as any);
+        this.map.addSource('exp-route', { type: 'geojson', data: res.geoJson });
 
         this.map.addLayer({
             id: 'exp-route',
