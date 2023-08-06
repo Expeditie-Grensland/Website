@@ -5,8 +5,14 @@ import { ExpeditieModel } from "./model.js";
 
 export const getPopulatedExpeditieByName = async (nameShort: string) =>
   await ExpeditieModel.findOne({ nameShort })
-    .populate<{ personIds: Person[] }>("personIds")
-    .populate<{ movieEditorIds: Person[] }>("movieEditorIds");
+    .populate<{ personIds: Person[] }>({
+      path: "personIds",
+      options: { sort: { sortingName: 1 } },
+    })
+    .populate<{ movieEditorIds: Person[] }>({
+      path: "movieEditorIds",
+      options: { sort: { sortingName: 1 } },
+    });
 
 export const getAllExpedities = async () =>
   await ExpeditieModel.find({}).sort({ sequenceNumber: -1 });

@@ -23,12 +23,12 @@ block content
             if expeditie.movieEditorIds && expeditie.movieEditorIds.length > 0 && (!expeditie.movieRestricted || user)
                 div.sidebar-item
                     span.sidebar-title= expeditie.movieEditorIds.length === 1 ? "Filmmonteur" : "Filmmonteurs"
-                    each person in expeditie.movieEditorIds.sort((e1, e2) => e1.lastName > e2.lastName || e1.lastName === e2.lastName && e1.firstName > e2.firstName ? 1 : -1)
+                    each person in expeditie.movieEditorIds
                         span= `${person.firstName} ${person.lastName}`
 
             div.sidebar-item
                 span.sidebar-title Deelnemers
-                each person in expeditie.personIds.sort((e1, e2) => e1.lastName > e2.lastName || e1.lastName === e2.lastName && e1.firstName > e2.firstName ? 1 : -1)
+                each person in expeditie.personIds
                     span= `${person.firstName} ${person.lastName}`
 
         .col-12.col-md-8.order-md-1

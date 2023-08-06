@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { PersonModel } from "./model.js";
 
 export const getAllPeople = async () =>
-  await PersonModel.find({}).sort({ lastName: 1 });
+  await PersonModel.find({}).sort({ sortingName: 1 });
 
 export const getPersonById = async (id: mongoose.Types.ObjectId) =>
   await PersonModel.findById(id);

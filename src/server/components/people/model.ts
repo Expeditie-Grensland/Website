@@ -6,6 +6,7 @@ const personSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   initials: { type: String, required: true },
+  sortingName: { type: String, required: true },
   userName: { type: String, required: true },
   ldapId: { type: String, required: true },
   isAdmin: { type: Boolean, default: false },
@@ -15,7 +16,7 @@ const personSchema = new Schema({
   },
 });
 
-personSchema.index({ lastName: 1, firstName: 1 });
+personSchema.index({ sortingName: 1 });
 personSchema.index({ userName: 1 });
 
 export type Person = InferSchemaType<typeof personSchema>;
