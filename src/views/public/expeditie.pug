@@ -20,7 +20,7 @@ block content
             if expeditie.showMap
                 a.btn.btn-map.btn-outline-light.sidebar-item(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
 
-            if expeditie.showMovie && (!expeditie.movieRestricted || user) && expeditie.movieEditorIds && expeditie.movieEditorIds.length > 0
+            if expeditie.movieEditorIds && expeditie.movieEditorIds.length > 0 && (!expeditie.movieRestricted || user)
                 div.sidebar-item
                     span.sidebar-title= expeditie.movieEditorIds.length === 1 ? "Filmmonteur" : "Filmmonteurs"
                     each person in expeditie.movieEditorIds.sort((e1, e2) => e1.lastName > e2.lastName || e1.lastName === e2.lastName && e1.firstName > e2.firstName ? 1 : -1)
@@ -32,10 +32,10 @@ block content
                     span= `${person.firstName} ${person.lastName}`
 
         .col-12.col-md-8.order-md-1
-            if expeditie.showMovie && (!expeditie.movieRestricted || user)
+            if expeditie.movieHlsDir && (!expeditie.movieRestricted || user)
                 .ratio.ratio-16x9
-                    video#video.embed-responsive-item(controls poster=movieUrls.poster preload="none" data-manifest-url=movieUrls.manifest)
-                        source(src=movieUrls.fallbackMP4 type="video/mp4")
+                    video#video.embed-responsive-item(controls poster=getFileUrl(`${expeditie.movieHlsDir}/poster.jpg`) preload="none" data-manifest-url=getFileUrl(`${expeditie.movieHlsDir}/index.m3u8`))
+                        source(src=getFileUrl(`${expeditie.movieHlsDir}/progressive.mp4`) type="video/mp4")
                         p Sorry, deze video wordt niet door je browser ondersteund.
 
 

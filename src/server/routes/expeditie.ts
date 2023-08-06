@@ -1,9 +1,6 @@
 import mongoose, { HydratedDocument } from "mongoose";
 
-import {
-  getMovieUrlsFromExpeditie,
-  getPopulatedExpeditieByName,
-} from "../components/expedities/index.js";
+import { getPopulatedExpeditieByName } from "../components/expedities/index.js";
 import { getLocationCountByExpeditie } from "../components/geoLocations/index.js";
 import { geoLocationModel } from "../components/geoLocations/model.js";
 import {
@@ -40,11 +37,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
       return reply.callNotFound();
   });
 
-  app.get("/", async (request, reply) =>
-    reply.view("public/expeditie", {
-      movieUrls: getMovieUrlsFromExpeditie(reply.locals.expeditie as any),
-    })
-  );
+  app.get("/", async (request, reply) => reply.view("public/expeditie"));
 
   app.get("/kaart", async (request, reply) => {
     const expeditie = reply.locals.expeditie!;

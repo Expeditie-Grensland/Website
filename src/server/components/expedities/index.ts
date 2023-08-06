@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 
-import { getFileUrl } from "../../helpers/files.js";
 import { Person } from "../people/model.js";
-import { Expeditie, ExpeditieModel } from "./model.js";
+import { ExpeditieModel } from "./model.js";
 
 export const getPopulatedExpeditieByName = async (nameShort: string) =>
   await ExpeditieModel.findOne({ nameShort })
@@ -14,18 +13,3 @@ export const getAllExpedities = async () =>
 
 export const getExpeditieById = async (id: mongoose.Types.ObjectId) =>
   await ExpeditieModel.findById(id);
-
-export const getMovieUrlsFromExpeditie = (expeditie: Expeditie) => ({
-  fallbackMP4:
-    expeditie !== undefined
-      ? getFileUrl(`${expeditie.nameShort}/progressive.mp4`)
-      : "",
-  manifest:
-    expeditie !== undefined
-      ? getFileUrl(`${expeditie.nameShort}/index.m3u8`)
-      : "",
-  poster:
-    expeditie !== undefined
-      ? getFileUrl(`${expeditie.nameShort}/poster.jpg`)
-      : "",
-});

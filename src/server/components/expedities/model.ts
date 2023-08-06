@@ -18,7 +18,7 @@ const expeditieSchema = new Schema({
   ],
   countries: [String],
   backgroundFile: { type: String, required: true },
-  showMovie: { type: Boolean, default: false },
+  movieHlsDir: { type: String },
   movieRestricted: { type: Boolean, default: false },
   movieEditorIds: [
     {
