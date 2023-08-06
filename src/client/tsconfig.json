@@ -1,14 +1,11 @@
 {
+  "extends": "../../tsconfig.json",
   "exclude": ["./worker/**/*"],
   "compilerOptions": {
     "target": "ES2015",
     "module": "ES2015",
     "moduleResolution": "Node",
     "lib": ["ES2015", "DOM"],
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "skipLibCheck": true
+    "allowSyntheticDefaultImports": true
   }
 }

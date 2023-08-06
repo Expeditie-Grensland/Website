@@ -1,14 +1,11 @@
 {
-  "compileOnSave": false,
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "noEmit": false,
+    "typeRoots": ["./globals.d.ts"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "NodeNext",
-    "esModuleInterop": true,
-    "outDir": "../../dist/server",
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "typeRoots": ["./globals.d.ts"]
+    "esModuleInterop": true
   }
 }
