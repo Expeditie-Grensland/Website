@@ -10,14 +10,21 @@ const personSchema = new Schema({
   userName: { type: String, required: true },
   ldapId: { type: String, required: true },
   isAdmin: { type: Boolean, default: false },
+  type: {
+    type: String,
+    enum: ["member", "guest"],
+    required: true,
+  },
   team: {
     type: String,
     enum: ["Blauw", "Rood"],
   },
 });
 
-personSchema.index({ sortingName: 1 });
 personSchema.index({ userName: 1 });
+personSchema.index({ ldapId: 1 });
+personSchema.index({ sortingName: 1 });
+personSchema.index({ type: -1, sortingName: 1 });
 
 export type Person = InferSchemaType<typeof personSchema>;
 

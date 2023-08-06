@@ -24,12 +24,16 @@ block content
                 div.sidebar-item
                     span.sidebar-title= expeditie.movieEditorIds.length === 1 ? "Filmmonteur" : "Filmmonteurs"
                     each person in expeditie.movieEditorIds
-                        span= `${person.firstName} ${person.lastName}`
+                        span #{person.firstName} #{person.lastName}
 
             div.sidebar-item
                 span.sidebar-title Deelnemers
                 each person in expeditie.personIds
-                    span= `${person.firstName} ${person.lastName}`
+                    span
+                        | #{person.firstName} #{person.lastName}
+                        |
+                        if person.type === "guest"
+                            span.sidebar-detail (gast)
 
         .col-12.col-md-8.order-md-1
             if expeditie.movieHlsDir && (!expeditie.movieRestricted || user)

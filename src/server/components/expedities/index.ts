@@ -7,7 +7,7 @@ export const getPopulatedExpeditieByName = async (nameShort: string) =>
   await ExpeditieModel.findOne({ nameShort })
     .populate<{ personIds: Person[] }>({
       path: "personIds",
-      options: { sort: { sortingName: 1 } },
+      options: { sort: { type: -1, sortingName: 1 } },
     })
     .populate<{ movieEditorIds: Person[] }>({
       path: "movieEditorIds",
