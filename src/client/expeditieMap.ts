@@ -20,7 +20,7 @@ if (window.screen.availWidth < 1024 || window.screen.availHeight < 768) {
 const nodeColors = [
     '#2962ff',
     '#d50000',
-    '#00c853',
+    '#008c3a',
     '#ff6d00',
     '#c51162',
     '#aa00ff',
