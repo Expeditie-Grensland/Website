@@ -5,7 +5,7 @@
     "typeRoots": ["./globals.d.ts"],
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true
   }
 }
