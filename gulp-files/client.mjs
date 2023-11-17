@@ -1,10 +1,10 @@
 import babelify from 'babelify';
 import browserify from 'browserify';
+import buffer from 'gulp-buffer';
 import { deleteAsync } from 'del';
 import fancyLog from 'fancy-log';
 import filter from 'gulp-filter';
 import rev from 'gulp-rev';
-import streamify from 'gulp-streamify';
 import terser from 'gulp-terser';
 import mergeStream from 'merge-stream';
 import tsify from 'tsify';
@@ -72,9 +72,10 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
 
     if (opts.prod)
       stream = stream
-        .pipe(streamify(terser()))
+        .pipe(buffer())
+        .pipe(terser())
         .pipe(workerFilter)
-        .pipe(streamify(rev()))
+        .pipe(rev())
         .pipe(workerFilter.restore)
         .pipe(gulp.dest(dest))
         .pipe(rev.manifest());
