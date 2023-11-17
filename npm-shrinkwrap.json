@@ -22,7 +22,7 @@
         "full-icu": "^1.5.0",
         "ldapauth-fork": "^5.0.5",
         "luxon": "^3.4.4",
-        "marked": "^7.0.1",
+        "marked": "^10.0.0",
         "migrate-mongo": "^11.0.0",
         "mongoose": "7.4.2",
         "pino": "^8.16.2",
@@ -41,7 +41,6 @@
         "@types/jquery": "^3.5.27",
         "@types/luxon": "^3.3.4",
         "@types/mapbox-gl": "^2.7.18",
-        "@types/marked": "^5.0.1",
         "@types/mime": "^3.0.4",
         "@types/node": "^20.9.1",
         "@types/pug": "^2.0.9",
@@ -2450,11 +2449,6 @@
       "dependencies": {
         "@types/geojson": "*"
       }
-    },
-    "node_modules/@types/marked": {
-      "version": "5.0.1",
-      "dev": true,
-      "license": "MIT"
     },
     "node_modules/@types/mime": {
       "version": "3.0.4",
@@ -9246,14 +9240,14 @@
       }
     },
     "node_modules/marked": {
-      "version": "7.0.1",
-      "resolved": "https://registry.npmjs.org/marked/-/marked-7.0.1.tgz",
-      "integrity": "sha512-m8Aze620Ts62yaciz2DghZGUkUfdgvSNRicS2/XtQkStMNoce3NWjOD2b/jWF32+XXK6udM6pRhv2dKNlneAFA==",
+      "version": "10.0.0",
+      "resolved": "https://registry.npmjs.org/marked/-/marked-10.0.0.tgz",
+      "integrity": "sha512-YiGcYcWj50YrwBgNzFoYhQ1hT6GmQbFG8SksnYJX1z4BXTHSOrz1GB5/Jm2yQvMg4nN1FHP4M6r03R10KrVUiA==",
       "bin": {
         "marked": "bin/marked.js"
       },
       "engines": {
-        "node": ">= 16"
+        "node": ">= 18"
       }
     },
     "node_modules/matchdep": {

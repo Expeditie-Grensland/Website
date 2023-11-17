@@ -134,8 +134,6 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
 
   marked.use({
     renderer,
-    mangle: false,
-    headerIds: false,
   });
 
   app.get("/woordenboek", async (request, reply) =>
