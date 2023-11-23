@@ -38,7 +38,7 @@ import { Word, WordModel } from "../components/words/model.js";
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { getMessages, setMessage } from "../helpers/flash.js";
 import fastifyMultipart from "@fastify/multipart";
-import { getFileList, getFileType } from "../helpers/files.js";
+import { getFileListWithUses } from "../helpers/files.js";
 
 type GetById<T> = (
   id: mongoose.Types.ObjectId
@@ -410,8 +410,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/bestanden", async (request, reply) =>
     reply.view("admin/files", {
-      files: await getFileList(),
-      getFileType: getFileType,
+      filesWithUses: await getFileListWithUses(),
     })
   );
 };

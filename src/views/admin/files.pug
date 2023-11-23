@@ -8,6 +8,16 @@ block content
     - const fileTypes = {}
     - fileTypes["film-hls"] = "Film in HLS-formaat"
     - fileTypes["achtergrond"] = "Achtergrond"
+    - fileTypes["image"] = "Afbeelding"
+    - fileTypes["video"] = "Video"
+    - fileTypes["audio"] = "Audio"
+
+    - const useTypes = {}
+    - useTypes["expeditie/background"] = "Achtergrond voor expeditie %"
+    - useTypes["expeditie/movie"] = "Film voor expeditie %"
+    - useTypes["word/attachment"] = "Bijlage voor woord '%'"
+    - useTypes["quote/attachment"] = "Bijlage voor quote '%'"
+    - useTypes["story/media"] = "Media voor verhaal bij expeditie %"
 
     .row
         .col-12.mb-4
@@ -21,10 +31,18 @@ block content
                     tr
                         th(style='min-width: 20rem') Sleutel (prefix)
                         th(style='min-width: 10rem') Type
+                        th(style='min-width: 15rem') In gebruik als
 
                 tbody
-                    each file, i in files
+                    each file, i in filesWithUses
                         tr
-                            td=file
-                            td=(fileTypes[getFileType(file)] || `Onbekend (${getFileType(file)})`)
+                            td.py-4=file.file
+                            td=(fileTypes[file.type] || `Onbekend (${file.type})`)
+                            td
+                                if file.uses
+                                    each use in file.uses
+                                        p.my-1=(useTypes[use.type] || "").replace("%", use.name)
+                                else
+                                    p.my-1 —
+
                             
