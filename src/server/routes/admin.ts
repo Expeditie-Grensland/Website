@@ -38,6 +38,7 @@ import { Word, WordModel } from "../components/words/model.js";
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { getMessages, setMessage } from "../helpers/flash.js";
 import fastifyMultipart from "@fastify/multipart";
+import { getFileList, getFileType } from "../helpers/files.js";
 
 type GetById<T> = (
   id: mongoose.Types.ObjectId
@@ -98,7 +99,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   });
 
   await app.register(fastifyMultipart, {
-    attachFieldsToBody: 'keyValues',
+    attachFieldsToBody: "keyValues",
     limits: {
       fileSize: 25000000,
     },
@@ -404,6 +405,13 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
       const result = await new BaseStoryElementModel(story).save();
       return `Verhaal "${result._id.toHexString()}" is successvol toegevoegd`;
+    })
+  );
+
+  app.get("/bestanden", async (request, reply) =>
+    reply.view("admin/files", {
+      files: await getFileList(),
+      getFileType: getFileType,
     })
   );
 };

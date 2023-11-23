@@ -1,0 +1,30 @@
+extends ../members/_frame
+include ../_expeditieMedia
+
+block title
+    title Expeditie - Admin - Bestanden
+
+block content
+    - const fileTypes = {}
+    - fileTypes["film-hls"] = "Film in HLS-formaat"
+    - fileTypes["achtergrond"] = "Achtergrond"
+
+    .row
+        .col-12.mb-4
+            .h1 Bestanden
+
+        .col-12.mb-4
+            hr
+            .h2.mb-3 Lijst van bestanden op S3
+            table.table.table-sticky-header
+                thead
+                    tr
+                        th(style='min-width: 20rem') Sleutel (prefix)
+                        th(style='min-width: 10rem') Type
+
+                tbody
+                    each file, i in files
+                        tr
+                            td=file
+                            td=(fileTypes[getFileType(file)] || `Onbekend (${getFileType(file)})`)
+                            

@@ -99,6 +99,11 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
           text: "Extra informatie op de kaart",
           adminHref: "/leden/admin/story",
         },
+        {
+          title: "Bestanden",
+          text: "De Small Data",
+          adminHref: "/leden/admin/bestanden",
+        },
       ].concat(
         (await getAllMemberLinks()).map((l) => {
           return {
