@@ -80,7 +80,7 @@ const getFileUses = async (): Promise<FileUses> => {
 
   for (const exp of await expedities) {
     addUseIfFile("expeditie/background", exp.name, exp.backgroundFile);
-    addUseIfFile("expeditie/movie", exp.name, exp.movieHlsDir);
+    addUseIfFile("expeditie/movie", exp.name, exp.movieFile);
   }
 
   for (const word of await words)
