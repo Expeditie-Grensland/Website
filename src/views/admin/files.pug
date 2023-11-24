@@ -4,6 +4,9 @@ include ../_expeditieMedia
 block title
     title Expeditie - Admin - Bestanden
 
+mixin previewImg(url)
+    img.w-100.h-100.object-fit-cover(src=url alt="Preview")
+
 block content
     - const fileTypes = {}
     - fileTypes["film-hls"] = "Film in HLS-formaat"
@@ -29,15 +32,25 @@ block content
             table.table.table-sticky-header
                 thead
                     tr
-                        th(style='min-width: 20rem') Sleutel (prefix)
-                        th(style='min-width: 10rem') Type
-                        th(style='min-width: 15rem') In gebruik als
+                        th(style='min-width: 25rem') Sleutel (prefix)
+                        th(style='min-width: 15rem') Type
+                        th(style='width: 10rem') Preview
+                        th(style='min-width: 20rem') In gebruik als
 
                 tbody
                     each file, i in filesWithUses
                         tr
                             td.py-4=file.file
                             td=(fileTypes[file.type] || `Onbekend (${file.type})`)
+                            td
+                                div(style='width: 7.5rem; height: 5rem')
+                                    case file.type
+                                        when "achtergrond"
+                                            +previewImg(`${getFileUrl(file.file)}/klein.jpg`)
+                                        when "film-hls"
+                                            +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
+                                        when "jpg"
+                                            +previewImg(`${getFileUrl(file.file)}`)
                             td
                                 if file.uses
                                     each use in file.uses
