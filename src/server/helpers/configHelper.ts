@@ -7,11 +7,11 @@ const envSchema = z.object({
   EG_PORT: z.union([z.coerce.number().int(), z.string()]),
 
   EG_FILES_BASE_URL: z.string(),
-  EG_FILES_S3_ENDPOINT: z.string().startsWith("https://"),
-  EG_FILES_S3_REGION: z.string(),
-  EG_FILES_S3_ACCESS_KEY_ID: z.string(),
-  EG_FILES_S3_ACCESS_SECRET: z.string(),
-  EG_FILES_S3_BUCKET: z.string(),
+  EG_S3_ENDPOINT: z.string().startsWith("https://"),
+  EG_S3_REGION: z.string(),
+  EG_S3_ACCESS_KEY_ID: z.string(),
+  EG_S3_ACCESS_SECRET: z.string(),
+  EG_S3_BUCKET: z.string(),
 
   EG_MONGO_URL: z.string().startsWith("mongodb://"),
 

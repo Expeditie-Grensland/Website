@@ -11,18 +11,18 @@ export const getFileUrl = (file: string) =>
   `${config.EG_FILES_BASE_URL}/${file}`;
 
 const client = new S3Client({
-  endpoint: config.EG_FILES_S3_ENDPOINT,
-  region: config.EG_FILES_S3_REGION,
+  endpoint: config.EG_S3_ENDPOINT,
+  region: config.EG_S3_REGION,
   credentials: {
-    accessKeyId: config.EG_FILES_S3_ACCESS_KEY_ID,
-    secretAccessKey: config.EG_FILES_S3_ACCESS_SECRET,
+    accessKeyId: config.EG_S3_ACCESS_KEY_ID,
+    secretAccessKey: config.EG_S3_ACCESS_SECRET,
   },
 });
 
 export const getFileList = async () => {
   const response = await client.send(
     new ListObjectsV2Command({
-      Bucket: config.EG_FILES_S3_BUCKET,
+      Bucket: config.EG_S3_BUCKET,
       Delimiter: "/",
     })
   );
