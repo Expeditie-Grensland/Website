@@ -27,6 +27,8 @@
     "fast-xml-parser": "^4.3.2",
     "fastify": "^4.24.3",
     "full-icu": "^1.5.0",
+    "inquirer": "^9.2.12",
+    "inquirer-file-tree-selection-prompt": "^2.0.5",
     "ldapauth-fork": "^5.0.5",
     "luxon": "^3.4.4",
     "marked": "^10.0.0",
@@ -45,6 +47,7 @@
     "@babel/preset-env": "^7.23.3",
     "@mapbox/mapbox-gl-language": "^1.0.1",
     "@types/bootstrap": "^5.2.9",
+    "@types/inquirer": "^9.0.7",
     "@types/jquery": "^3.5.27",
     "@types/luxon": "^3.3.4",
     "@types/mapbox-gl": "^2.7.18",
@@ -98,6 +101,7 @@
     "migrations"
   ],
   "scripts": {
+    "cli": "dotenv -- node dist/server/cli/main.js",
     "lint": "eslint . --ext ts,js,cjs,mjs",
     "nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
     "build:prod": "gulp build:prod",
