@@ -2,7 +2,7 @@ import inquirer from "inquirer";
 import { getAllExpedities } from "../components/expedities/index.js";
 import { stat, constants, access } from "node:fs/promises";
 
-export default async function filesCli() {
+export const filesCli = async () => {
   const answers = await inquirer.prompt([
     {
       name: "type",
@@ -85,4 +85,4 @@ export default async function filesCli() {
 
   console.dir(answers);
   return;
-}
+};

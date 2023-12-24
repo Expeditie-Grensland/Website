@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
 import inquirerFileTreeSelection from "inquirer-file-tree-selection-prompt";
 import mongoose from "mongoose";
-import filesCli from "./files.js";
+import { filesCli } from "./files.js";
 import { config } from "../helpers/configHelper.js";
 
 console.info("Connecting to database...");
