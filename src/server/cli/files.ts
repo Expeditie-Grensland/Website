@@ -123,6 +123,15 @@ if (!converter) throw new Error("Converteerder niet geïmplementeerd!");
 
 const name = answersToName(answers);
 
+await inquirer.prompt([
+  {
+    name: "confirm",
+    message: "De conversie starten?",
+    type: "list",
+    choices: [{ name: "Ja", value: true }],
+  },
+] as QuestionCollection<{ confirm: true }>);
+
 const convOutput = await convertFile(answers.bron, converter);
 const prefix = await determinePrefix(name, convOutput, converter.extension);
 
