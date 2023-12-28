@@ -1,17 +1,13 @@
 import inquirer, { QuestionCollection } from "inquirer";
 import { access, constants, stat } from "node:fs/promises";
 import { getAllExpedities } from "../components/expedities/index.js";
-import { convertAchtergrond } from "../files/types/achtergrond.js";
-import { convertAfbeelding } from "../files/types/afbeelding.js";
 import {
-  Converter,
   convertFile,
   determinePrefix,
   tryToDelete,
   uploadFiles,
 } from "../files/convert.js";
-import { convertAudio } from "../files/types/audio.js";
-import { convertVideo } from "../files/types/video.js";
+import { allConverters } from "../files/types/index.js";
 
 type AnswersType = {
   type: "film" | "achtergrond" | "afbeelding" | "video" | "audio";
@@ -111,16 +107,7 @@ const answersToName = ({
 
 const answers = await inquirer.prompt(questions);
 
-const converter = (
-  {
-    film: undefined,
-    achtergrond: convertAchtergrond,
-    afbeelding: convertAfbeelding,
-    video: convertVideo,
-    audio: convertAudio,
-  } satisfies Record<AnswersType["type"], Converter | undefined>
-)[answers.type];
-
+const converter = allConverters[answers.type];
 if (!converter) throw new Error("Converteerder niet geïmplementeerd!");
 
 const name = answersToName(answers);
@@ -140,7 +127,7 @@ const prefix = await determinePrefix(name, convOutput, converter.extension);
 const uploadConfirm = await inquirer.prompt([
   {
     name: "confirm",
-    message: `De geconverteerde bestanden (in '${convOutput.dir}') uploaden met de prefix '${prefix}'?`,
+    message: `De geconverteerde bestanden (in '${convOutput.dir}') uploaden met de sleutelprefix '${prefix}'?`,
     type: "list",
     choices: [
       { name: "Ja", value: true },

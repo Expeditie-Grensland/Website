@@ -5,28 +5,35 @@ import { config } from "../helpers/configHelper.js";
 
 global.cliMode = true;
 
-console.info("Connecting to database...");
-await mongoose.connect(config.EG_MONGO_URL);
+try {
+  console.info("Connecting to database...");
+  await mongoose.connect(config.EG_MONGO_URL);
 
-inquirer.registerPrompt("file-tree-selection", inquirerFileTreeSelection);
+  inquirer.registerPrompt("file-tree-selection", inquirerFileTreeSelection);
 
-type AnswersType = {
-  commando: "files";
-};
+  type AnswersType = {
+    commando: "files" | "filesBatch";
+  };
 
-const questions: QuestionCollection<AnswersType> = {
-  name: "commando",
-  message: "Actie",
-  type: "list",
-  choices: [{ name: "Bestand converteren en uploaden", value: "files" }],
-};
+  const questions: QuestionCollection<AnswersType> = {
+    name: "commando",
+    message: "Actie",
+    type: "list",
+    choices: [
+      { name: "Bestand converteren en uploaden", value: "files" },
+      {
+        name: "Bestanden converteren en uploaden per partij",
+        value: "filesBatch",
+      },
+    ],
+  };
 
-const answers = await inquirer.prompt(questions);
+  const answers = await inquirer.prompt(questions);
 
-switch (answers.commando) {
-  case "files":
-    await import("./files.js");
-    break;
+  await import(`./${answers.commando}.js`);
+} catch (err) {
+  console.error("Er is een fout opgetreden.");
+  console.error(err instanceof Error ? err.message : String(err));
+} finally {
+  await mongoose.disconnect();
 }
-
-await mongoose.disconnect();

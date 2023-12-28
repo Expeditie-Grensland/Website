@@ -7,10 +7,7 @@ import { config } from "../helpers/configHelper.js";
 
 export type Converter = {
   extension: string;
-  convert: (
-    inputFile: string,
-    outputDir: string,
-  ) => Promise<void>;
+  convert: (inputFile: string, outputDir: string) => Promise<void>;
 };
 
 export type ConvertOutput = {
@@ -20,7 +17,7 @@ export type ConvertOutput = {
 
 export const convertFile = async (
   inputFile: string,
-  converter: Converter,
+  converter: Converter
 ): Promise<ConvertOutput> => {
   let dir: string | undefined;
   try {
@@ -99,4 +96,5 @@ export const convertAndUploadFile = async (
   const prefix = await determinePrefix(name, convOutput, converter.extension);
   await uploadFiles(prefix, convOutput);
   await tryToDelete(convOutput.dir);
+  return prefix;
 };

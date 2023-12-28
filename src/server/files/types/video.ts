@@ -23,7 +23,7 @@ const convert = async (inputFile: string, outputDir: string) =>
       ["-movflags", "+faststart"],
       ["-c:v", "libx264"],
       ["-crf:v", "23"],
-      ["-filter:v", `scale=${width}:-1,fps=30`],
+      ["-filter:v", `scale='min(iw,${width})':-1,fps=30`],
       ["-bsf:v", "filter_units=remove_types=6"],
       ["-c:a", "aac"],
       ["-b:a", "128k"],
@@ -31,7 +31,10 @@ const convert = async (inputFile: string, outputDir: string) =>
     ]),
     [
       ["-map_metadata", "-1"],
-      ["-filter:v", "trim=start=0:end=2.5,thumbnail=200,scale=w=1280:-1"],
+      [
+        "-filter:v",
+        "trim=start=0:end=2.5,thumbnail=200,scale='min(iw,1280)':-1",
+      ],
       ["-frames:v", "1"],
       ["-update", "1"],
       join(outputDir, "poster.jpg"),
