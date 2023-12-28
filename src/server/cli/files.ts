@@ -10,6 +10,8 @@ import {
   tryToDelete,
   uploadFiles,
 } from "../files/convert.js";
+import { convertAudio } from "../files/types/audio.js";
+import { convertVideo } from "../files/types/video.js";
 
 type AnswersType = {
   type: "film" | "achtergrond" | "afbeelding" | "video" | "audio";
@@ -114,8 +116,8 @@ const converter = (
     film: undefined,
     achtergrond: convertAchtergrond,
     afbeelding: convertAfbeelding,
-    video: undefined,
-    audio: undefined,
+    video: convertVideo,
+    audio: convertAudio,
   } satisfies Record<AnswersType["type"], Converter | undefined>
 )[answers.type];
 

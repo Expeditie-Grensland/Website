@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 import mongoose from "mongoose";
 
 import { getPopulatedExpeditieByName } from "./components/expedities/index.ts";
@@ -25,7 +26,12 @@ declare module "fastify" {
   }
 }
 
+interface Global {
+  rootDir: string;
+  isCli: boolean;
+}
+
 declare global {
-  // eslint-disable-next-line no-var
   var rootDir: string;
+  var cliMode: boolean;
 }

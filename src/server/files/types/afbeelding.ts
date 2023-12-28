@@ -2,7 +2,7 @@ import { join } from "node:path";
 import { runProcess } from "../../helpers/process.js";
 import { Converter } from "../convert.js";
 
-const convertWithMagick = async (inputFile: string, outputDir: string) =>
+const convert = async (inputFile: string, outputDir: string) =>
   runProcess("magick", [
     inputFile,
     ["-colorspace", "sRGB"],
@@ -30,5 +30,5 @@ const convertWithMagick = async (inputFile: string, outputDir: string) =>
 
 export const convertAfbeelding: Converter = {
   extension: "afbeelding",
-  convert: (inputFile, outputDir) => convertWithMagick(inputFile, outputDir),
+  convert,
 };

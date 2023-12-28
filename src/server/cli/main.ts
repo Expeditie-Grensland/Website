@@ -3,6 +3,8 @@ import inquirerFileTreeSelection from "inquirer-file-tree-selection-prompt";
 import mongoose from "mongoose";
 import { config } from "../helpers/configHelper.js";
 
+global.cliMode = true;
+
 console.info("Connecting to database...");
 await mongoose.connect(config.EG_MONGO_URL);
 

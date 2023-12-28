@@ -1,10 +1,21 @@
 import { spawn } from "node:child_process";
 
-type ArgList = (string | string[])[];
+type ArgList = (string | undefined | ArgList)[];
+
+const flattenArgList = (argList: ArgList): string[] =>
+  argList.flatMap((arg) =>
+    Array.isArray(arg) ? flattenArgList(arg) : arg === undefined ? [] : arg
+  );
 
 export const runProcess = async (command: string, args: ArgList) =>
   new Promise<void>((resolve, reject) => {
-    const cmd = spawn(command, args.flat(2), { stdio: "ignore" });
+    const flatArgs = flattenArgList(args);
+
+    console.info(`Running process: '${command} ${flatArgs.join(" ")}'\n`);
+
+    const cmd = spawn(command, flattenArgList(args), {
+      stdio: global.cliMode ? ["ignore", "inherit", "inherit"] : "ignore",
+    });
 
     cmd.on("error", (err) => reject(err));
 
