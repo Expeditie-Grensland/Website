@@ -31,10 +31,7 @@ const convert = async (inputFile: string, outputDir: string) =>
     ]),
     [
       ["-map_metadata", "-1"],
-      [
-        "-filter:v",
-        "trim=start=0:end=2.5,thumbnail=200,scale='min(iw,1280)':-1",
-      ],
+      ["-filter:v", "scale='min(iw,1280)':-1"],
       ["-frames:v", "1"],
       ["-update", "1"],
       join(outputDir, "poster.jpg"),
