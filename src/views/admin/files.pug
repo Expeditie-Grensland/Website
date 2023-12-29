@@ -11,7 +11,7 @@ block content
     - const fileTypes = {}
     - fileTypes["film-hls"] = "Film in HLS-formaat"
     - fileTypes["achtergrond"] = "Achtergrond"
-    - fileTypes["image"] = "Afbeelding"
+    - fileTypes["afbeelding"] = "Afbeelding"
     - fileTypes["video"] = "Video"
     - fileTypes["audio"] = "Audio"
 
@@ -47,10 +47,12 @@ block content
                                     case file.type
                                         when "achtergrond"
                                             +previewImg(`${getFileUrl(file.file)}/klein.jpg`)
+                                        when "afbeelding"
+                                            +previewImg(`${getFileUrl(file.file)}/klein.jpg`)
                                         when "film-hls"
                                             +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
-                                        when "jpg"
-                                            +previewImg(`${getFileUrl(file.file)}`)
+                                        when "video"
+                                            +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
                             td
                                 if file.uses
                                     each use in file.uses
