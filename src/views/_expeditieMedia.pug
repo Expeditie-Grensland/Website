@@ -16,11 +16,11 @@ mixin innerImage(expeditie, size="small")
 mixin filePlayer(file)
     if file
         case file.split('.').pop()
-            when "mp3"
+            when "audio"
                 audio.mw-100(controls preload="none")
-                    source(src=getFileUrl(file) type="audio/mpeg")
-            when "mp4"
-                video.mw-100(controls preload="none")
-                    source(src=getFileUrl(file) type="video/mp4")
-            when "jpg"
-                img(src=getFileUrl(file))
+                    source(src=getFileUrl(`${file}/audio.mp3`) type="audio/mpeg")
+            when "video"
+                video.mw-100(controls preload="none" poster=getFileUrl(`${file}/poster.jpg`))
+                    source(src=getFileUrl(`${file}/1080p30.mp4`) type="video/mp4")
+            when "afbeelding"
+                img(src=getFileUrl(`${file}/normaal.jpg`))

@@ -76,12 +76,16 @@ export class StoryHandler {
             if(this.complete) $(this).trigger('load');
         });
 
-        storyWrapper.find('video').on('loadedmetadata', function() {
-            if (--mediaCount === 0)
-                onAllMediaLoaded()
-        }).each(function() {
-            //https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
-            if(this.readyState >= 1) $(this).trigger('loadedmetadata');
+        storyWrapper.find("video").each(function () {
+            const poster = $(this).prop("poster");
+            const image = new Image();
+
+            $(image).on("load", function () {
+                if (--mediaCount === 0)
+                    onAllMediaLoaded();
+            });
+
+            image.src = poster;
         });
 
         // Set scroll margin for auto-scrolling
@@ -172,19 +176,21 @@ export class StoryHandler {
 
     private getMediaPlayer = (media: StoryMedia) => {
         switch (media.file.split('.').pop()) {
-            case "mp4":
+            case "video":
                 return $('<video>')
                     .addClass('media-preview')
                     .attr('controls', '')
+                    .attr('preload', 'none')
+                    .attr('poster', media.file + '/poster.jpg')
                     .append($('<source>')
-                        .attr("src", media.file)
+                        .attr("src", media.file + "/1080p30.mp4")
                         .attr("type", "video/mp4")
                     );
 
-            case "jpg":
+            case "afbeelding":
                 return $(`<img>`)
                     .addClass('media-preview')
-                    .attr("src", media.file);
+                    .attr("src", media.file + "/normaal.jpg");
 
             default:
                 return $("<div>")
