@@ -3,7 +3,7 @@ import { runProcess } from "../../helpers/process.js";
 import { Converter } from "../convert.js";
 
 const convert = async (inputFile: string, outputDir: string) =>
-  runProcess("ffmpeg", [
+  await runProcess("ffmpeg", [
     ["-hide_banner", "-loglevel", "info", "-nostdin"],
     ["-i", inputFile],
     [

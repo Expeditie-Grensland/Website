@@ -3,7 +3,7 @@ import { runProcess } from "../../helpers/process.js";
 import { Converter } from "../convert.js";
 
 const convert = async (inputFile: string, outputDir: string) =>
-  runProcess("magick", [
+  await runProcess("magick", [
     inputFile,
     ["-colorspace", "sRGB"],
     ["-sampling-factor", "4:2:0"],

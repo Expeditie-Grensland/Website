@@ -1,10 +1,12 @@
+import { platform } from "node:os";
 import { join } from "node:path";
 import { runProcess } from "../../helpers/process.js";
 import { Converter } from "../convert.js";
 
 const convert = async (inputFile: string, outputDir: string) =>
-  runProcess("ffmpeg", [
+  await runProcess("ffmpeg", [
     ["-hide_banner", "-loglevel", "info", "-nostdin"],
+    platform() === "win32" && ["-hwaccel", "auto"],
     ["-i", inputFile],
     [
       ["-map_metadata", "-1"],
@@ -23,7 +25,8 @@ const convert = async (inputFile: string, outputDir: string) =>
       ["-movflags", "+faststart"],
       ["-c:v", "libx264"],
       ["-crf:v", "23"],
-      ["-filter:v", `scale='min(iw,${width})':-1,fps=30`],
+      ["-filter:v", `scale='min(iw,${width})':-1,format=yuv420p`],
+      ["-r:v", "30"],
       ["-bsf:v", "filter_units=remove_types=6"],
       ["-c:a", "aac"],
       ["-b:a", "128k"],

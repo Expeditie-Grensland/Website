@@ -4,7 +4,6 @@ import { convertAudio } from "./audio.js";
 import { convertVideo } from "./video.js";
 
 export const allConverters = {
-  film: undefined,
   achtergrond: convertAchtergrond,
   afbeelding: convertAfbeelding,
   video: convertVideo,
