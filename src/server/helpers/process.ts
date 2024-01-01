@@ -1,10 +1,14 @@
 import { spawn } from "node:child_process";
 
-type ArgList = (string | undefined | ArgList)[];
+type ArgList = (string | undefined | false | ArgList)[];
 
 const flattenArgList = (argList: ArgList): string[] =>
   argList.flatMap((arg) =>
-    Array.isArray(arg) ? flattenArgList(arg) : arg === undefined ? [] : arg
+    Array.isArray(arg)
+      ? flattenArgList(arg)
+      : arg === undefined || arg === false
+      ? []
+      : arg
   );
 
 export const runProcess = async (command: string, args: ArgList) =>

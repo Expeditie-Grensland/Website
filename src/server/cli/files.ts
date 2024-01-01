@@ -7,10 +7,13 @@ import {
   tryToDelete,
   uploadFiles,
 } from "../files/convert.js";
+import { convertFilm } from "../files/types/film.js";
 import { allConverters } from "../files/types/index.js";
 
 type AnswersType = {
   type: "film" | "achtergrond" | "afbeelding" | "video" | "audio";
+  filmResolutie?: 2160 | 1440 | 1080 | 720;
+  filmFps?: 60 | 30;
   bijlageVan?: "verhaal" | "woord" | "citaat";
   expeditie?: string;
   beschrijving?: string;
@@ -90,6 +93,26 @@ const questions: QuestionCollection<AnswersType> = [
       }
     },
   },
+  {
+    name: "filmResolutie",
+    message: "Resolutie (van bronbestand)",
+    type: "list",
+    choices: [
+      { name: "2160p (4K)", value: 2160 },
+      { name: "1440p (QHD)", value: 1440 },
+      { name: "1080p (FHD)", value: 1080 },
+      { name: "720p (HD)", value: 720 },
+    ],
+  },
+  {
+    name: "filmFps",
+    message: "Framerate (van bronbestand)",
+    type: "list",
+    choices: [
+      { name: "60 fps", value: 60 },
+      { name: "30 fps", value: 30 },
+    ],
+  },
 ];
 
 const answersToName = ({
@@ -107,8 +130,10 @@ const answersToName = ({
 
 const answers = await inquirer.prompt(questions);
 
-const converter = allConverters[answers.type];
-if (!converter) throw new Error("Converteerder niet geïmplementeerd!");
+const converter =
+  answers.type === "film"
+    ? convertFilm({ resolution: answers.filmResolutie!, fps: answers.filmFps! })
+    : allConverters[answers.type];
 
 const name = answersToName(answers);
 
