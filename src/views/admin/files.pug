@@ -10,6 +10,7 @@ mixin previewImg(url)
 block content
     - const fileTypes = {}
     - fileTypes["film-hls"] = "Film in HLS-formaat"
+    - fileTypes["film-dash"] = "Film in DASH-formaat"
     - fileTypes["achtergrond"] = "Achtergrond"
     - fileTypes["afbeelding"] = "Afbeelding"
     - fileTypes["video"] = "Video"
@@ -50,6 +51,8 @@ block content
                                         when "afbeelding"
                                             +previewImg(`${getFileUrl(file.file)}/klein.jpg`)
                                         when "film-hls"
+                                            +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
+                                        when "film-dash"
                                             +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
                                         when "video"
                                             +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
