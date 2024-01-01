@@ -75,9 +75,12 @@ const client = new S3Client({
 
 export const uploadFiles = async (
   prefix: string,
-  convOutput: ConvertOutput
+  convOutput: ConvertOutput,
+  onEachFile?: (file: string) => void
 ) => {
   for (const file of convOutput.files) {
+    if (onEachFile) onEachFile(file);
+
     const command = new PutObjectCommand({
       Bucket: config.EG_S3_BUCKET,
       Key: `${prefix}/${file}`,

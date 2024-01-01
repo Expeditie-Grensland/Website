@@ -147,12 +147,22 @@ await inquirer.prompt([
 ] as QuestionCollection<{ confirm: true }>);
 
 const convOutput = await convertFile(answers.bron, converter);
+
+await inquirer.prompt([
+  {
+    name: "confirm",
+    message: `De bestanden zijn geconverteerd naar '${convOutput.dir}'`,
+    type: "list",
+    choices: [{ name: "Doorgaan", value: true }],
+  },
+] as QuestionCollection<{ confirm: true }>);
+
 const prefix = await determinePrefix(name, convOutput, converter.extension);
 
 const uploadConfirm = await inquirer.prompt([
   {
     name: "confirm",
-    message: `De geconverteerde bestanden (in '${convOutput.dir}') uploaden met de sleutelprefix '${prefix}'?`,
+    message: `De geconverteerde bestanden uploaden met de sleutelprefix '${prefix}'?`,
     type: "list",
     choices: [
       { name: "Ja", value: true },
@@ -161,12 +171,24 @@ const uploadConfirm = await inquirer.prompt([
   },
 ] as QuestionCollection<{ confirm: boolean }>);
 
-if (uploadConfirm.confirm) await uploadFiles(prefix, convOutput);
+const fileCount = convOutput.files.length.toString();
+let fileNum = 1;
+
+if (uploadConfirm.confirm)
+  await uploadFiles(prefix, convOutput, (file) =>
+    console.info(
+      `(${(fileNum++)
+        .toString()
+        .padStart(fileCount.length)}/${fileCount}) ${file}`
+    )
+  );
+
+console.info(`Successvol geüpload met de sleutelprefix '${prefix}'`);
 
 const deleteConfirm = await inquirer.prompt([
   {
     name: "confirm",
-    message: `De geconverteerde bestanden (in '${convOutput.dir}') verwijderen?'`,
+    message: `De lokale bestanden verwijderen?'`,
     type: "list",
     choices: [
       { name: "Ja", value: true },
