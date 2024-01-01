@@ -14,6 +14,7 @@ type AnswersType = {
   type: "film" | "achtergrond" | "afbeelding" | "video" | "audio";
   filmResolutie?: 2160 | 1440 | 1080 | 720;
   filmFps?: 60 | 30;
+  filmPosterTijd?: number;
   bijlageVan?: "verhaal" | "woord" | "citaat";
   expeditie?: string;
   beschrijving?: string;
@@ -96,6 +97,7 @@ const questions: QuestionCollection<AnswersType> = [
   {
     name: "filmResolutie",
     message: "Resolutie (van bronbestand)",
+    when: ({ type }) => type === "film",
     type: "list",
     choices: [
       { name: "2160p (4K)", value: 2160 },
@@ -107,11 +109,18 @@ const questions: QuestionCollection<AnswersType> = [
   {
     name: "filmFps",
     message: "Framerate (van bronbestand)",
+    when: ({ type }) => type === "film",
     type: "list",
     choices: [
       { name: "60 fps", value: 60 },
       { name: "30 fps", value: 30 },
     ],
+  },
+  {
+    name: "filmPosterTijd",
+    message: "Tijd voor posterafbeelding (in seconden)",
+    when: ({ type }) => type === "film",
+    type: "number",
   },
 ];
 
@@ -132,7 +141,11 @@ const answers = await inquirer.prompt(questions);
 
 const converter =
   answers.type === "film"
-    ? convertFilm({ resolution: answers.filmResolutie!, fps: answers.filmFps! })
+    ? convertFilm({
+        resolution: answers.filmResolutie!,
+        fps: answers.filmFps!,
+        posterTime: answers.filmPosterTijd!,
+      })
     : allConverters[answers.type];
 
 const name = answersToName(answers);

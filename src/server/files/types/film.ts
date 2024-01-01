@@ -1,17 +1,18 @@
 import { platform } from "node:os";
-import path, { join, resolve } from "node:path";
+import { resolve } from "node:path";
 import { runProcess } from "../../helpers/process.js";
 import { Converter } from "../convert.js";
 
 export type FilmOptions = {
   resolution: 2160 | 1440 | 1080 | 720;
   fps: 60 | 30;
+  posterTime: number;
 };
 
 const convert = async (
   inputFile: string,
   outputDir: string,
-  { resolution: inHeight, fps: inFps }: FilmOptions
+  { resolution: inHeight, fps: inFps, posterTime }: FilmOptions
 ) =>
   await runProcess(
     "ffmpeg",
@@ -106,7 +107,7 @@ const convert = async (
       [
         // Poster
         ["-map_metadata", "-1"],
-        ["-ss", "3"],
+        ["-ss", posterTime.toString()],
         ["-filter:v", "scale=1280:720:force_original_aspect_ratio=decrease"],
         ["-frames:v", "1"],
         ["-update", "1"],
