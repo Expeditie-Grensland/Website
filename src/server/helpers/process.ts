@@ -11,7 +11,11 @@ const flattenArgList = (argList: ArgList): string[] =>
       : arg
   );
 
-export const runProcess = async (command: string, args: ArgList) =>
+export const runProcess = async (
+  command: string,
+  args: ArgList,
+  cwd?: string
+) =>
   new Promise<void>((resolve, reject) => {
     const flatArgs = flattenArgList(args);
 
@@ -19,6 +23,7 @@ export const runProcess = async (command: string, args: ArgList) =>
 
     const cmd = spawn(command, flattenArgList(args), {
       stdio: global.cliMode ? ["ignore", "inherit", "inherit"] : "ignore",
+      cwd,
     });
 
     cmd.on("error", (err) => reject(err));
