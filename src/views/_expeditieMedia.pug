@@ -1,13 +1,13 @@
 mixin innerImage(expeditie, size="small")
     picture
         if size === "large"
-            source(srcset=`${getFileUrl(expeditie.backgroundFile)}/klein.webp` media="(max-width: 650px)" type="image/webp")
-            source(srcset=`${getFileUrl(expeditie.backgroundFile)}/klein.jpg` media="(max-width: 650px)" type="image/jpeg")
-            source(srcset=`${getFileUrl(expeditie.backgroundFile)}/normaal.webp` type="image/webp")
-            img.img-bg(src=`${getFileUrl(expeditie.backgroundFile)}/normaal.jpg` draggable="false")
+            source(srcset=getFileUrl(expeditie.backgroundFile, "klein.webp") media="(max-width: 650px)" type="image/webp")
+            source(srcset=getFileUrl(expeditie.backgroundFile, "klein.jpg") media="(max-width: 650px)" type="image/jpeg")
+            source(srcset=getFileUrl(expeditie.backgroundFile, "normaal.webp") type="image/webp")
+            img.img-bg(src=getFileUrl(expeditie.backgroundFile, "normaal.jpg") draggable="false")
         else
-            source(srcset=`${getFileUrl(expeditie.backgroundFile)}/klein.webp` type="image/webp")
-            img.img-bg(src=`${getFileUrl(expeditie.backgroundFile)}/klein.jpg` draggable="false")
+            source(srcset=getFileUrl(expeditie.backgroundFile, "klein.webp") type="image/webp")
+            img.img-bg(src=getFileUrl(expeditie.backgroundFile, "klein.jpg") draggable="false")
 
     .img-inner
         span.h1= expeditie.name
@@ -15,12 +15,12 @@ mixin innerImage(expeditie, size="small")
 
 mixin filePlayer(file)
     if file
-        case file.split('.').pop()
+        case file.split(".").pop()
             when "audio"
                 audio.mw-100(controls preload="none")
-                    source(src=getFileUrl(`${file}/audio.mp3`) type="audio/mpeg")
+                    source(src=getFileUrl(file, "audio.mp3") type="audio/mpeg")
             when "video"
-                video.mw-100(controls preload="none" poster=getFileUrl(`${file}/poster.jpg`))
-                    source(src=getFileUrl(`${file}/1080p30.mp4`) type="video/mp4")
+                video.mw-100(controls preload="none" poster=getFileUrl(file, "poster.jpg"))
+                    source(src=getFileUrl(file, "1080p30.mp4") type="video/mp4")
             when "afbeelding"
-                img(src=getFileUrl(`${file}/normaal.jpg`))
+                img(src=getFileUrl(file, "normaal.jpg"))

@@ -17,7 +17,7 @@ import {
   MediaStoryElement,
   TextStoryElement,
 } from "../components/storyElements/model.js";
-import { getFileUrl } from "../helpers/files.js";
+import { getFileUrl } from "../files/files.js";
 import { FastifyPluginAsync } from "fastify";
 
 const HEADER_REV = "x-revision-id";

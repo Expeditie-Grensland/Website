@@ -6,12 +6,13 @@ import {
   getPersonByLdapId,
   getPersonByUserName,
 } from "./components/people/index.ts";
-import { getFileUrl } from "./helpers/files.ts";
+import { getFileType, getFileUrl } from "./files/files.js";
 
 declare module "fastify" {
   export interface FastifyReply {
     locals: {
       getFileUrl: typeof getFileUrl;
+      getFileType: typeof getFileType;
       user?: Awaited<ReturnType<typeof getPersonByLdapId>>;
       person?: Awaited<ReturnType<typeof getPersonByUserName>>;
       expeditie?: Awaited<ReturnType<typeof getPopulatedExpeditieByName>>;

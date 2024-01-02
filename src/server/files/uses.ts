@@ -1,52 +1,9 @@
-import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
-
-import { config } from "./configHelper.js";
 import { getAllExpedities } from "../components/expedities/index.js";
-import { getAllWords } from "../components/words/index.js";
 import { getAllQuotes } from "../components/quotes/index.js";
 import { getAllStories } from "../components/storyElements/index.js";
 import { MediaStoryElement } from "../components/storyElements/model.js";
-
-export const getFileUrl = (file: string) =>
-  `${config.EG_FILES_BASE_URL}/${file}`;
-
-const client = new S3Client({
-  endpoint: config.EG_S3_ENDPOINT,
-  region: config.EG_S3_REGION,
-  credentials: {
-    accessKeyId: config.EG_S3_ACCESS_KEY_ID,
-    secretAccessKey: config.EG_S3_ACCESS_SECRET,
-  },
-});
-
-export const getFileList = async () => {
-  const response = await client.send(
-    new ListObjectsV2Command({
-      Bucket: config.EG_S3_BUCKET,
-      Delimiter: "/",
-    })
-  );
-
-  return [
-    ...(response.CommonPrefixes?.reduce(
-      (dirs, cp) =>
-        cp.Prefix && cp.Prefix.endsWith("/") && cp.Prefix.indexOf(".") > -1
-          ? [...dirs, cp.Prefix!.slice(0, -1)]
-          : dirs,
-      [] as string[]
-    ) || []),
-    ...(response.Contents || []).reduce(
-      (files, item) =>
-        item.Key && !item.Key.endsWith("/") && item.Key.indexOf(".") > -1
-          ? [...files, item.Key]
-          : files,
-      [] as string[]
-    ),
-  ].sort();
-};
-
-export const getFileType = (file: string) =>
-  file.slice(file.lastIndexOf(".") + 1);
+import { getAllWords } from "../components/words/index.js";
+import { getFileType } from "./files.js";
 
 export type FileUseType =
   | "expeditie/background"
@@ -109,14 +66,14 @@ type FileWithUses = {
   uses: FileUse[] | null;
 };
 
-export const getFileListWithUses = async (): Promise<FileWithUses[]> => {
+export const getUsesForFiles = async (files: string[]) => {
   const uses = await getFileUses();
 
-  console.dir(uses);
-
-  return (await getFileList()).map((file) => ({
-    file,
-    type: getFileType(file),
-    uses: uses[file] || null,
-  }));
+  return files.map(
+    (file): FileWithUses => ({
+      file,
+      type: getFileType(file),
+      uses: uses[file] || null,
+    })
+  );
 };

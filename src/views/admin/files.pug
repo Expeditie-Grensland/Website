@@ -47,15 +47,15 @@ block content
                                 div(style='width: 7.5rem; height: 5rem')
                                     case file.type
                                         when "achtergrond"
-                                            +previewImg(`${getFileUrl(file.file)}/klein.jpg`)
+                                            +previewImg(getFileUrl(file.file, "klein.jpg"))
                                         when "afbeelding"
-                                            +previewImg(`${getFileUrl(file.file)}/klein.jpg`)
+                                            +previewImg(getFileUrl(file.file, "klein.jpg"))
                                         when "film-hls"
-                                            +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
+                                            +previewImg(getFileUrl(file.file, "poster.jpg"))
                                         when "film-dash"
-                                            +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
+                                            +previewImg(getFileUrl(file.file, "poster.jpg"))
                                         when "video"
-                                            +previewImg(`${getFileUrl(file.file)}/poster.jpg`)
+                                            +previewImg(getFileUrl(file.file, "poster.jpg"))
                             td
                                 if file.uses
                                     each use in file.uses

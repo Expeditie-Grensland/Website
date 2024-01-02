@@ -1,5 +1,7 @@
 import mongoose, { HydratedDocument } from "mongoose";
 
+import fastifyMultipart from "@fastify/multipart";
+import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { ZodError, ZodTypeAny, z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import {
@@ -35,10 +37,9 @@ import {
 } from "../components/storyElements/model.js";
 import { getAllWords, getWordById } from "../components/words/index.js";
 import { Word, WordModel } from "../components/words/model.js";
-import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
+import { getS3Files } from "../files/s3.js";
+import { getUsesForFiles } from "../files/uses.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
-import fastifyMultipart from "@fastify/multipart";
-import { getFileListWithUses, getFileUrl } from "../helpers/files.js";
 
 type GetById<T> = (
   id: mongoose.Types.ObjectId
@@ -410,8 +411,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/bestanden", async (request, reply) =>
     reply.view("admin/files", {
-      filesWithUses: await getFileListWithUses(),
-      getFileUrl: getFileUrl,
+      filesWithUses: await getUsesForFiles(await getS3Files()),
     })
   );
 };

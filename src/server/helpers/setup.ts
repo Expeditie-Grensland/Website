@@ -8,12 +8,12 @@ import fastify, { FastifyInstance } from "fastify";
 import mongoose from "mongoose";
 import { join } from "node:path";
 import pug from "pug";
+import qs from "qs";
 import redis from "redis";
 import { getPersonById } from "../components/people/index.js";
+import { getFileType, getFileUrl } from "../files/files.js";
 import routes from "../routes/index.js";
 import { config } from "./configHelper.js";
-import { getFileUrl } from "./files.js";
-import qs from "qs";
 import { getHttpMessage } from "./errorCodes.js";
 
 export const setupMongooose = async () => {
@@ -122,6 +122,7 @@ export const setupFastify = async () => {
   app.addHook("onRequest", async (request, reply) => {
     reply.locals = {
       ...reply.locals,
+      getFileType,
       getFileUrl,
       user:
         (request.session.userId &&
