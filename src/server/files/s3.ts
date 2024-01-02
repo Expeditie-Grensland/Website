@@ -11,7 +11,6 @@ import mime from "mime";
 import { FileHandle, open } from "node:fs/promises";
 import { config } from "../helpers/configHelper.js";
 import { readFileHandleByChunk } from "./chunks.js";
-import { getBufferHash } from "./hash.js";
 
 const CHUNK_SIZE = 256 * 1024 * 1024;
 
@@ -71,7 +70,6 @@ const uploadS3FileSingle = async (
           Key: key,
           Body: buffer,
           ContentType: type,
-          ContentMD5: (await getBufferHash(buffer)).digest("hex"),
         })
       )
   );
@@ -104,7 +102,6 @@ const uploadS3FileMultiPart = async (
             UploadId: createResponse.UploadId!,
             PartNumber: num + 1,
             Body: buffer,
-            ContentMD5: (await getBufferHash(buffer)).digest("hex"),
           })
         )
     );
@@ -133,4 +130,6 @@ export const uploadS3File = async (fileName: string, key: string) => {
   if ((await file.stat()).size > CHUNK_SIZE)
     await uploadS3FileMultiPart(file, key, type);
   else await uploadS3FileSingle(file, key, type);
+
+  file.close();
 };
