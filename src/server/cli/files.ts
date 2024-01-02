@@ -2,8 +2,10 @@ import inquirer, { QuestionCollection } from "inquirer";
 import { access, constants, stat } from "node:fs/promises";
 import { getAllExpedities } from "../components/expedities/index.js";
 import {
+  ConvertOutput,
   convertFile,
   determinePrefix,
+  getConvertOutput,
   tryToDelete,
   uploadFiles,
 } from "../files/convert.js";
@@ -12,13 +14,14 @@ import { allConverters } from "../files/types/index.js";
 
 type AnswersType = {
   type: "film" | "achtergrond" | "afbeelding" | "video" | "audio";
-  filmResolutie?: 2160 | 1440 | 1080 | 720;
-  filmFps?: 60 | 30;
-  filmPosterTijd?: number;
   bijlageVan?: "verhaal" | "woord" | "citaat";
   expeditie?: string;
   beschrijving?: string;
+  geenConversie?: boolean;
   bron: string;
+  filmResolutie?: 2160 | 1440 | 1080 | 720;
+  filmFps?: 60 | 30;
+  filmPosterTijd?: number;
 };
 
 const questions: QuestionCollection<AnswersType> = [
@@ -81,14 +84,25 @@ const questions: QuestionCollection<AnswersType> = [
       "Moet bestaan uit a-z en 0-9, gescheiden met -",
   },
   {
+    name: "geenConversie",
+    message: "Conversie overslaan (bestand is al geconverteerd)?",
+    type: "list",
+    choices: [
+      { name: "Nee", value: false },
+      { name: "Ja", value: true },
+    ],
+  },
+  {
     name: "bron",
     message: "Bronbestand",
     type: "file-tree-selection",
     enableGoUpperDirectory: true,
-    validate: async (input: string) => {
+    validate: async (input: string, answers) => {
       try {
         await access(input, constants.R_OK);
-        return (await stat(input)).isFile();
+        return answers?.geenConversie
+          ? (await stat(input)).isDirectory()
+          : (await stat(input)).isFile();
       } catch (err) {
         return false;
       }
@@ -97,7 +111,7 @@ const questions: QuestionCollection<AnswersType> = [
   {
     name: "filmResolutie",
     message: "Resolutie (van bronbestand)",
-    when: ({ type }) => type === "film",
+    when: ({ type, geenConversie }) => type === "film" && !geenConversie,
     type: "list",
     choices: [
       { name: "2160p (4K)", value: 2160 },
@@ -109,7 +123,7 @@ const questions: QuestionCollection<AnswersType> = [
   {
     name: "filmFps",
     message: "Framerate (van bronbestand)",
-    when: ({ type }) => type === "film",
+    when: ({ type, geenConversie }) => type === "film" && !geenConversie,
     type: "list",
     choices: [
       { name: "60 fps", value: 60 },
@@ -119,7 +133,7 @@ const questions: QuestionCollection<AnswersType> = [
   {
     name: "filmPosterTijd",
     message: "Tijd voor posterafbeelding (in seconden)",
-    when: ({ type }) => type === "film",
+    when: ({ type, geenConversie }) => type === "film" && !geenConversie,
     type: "number",
   },
 ];
@@ -150,25 +164,31 @@ const converter =
 
 const name = answersToName(answers);
 
-await inquirer.prompt([
-  {
-    name: "confirm",
-    message: "De conversie starten?",
-    type: "list",
-    choices: [{ name: "Ja", value: true }],
-  },
-] as QuestionCollection<{ confirm: true }>);
+let convOutput: ConvertOutput;
 
-const convOutput = await convertFile(answers.bron, converter);
+if (!answers.geenConversie) {
+  await inquirer.prompt([
+    {
+      name: "confirm",
+      message: "De conversie starten?",
+      type: "list",
+      choices: [{ name: "Ja", value: true }],
+    },
+  ] as QuestionCollection<{ confirm: true }>);
 
-await inquirer.prompt([
-  {
-    name: "confirm",
-    message: `De bestanden zijn geconverteerd naar '${convOutput.dir}'`,
-    type: "list",
-    choices: [{ name: "Doorgaan", value: true }],
-  },
-] as QuestionCollection<{ confirm: true }>);
+  convOutput = await convertFile(answers.bron, converter);
+
+  await inquirer.prompt([
+    {
+      name: "confirm",
+      message: `De bestanden zijn geconverteerd naar '${convOutput.dir}'`,
+      type: "list",
+      choices: [{ name: "Doorgaan", value: true }],
+    },
+  ] as QuestionCollection<{ confirm: true }>);
+} else {
+  convOutput = await getConvertOutput(answers.bron);
+}
 
 const prefix = await determinePrefix(name, convOutput, converter.extension);
 

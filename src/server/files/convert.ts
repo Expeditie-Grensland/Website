@@ -15,6 +15,14 @@ export type ConvertOutput = {
   files: string[];
 };
 
+export const getConvertOutput = async (dir: string) => ({
+  dir,
+  files: (await readdir(dir, { withFileTypes: true }))
+    .filter((dirent) => dirent.isFile())
+    .map((dirent) => dirent.name)
+    .toSorted(),
+});
+
 export const convertFile = async (
   inputFile: string,
   converter: Converter
@@ -23,16 +31,7 @@ export const convertFile = async (
   try {
     dir = await mkdtemp(join(tmpdir(), "expeditiegrensland-"));
     await converter.convert(inputFile, dir);
-
-    const files = (await readdir(dir, { withFileTypes: true }))
-      .filter((dirent) => dirent.isFile())
-      .map((dirent) => dirent.name)
-      .toSorted();
-
-    return {
-      dir,
-      files,
-    };
+    return getConvertOutput(dir);
   } catch (e) {
     if (dir) tryToDelete(dir);
     throw e;
