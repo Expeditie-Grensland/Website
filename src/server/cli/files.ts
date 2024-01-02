@@ -204,10 +204,10 @@ const uploadConfirm = await inquirer.prompt([
   },
 ] as QuestionCollection<{ confirm: boolean }>);
 
-const fileCount = convOutput.files.length.toString();
-let fileNum = 1;
+if (uploadConfirm.confirm) {
+  const fileCount = convOutput.files.length.toString();
+  let fileNum = 1;
 
-if (uploadConfirm.confirm)
   await uploadFiles(prefix, convOutput, (file) =>
     console.info(
       `(${(fileNum++)
@@ -216,18 +216,19 @@ if (uploadConfirm.confirm)
     )
   );
 
-console.info(`Successvol geüpload met de sleutelprefix '${prefix}'`);
+  console.info(`Successvol geüpload met de sleutelprefix '${prefix}'`);
 
-const deleteConfirm = await inquirer.prompt([
-  {
-    name: "confirm",
-    message: `De lokale bestanden verwijderen?'`,
-    type: "list",
-    choices: [
-      { name: "Ja", value: true },
-      { name: "Nee", value: false },
-    ],
-  },
-] as QuestionCollection<{ confirm: boolean }>);
+  const deleteConfirm = await inquirer.prompt([
+    {
+      name: "confirm",
+      message: "De lokale bestanden verwijderen?",
+      type: "list",
+      choices: [
+        { name: "Ja", value: true },
+        { name: "Nee", value: false },
+      ],
+    },
+  ] as QuestionCollection<{ confirm: boolean }>);
 
-if (deleteConfirm.confirm) await tryToDelete(convOutput.dir);
+  if (deleteConfirm.confirm) await tryToDelete(convOutput.dir);
+}

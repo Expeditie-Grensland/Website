@@ -1,9 +1,8 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { createHash } from "node:crypto";
-import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import { mkdtemp, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { config } from "../helpers/configHelper.js";
+import { getFilesInDirHash } from "./hash.js";
+import { uploadS3File } from "./s3.js";
 
 export type Converter = {
   extension: string;
@@ -38,22 +37,14 @@ export const convertFile = async (
   }
 };
 
-export const calculateHash = async (convOutput: ConvertOutput) => {
-  const hash = createHash("md5");
-
-  for (const file of convOutput.files) {
-    hash.update(file);
-    hash.update(await readFile(join(convOutput.dir, file)));
-  }
-
-  return hash.digest("hex").slice(0, 10);
-};
-
 export const determinePrefix = async (
   name: string,
-  convOutput: ConvertOutput,
+  { dir, files }: ConvertOutput,
   extension: string
-) => `${name}.${await calculateHash(convOutput)}.${extension}`;
+) =>
+  `${name}.${(await getFilesInDirHash(dir, files))
+    .digest("hex")
+    .slice(0, 10)}.${extension}`;
 
 export const tryToDelete = async (dir: string) => {
   try {
@@ -63,15 +54,6 @@ export const tryToDelete = async (dir: string) => {
   }
 };
 
-const client = new S3Client({
-  endpoint: config.EG_S3_ENDPOINT,
-  region: config.EG_S3_REGION,
-  credentials: {
-    accessKeyId: config.EG_S3_ACCESS_KEY_ID,
-    secretAccessKey: config.EG_S3_ACCESS_SECRET,
-  },
-});
-
 export const uploadFiles = async (
   prefix: string,
   convOutput: ConvertOutput,
@@ -80,12 +62,7 @@ export const uploadFiles = async (
   for (const file of convOutput.files) {
     if (onEachFile) onEachFile(file);
 
-    const command = new PutObjectCommand({
-      Bucket: config.EG_S3_BUCKET,
-      Key: `${prefix}/${file}`,
-      Body: await readFile(join(convOutput.dir, file)),
-    });
-    await client.send(command);
+    await uploadS3File(join(convOutput.dir, file), `${prefix}/${file}`);
   }
 };
 

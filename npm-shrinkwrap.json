@@ -26,6 +26,7 @@
         "luxon": "^3.4.4",
         "marked": "^10.0.0",
         "migrate-mongo": "^11.0.0",
+        "mime": "^4.0.1",
         "mongoose": "7.4.2",
         "pino": "^8.16.2",
         "pug": "^3.0.2",
@@ -2749,6 +2750,17 @@
         "fast-decode-uri-component": "^1.0.1",
         "http-errors": "2.0.0",
         "mime": "^3.0.0"
+      }
+    },
+    "node_modules/@fastify/send/node_modules/mime": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-3.0.0.tgz",
+      "integrity": "sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==",
+      "bin": {
+        "mime": "cli.js"
+      },
+      "engines": {
+        "node": ">=10.0.0"
       }
     },
     "node_modules/@fastify/session": {
@@ -11220,13 +11232,17 @@
       "license": "MIT"
     },
     "node_modules/mime": {
-      "version": "3.0.0",
-      "license": "MIT",
+      "version": "4.0.1",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-4.0.1.tgz",
+      "integrity": "sha512-5lZ5tyrIfliMXzFtkYyekWbtRXObT9OWa8IwQ5uxTBDHucNNwniRqo0yInflj+iYi5CBa6qxadGzGarDfuEOxA==",
+      "funding": [
+        "https://github.com/sponsors/broofa"
+      ],
       "bin": {
-        "mime": "cli.js"
+        "mime": "bin/cli.js"
       },
       "engines": {
-        "node": ">=10.0.0"
+        "node": ">=16"
       }
     },
     "node_modules/mimic-fn": {

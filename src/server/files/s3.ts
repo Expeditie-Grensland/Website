@@ -1,5 +1,19 @@
-import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
+import {
+  CompleteMultipartUploadCommand,
+  CompletedPart,
+  CreateMultipartUploadCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+  UploadPartCommand,
+} from "@aws-sdk/client-s3";
+import mime from "mime";
+import { FileHandle, open } from "node:fs/promises";
 import { config } from "../helpers/configHelper.js";
+import { readFileHandleByChunk } from "./chunks.js";
+import { getBufferHash } from "./hash.js";
+
+const CHUNK_SIZE = 256 * 1024 * 1024;
 
 const client = new S3Client({
   endpoint: config.EG_S3_ENDPOINT,
@@ -10,12 +24,25 @@ const client = new S3Client({
   },
 });
 
+const withRetries = async <T>(func: () => Promise<T>) => {
+  for (let i = 1; i < 3; i++) {
+    try {
+      return await func();
+    } catch (e) {
+      // retry
+    }
+  }
+  return await func();
+};
+
 export const getS3Files = async () => {
-  const response = await client.send(
-    new ListObjectsV2Command({
-      Bucket: config.EG_S3_BUCKET,
-      Delimiter: "/",
-    })
+  const response = await withRetries(() =>
+    client.send(
+      new ListObjectsV2Command({
+        Bucket: config.EG_S3_BUCKET,
+        Delimiter: "/",
+      })
+    )
   );
 
   return (
@@ -27,4 +54,83 @@ export const getS3Files = async () => {
       [] as string[]
     ) || []
   ).sort();
+};
+
+const uploadS3FileSingle = async (
+  file: FileHandle,
+  key: string,
+  type: string
+) => {
+  const buffer = await file.readFile();
+
+  await withRetries(
+    async () =>
+      await client.send(
+        new PutObjectCommand({
+          Bucket: config.EG_S3_BUCKET,
+          Key: key,
+          Body: buffer,
+          ContentType: type,
+          ContentMD5: (await getBufferHash(buffer)).digest("hex"),
+        })
+      )
+  );
+};
+
+const uploadS3FileMultiPart = async (
+  file: FileHandle,
+  key: string,
+  type: string
+) => {
+  const createResponse = await withRetries(() =>
+    client.send(
+      new CreateMultipartUploadCommand({
+        Bucket: config.EG_S3_BUCKET,
+        Key: key,
+        ContentType: type,
+      })
+    )
+  );
+
+  const completeParts: CompletedPart[] = [];
+
+  await readFileHandleByChunk(file, CHUNK_SIZE, async (buffer, num) => {
+    const partResponse = await withRetries(
+      async () =>
+        await client.send(
+          new UploadPartCommand({
+            Bucket: config.EG_S3_BUCKET,
+            Key: key,
+            UploadId: createResponse.UploadId!,
+            PartNumber: num + 1,
+            Body: buffer,
+            ContentMD5: (await getBufferHash(buffer)).digest("hex"),
+          })
+        )
+    );
+
+    completeParts.push({ PartNumber: num + 1, ETag: partResponse.ETag! });
+  });
+
+  await withRetries(() =>
+    client.send(
+      new CompleteMultipartUploadCommand({
+        Bucket: config.EG_S3_BUCKET,
+        Key: key,
+        UploadId: createResponse.UploadId!,
+        MultipartUpload: {
+          Parts: completeParts,
+        },
+      })
+    )
+  );
+};
+
+export const uploadS3File = async (fileName: string, key: string) => {
+  const file = await open(fileName, "r");
+  const type = mime.getType(fileName) || "application/octet-stream";
+
+  if ((await file.stat()).size > CHUNK_SIZE)
+    await uploadS3FileMultiPart(file, key, type);
+  else await uploadS3FileSingle(file, key, type);
 };
