@@ -1,6 +1,5 @@
 import child_process from 'node:child_process';
 import { deleteAsync } from 'del';
-import newer from 'gulp-newer';
 import sourcemaps from 'gulp-sourcemaps';
 import typescript from 'gulp-typescript';
 
@@ -49,13 +48,6 @@ export default (
 
     return project
       .src()
-      .pipe(
-        newer({
-          dest: 'dist/server/',
-          ext: '.js',
-          extra: ['package-lock.json', 'gulpfile.mjs', 'gulp-files/*'],
-        })
-      )
       .pipe(sourcemaps.init())
       .pipe(project())
       .js.pipe(sourcemaps.write())
