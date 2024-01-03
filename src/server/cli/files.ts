@@ -13,42 +13,54 @@ import {
 import { convertFilm } from "../files/types/film.js";
 import { allConverters } from "../files/types/index.js";
 
-const type: "film" | "achtergrond" | "afbeelding" | "video" | "audio" =
-  await select({
-    message: "Type bestand",
-    choices: [
-      { name: "Expeditie-film", value: "film" },
-      { name: "Expeditie-achtergrond", value: "achtergrond" },
-      {
-        name: "Afbeelding-bijlage (voor verhaal, woord of citaat)",
-        value: "afbeelding",
-      },
-      {
-        name: "Video-bijlage (voor verhaal, woord of citaat)",
-        value: "video",
-      },
-      {
-        name: "Audio-bijlage (voor verhaal, woord of citaat)",
-        value: "audio",
-      },
-    ],
-  });
+const type: "film" | "afbeelding" | "video" | "audio" = await select({
+  message: "Type bestand",
+  choices: [
+    { name: "Expeditie-film", value: "film" },
+    {
+      name: "Afbeelding-bijlage (voor verhaal, woord of citaat)",
+      value: "afbeelding",
+    },
+    {
+      name: "Video-bijlage (voor verhaal, woord of citaat)",
+      value: "video",
+    },
+    {
+      name: "Audio-bijlage (voor verhaal, woord of citaat)",
+      value: "audio",
+    },
+  ],
+});
 
-let itemType: "verhaal" | "woord" | "citaat" | undefined;
+let itemType: "verhaal" | "woord" | "citaat" | "achtergrond" | undefined;
+
+const choicesByType = {
+  afbeelding: [
+    { name: "Achtergrond", value: "achtergrond" },
+    { name: "Verhaal", value: "verhaal" },
+    { name: "Woord", value: "woord" },
+    { name: "Citaat", value: "citaat" },
+  ],
+  video: [
+    { name: "Verhaal", value: "verhaal" },
+    { name: "Woord", value: "woord" },
+    { name: "Citaat", value: "citaat" },
+  ],
+  audio: [
+    { name: "Woord", value: "woord" },
+    { name: "Citaat", value: "citaat" },
+  ],
+} as const;
 
 if (type == "afbeelding" || type == "video" || type == "audio")
   itemType = await select({
-    message: "Bijlage van",
-    choices: [
-      { name: "Verhaal", value: "verhaal" },
-      { name: "Woord", value: "woord" },
-      { name: "Citaat", value: "citaat" },
-    ],
+    message: `Doel van de ${type}`,
+    choices: choicesByType[type],
   });
 
 let expeditie: string | undefined;
 
-if (type == "film" || type == "achtergrond" || itemType == "verhaal")
+if (type == "film" || itemType == "verhaal")
   expeditie = await select({
     message: "Expeditie",
     loop: false,
@@ -58,7 +70,8 @@ if (type == "film" || type == "achtergrond" || itemType == "verhaal")
   });
 
 const answersToName = (description: string) => {
-  if (type === "film" || type === "achtergrond") return expeditie as string;
+  if (type === "film") return expeditie as string;
+  if (itemType == "achtergrond") return `${expeditie}-achtergrond`;
   if (itemType === "verhaal") return `${expeditie}-verhaal-${description}`;
   if (itemType === "woord") return `woord-${description}`;
   if (itemType === "citaat") return `citaat-${description}`;

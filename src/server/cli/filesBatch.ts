@@ -9,7 +9,7 @@ import { allConverters } from "../files/types/index.js";
 const manifestFormat = z.array(
   z.object({
     converteerder: z
-      .enum(["achtergrond", "afbeelding", "video", "audio"])
+      .enum(["afbeelding", "video", "audio"])
       .transform((x) => allConverters[x]),
     bestand: z.string(),
     beschrijving: z.string().regex(/^([a-z0-9]+-)*[a-z0-9]+$/),
