@@ -2,7 +2,9 @@ import {
   CompleteMultipartUploadCommand,
   CompletedPart,
   CreateMultipartUploadCommand,
+  DeleteObjectCommand,
   ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
   PutObjectCommand,
   S3Client,
   UploadPartCommand,
@@ -133,3 +135,34 @@ export const uploadS3File = async (fileName: string, key: string) => {
 
   file.close();
 };
+
+export const deleteS3Prefix = async (prefix: string) =>
+  withRetries(async () => {
+    let listResponse: ListObjectsV2CommandOutput;
+
+    do {
+      listResponse = await withRetries(() =>
+        client.send(
+          new ListObjectsV2Command({
+            Bucket: config.EG_S3_BUCKET,
+            Prefix: prefix,
+            ContinuationToken:
+              (listResponse && listResponse.NextContinuationToken) || undefined,
+            MaxKeys: 100,
+          })
+        )
+      );
+
+      console.dir(listResponse);
+
+      await Promise.all(
+        listResponse.Contents!.map(({ Key }) =>
+          withRetries(() =>
+            client.send(
+              new DeleteObjectCommand({ Bucket: config.EG_S3_BUCKET, Key })
+            )
+          )
+        )
+      );
+    } while (listResponse.IsTruncated);
+  });

@@ -37,7 +37,7 @@ import {
 } from "../components/storyElements/model.js";
 import { getAllWords, getWordById } from "../components/words/index.js";
 import { Word, WordModel } from "../components/words/model.js";
-import { getS3Files } from "../files/s3.js";
+import { deleteS3Prefix, getS3Files } from "../files/s3.js";
 import { getUsesForFiles } from "../files/uses.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
 
@@ -92,6 +92,7 @@ const tryCatchAndRedirect =
       setMessage(request.session, "errorMsg", errorMsg);
     }
     reply.redirect(302, request.url);
+    return reply;
   };
 
 const adminRoutes: FastifyPluginAsync = async (app) => {
@@ -412,6 +413,25 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   app.get("/bestanden", async (request, reply) =>
     reply.view("admin/files", {
       filesWithUses: await getUsesForFiles(await getS3Files()),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+    })
+  );
+
+  const filesSchema = z.object({
+    key: z.string(),
+  });
+
+  app.post(
+    "/bestanden",
+    tryCatchAndRedirect(async (request) => {
+      const action = zActionFromBody.parse(request.body);
+
+      if (action != "delete") throw new Error("Onverwachte actie");
+
+      const { key } = await filesSchema.parseAsync(request.body);
+      await deleteS3Prefix(key);
+      return `Bestand '${key}' is successvol verwijderd`;
     })
   );
 };

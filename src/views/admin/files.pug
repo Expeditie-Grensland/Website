@@ -5,7 +5,8 @@ block title
     title Expeditie - Admin - Bestanden
 
 mixin previewImg(url)
-    img.w-100.h-100.object-fit-cover(src=url alt="Preview")
+    div(style='width: 7.5rem; height: 5rem')
+        img.w-100.h-100.object-fit-cover(src=url alt="Preview")
 
 block content
     - const fileTypes = {}
@@ -20,11 +21,18 @@ block content
     - useTypes["expeditie/movie"] = "Film voor expeditie %"
     - useTypes["word/attachment"] = "Bijlage voor woord '%'"
     - useTypes["quote/attachment"] = "Bijlage voor quote '%'"
-    - useTypes["story/media"] = "Media voor verhaal bij expeditie %"
+    - useTypes["story/media"] = "Verhaal bij expeditie %"
 
     .row
         .col-12.mb-4
             .h1 Bestanden
+
+        if errMsgs.length + infoMsgs.length
+            .col-12.mb-4
+                each msg in errMsgs
+                    .alert.alert-danger= msg
+                each msg in infoMsgs
+                    .alert.alert-info= msg
 
         .col-12.mb-4
             hr
@@ -43,23 +51,26 @@ block content
                             td.py-4=file.file
                             td=(fileTypes[file.type] || `Onbekend (${file.type})`)
                             td
-                                div(style='width: 7.5rem; height: 5rem')
-                                    case file.type
-                                        when "achtergrond"
+                                case file.type
+                                    when "afbeelding"
+                                        a(href=getFileUrl(file.file, "normaal.jpg"))
                                             +previewImg(getFileUrl(file.file, "klein.jpg"))
-                                        when "afbeelding"
-                                            +previewImg(getFileUrl(file.file, "klein.jpg"))
-                                        when "film-hls"
+                                    when "film-hls"
+                                        a(href=getFileUrl(file.file, "progressive.mp4"))
                                             +previewImg(getFileUrl(file.file, "poster.jpg"))
-                                        when "film-dash"
+                                    when "film-dash"
+                                        a(href=getFileUrl(file.file, "720p30.mp4"))
                                             +previewImg(getFileUrl(file.file, "poster.jpg"))
-                                        when "video"
+                                    when "video"
+                                        a(href=getFileUrl(file.file, "1080p30.mp4"))
                                             +previewImg(getFileUrl(file.file, "poster.jpg"))
+                                    when "audio"
+                                        a(href=getFileUrl(file.file, "audio.mp3")) Link
                             td
                                 if file.uses
                                     each use in file.uses
                                         p.my-1=(useTypes[use.type] || "").replace("%", use.name)
                                 else
-                                    p.my-1 —
-
-                            
+                                    form.my-1.form-confirm(id=`f-${i}` method='POST' action=`/leden/admin/bestanden`)
+                                        input(type='hidden' name='key' value=file.file)
+                                        button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen
