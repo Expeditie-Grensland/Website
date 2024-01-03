@@ -6,13 +6,19 @@ import { Converter } from "../convert.js";
 export type FilmOptions = {
   resolution: 2160 | 1440 | 1080 | 720;
   fps: 60 | 30;
+  audioBitrate: 192 | 128;
   posterTime: number;
 };
 
 const convert = async (
   inputFile: string,
   outputDir: string,
-  { resolution: inHeight, fps: inFps, posterTime }: FilmOptions
+  {
+    resolution: inHeight,
+    fps: inFps,
+    audioBitrate: inAudioBr,
+    posterTime,
+  }: FilmOptions
 ) =>
   await runProcess(
     "ffmpeg",
@@ -81,10 +87,12 @@ const convert = async (
           { bitrate: 192 },
           { bitrate: 128 },
           { bitrate: 96 },
-        ].map(({ bitrate }, i) => [
-          ["-map", "0:a:0"],
-          [`-b:a:${i}`, `${bitrate}k`],
-        ]),
+        ]
+          .filter(({ bitrate }) => bitrate <= inAudioBr)
+          .map(({ bitrate }, i) => [
+            ["-map", "0:a:0"],
+            [`-b:a:${i}`, `${bitrate}k`],
+          ]),
         "dash.mpd",
       ],
       [

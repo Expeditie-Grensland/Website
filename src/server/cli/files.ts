@@ -122,6 +122,14 @@ const converter =
                   { name: "30 fps", value: 30 },
                 ],
               }),
+              audioBitrate: await select({
+                message: "Audio bitrate",
+                choices: [
+                  { name: "192 kb/s", value: 192 },
+                  { name: "128 kb/s", value: 128 },
+                ],
+                default: 128,
+              }),
               posterTime: parseFloat(
                 await input({
                   message: "Tijd voor posterafbeelding (in seconden)",
