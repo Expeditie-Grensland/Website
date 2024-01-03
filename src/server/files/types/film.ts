@@ -117,7 +117,10 @@ const convert = async (
     outputDir
   );
 
-export const convertFilm = (options: FilmOptions): Converter => ({
+export const convertFilm = (options?: FilmOptions): Converter => ({
   extension: "film-dash",
-  convert: (input, output) => convert(input, output, options),
+  convert: async (input, output) => {
+    if (!options) throw new Error("No film options specified");
+    await convert(input, output, options);
+  },
 });

@@ -1,4 +1,5 @@
-import inquirer, { QuestionCollection } from "inquirer";
+import input from "@inquirer/input";
+import select from "@inquirer/select";
 import { access, constants, stat } from "node:fs/promises";
 import { getAllExpedities } from "../components/expedities/index.js";
 import {
@@ -12,23 +13,9 @@ import {
 import { convertFilm } from "../files/types/film.js";
 import { allConverters } from "../files/types/index.js";
 
-type AnswersType = {
-  type: "film" | "achtergrond" | "afbeelding" | "video" | "audio";
-  bijlageVan?: "verhaal" | "woord" | "citaat";
-  expeditie?: string;
-  beschrijving?: string;
-  geenConversie?: boolean;
-  bron: string;
-  filmResolutie?: 2160 | 1440 | 1080 | 720;
-  filmFps?: 60 | 30;
-  filmPosterTijd?: number;
-};
-
-const questions: QuestionCollection<AnswersType> = [
-  {
-    name: "type",
+const type: "film" | "achtergrond" | "afbeelding" | "video" | "audio" =
+  await select({
     message: "Type bestand",
-    type: "list",
     choices: [
       { name: "Expeditie-film", value: "film" },
       { name: "Expeditie-achtergrond", value: "achtergrond" },
@@ -45,166 +32,140 @@ const questions: QuestionCollection<AnswersType> = [
         value: "audio",
       },
     ],
-  },
-  {
-    name: "bijlageVan",
+  });
+
+let itemType: "verhaal" | "woord" | "citaat" | undefined;
+
+if (type == "afbeelding" || type == "video" || type == "audio")
+  itemType = await select({
     message: "Bijlage van",
-    when: ({ type }) =>
-      type === "afbeelding" || type === "video" || type === "audio",
-    type: "list",
     choices: [
       { name: "Verhaal", value: "verhaal" },
       { name: "Woord", value: "woord" },
       { name: "Citaat", value: "citaat" },
     ],
-  },
-  {
-    name: "expeditie",
-    message: "Expeditie",
-    when: ({ type, bijlageVan }) =>
-      type === "film" || type === "achtergrond" || bijlageVan === "verhaal",
-    type: "list",
-    loop: false,
-    choices: async () =>
-      (await getAllExpedities()).map((exp) => ({
-        name: exp.name,
-        value: exp.nameShort,
-      })),
-  },
-  {
-    name: "beschrijving",
-    message: "Bestandsnaam (beknopte beschrijving)",
-    when: ({ type }) =>
-      type === "afbeelding" || type === "video" || type === "audio",
-    type: "input",
-    transformer: (input: string, answers) =>
-      answersToName({ ...answers, beschrijving: input }),
-    validate: (input: string) =>
-      /^([a-z0-9]+-)*[a-z0-9]+$/.test(input) ||
-      "Moet bestaan uit a-z en 0-9, gescheiden met -",
-  },
-  {
-    name: "geenConversie",
-    message: "Conversie overslaan (bestand is al geconverteerd)?",
-    type: "list",
-    choices: [
-      { name: "Nee", value: false },
-      { name: "Ja", value: true },
-    ],
-  },
-  {
-    name: "bron",
-    message: "Bronbestand",
-    type: "file-tree-selection",
-    enableGoUpperDirectory: true,
-    validate: async (input: string, answers) => {
-      try {
-        await access(input, constants.R_OK);
-        return answers?.geenConversie
-          ? (await stat(input)).isDirectory()
-          : (await stat(input)).isFile();
-      } catch (err) {
-        return false;
-      }
-    },
-  },
-  {
-    name: "filmResolutie",
-    message: "Resolutie (van bronbestand)",
-    when: ({ type, geenConversie }) => type === "film" && !geenConversie,
-    type: "list",
-    choices: [
-      { name: "2160p (4K)", value: 2160 },
-      { name: "1440p (QHD)", value: 1440 },
-      { name: "1080p (FHD)", value: 1080 },
-      { name: "720p (HD)", value: 720 },
-    ],
-  },
-  {
-    name: "filmFps",
-    message: "Framerate (van bronbestand)",
-    when: ({ type, geenConversie }) => type === "film" && !geenConversie,
-    type: "list",
-    choices: [
-      { name: "60 fps", value: 60 },
-      { name: "30 fps", value: 30 },
-    ],
-  },
-  {
-    name: "filmPosterTijd",
-    message: "Tijd voor posterafbeelding (in seconden)",
-    when: ({ type, geenConversie }) => type === "film" && !geenConversie,
-    type: "number",
-  },
-];
+  });
 
-const answersToName = ({
-  type,
-  beschrijving,
-  bijlageVan,
-  expeditie,
-}: AnswersType) => {
+let expeditie: string | undefined;
+
+if (type == "film" || type == "achtergrond" || itemType == "verhaal")
+  expeditie = await select({
+    message: "Expeditie",
+    loop: false,
+    choices: (
+      await getAllExpedities()
+    ).map((x) => ({ name: x.name, value: x.nameShort })),
+  });
+
+const answersToName = (description: string) => {
   if (type === "film" || type === "achtergrond") return expeditie as string;
-  if (bijlageVan === "verhaal") return `${expeditie}-verhaal-${beschrijving}`;
-  if (bijlageVan === "woord") return `woord-${beschrijving}`;
-  if (bijlageVan === "citaat") return `citaat-${beschrijving}`;
-  return beschrijving as string;
+  if (itemType === "verhaal") return `${expeditie}-verhaal-${description}`;
+  if (itemType === "woord") return `woord-${description}`;
+  if (itemType === "citaat") return `citaat-${description}`;
+  return description as string;
 };
 
-const answers = await inquirer.prompt(questions);
+const name = answersToName(
+  type == "afbeelding" || type == "video" || type == "audio"
+    ? await input({
+        message: "Bestandsnaam (beknopte beschrijving)",
+        transformer: answersToName,
+        validate: (value) =>
+          /^([a-z0-9]+-)*[a-z0-9]+$/.test(value) ||
+          "Moet bestaan uit a-z en 0-9, gescheiden met -",
+      })
+    : ""
+);
+
+const noConversion = await select({
+  message: "Conversie overslaan (bestand is al geconverteerd)?",
+  choices: [
+    { name: "Nee", value: false },
+    { name: "Ja", value: true },
+  ],
+});
+
+const sourceFile = await input({
+  message: "Pad naar bronbestand",
+  validate: async (value) => {
+    try {
+      await access(value, constants.R_OK);
+      const s = await stat(value);
+
+      if (noConversion) return s.isDirectory() || "Pad wijst niet naar een map";
+      return s.isFile() || "Pad wijst niet naar een bestand";
+    } catch {
+      return "Pad kan niet worden geopend";
+    }
+  },
+});
 
 const converter =
-  answers.type === "film"
-    ? convertFilm({
-        resolution: answers.filmResolutie!,
-        fps: answers.filmFps!,
-        posterTime: answers.filmPosterTijd!,
-      })
-    : allConverters[answers.type];
-
-const name = answersToName(answers);
+  type == "film"
+    ? convertFilm(
+        !noConversion
+          ? {
+              resolution: await select({
+                message: "Filmresolutie",
+                choices: [
+                  { name: "2160p (4K)", value: 2160 },
+                  { name: "1440p (QHD)", value: 1440 },
+                  { name: "1080p (FHD)", value: 1080 },
+                  { name: "720p (HD)", value: 720 },
+                ],
+                default: 1080,
+              }),
+              fps: await select({
+                message: "Framerate",
+                choices: [
+                  { name: "60 fps", value: 60 },
+                  { name: "30 fps", value: 30 },
+                ],
+              }),
+              posterTime: parseFloat(
+                await input({
+                  message: "Tijd voor posterafbeelding (in seconden)",
+                  validate: (value) =>
+                    /^(?:[0-9]+\.?)|(?:[0-9]*\.[0-9]+)$/.test(value) ||
+                    "Tijd is geen positief getal",
+                })
+              ),
+            }
+          : undefined
+      )
+    : allConverters[type];
 
 let convOutput: ConvertOutput;
 
-if (!answers.geenConversie) {
-  await inquirer.prompt([
-    {
-      name: "confirm",
-      message: "De conversie starten?",
-      type: "list",
-      choices: [{ name: "Ja", value: true }],
-    },
-  ] as QuestionCollection<{ confirm: true }>);
+if (!noConversion) {
+  await select({
+    message: "De conversie starten?",
+    choices: [{ name: "Ja", value: true }],
+  });
 
-  convOutput = await convertFile(answers.bron, converter);
+  convOutput = await convertFile(sourceFile, converter);
 
-  await inquirer.prompt([
-    {
-      name: "confirm",
-      message: `De bestanden zijn geconverteerd naar '${convOutput.dir}'`,
-      type: "list",
-      choices: [{ name: "Doorgaan", value: true }],
-    },
-  ] as QuestionCollection<{ confirm: true }>);
+  console.info(`Successvol geconverteerd naar '${convOutput.dir}'`);
 } else {
-  convOutput = await getConvertOutput(answers.bron);
+  convOutput = await getConvertOutput(sourceFile);
 }
+
+await select({
+  message: `Doorgaan met de prefix berekenen?`,
+  choices: [{ name: "Ja", value: true }],
+});
 
 const prefix = await determinePrefix(name, convOutput, converter.extension);
 
-const uploadConfirm = await inquirer.prompt([
-  {
-    name: "confirm",
-    message: `De geconverteerde bestanden uploaden met de sleutelprefix '${prefix}'?`,
-    type: "list",
-    choices: [
-      { name: "Ja", value: true },
-      { name: "Nee", value: false },
-    ],
-  },
-] as QuestionCollection<{ confirm: boolean }>);
+const uploadConfirm = await select({
+  message: `De geconverteerde bestanden uploaden met de sleutelprefix '${prefix}'?`,
+  choices: [
+    { name: "Ja", value: true },
+    { name: "Nee", value: false },
+  ],
+});
 
-if (uploadConfirm.confirm) {
+if (uploadConfirm) {
   const fileCount = convOutput.files.length.toString();
   let fileNum = 1;
 
@@ -218,17 +179,13 @@ if (uploadConfirm.confirm) {
 
   console.info(`Successvol geüpload met de sleutelprefix '${prefix}'`);
 
-  const deleteConfirm = await inquirer.prompt([
-    {
-      name: "confirm",
-      message: "De lokale bestanden verwijderen?",
-      type: "list",
-      choices: [
-        { name: "Ja", value: true },
-        { name: "Nee", value: false },
-      ],
-    },
-  ] as QuestionCollection<{ confirm: boolean }>);
+  const deleteConfirm = await select({
+    message: "De lokale bestanden verwijderen?",
+    choices: [
+      { name: "Ja", value: true },
+      { name: "Nee", value: false },
+    ],
+  });
 
-  if (deleteConfirm.confirm) await tryToDelete(convOutput.dir);
+  if (deleteConfirm) await tryToDelete(convOutput.dir);
 }

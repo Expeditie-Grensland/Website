@@ -1,5 +1,4 @@
-import inquirer, { QuestionCollection } from "inquirer";
-import inquirerFileTreeSelection from "inquirer-file-tree-selection-prompt";
+import select from "@inquirer/select";
 import mongoose from "mongoose";
 import { config } from "../helpers/configHelper.js";
 
@@ -9,16 +8,8 @@ try {
   console.info("Connecting to database...");
   await mongoose.connect(config.EG_MONGO_URL);
 
-  inquirer.registerPrompt("file-tree-selection", inquirerFileTreeSelection);
-
-  type AnswersType = {
-    commando: "files" | "filesBatch";
-  };
-
-  const questions: QuestionCollection<AnswersType> = {
-    name: "commando",
+  const command = await select({
     message: "Actie",
-    type: "list",
     choices: [
       { name: "Bestand converteren en uploaden", value: "files" },
       {
@@ -26,11 +17,9 @@ try {
         value: "filesBatch",
       },
     ],
-  };
+  });
 
-  const answers = await inquirer.prompt(questions);
-
-  await import(`./${answers.commando}.js`);
+  await import(`./${command}.js`);
 } catch (err) {
   console.error("Er is een fout opgetreden.");
   console.error(err instanceof Error ? err.message : String(err));
