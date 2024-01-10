@@ -9,6 +9,7 @@ import { getAllWords } from "../components/words/index.js";
 import { authenticateUser } from "../helpers/auth.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
 import adminRoutes from "./admin.js";
+import { config } from "../helpers/configHelper.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -104,6 +105,16 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
           text: "De Small Data",
           adminHref: "/leden/admin/bestanden",
         },
+        ...(config.EG_UMAMI_SHARE_URL
+          ? [
+              {
+                title: "Statistieken",
+                text: "Wie zijn onze fans?",
+                href: config.EG_UMAMI_SHARE_URL,
+                target: "_blank",
+              },
+            ]
+          : []),
       ].concat(
         (await getAllMemberLinks()).map((l) => {
           return {

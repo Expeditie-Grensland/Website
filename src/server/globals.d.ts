@@ -16,6 +16,7 @@ declare module "fastify" {
       user?: Awaited<ReturnType<typeof getPersonByLdapId>>;
       person?: Awaited<ReturnType<typeof getPersonByUserName>>;
       expeditie?: Awaited<ReturnType<typeof getPopulatedExpeditieByName>>;
+      umami?: { scriptUrl: string; websiteId: string };
     };
   }
 
@@ -25,11 +26,6 @@ declare module "fastify" {
     infoMsg: string[];
     errorMsg: string[];
   }
-}
-
-interface Global {
-  rootDir: string;
-  isCli: boolean;
 }
 
 declare global {

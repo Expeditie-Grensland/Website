@@ -27,6 +27,10 @@ const envSchema = z.object({
   EG_REDIS_PREFIX: z.string().default("expeditie-grensland:"),
 
   EG_SESSION_SECRET: z.string().min(128),
+
+  EG_UMAMI_SCRIPT_URL: z.string().startsWith("https://").optional(),
+  EG_UMAMI_WEBSITE_ID: z.string().length(36).optional(),
+  EG_UMAMI_SHARE_URL: z.string().startsWith("https://").optional()
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

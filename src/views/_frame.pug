@@ -23,6 +23,9 @@ html(lang="nl")
         link(rel="apple-touch-icon" sizes="152x152" href="/static/favicons/touch-icon-152.png")
         link(rel="apple-touch-icon" sizes="180x180" href="/static/favicons/touch-icon-180.png")
 
+        if umami
+            script(async src=umami.scriptUrl data-website-id=umami.websiteId)
+
         block title
 
         block styles

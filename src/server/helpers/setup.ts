@@ -128,6 +128,13 @@ export const setupFastify = async () => {
         (request.session.userId &&
           (await getPersonById(request.session.userId))) ||
         undefined,
+      umami:
+        config.EG_UMAMI_SCRIPT_URL && config.EG_UMAMI_WEBSITE_ID
+          ? {
+              scriptUrl: config.EG_UMAMI_SCRIPT_URL,
+              websiteId: config.EG_UMAMI_WEBSITE_ID,
+            }
+          : undefined,
     };
   });
 
