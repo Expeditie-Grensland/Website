@@ -28,3 +28,8 @@ block body
 
 
         block content
+    
+    script.
+        window.addEventListener('load', function () {
+            umami.track('ledenpagina', { gebruiker: '#{ user.userName }'})
+        });

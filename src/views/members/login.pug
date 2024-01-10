@@ -14,12 +14,12 @@ block content
                         each message in messages
                             p.text-danger.text-center= message
 
-                    form(action='/leden/login' method='POST')
+                    form(action='/leden/login' method='POST' onsubmit=`umami.track('login', { gebruiker: document.getElementById('username').value })`)
                         .form-group
                             .input-group
                                 .input-group-text
                                     span.fas.fa-fw.fa-user
-                                input.form-control(type='text' name='username' placeholder='Gebruikersnaam' required autofocus)
+                                input.form-control(type='text' id="username" name='username' placeholder='Gebruikersnaam' required autofocus)
 
                         .form-group
                             .input-group
