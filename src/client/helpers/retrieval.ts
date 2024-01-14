@@ -1,4 +1,4 @@
-import geoJson from 'geojson';
+import type geoJson from 'geojson';
 
 
 export type GeoJsonResult = {

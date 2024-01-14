@@ -40,7 +40,6 @@
         "@babel/core": "^7.23.7",
         "@babel/preset-env": "^7.23.7",
         "@mapbox/mapbox-gl-language": "^1.0.1",
-        "@types/bootstrap": "^5.2.10",
         "@types/jquery": "^3.5.29",
         "@types/luxon": "^3.3.7",
         "@types/mapbox-gl": "^2.7.19",
@@ -79,7 +78,6 @@
         "mapbox-gl": "^2.15.0",
         "merge-stream": "^2.0.0",
         "pino-pretty": "^10.3.1",
-        "popper.js": "^1.16.1",
         "postcss": "^8.4.32",
         "sass": "^1.69.6",
         "ts-unused-exports": "^10.0.1",
@@ -3439,6 +3437,7 @@
       "version": "2.11.8",
       "dev": true,
       "license": "MIT",
+      "peer": true,
       "funding": {
         "type": "opencollective",
         "url": "https://opencollective.com/popperjs"
@@ -4135,15 +4134,6 @@
       },
       "engines": {
         "node": ">=14.0.0"
-      }
-    },
-    "node_modules/@types/bootstrap": {
-      "version": "5.2.10",
-      "resolved": "https://registry.npmjs.org/@types/bootstrap/-/bootstrap-5.2.10.tgz",
-      "integrity": "sha512-F2X+cd6551tep0MvVZ6nM8v7XgGN/twpdNDjqS1TUM7YFNEtQYWk+dKAnH+T1gr6QgCoGMPl487xw/9hXooa2g==",
-      "dev": true,
-      "dependencies": {
-        "@popperjs/core": "^2.9.2"
       }
     },
     "node_modules/@types/expect": {
@@ -12465,15 +12455,6 @@
       },
       "engines": {
         "node": ">=0.10.0"
-      }
-    },
-    "node_modules/popper.js": {
-      "version": "1.16.1",
-      "dev": true,
-      "license": "MIT",
-      "funding": {
-        "type": "opencollective",
-        "url": "https://opencollective.com/popperjs"
       }
     },
     "node_modules/posix-character-classes": {

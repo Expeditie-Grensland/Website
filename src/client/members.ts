@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import 'bootstrap';
 
 $('.form-confirm').on('submit', () => {
     return confirm('Weet je het zeker?');
