@@ -1,4 +1,4 @@
-name: Build & Check
+name: Check, Build & Release
 
 on: push
 
@@ -7,7 +7,7 @@ permissions:
 
 jobs:
   build:
-    name: Check & Build
+    name: Check, Build & Release
     runs-on: ubuntu-22.04
 
     permissions:
@@ -42,10 +42,16 @@ jobs:
 
       - name: Set pre-release version
         if: github.ref == 'refs/heads/master'
-        run: npm version --git-tag-version false prerelease --preid "pre.$(date +"%Y%m%d").$(git rev-parse --short=8 HEAD)"
+        run: pnpm version --git-tag-version false prerelease --preid "pre.$(date +"%Y%m%d").$(git rev-parse --short=8 HEAD)"
 
       - name: Publish pre-release
         if: github.ref == 'refs/heads/master'
-        run: npm publish -ddd --tag next --no-git-checks
+        run: pnpm publish --tag next --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-pre')
+        run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
