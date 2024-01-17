@@ -32,7 +32,7 @@ export default (
 
       node = child_process.spawn(
         'node',
-        ['--icu-data-dir=node_modules/full-icu', 'dist/server/server.js'],
+        ['--enable-source-maps', '--icu-data-dir=node_modules/full-icu', 'dist/server/server.js'],
         { stdio: 'inherit' }
       );
 
