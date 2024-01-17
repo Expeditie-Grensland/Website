@@ -7,8 +7,12 @@ permissions:
 
 jobs:
   build:
-    name: Build
-    runs-on: ubuntu-latest
+    name: Check & Build
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
@@ -20,77 +24,28 @@ jobs:
           version: latest
 
       - name: Setup node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          registry-url: https://npm.pkg.github.com
+          scope: "@expeditie-grensland"
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Run checks
+        run: pnpm run lint
 
       - name: Run build
         run: pnpm run build:prod
 
-      - name: Create package
-        id: pack_file
-        run: echo "package_name=$(pnpm pack)" >> $GITHUB_OUTPUT
+      - name: Set pre-release version
+        if: github.ref == 'refs/heads/master'
+        run: npm version --git-tag-version false prerelease --preid "pre.$(date +"%Y%m%d").$(git rev-parse --short=8 HEAD)"
 
-      - name: Rename package
-        run: mv "${{ steps.pack_file.outputs.package_name }}" expeditiegrensland-website.tar.gz
-
-      - name: Upload package artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: package
-          path: expeditiegrensland-website.tar.gz
-
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-
-      - name: Setup node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run linting
-        run: pnpm run lint
-
-  deploy_production:
-    name: Deploy to production
-    if: github.ref == 'refs/heads/release'
-    needs:
-      - build
-      - check
-    uses: ./.github/workflows/deploy.yml
-    with:
-      environment: production
-      environment_url: https://expeditiegrensland.nl
-      prerelease: false
-    secrets: inherit
-
-  deploy_staging:
-    name: Deploy to staging
-    if: github.ref == 'refs/heads/master'
-    needs:
-      - build
-      - check
-    uses: ./.github/workflows/deploy.yml
-    with:
-      environment: staging
-      environment_url: https://staging.expeditiegrensland.nl
-      prerelease: true
-    secrets: inherit
+      - name: Publish pre-release
+        if: github.ref == 'refs/heads/master'
+        run: npm publish -ddd --tag next --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

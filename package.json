@@ -1,8 +1,7 @@
 {
-  "name": "expeditiegrensland-website",
+  "name": "@expeditie-grensland/expeditiegrensland",
   "version": "1.0.0",
-  "description": "The Expeditie Grensland website.",
-  "private": true,
+  "description": "De Expeditie Grensland website & CLI",
   "author": "Expeditie Admins",
   "contributors": [
     "Maurice Meedendorp <mauricemeedendorp@gmail.com>",
@@ -10,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Expeditie-Grensland/Website.git"
+    "url": "git+https://github.com/Expeditie-Grensland/Website.git"
   },
   "license": "GPL-3.0",
   "type": "module",
