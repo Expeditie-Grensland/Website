@@ -74,7 +74,6 @@
     "geojson": "^0.5.0",
     "gulp": "^4.0.2",
     "gulp-buffer": "^0.0.2",
-    "gulp-filter": "^9.0.1",
     "gulp-newer": "^1.4.0",
     "gulp-postcss": "^9.0.1",
     "gulp-pug": "^5.0.0",
@@ -119,7 +118,6 @@
     "migrate-up": "dotenv -- migrate-mongo up",
     "migrate-down": "dotenv -- migrate-mongo down",
     "unused-server": "ts-unused-exports src/server/tsconfig.json",
-    "unused-client": "ts-unused-exports src/client/tsconfig.json",
-    "unused-worker": "ts-unused-exports src/client/worker/tsconfig.json"
+    "unused-client": "ts-unused-exports src/client/tsconfig.json"
   }
 }

@@ -1,3 +1,5 @@
+/// <reference lib="WebWorker" />
+
 import { onFetch } from './routeCache';
 
 declare const self: ServiceWorkerGlobalScope;

@@ -1,6 +1,5 @@
 {
   "extends": "../../tsconfig.json",
-  "exclude": ["./worker/**/*"],
   "compilerOptions": {
     "target": "ES2015",
     "module": "ES2015",
