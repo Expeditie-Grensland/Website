@@ -103,6 +103,10 @@
     "migrate-mongo-config.js",
     "migrations"
   ],
+  "bin": {
+    "expeditiegrensland-website": "dist/server/server.js",
+    "expeditiegrensland-cli": "dist/server/cli/main.js"
+  },
   "scripts": {
     "cli": "dotenv -- node dist/server/cli/main.js",
     "lint": "eslint . --ext ts,js,cjs,mjs",
