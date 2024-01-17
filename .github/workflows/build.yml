@@ -1,6 +1,8 @@
 name: Check, Build & Release
 
-on: push
+on: 
+  - push
+  - create
 
 permissions:
   contents: write
