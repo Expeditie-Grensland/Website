@@ -6,3 +6,7 @@ node_modules/
 .idea/
 .vscode/
 .scannerwork/
+
+package-lock.json
+npm-shrinkwrap.json
+yarn.lock
