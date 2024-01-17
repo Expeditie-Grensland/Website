@@ -1,8 +1,6 @@
 name: Check, Build & Release
 
-on: 
-  - push
-  - create
+on: push
 
 permissions:
   contents: read
@@ -50,7 +48,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-pre')
+        if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
         run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
