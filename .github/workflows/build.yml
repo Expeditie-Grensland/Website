@@ -5,16 +5,13 @@ on:
   - create
 
 permissions:
-  contents: write
+  contents: read
+  packages: write
 
 jobs:
   build:
     name: Check, Build & Release
     runs-on: ubuntu-22.04
-
-    permissions:
-      contents: read
-      packages: write
 
     steps:
       - name: Checkout repository
