@@ -39,7 +39,7 @@ jobs:
 
       - name: Set pre-release version
         if: github.ref == 'refs/heads/master'
-        run: pnpm version --git-tag-version false prerelease --preid "pre.$(date +"%Y%m%d").$(git rev-parse --short=8 HEAD)"
+        run: pnpm version --git-tag-version false "$(pnpm version --git-tag-version false patch)-pre.$(date +"%Y%m%d").$(git rev-parse --short=8 HEAD)"
 
       - name: Publish pre-release
         if: github.ref == 'refs/heads/master'
