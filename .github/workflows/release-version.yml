@@ -42,4 +42,4 @@ jobs:
           TYPE: ${{ inputs.releaseType }}
 
       - name: Push changes & tag
-        run: git push --followTags
+        run: git push --follow-tags
