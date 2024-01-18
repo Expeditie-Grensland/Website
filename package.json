@@ -85,7 +85,7 @@
     "gulp-typescript": "^6.0.0-alpha.1",
     "hls.js": "1.5.1",
     "jquery": "^3.7.1",
-    "mapbox-gl": "^3.0.1",
+    "mapbox-gl": "^3.1.0",
     "merge-stream": "^2.0.0",
     "pino-pretty": "^10.3.1",
     "postcss": "^8.4.33",

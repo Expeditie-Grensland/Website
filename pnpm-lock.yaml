@@ -90,7 +90,7 @@ devDependencies:
     version: 7.23.8(@babel/core@7.23.7)
   '@mapbox/mapbox-gl-language':
     specifier: ^1.0.1
-    version: 1.0.1(mapbox-gl@3.0.1)
+    version: 1.0.1(mapbox-gl@3.1.0)
   '@types/geojson':
     specifier: ^7946.0.13
     version: 7946.0.13
@@ -200,8 +200,8 @@ devDependencies:
     specifier: ^3.7.1
     version: 3.7.1
   mapbox-gl:
-    specifier: ^3.0.1
-    version: 3.0.1
+    specifier: ^3.1.0
+    version: 3.1.0
   merge-stream:
     specifier: ^2.0.0
     version: 2.0.0
@@ -2281,12 +2281,12 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /@mapbox/mapbox-gl-language@1.0.1(mapbox-gl@3.0.1):
+  /@mapbox/mapbox-gl-language@1.0.1(mapbox-gl@3.1.0):
     resolution: {integrity: sha512-gL58ojl7gaWLfbSISoB2QJEfTK3j+NKvPH9og0r+c3bd5BNqhY19Eb4OPfDc5+dGmjW03LhtZBc4n2b7Xn8kjA==}
     peerDependencies:
       mapbox-gl: '>=0.29.0'
     dependencies:
-      mapbox-gl: 3.0.1
+      mapbox-gl: 3.1.0
     dev: true
 
   /@mapbox/mapbox-gl-supported@2.0.1:
@@ -6857,8 +6857,8 @@ packages:
       object-visit: 1.0.1
     dev: true
 
-  /mapbox-gl@3.0.1:
-    resolution: {integrity: sha512-o7C6sAlj6Hkdd4xQVEgQflgJYNYyZOAtYahhIOb9m8chI8umtWcCp8Ie0iGLYJvce1WHRMa3WGzs69ggwuWlDA==}
+  /mapbox-gl@3.1.0:
+    resolution: {integrity: sha512-X6gaQ7WCNwMK6MnQn+rlq6ugzRItdE775TSzmyGPy0wN6hs/8PONi/G+hioeGV5ZyQ0a0BmvmF+gCUH0FBvavw==}
     dependencies:
       '@mapbox/geojson-rewind': 0.5.2
       '@mapbox/jsonlint-lines-primitives': 2.0.2
