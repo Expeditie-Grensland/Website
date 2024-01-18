@@ -22,7 +22,7 @@ const getFileUses = async (): Promise<FileUses> => {
   const addUseIfFile = (
     type: FileUseType,
     name: string,
-    file: string | undefined
+    file: string | null | undefined
   ) => {
     if (!file) return;
 

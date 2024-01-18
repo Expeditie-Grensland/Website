@@ -6,4 +6,4 @@ export const createManyLocations = async (locs: GeoLocation[]) =>
 
 export const getLocationCountByExpeditie = async (
   expeditieId: mongoose.Types.ObjectId
-) => await geoLocationModel.count({ expeditieId });
+) => await geoLocationModel.countDocuments({ expeditieId });

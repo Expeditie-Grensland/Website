@@ -18,4 +18,4 @@ export const getStoryByExpeditie = async (
 
 export const getStoryCountByExpeditie = async (
   expeditieId: mongoose.Types.ObjectId
-) => await BaseStoryElementModel.find({ expeditieId }).count();
+) => await BaseStoryElementModel.find({ expeditieId }).countDocuments();

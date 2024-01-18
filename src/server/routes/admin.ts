@@ -136,7 +136,11 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       if (action === "delete") {
         const doc = await quoteDocSchema.parseAsync(request.body);
         const result = await doc.deleteOne();
-        return `Citaat "${result.quote}" is succesvol verwijderd`;
+
+        if (result.deletedCount !== 1)
+          throw new Error("Citaat kon niet worden verwijderd");
+
+        return `Citaat "${doc.quote}" is succesvol verwijderd`;
       }
 
       const input = await quoteSchema.parseAsync(request.body);
@@ -186,7 +190,11 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       if (action === "delete") {
         const doc = await wordDocSchema.parseAsync(request.body);
         const result = await doc.deleteOne();
-        return `Woord "${result.word}" is succesvol verwijderd`;
+
+        if (result.deletedCount !== 1)
+          throw new Error("Woord kon niet worden verwijderd");
+
+        return `Woord "${doc.word}" is succesvol verwijderd`;
       }
 
       const input = await wordSchema.parseAsync(request.body);
@@ -239,7 +247,11 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       if (action === "delete") {
         const doc = await pointDocSchema.parseAsync(request.body);
         const result = await doc.deleteOne();
-        return `Punt "${result._id.toHexString()}" is succesvol verwijderd`;
+
+        if (result.deletedCount !== 1)
+          throw new Error("Punt kon niet worden verwijderd");
+
+        return "Punt is succesvol verwijderd";
       }
 
       const input = await pointSchema.parseAsync(request.body);
@@ -363,7 +375,11 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       if (action === "delete") {
         const doc = await storyDocSchema.parseAsync(request.body);
         const result = await doc.deleteOne();
-        return `Verhaal "${result._id.toHexString()}" is succesvol verwijderd`;
+
+        if (result.deletedCount !== 1)
+          throw new Error("Verhaal kon niet worden verwijderd");
+
+        return "Verhaal is succesvol verwijderd";
       }
 
       const input = await storySchema.parseAsync(request.body);
@@ -393,10 +409,12 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
         story = {
           ...baseStory,
           title: input.title,
-          media: input.files.map((file, i) => ({
-            file,
-            description: input.descriptions[i],
-          })),
+          media: new mongoose.Types.DocumentArray(
+            input.files.map((file, i) => ({
+              file,
+              description: input.descriptions[i],
+            }))
+          ),
         };
 
       if (action === "change") {
@@ -427,7 +445,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     tryCatchAndRedirect(async (request) => {
       const action = zActionFromBody.parse(request.body);
 
-      if (action != "delete") throw new Error("Onverwachte actie");
+      if (action !== "delete") throw new Error("Onverwachte actie");
 
       const { key } = await filesSchema.parseAsync(request.body);
       await deleteS3Prefix(key);
