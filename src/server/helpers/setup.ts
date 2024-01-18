@@ -141,9 +141,8 @@ export const setupFastify = async () => {
   await app.register(routes);
 
   await app.ready();
-  await app.listen(
-    typeof config.EG_PORT === "number"
-      ? { port: config.EG_PORT }
-      : { path: config.EG_PORT }
-  );
+  await app.listen({
+    host: "::",
+    port: config.EG_PORT,
+  });
 };

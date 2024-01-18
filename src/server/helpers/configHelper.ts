@@ -4,7 +4,7 @@ import { fromZodError } from "zod-validation-error";
 const envSchema = z.object({
   NODE_ENV: z.enum(["production", "development"]).default("development"),
 
-  EG_PORT: z.union([z.coerce.number().int(), z.string()]),
+  EG_PORT: z.coerce.number().int().min(1024).max(65535),
 
   EG_FILES_BASE_URL: z.string(),
   EG_S3_ENDPOINT: z.string().startsWith("https://"),
