@@ -6,16 +6,16 @@ settings:
 
 dependencies:
   '@aws-sdk/client-s3':
-    specifier: ^3.484.0
+    specifier: ^3.490.0
     version: 3.490.0
   '@fastify/cookie':
-    specifier: ^9.2.0
-    version: 9.3.0
+    specifier: ^9.3.1
+    version: 9.3.1
   '@fastify/formbody':
     specifier: ^7.4.0
     version: 7.4.0
   '@fastify/multipart':
-    specifier: ^8.0.0
+    specifier: ^8.1.0
     version: 8.1.0
   '@fastify/session':
     specifier: ^10.7.0
@@ -36,7 +36,7 @@ dependencies:
     specifier: ^7.1.0
     version: 7.1.0(express-session@1.17.3)
   fast-xml-parser:
-    specifier: ^4.3.2
+    specifier: ^4.3.3
     version: 4.3.3
   fastify:
     specifier: ^4.25.2
@@ -78,19 +78,19 @@ dependencies:
     specifier: ^3.22.4
     version: 3.22.4
   zod-validation-error:
-    specifier: ^2.1.0
-    version: 2.1.0(zod@3.22.4)
+    specifier: ^3.0.0
+    version: 3.0.0(zod@3.22.4)
 
 devDependencies:
   '@babel/core':
     specifier: ^7.23.7
     version: 7.23.7
   '@babel/preset-env':
-    specifier: ^7.23.7
+    specifier: ^7.23.8
     version: 7.23.8(@babel/core@7.23.7)
   '@mapbox/mapbox-gl-language':
     specifier: ^1.0.1
-    version: 1.0.1(mapbox-gl@2.15.0)
+    version: 1.0.1(mapbox-gl@3.0.1)
   '@types/geojson':
     specifier: ^7946.0.13
     version: 7946.0.13
@@ -98,7 +98,7 @@ devDependencies:
     specifier: ^3.5.29
     version: 3.5.29
   '@types/luxon':
-    specifier: ^3.3.7
+    specifier: ^3.4.1
     version: 3.4.1
   '@types/mapbox-gl':
     specifier: ^2.7.19
@@ -107,7 +107,7 @@ devDependencies:
     specifier: ^3.0.4
     version: 3.0.4
   '@types/node':
-    specifier: ^20.10.6
+    specifier: ^20.11.5
     version: 20.11.5
   '@types/pug':
     specifier: ^2.0.10
@@ -116,14 +116,14 @@ devDependencies:
     specifier: ^6.9.11
     version: 6.9.11
   '@typescript-eslint/eslint-plugin':
-    specifier: ^6.17.0
+    specifier: ^6.19.0
     version: 6.19.0(@typescript-eslint/parser@6.19.0)(eslint@8.56.0)(typescript@5.3.3)
   '@typescript-eslint/parser':
-    specifier: ^6.17.0
+    specifier: ^6.19.0
     version: 6.19.0(eslint@8.56.0)(typescript@5.3.3)
   autoprefixer:
-    specifier: ^10.4.16
-    version: 10.4.16(postcss@8.4.33)
+    specifier: ^10.4.17
+    version: 10.4.17(postcss@8.4.33)
   babelify:
     specifier: ^10.0.0
     version: 10.0.0(@babel/core@7.23.7)
@@ -167,7 +167,7 @@ devDependencies:
     specifier: ^1.4.0
     version: 1.4.0
   gulp-postcss:
-    specifier: ^9.0.1
+    specifier: ^9.1.0
     version: 9.1.0(postcss@8.4.33)
   gulp-pug:
     specifier: ^5.0.0
@@ -194,14 +194,14 @@ devDependencies:
     specifier: ^6.0.0-alpha.1
     version: 6.0.0-alpha.1(typescript@5.3.3)
   hls.js:
-    specifier: 1.4.14
-    version: 1.4.14
+    specifier: 1.5.1
+    version: 1.5.1
   jquery:
     specifier: ^3.7.1
     version: 3.7.1
   mapbox-gl:
-    specifier: ^2.15.0
-    version: 2.15.0
+    specifier: ^3.0.1
+    version: 3.0.1
   merge-stream:
     specifier: ^2.0.0
     version: 2.0.0
@@ -209,11 +209,11 @@ devDependencies:
     specifier: ^10.3.1
     version: 10.3.1
   postcss:
-    specifier: ^8.4.32
+    specifier: ^8.4.33
     version: 8.4.33
   sass:
-    specifier: ^1.69.6
-    version: 1.69.7
+    specifier: ^1.70.0
+    version: 1.70.0
   ts-unused-exports:
     specifier: ^10.0.1
     version: 10.0.1(typescript@5.3.3)
@@ -2060,8 +2060,8 @@ packages:
       text-decoding: 1.0.0
     dev: false
 
-  /@fastify/cookie@9.3.0:
-    resolution: {integrity: sha512-kDEo3hOaWGcbwgK2TLXAK034a4YmNIcencBeHFO3kiFs9YbGdNEluC62rzqKxSW+NyomezxDrpyts30hK0xQ6g==}
+  /@fastify/cookie@9.3.1:
+    resolution: {integrity: sha512-h1NAEhB266+ZbZ0e9qUE6NnNR07i7DnNXWG9VbbZ8uC6O/hxHpl+Zoe5sw1yfdZ2U6XhToUGDnzQtWJdCaPwfg==}
     dependencies:
       cookie-signature: 1.2.1
       fastify-plugin: 4.5.1
@@ -2281,12 +2281,12 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /@mapbox/mapbox-gl-language@1.0.1(mapbox-gl@2.15.0):
+  /@mapbox/mapbox-gl-language@1.0.1(mapbox-gl@3.0.1):
     resolution: {integrity: sha512-gL58ojl7gaWLfbSISoB2QJEfTK3j+NKvPH9og0r+c3bd5BNqhY19Eb4OPfDc5+dGmjW03LhtZBc4n2b7Xn8kjA==}
     peerDependencies:
       mapbox-gl: '>=0.29.0'
     dependencies:
-      mapbox-gl: 2.15.0
+      mapbox-gl: 3.0.1
     dev: true
 
   /@mapbox/mapbox-gl-supported@2.0.1:
@@ -3510,8 +3510,8 @@ packages:
     resolution: {integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==}
     engines: {node: '>=8.0.0'}
 
-  /autoprefixer@10.4.16(postcss@8.4.33):
-    resolution: {integrity: sha512-7vd3UC6xKp0HLfua5IjZlcXvGAGy7cBAXTg2lyQ/8WpNhd6SiZ8Be+xm3FyBSYJx5GKcpRCzBh7RH4/0dnY+uQ==}
+  /autoprefixer@10.4.17(postcss@8.4.33):
+    resolution: {integrity: sha512-/cpVNRLSfhOtcGflT13P2794gVSgmPgTR+erw5ifnMLZb0UnSlkK4tquLmkd3BhA+nLo5tX8Cu0upUsGKvKbmg==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
@@ -4000,6 +4000,10 @@ packages:
 
   /chardet@0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
+    dev: true
+
+  /cheap-ruler@3.0.2:
+    resolution: {integrity: sha512-02T332h1/HTN6cDSufLP8x4JzDs2+VC+8qZ/N0kWIVPyc2xUkWwWh3B2fJxR7raXkL4Mq7k554mfuM9ofv/vGg==}
     dev: true
 
   /chokidar@2.1.8:
@@ -6028,8 +6032,8 @@ packages:
     resolution: {integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==}
     dev: true
 
-  /hls.js@1.4.14:
-    resolution: {integrity: sha512-UppQjyvPVclg+6t2KY/Rv03h0+bA5u6zwqVoz4LAC/L0fgYmIaCD7ZCrwe8WI1Gv01be1XL0QFsRbSdIHV/Wbw==}
+  /hls.js@1.5.1:
+    resolution: {integrity: sha512-SsUSlpyjOGnwBhVrVEG6vRFPU2SAJ0gUqrFdGeo7YPbOC0vuWK0TDMyp7n3QiaBC/Wkic771uqPnnVdT8/x+3Q==}
     dev: true
 
   /hmac-drbg@1.0.1:
@@ -6869,8 +6873,8 @@ packages:
       object-visit: 1.0.1
     dev: true
 
-  /mapbox-gl@2.15.0:
-    resolution: {integrity: sha512-fjv+aYrd5TIHiL7wRa+W7KjtUqKWziJMZUkK5hm8TvJ3OLeNPx4NmW/DgfYhd/jHej8wWL+QJBDbdMMAKvNC0A==}
+  /mapbox-gl@3.0.1:
+    resolution: {integrity: sha512-o7C6sAlj6Hkdd4xQVEgQflgJYNYyZOAtYahhIOb9m8chI8umtWcCp8Ie0iGLYJvce1WHRMa3WGzs69ggwuWlDA==}
     dependencies:
       '@mapbox/geojson-rewind': 0.5.2
       '@mapbox/jsonlint-lines-primitives': 2.0.2
@@ -6880,6 +6884,7 @@ packages:
       '@mapbox/unitbezier': 0.0.1
       '@mapbox/vector-tile': 1.3.1
       '@mapbox/whoots-js': 3.1.0
+      cheap-ruler: 3.0.2
       csscolorparser: 1.0.3
       earcut: 2.2.4
       geojson-vt: 3.2.1
@@ -8421,8 +8426,8 @@ packages:
     dev: false
     optional: true
 
-  /sass@1.69.7:
-    resolution: {integrity: sha512-rzj2soDeZ8wtE2egyLXgOOHQvaC2iosZrkF6v3EUG+tBwEvhqUCzm0VP3k9gHF9LXbSrRhT5SksoI56Iw8NPnQ==}
+  /sass@1.70.0:
+    resolution: {integrity: sha512-uUxNQ3zAHeAx5nRFskBnrWzDUJrrvpCPD5FNAoRvTi0WwremlheES3tg+56PaVtCs5QDRX5CBLxxKMDJMEa1WQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -9768,8 +9773,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  /zod-validation-error@2.1.0(zod@3.22.4):
-    resolution: {integrity: sha512-VJh93e2wb4c3tWtGgTa0OF/dTt/zoPCPzXq4V11ZjxmEAFaPi/Zss1xIZdEB5RD8GD00U0/iVXgqkF77RV7pdQ==}
+  /zod-validation-error@3.0.0(zod@3.22.4):
+    resolution: {integrity: sha512-x+agsJJG9rvC7axF0xqTEdZhJkLHyIZkdOAWDJSmwGPzxNHMHwtU6w2yDOAAP6yuSfTAUhAMJRBfhVGY64ySEQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.18.0
