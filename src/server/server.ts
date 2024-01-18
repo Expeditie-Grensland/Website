@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { dirname, join } from "node:path";
 import { setupFastify, setupMongooose } from "./helpers/setup.js";
 
