@@ -1,4 +1,4 @@
-name: Check, Build & Release
+name: Check, Build, Release & Deploy
 
 on: push
 
@@ -52,3 +52,39 @@ jobs:
         run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-latest:
+    name: Deploy Latest
+    runs-on: ubuntu-22.04
+    needs: build
+    environment:
+      name: latest
+      url: https://expeditiegrensland.nl
+      
+    steps:
+      - name: Install SSH configuration
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known_hosts: ${{ secrets.DEPLOY_SSH_HOSTS }}
+
+      - name: Deploy to server
+        run: ssh -T ${{ secrets.DEPLOY_SERVER }}
+
+  deploy-next:
+    name: Deploy Next
+    runs-on: ubuntu-22.04
+    needs: build
+    environment:
+      name: next
+      url: https://next.expeditiegrensland.nl
+      
+    steps:
+      - name: Install SSH configuration
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known_hosts: ${{ secrets.DEPLOY_SSH_HOSTS }}
+
+      - name: Deploy to server
+        run: ssh -T ${{ secrets.DEPLOY_SERVER }}
