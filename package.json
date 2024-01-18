@@ -107,6 +107,7 @@
     "expeditiegrensland-cli": "dist/server/cli/main.js"
   },
   "scripts": {
+    "start": "node dist/server/server.js",
     "cli": "dotenv -- node dist/server/cli/main.js",
     "lint": "eslint . --ext ts,js,cjs,mjs",
     "nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
