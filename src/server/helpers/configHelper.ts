@@ -12,6 +12,7 @@ const envSchema = z.object({
   EG_S3_ACCESS_KEY_ID: z.string(),
   EG_S3_ACCESS_SECRET: z.string(),
   EG_S3_BUCKET: z.string(),
+  EG_S3_MIN_DELETE_AGE: z.coerce.number().int().default(90),
 
   EG_MONGO_URL: z.string().startsWith("mongodb://"),
 

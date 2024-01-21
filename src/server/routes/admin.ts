@@ -449,6 +449,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
       const { key } = await filesSchema.parseAsync(request.body);
       await deleteS3Prefix(key);
+
       return `Bestand '${key}' is successvol verwijderd`;
     })
   );
