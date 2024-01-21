@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import select from "@inquirer/select";
 import mongoose from "mongoose";
 import { config } from "../helpers/configHelper.js";
