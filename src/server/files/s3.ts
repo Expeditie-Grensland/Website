@@ -25,25 +25,12 @@ const client = new S3Client({
   },
 });
 
-const withRetries = async <T>(func: () => Promise<T>) => {
-  for (let i = 1; i < 3; i++) {
-    try {
-      return await func();
-    } catch (e) {
-      // retry
-    }
-  }
-  return await func();
-};
-
 export const getS3Files = async () => {
-  const response = await withRetries(() =>
-    client.send(
-      new ListObjectsV2Command({
-        Bucket: config.EG_S3_BUCKET,
-        Delimiter: "/",
-      })
-    )
+  const response = await client.send(
+    new ListObjectsV2Command({
+      Bucket: config.EG_S3_BUCKET,
+      Delimiter: "/",
+    })
   );
 
   return (
@@ -64,16 +51,13 @@ const uploadS3FileSingle = async (
 ) => {
   const buffer = await file.readFile();
 
-  await withRetries(
-    async () =>
-      await client.send(
-        new PutObjectCommand({
-          Bucket: config.EG_S3_BUCKET,
-          Key: key,
-          Body: buffer,
-          ContentType: type,
-        })
-      )
+  await client.send(
+    new PutObjectCommand({
+      Bucket: config.EG_S3_BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: type,
+    })
   );
 };
 
@@ -82,46 +66,39 @@ const uploadS3FileMultiPart = async (
   key: string,
   type: string
 ) => {
-  const createResponse = await withRetries(() =>
-    client.send(
-      new CreateMultipartUploadCommand({
-        Bucket: config.EG_S3_BUCKET,
-        Key: key,
-        ContentType: type,
-      })
-    )
+  const createResponse = await client.send(
+    new CreateMultipartUploadCommand({
+      Bucket: config.EG_S3_BUCKET,
+      Key: key,
+      ContentType: type,
+    })
   );
 
   const completeParts: CompletedPart[] = [];
 
   await readFileHandleByChunk(file, CHUNK_SIZE, async (buffer, num) => {
-    const partResponse = await withRetries(
-      async () =>
-        await client.send(
-          new UploadPartCommand({
-            Bucket: config.EG_S3_BUCKET,
-            Key: key,
-            UploadId: createResponse.UploadId!,
-            PartNumber: num + 1,
-            Body: buffer,
-          })
-        )
+    const partResponse = await client.send(
+      new UploadPartCommand({
+        Bucket: config.EG_S3_BUCKET,
+        Key: key,
+        UploadId: createResponse.UploadId!,
+        PartNumber: num + 1,
+        Body: buffer,
+      })
     );
 
     completeParts.push({ PartNumber: num + 1, ETag: partResponse.ETag! });
   });
 
-  await withRetries(() =>
-    client.send(
-      new CompleteMultipartUploadCommand({
-        Bucket: config.EG_S3_BUCKET,
-        Key: key,
-        UploadId: createResponse.UploadId!,
-        MultipartUpload: {
-          Parts: completeParts,
-        },
-      })
-    )
+  await client.send(
+    new CompleteMultipartUploadCommand({
+      Bucket: config.EG_S3_BUCKET,
+      Key: key,
+      UploadId: createResponse.UploadId!,
+      MultipartUpload: {
+        Parts: completeParts,
+      },
+    })
   );
 };
 
@@ -136,33 +113,26 @@ export const uploadS3File = async (fileName: string, key: string) => {
   file.close();
 };
 
-export const deleteS3Prefix = async (prefix: string) =>
-  withRetries(async () => {
-    let listResponse: ListObjectsV2CommandOutput;
+export const deleteS3Prefix = async (prefix: string) => {
+  let listResponse: ListObjectsV2CommandOutput | undefined;
 
-    do {
-      listResponse = await withRetries(() =>
+  do {
+    listResponse = await client.send(
+      new ListObjectsV2Command({
+        Bucket: config.EG_S3_BUCKET,
+        Prefix: prefix,
+        ContinuationToken:
+          (listResponse && listResponse.NextContinuationToken) || undefined,
+        MaxKeys: 100,
+      })
+    );
+
+    await Promise.all(
+      listResponse.Contents!.map(({ Key }) =>
         client.send(
-          new ListObjectsV2Command({
-            Bucket: config.EG_S3_BUCKET,
-            Prefix: prefix,
-            ContinuationToken:
-              (listResponse && listResponse.NextContinuationToken) || undefined,
-            MaxKeys: 100,
-          })
+          new DeleteObjectCommand({ Bucket: config.EG_S3_BUCKET, Key })
         )
-      );
-
-      console.dir(listResponse);
-
-      await Promise.all(
-        listResponse.Contents!.map(({ Key }) =>
-          withRetries(() =>
-            client.send(
-              new DeleteObjectCommand({ Bucket: config.EG_S3_BUCKET, Key })
-            )
-          )
-        )
-      );
-    } while (listResponse.IsTruncated);
-  });
+      )
+    );
+  } while (listResponse.IsTruncated);
+};
