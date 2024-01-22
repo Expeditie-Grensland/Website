@@ -99,22 +99,28 @@ const noConversion = await select({
   ],
 });
 
-const sourceFile = await input({
-  message: "Pad naar bronbestand",
-  validate: async (value) => {
-    const path = (value.startsWith('"') && value.endsWith('"')) ? value.slice(1, value.length - 1) : value;
+const removeQuotes = (str: string) =>
+  str.replace(/^"(.+)"$/, "$1").replace(/^'(.+)'$/, "$1");
 
-    try {
-      await access(path, constants.R_OK);
-      const s = await stat(path);
+const sourceFile = removeQuotes(
+  await input({
+    message: "Pad naar bronbestand",
+    validate: async (value) => {
+      const path = removeQuotes(value);
 
-      if (noConversion) return s.isDirectory() || "Pad wijst niet naar een map";
-      return s.isFile() || "Pad wijst niet naar een bestand";
-    } catch {
-      return "Pad kan niet worden geopend";
-    }
-  },
-});
+      try {
+        await access(path, constants.R_OK);
+        const s = await stat(path);
+
+        if (noConversion)
+          return s.isDirectory() || "Pad wijst niet naar een map";
+        return s.isFile() || "Pad wijst niet naar een bestand";
+      } catch {
+        return "Pad kan niet worden geopend";
+      }
+    },
+  })
+);
 
 const converter =
   type == "film"
