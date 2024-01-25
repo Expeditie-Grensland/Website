@@ -3,7 +3,6 @@ import select from "@inquirer/select";
 import { access, constants, stat } from "node:fs/promises";
 import { getAllExpedities } from "../components/expedities/index.js";
 import {
-  ConvertOutput,
   convertFile,
   determinePrefix,
   getConvertOutput,
@@ -157,35 +156,38 @@ const converter =
       )
     : allConverters[type];
 
-let convOutput: ConvertOutput;
+const immediateUpload = await select({
+  message: "Starten?",
+  choices: [
+    { name: "Ja", value: false },
+    { name: "Ja, en na afloop gelijk uploaden", value: true },
+  ],
+});
 
+let convOutput;
 if (!noConversion) {
-  await select({
-    message: "De conversie starten?",
-    choices: [{ name: "Ja", value: true }],
-  });
-
   convOutput = await convertFile(sourceFile, converter);
-
   console.info(`Successvol geconverteerd naar '${convOutput.dir}'`);
 } else {
   convOutput = await getConvertOutput(sourceFile);
 }
 
-await select({
-  message: `Doorgaan met de prefix berekenen?`,
-  choices: [{ name: "Ja", value: true }],
-});
+let prefix, uploadConfirm;
 
-const prefix = await determinePrefix(name, convOutput, converter.extension);
+do {
+  prefix = await determinePrefix(name, convOutput, converter.extension);
 
-const uploadConfirm = await select({
-  message: `De geconverteerde bestanden uploaden met de sleutelprefix '${prefix}'?`,
-  choices: [
-    { name: "Ja", value: true },
-    { name: "Nee", value: false },
-  ],
-});
+  uploadConfirm =
+    immediateUpload ||
+    (await select<boolean | "recompute">({
+      message: `De geconverteerde bestanden uploaden met de sleutelprefix '${prefix}'?`,
+      choices: [
+        { name: "Ja", value: true },
+        { name: "Nee", value: false },
+        { name: "Prefix herberekenen", value: "recompute" },
+      ],
+    }));
+} while (uploadConfirm == "recompute");
 
 if (uploadConfirm) {
   const fileCount = convOutput.files.length.toString();
@@ -201,13 +203,15 @@ if (uploadConfirm) {
 
   console.info(`Successvol geüpload met de sleutelprefix '${prefix}'`);
 
-  const deleteConfirm = await select({
-    message: "De lokale bestanden verwijderen?",
-    choices: [
-      { name: "Ja", value: true },
-      { name: "Nee", value: false },
-    ],
-  });
+  if (!noConversion) {
+    const deleteConfirm = await select({
+      message: "De lokale bestanden verwijderen?",
+      choices: [
+        { name: "Ja", value: true },
+        { name: "Nee", value: false },
+      ],
+    });
 
-  if (deleteConfirm) await tryToDelete(convOutput.dir);
+    if (deleteConfirm) await tryToDelete(convOutput.dir);
+  }
 }
