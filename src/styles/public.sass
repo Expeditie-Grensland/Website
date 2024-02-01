@@ -127,9 +127,12 @@ a, a *
 .sidebar-item:not(:last-child)
   margin-bottom: 2rem
 
-.sidebar-item span:not(:first-child)::before, .ratio .h1::after
+.sidebar-item > span:not(:first-child)::before, .ratio .h1::after
   content: "\A"
   white-space: pre
 
-.sidebar-title, .sidebar-detail, .error-details
+.sidebar-title, .sidebar-detail, .error-details, .sidebar-link
   color: #a1a1a1
+
+.sidebar-link:hover, .sidebar-link:focus
+  color: #c7c7c7

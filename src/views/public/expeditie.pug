@@ -18,7 +18,7 @@ block content
     .row
         .col-12.col-md-4.order-md-2.sidebar.text-md-right
             if expeditie.showMap
-                a.btn.btn-map.btn-outline-light.sidebar-item(href=`/${expeditie.nameShort}/kaart`) Open de Kaart
+                a.btn.btn-map.btn-outline-light.sidebar-item(href=`/${expeditie.nameShort}/kaart`) Open de kaart
 
             if expeditie.movieEditorIds && expeditie.movieEditorIds.length > 0 && (!expeditie.movieRestricted || user)
                 div.sidebar-item
@@ -34,6 +34,10 @@ block content
                         |
                         if person.type === "guest"
                             span.sidebar-detail (gast)
+
+            if expeditie.movieFile && (!expeditie.movieRestricted || user) && getFileType(expeditie.movieFile) == "film-dash"
+                div.sidebar-item
+                    a.sidebar-link(href=getFileUrl(expeditie.movieFile, "origineel.mp4") download=`Expeditie ${expeditie.name}.mp4`) Download film
 
         .col-12.col-md-8.order-md-1
             if expeditie.movieFile && (!expeditie.movieRestricted || user)
