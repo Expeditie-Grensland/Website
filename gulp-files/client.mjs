@@ -1,17 +1,18 @@
-import babelify from 'babelify';
-import browserify from 'browserify';
-import buffer from 'gulp-buffer';
-import { deleteAsync } from 'del';
-import fancyLog from 'fancy-log';
-import rev from 'gulp-rev';
-import terser from 'gulp-terser';
-import mergeStream from 'merge-stream';
-import tsify from 'tsify';
-import source from 'vinyl-source-stream';
-import watchify from 'watchify';
+import babelify from "babelify";
+import browserify from "browserify";
+import buffer from "gulp-buffer";
+import { deleteAsync } from "del";
+import fancyLog from "fancy-log";
+import filter from "gulp-filter";
+import rev from "gulp-rev";
+import terser from "gulp-terser";
+import mergeStream from "merge-stream";
+import tsify from "tsify";
+import source from "vinyl-source-stream";
+import watchify from "watchify";
 
-const src = 'src/client';
-const dest = 'dist/static/scripts';
+const src = "src/client";
+const dest = "dist/static/scripts";
 
 const entries = [
   `${src}/all.ts`,
@@ -23,6 +24,8 @@ const entries = [
   `${src}/worker/index.ts`,
 ];
 
+const workerFilter = filter(["**/*", "!**/worker.js"], { restore: true });
+
 export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
   // client:clean
   if (opts.clean) return () => deleteAsync(`${dest}/**`);
@@ -31,7 +34,7 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
     fancyLog(`Starting bundling ${path}`);
     return b
       .bundle()
-      .on('end', () => fancyLog(`Finished bundling ${path}`))
+      .on("end", () => fancyLog(`Finished bundling ${path}`))
       .pipe(source(path));
   };
 
@@ -51,14 +54,14 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
         packageCache: {},
       })
         .plugin(tsify, { project, files: [] })
-        .transform(babelify, { extensions: ['.ts', '.js'] });
+        .transform(babelify, { extensions: [".ts", ".js"] });
 
       const path = entry
-        .replace('.ts', '.js')
-        .replace('/index.js', '.js')
-        .replace(`${src}/`, '');
+        .replace(".ts", ".js")
+        .replace("/index.js", ".js")
+        .replace(`${src}/`, "");
 
-      if (opts.watch) b.plugin(watchify).on('update', bundleToDest(b, path));
+      if (opts.watch) b.plugin(watchify).on("update", bundleToDest(b, path));
 
       return bundle(b, path);
     });
@@ -69,7 +72,9 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
       stream = stream
         .pipe(buffer())
         .pipe(terser())
+        .pipe(workerFilter)
         .pipe(rev())
+        .pipe(workerFilter.restore)
         .pipe(gulp.dest(dest))
         .pipe(rev.manifest());
 

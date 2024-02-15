@@ -74,6 +74,7 @@
     "geojson": "^0.5.0",
     "gulp": "^4.0.2",
     "gulp-buffer": "^0.0.2",
+    "gulp-filter": "^9.0.1",
     "gulp-newer": "^1.4.0",
     "gulp-postcss": "^10.0.0",
     "gulp-pug": "^5.0.0",
