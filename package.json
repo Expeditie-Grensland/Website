@@ -49,6 +49,7 @@
   "devDependencies": {
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.23.9",
+    "@fullhuman/postcss-purgecss": "^5.0.0",
     "@mapbox/mapbox-gl-language": "^1.0.1",
     "@types/geojson": "^7946.0.14",
     "@types/jquery": "^3.5.29",
