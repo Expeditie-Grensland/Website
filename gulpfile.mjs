@@ -17,7 +17,6 @@ import serverTask from './gulp-files/server.mjs';
 gulp.task('server:dev', serverTask(gulp, { dev: true }));
 gulp.task('server:prod', serverTask(gulp, { prod: true }));
 gulp.task('server:watch', serverTask(gulp, { watch: true }));
-gulp.task('server:run', serverTask(gulp, { run: true }));
 
 import stylesTask from './gulp-files/styles.mjs';
 gulp.task('styles:dev', stylesTask(gulp, { dev: true }));
@@ -47,13 +46,10 @@ gulp.task(
   )
 );
 
-gulp.task('once', gulp.series('build:dev', 'server:run'));
-
 gulp.task(
   'watch',
   gulp.series(
     gulp.parallel('client:watch', 'copy:dev', 'server:dev', 'styles:dev', 'errorpages:dev'),
-    'server:run',
     gulp.parallel('copy:watch', 'server:watch', 'styles:watch', 'errorpages:watch')
   )
 );
