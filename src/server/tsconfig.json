@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
+    "sourceMap": true,
     "typeRoots": ["./globals.d.ts"],
     "target": "ESNext",
     "module": "ESNext",
