@@ -23,6 +23,6 @@ export default (
       .pipe(sourcemaps.init())
       .pipe(project())
       .js.pipe(sourcemaps.write())
-      .pipe(gulp.dest("dist/server/"));
+      .pipe(gulp.dest(opts.prod ? "dist/server/" : "dev/server/"));
   };
 };

@@ -11,7 +11,6 @@ import source from "vinyl-source-stream";
 import watchify from "watchify";
 
 const src = "src/client";
-const dest = "dist/static/scripts";
 
 const entries = [
   `${src}/all.ts`,
@@ -26,6 +25,8 @@ const entries = [
 const workerFilter = filter(["**/*", "!**/worker.js"], { restore: true });
 
 export default (gulp, opts = { prod: false, watch: false }) => {
+  const dest = opts.prod ? "dist/static/scripts" : "dev/static/scripts";
+
   const bundle = (b, path) => {
     fancyLog(`Starting bundling ${path}`);
     return b

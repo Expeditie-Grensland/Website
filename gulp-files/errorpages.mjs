@@ -53,7 +53,7 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
       );
 
     return mergeStream(...errorPages).pipe(
-      gulp.dest("dist/static/errorpages/")
+      gulp.dest(opts.prod ? "dist/static/errorpages/" : "dev/static/errorpages/")
     );
   };
 };

@@ -1,6 +1,5 @@
 import purgecss from "@fullhuman/postcss-purgecss";
 import autoprefixer from "autoprefixer";
-import newer from "gulp-newer";
 import postcss from "gulp-postcss";
 import rev from "gulp-rev";
 import gulpSass from "gulp-sass";
@@ -17,18 +16,7 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
 
   // styles:dev and styles:prod
   return () => {
-    let stream = gulp.src("src/styles/**/*.{sass,scss}").pipe(
-      newer({
-        dest: "dist/static/styles/",
-        ext: ".css",
-        extra: [
-          "dist/static/styles/**/*.css",
-          "package-lock.json",
-          "gulpfile.mjs",
-          "gulp-files/*",
-        ],
-      })
-    );
+    let stream = gulp.src("src/styles/**/*.{sass,scss}");
 
     if (!opts.prod) stream = stream.pipe(sourcemaps.init());
 
@@ -61,6 +49,6 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
         .pipe(gulp.dest("dist/static/styles/"))
         .pipe(rev.manifest());
 
-    return stream.pipe(gulp.dest("dist/static/styles/"));
+    return stream.pipe(gulp.dest(opts.prod ? "dist/static/styles/" : "dev/static/styles"));
   };
 };

@@ -69,12 +69,12 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
           )
           .pipe(
             newer({
-              dest: 'dist/',
+              dest: 'dev/',
               extra: ['package-lock.json', 'gulpfile.mjs', 'gulp-files/*'],
             })
           ),
       ];
 
-    return mergeStream(...sources).pipe(gulp.dest('dist/'));
+    return mergeStream(...sources).pipe(gulp.dest(opts.prod ? 'dist/' : 'dev/'));
   };
 };
