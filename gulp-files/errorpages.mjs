@@ -18,24 +18,15 @@ const httpCodes = Object.entries({
   504: "Gateway timeout",
 });
 
-export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
-  // errorpages:watch
-  if (opts.watch)
-    return () =>
-      gulp.watch(["src/views/public/error.pug"], gulp.series("errorpages:dev"));
-
-  // errorpages:dev and errorpages:prod
+export default (gulp) => {
+  // errorpages:prod
   return () => {
-    let errorPages = httpCodes.map(([code, message]) =>
-      gulp
-        .src("src/views/public/error.pug")
-        .pipe(pug({ data: { code, message, noLoginLink: true } }))
-        .pipe(rename(`${code}.html`))
-    );
-
-    if (opts.prod)
-      errorPages = errorPages.map((page) =>
-        page
+    mergeStream(
+      ...httpCodes.map(([code, message]) =>
+        gulp
+          .src("src/views/public/error.pug")
+          .pipe(pug({ data: { code, message, noLoginLink: true } }))
+          .pipe(rename(`${code}.html`))
           .pipe(
             revRewrite({
               manifest: readFileSync("dist/static/styles/rev-manifest.json"),
@@ -50,10 +41,7 @@ export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
               modifyReved: (x) => "scripts/" + x,
             })
           )
-      );
-
-    return mergeStream(...errorPages).pipe(
-      gulp.dest(opts.prod ? "dist/static/errorpages/" : "dev/static/errorpages/")
-    );
+      )
+    ).pipe(gulp.dest("dist/static/errorpages"));
   };
 };

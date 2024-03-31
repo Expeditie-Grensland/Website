@@ -19,9 +19,7 @@ gulp.task('styles:prod', stylesTask(gulp, { prod: true }));
 gulp.task('styles:watch', stylesTask(gulp, { watch: true }));
 
 import errorPagesTask from './gulp-files/errorpages.mjs';
-gulp.task('errorpages:dev', errorPagesTask(gulp, { dev: true }));
-gulp.task('errorpages:prod', errorPagesTask(gulp, { prod: true }));
-gulp.task('errorpages:watch', errorPagesTask(gulp, { watch: true }));
+gulp.task('errorpages:prod', errorPagesTask(gulp));
 
 /*
  * Load tasks that apply to multiple components
@@ -36,7 +34,7 @@ gulp.task(
 gulp.task(
   'watch',
   gulp.series(
-    gulp.parallel('client:watch', 'copy:dev', 'styles:dev', 'errorpages:dev'),
-    gulp.parallel('copy:watch', 'styles:watch', 'errorpages:watch')
+    gulp.parallel('client:watch', 'copy:dev', 'styles:dev'),
+    gulp.parallel('copy:watch', 'styles:watch')
   )
 );
