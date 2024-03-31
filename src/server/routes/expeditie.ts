@@ -175,7 +175,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
               .find(
                 {
                   expeditieId: expeditie._id,
-                  personId: { $in: nodes[nodeIdx].personIds },
+                  personId: { $in: nodes[nodeIdx].personIds.map((p) => p._id) },
                   "dateTime.stamp": { $gte: story.dateTime.stamp },
                 },
                 { _id: false, longitude: true, latitude: true }
