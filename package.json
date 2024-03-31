@@ -121,7 +121,7 @@
     "migrate-create": "dotenv -- migrate-mongo create",
     "migrate-up": "dotenv -- migrate-mongo up",
     "migrate-down": "dotenv -- migrate-mongo down",
-    "clean": "node scripts/clean.mjs",
+    "clean": "node -e \"require('fs').rmSync('dist/', {recursive: true, force: true})\"",
     "check": "concurrently -c auto -m 1 'npm:check:*(!nibble)'",
     "check:lint": "eslint . --ext ts,js,cjs,mjs",
     "check:nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
