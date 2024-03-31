@@ -1,7 +1,6 @@
 import babelify from "babelify";
 import browserify from "browserify";
 import buffer from "gulp-buffer";
-import { deleteAsync } from "del";
 import fancyLog from "fancy-log";
 import filter from "gulp-filter";
 import rev from "gulp-rev";
@@ -26,10 +25,7 @@ const entries = [
 
 const workerFilter = filter(["**/*", "!**/worker.js"], { restore: true });
 
-export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
-  // client:clean
-  if (opts.clean) return () => deleteAsync(`${dest}/**`);
-
+export default (gulp, opts = { prod: false, watch: false }) => {
   const bundle = (b, path) => {
     fancyLog(`Starting bundling ${path}`);
     return b

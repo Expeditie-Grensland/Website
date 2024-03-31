@@ -1,4 +1,3 @@
-import { deleteAsync } from 'del';
 import { readFileSync } from 'node:fs';
 import newer from 'gulp-newer';
 import revRewrite from 'gulp-rev-rewrite';
@@ -6,22 +5,6 @@ import terser from 'gulp-terser';
 import mergeStream from 'merge-stream';
 
 export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
-  // copy:clean
-  if (opts.clean)
-    return () =>
-    deleteAsync([
-        'dist/config/**',
-        'dist/locales/**',
-        'dist/static/**/*',
-        '!dist/static/scripts/**',
-        '!dist/static/styles/**',
-        'dist/views/**',
-        'dist/LICENSE',
-        'dist/package.json',
-        'dist/package-lock.json',
-        'dist/README.md',
-      ]);
-
   // copy:watch
   if (opts.watch)
     return () =>

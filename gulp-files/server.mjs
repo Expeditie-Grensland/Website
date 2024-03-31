@@ -1,5 +1,4 @@
 import child_process from 'node:child_process';
-import { deleteAsync } from 'del';
 import sourcemaps from 'gulp-sourcemaps';
 import typescript from 'gulp-typescript';
 
@@ -7,9 +6,6 @@ export default (
   gulp,
   opts = { clean: false, prod: false, watch: false, run: false }
 ) => {
-  // server:clean
-  if (opts.clean) return () => deleteAsync(['dist/server/**']);
-
   // server:watch
   if (opts.watch)
     return async () =>

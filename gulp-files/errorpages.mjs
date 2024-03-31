@@ -1,4 +1,3 @@
-import { deleteAsync } from "del";
 import pug from "gulp-pug";
 import rename from "gulp-rename";
 import mergeStream from "merge-stream";
@@ -20,9 +19,6 @@ const httpCodes = Object.entries({
 });
 
 export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
-  // errorpages:clean
-  if (opts.clean) return () => deleteAsync(["dist/static/errorpages/*"]);
-
   // errorpages:watch
   if (opts.watch)
     return () =>

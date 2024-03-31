@@ -65,8 +65,8 @@
     "babelify": "^10.0.0",
     "bootstrap": "^5.3.3",
     "browserify": "^17.0.0",
+    "concurrently": "^8.2.2",
     "core-js": "^3.36.1",
-    "del": "^7.1.0",
     "dotenv-cli": "^7.4.1",
     "eslint": "^8.57.0",
     "eslint-nibble": "^8.1.0",
@@ -112,19 +112,20 @@
   "scripts": {
     "start": "node dist/server/server.js",
     "cli": "dotenv -- node dist/server/cli/main.js",
-    "lint": "eslint . --ext ts,js,cjs,mjs",
-    "nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
     "build:prod": "gulp build:prod",
     "build:dev": "gulp build:dev",
     "watch": "dotenv -- gulp watch",
     "once": "dotenv -- gulp once",
     "server": "dotenv -- gulp server:run",
-    "clean": "gulp clean",
     "migrate-status": "dotenv -- migrate-mongo status",
     "migrate-create": "dotenv -- migrate-mongo create",
     "migrate-up": "dotenv -- migrate-mongo up",
     "migrate-down": "dotenv -- migrate-mongo down",
-    "unused-server": "ts-unused-exports src/server/tsconfig.json",
-    "unused-client": "ts-unused-exports src/client/tsconfig.json"
+    "clean": "node scripts/clean.mjs",
+    "check": "concurrently -c auto -m 1 'npm:check:*(!nibble)'",
+    "check:lint": "eslint . --ext ts,js,cjs,mjs",
+    "check:nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
+    "check:unused:server": "ts-unused-exports src/server/tsconfig.json --maxIssues=9999999",
+    "check:unused:client": "ts-unused-exports src/client/tsconfig.json --maxIssues=9999999"
   }
 }

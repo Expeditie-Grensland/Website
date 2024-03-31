@@ -1,6 +1,5 @@
 import purgecss from "@fullhuman/postcss-purgecss";
 import autoprefixer from "autoprefixer";
-import { deleteAsync } from "del";
 import newer from "gulp-newer";
 import postcss from "gulp-postcss";
 import rev from "gulp-rev";
@@ -11,9 +10,6 @@ import * as sassCompiler from "sass";
 const sass = gulpSass(sassCompiler);
 
 export default (gulp, opts = { clean: false, prod: false, watch: false }) => {
-  // styles:clean
-  if (opts.clean) return () => deleteAsync(["dist/static/styles/**"]);
-
   // styles:watch
   if (opts.watch)
     return () =>
