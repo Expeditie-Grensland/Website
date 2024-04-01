@@ -172,7 +172,7 @@ devDependencies:
   postcss:
     specifier: ^8.4.38
     version: 8.4.38
-  sass:
+  sass-embedded:
     specifier: ^1.72.0
     version: 1.72.0
   ts-unused-exports:
