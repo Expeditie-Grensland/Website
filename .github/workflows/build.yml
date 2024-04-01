@@ -32,14 +32,14 @@ jobs:
         run: pnpm install
 
       - name: Run checks
-        run: pnpm run lint
+        run: npm run check
 
       - name: Run build
-        run: pnpm run build:prod
+        run: npm run build
 
       - name: Set pre-release version
         if: github.ref == 'refs/heads/master'
-        run: pnpm version --git-tag-version false "$(pnpm version --git-tag-version false patch)-pre.$(date +"%Y%m%d").$(git rev-parse --short=8 HEAD)"
+        run: npm version --git-tag-version false "$(npm version --git-tag-version false patch)-pre.$(date +"%Y%m%d").$(git rev-parse --short=8 HEAD)"
 
       - name: Publish pre-release
         if: github.ref == 'refs/heads/master'
