@@ -18,5 +18,6 @@ module.exports = {
   rules: {
     "no-constant-condition": ["error", { checkLoops: false }],
     "@typescript-eslint/consistent-type-definitions": "off",
+    "no-unused-variable": [true, { "ignore-pattern": "^_" }],
   },
 };
