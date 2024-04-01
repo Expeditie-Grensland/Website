@@ -120,7 +120,7 @@
     "dev:gulp": "gulp watch",
     "dev:styles:sass": "sass --watch -p node src/styles/:dev/tmp/styles/",
     "dev:styles:post": "sleep 5 && postcss dev/tmp/styles/*.css -d dev/static/styles/ --config build/ -w",
-    "dev:server": "tsc --project src/server/ --outDir dev/server/ --watch --preserveWatchOutput",
+    "dev:server": "tsc --project src/server/ --outDir dev/server/ --watch --preserveWatchOutput --sourceMap",
     "dev:run": "sleep 15 && dotenv -- nodemon --watch 'dev/server/**/*' --delay 5s --exec 'node --enable-source-maps --icu-data-dir=node_modules/full-icu' dev/server/server.js",
     "migrate-status": "dotenv -- migrate-mongo status",
     "migrate-create": "dotenv -- migrate-mongo create",
