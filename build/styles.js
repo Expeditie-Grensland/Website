@@ -38,6 +38,7 @@ const options = {
   logLevel: "info",
   plugins: [
     sassPlugin({
+      cssImports: true,
       embedded: true,
       transform: async (source) =>
         (await postcssProcessor.process(source, { from: undefined })).css,
