@@ -97,7 +97,7 @@
     "build": "concurrently -c auto -m 1 'npm:build:*(!run)'",
     "build:clean": "node build/clean.js dist",
     "build:copy": "node build/copy.js dist",
-    "build:errorpages": "node build/error-pages.js",
+    "build:errorpages": "node build/errorpages.js",
     "build:client": "node build/client.js dist",
     "build:styles": "node build/styles.js dist",
     "build:server": "tsc --project src/server/ --outDir dist/server/",
