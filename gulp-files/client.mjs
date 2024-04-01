@@ -1,7 +1,6 @@
 import babelify from "babelify";
 import browserify from "browserify";
 import buffer from "gulp-buffer";
-import fancyLog from "fancy-log";
 import filter from "gulp-filter";
 import rev from "gulp-rev";
 import terser from "gulp-terser";
@@ -28,10 +27,10 @@ export default (gulp, opts = { prod: false, watch: false }) => {
   const dest = opts.prod ? "dist/static/scripts" : "dev/static/scripts";
 
   const bundle = (b, path) => {
-    fancyLog(`Starting bundling ${path}`);
+    console.error(`Starting bundling ${path}`);
     return b
       .bundle()
-      .on("end", () => fancyLog(`Finished bundling ${path}`))
+      .on("end", () => console.error(`Finished bundling ${path}`))
       .pipe(source(path));
   };
 
@@ -40,7 +39,7 @@ export default (gulp, opts = { prod: false, watch: false }) => {
   // client:dev, client:prod and client:watch
   return () => {
     const tasks = entries.map((entry) => {
-      fancyLog(`Creating bundler for ${entry}`);
+      console.error(`Creating bundler for ${entry}`);
 
       const project = `${src}/tsconfig.json`;
 

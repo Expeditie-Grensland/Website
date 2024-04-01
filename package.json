@@ -71,7 +71,6 @@
     "eslint": "^8.57.0",
     "eslint-nibble": "^8.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "fancy-log": "^2.0.0",
     "geojson": "^0.5.0",
     "gulp": "^5.0.0",
     "gulp-buffer": "^0.0.2",
