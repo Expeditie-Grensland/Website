@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  ignorePatterns: [".eslintrc.cjs", "dist/"],
+  ignorePatterns: [".eslintrc.cjs", "dev/", "dist/"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -18,6 +18,5 @@ module.exports = {
   rules: {
     "no-constant-condition": ["error", { checkLoops: false }],
     "@typescript-eslint/consistent-type-definitions": "off",
-    "no-unused-variable": [true, { "ignore-pattern": "^_" }],
   },
 };

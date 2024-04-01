@@ -129,6 +129,8 @@
     "migrate-down": "dotenv -- migrate-mongo down",
     "clean": "concurrently -c auto -m 1 'npm:*:clean'",
     "check": "concurrently -c auto -m 1 'npm:check:*(!nibble)'",
+    "check:types:server": "tsc --noEmit --project src/server/tsconfig.json",
+    "check:types:client": "tsc --noEmit --project src/client/tsconfig.json",
     "check:lint": "eslint . --ext ts,js,cjs,mjs",
     "check:nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
     "check:unused:server": "ts-unused-exports src/server/tsconfig.json --maxIssues=9999999",
