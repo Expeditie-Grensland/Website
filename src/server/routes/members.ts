@@ -1,5 +1,4 @@
 import { marked } from "marked";
-
 import { FastifyPluginAsync } from "fastify";
 import { getLuxonDate } from "../components/dateTime/dateHelpers.js";
 import { getAllPopulatedPoints } from "../components/earnedPoints/index.js";
@@ -10,6 +9,7 @@ import { authenticateUser } from "../helpers/auth.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
 import adminRoutes from "./admin.js";
 import { config } from "../helpers/configHelper.js";
+import packageJson from "../../../package.json" assert { type: "json" };
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -66,6 +66,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   app.get("/", async (request, reply) =>
     reply.view("members/index", {
       isHome: true,
+      version: packageJson.version,
       links: [
         {
           title: "Hoofdpagina",
