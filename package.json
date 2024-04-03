@@ -102,6 +102,7 @@
     "build:styles": "node build/styles.js dist",
     "build:server": "node build/server.js dist",
     "build:rev": "node build/rev.js",
+    "build:compress": "node build/compress.js",
     "dev": "concurrently -c auto --restart-tries -1 -i --default-input-target run 'npm:dev:*(!clean)'",
     "dev:clean": "node build/clean.js dev",
     "dev:copy": "node build/copy.js dev",
