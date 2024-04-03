@@ -9,20 +9,32 @@ console.log("## Static file sizes" + EOL);
 
 const staticFiles = (await globby(["**/*.*"])).toSorted();
 
-const printTable = (headers, tableRows) => {
+const printTable = (headers, aligns, tableRows) => {
   const maxes = tableRows.reduce(
-    (acc, cur) => acc.map((ms, i) => (ms < cur[i].length ? cur[i].length : ms)),
-    headers.map((h) => h.length)
+    (acc, cur) => acc.map((ms, i) => Math.max(ms, cur[i].length)),
+    headers.map((h) => Math.min(h.length, 4))
   );
 
   const printRow = (row) => {
     console.log(
-      "| " + row.map((cell, i) => cell.padEnd(maxes[i])).join(" | ") + " |"
+      "| " +
+        row
+          .map((cell, i) =>
+            aligns[i] === "r" ? cell.padStart(maxes[i]) : cell.padEnd(maxes[i])
+          )
+          .join(" | ") +
+        " |"
     );
   };
 
   printRow(headers);
-  printRow(maxes.map((m) => "-".repeat(m)));
+  printRow(
+    aligns.map((a, i) =>
+      a === "r"
+        ? "-".repeat(maxes[i] - 1) + ":"
+        : ":" + "-".repeat(maxes[i] - 1)
+    )
+  );
   tableRows.forEach((r) => printRow(r));
 };
 
@@ -52,4 +64,4 @@ const strItems = items
     sizeToStr(br),
   ]);
 
-printTable(["File", "Size", "Gzip", "Brotli"], strItems);
+printTable(["File", "Size", "Gzip", "Brotli"], ["l", "r", "r", "r"], strItems);
