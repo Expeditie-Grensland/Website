@@ -7,7 +7,9 @@ chdir("dist/static");
 
 console.log("## Static file sizes" + EOL);
 
-const staticFiles = (await globby(["**/*.*"])).toSorted();
+const staticFiles = (
+  await globby(["scripts/**/*.*", "styles/**/*.*", "images/**/*.*"])
+).toSorted();
 
 const printTable = (headers, aligns, tableRows) => {
   const maxes = tableRows.reduce(
