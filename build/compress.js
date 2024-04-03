@@ -43,7 +43,7 @@ for (const file of filesToCompress) {
     const outStream = createWriteStream(`${file}.${extension}`);
     await pipeline(inStream, createTransform(size), outStream);
   }
-  console.error(
+  console.log(
     `${file}{=> .${transformers.map(({ extension }) => extension).join(", .")}}`
   );
 }

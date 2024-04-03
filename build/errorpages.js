@@ -30,4 +30,4 @@ await Promise.all(
   )
 );
 
-console.error(`Generated ${Object.keys(errorCodes).length} error pages`);
+console.log(`Generated ${Object.keys(errorCodes).length} error pages`);

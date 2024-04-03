@@ -7,4 +7,4 @@ if (!opts.includes(dir))
   throw new Error(`Invalid choice ${dir} (choose from: ${opts.join(", ")}})`);
 
 await rm(`${dir}/`, { recursive: true, force: true });
-console.error(`Deleted ${dir}/`);
+console.log(`Deleted ${dir}/`);

@@ -27,7 +27,7 @@ const filesToRev = await globby([
 const renames = filesToRev.map((file) => [file, getNewName(file)]);
 
 for (const [oldName, newName] of renames) {
-  console.error(
+  console.log(
     `${dirname(oldName)}/{${basename(oldName)} => ${basename(newName)}}`
   );
   rename(oldName, newName);

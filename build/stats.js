@@ -5,8 +5,6 @@ import { chdir } from "process";
 
 chdir("dist/static");
 
-console.log("# Statistics" + EOL);
-
 console.log("## Static file sizes" + EOL);
 
 const staticFiles = (await globby(["**/*.*"])).toSorted();

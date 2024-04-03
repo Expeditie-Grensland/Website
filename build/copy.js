@@ -10,13 +10,13 @@ if (!opts.includes(dir))
 
 const copySubDir = async (subDir) => {
   await cp(`src/${subDir}`, `${dir}/${subDir}`, { recursive: true });
-  console.error(`Copied src/${subDir}/ to ${dir}/${subDir}/`);
+  console.log(`Copied src/${subDir}/ to ${dir}/${subDir}/`);
 };
 
 await Promise.all(subDirs.map(copySubDir));
 
 if (dir == "dev")
   subDirs.forEach((subDir) => {
-    console.error(`Watching src/${subDir}/...`);
+    console.log(`Watching src/${subDir}/...`);
     watch(`src/${subDir}`, { recursive: true }, () => copySubDir(subDir));
   });
