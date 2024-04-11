@@ -53,7 +53,6 @@
     "@types/jquery": "^3.5.29",
     "@types/luxon": "^3.4.2",
     "@types/mapbox-gl": "^3.1.0",
-    "@types/mime": "^3.0.4",
     "@types/node": "^20.12.2",
     "@types/pug": "^2.0.10",
     "@types/qs": "^6.9.14",

@@ -103,9 +103,6 @@ devDependencies:
   '@types/mapbox-gl':
     specifier: ^3.1.0
     version: 3.1.0
-  '@types/mime':
-    specifier: ^3.0.4
-    version: 3.0.4
   '@types/node':
     specifier: ^20.12.2
     version: 20.12.2
@@ -1939,10 +1936,6 @@ packages:
     resolution: {integrity: sha512-hI6cQDjw1bkJw7MC/eHMqq5TWUamLwsujnUUeiIX2KDRjxRNSYMjnHz07+LATz9I9XIsKumOtUz4gRYnZOJ/FA==}
     dependencies:
       '@types/geojson': 7946.0.14
-    dev: true
-
-  /@types/mime@3.0.4:
-    resolution: {integrity: sha512-iJt33IQnVRkqeqC7PzBHPTC6fDlRNRW8vjrgqtScAhrmMwe8c4Eo7+fUGTa+XdWrpEgpyKWMYmi2dIwMAYRzPw==}
     dev: true
 
   /@types/mute-stream@0.0.4:
