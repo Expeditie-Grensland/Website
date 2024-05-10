@@ -40,6 +40,8 @@ import { Word, WordModel } from "../components/words/model.js";
 import { deleteS3Prefix, getS3Files } from "../files/s3.js";
 import { getUsesForFiles } from "../files/uses.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
+import { getAfkoById, getAllAfkos } from "../components/afkos/index.js";
+import { Afko, AfkoModel } from "../components/afkos/model.js";
 
 type GetById<T> = (
   id: mongoose.Types.ObjectId
@@ -214,6 +216,57 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
       const result = await new WordModel(word).save();
       return `Woord "${result.word}" is successvol toegevoegd`;
+    })
+  );
+
+  app.get("/afkowobo", async (request, reply) =>
+    reply.view("admin/afkowobo", {
+      fluidContainer: true,
+      afkos: await getAllAfkos(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+    })
+  );
+
+  const afkoSchema = z.object({
+    afko: z.string(),
+    definitions: z.array(z.string().nonempty()).nonempty(),
+    file: z.string().optional(),
+  });
+
+  const afkoDocSchema = zDocumentFromBodyId<Afko>(getAfkoById);
+
+  app.post(
+    "/afkowobo",
+    tryCatchAndRedirect(async (request) => {
+      const action = zActionFromBody.parse(request.body);
+
+      if (action === "delete") {
+        const doc = await afkoDocSchema.parseAsync(request.body);
+        const result = await doc.deleteOne();
+
+        if (result.deletedCount !== 1)
+          throw new Error("Afko kon niet worden verwijderd");
+
+        return `Afko "${doc.afko}" is succesvol verwijderd`;
+      }
+
+      const input = await afkoSchema.parseAsync(request.body);
+
+      const afko: Afko = {
+        afko: input.afko,
+        definitions: input.definitions,
+        attachmentFile: input.file || undefined,
+      };
+
+      if (action === "change") {
+        const doc = await afkoDocSchema.parseAsync(request.body);
+        const result = await doc.overwrite(afko).save();
+        return `Afko "${result.afko}" is succesvol gewijzigd`;
+      }
+
+      const result = await new AfkoModel(afko).save();
+      return `Afko "${result.afko}" is successvol toegevoegd`;
     })
   );
 

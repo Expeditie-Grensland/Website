@@ -10,6 +10,7 @@ import { getMessages, setMessage } from "../helpers/flash.js";
 import adminRoutes from "./admin.js";
 import { config } from "../helpers/configHelper.js";
 import packageJson from "../../../package.json" assert { type: "json" };
+import { getAllAfkos } from "../components/afkos/index.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -84,6 +85,12 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
           text: "De Lange Citatenlijst der Expeditie Grensland",
           href: "/leden/citaten",
           adminHref: "/leden/admin/citaten",
+        },
+        {
+          title: "Afkowobo",
+          text: "Het enige echte afkortingenwoordenboek der Expediets",
+          href: "/leden/afkowobo",
+          adminHref: "/leden/admin/afkowobo",
         },
         {
           title: "De Punt'n",
@@ -164,6 +171,14 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   app.get("/citaten", async (request, reply) =>
     reply.view("members/quotes", {
       quotes: await getAllQuotes(),
+      generateSimple,
+      marked: (s: string) => marked(s),
+    })
+  );
+
+  app.get("/afkowobo", async (request, reply) =>
+    reply.view("members/afkowobo", {
+      afkos: await getAllAfkos(),
       generateSimple,
       marked: (s: string) => marked(s),
     })

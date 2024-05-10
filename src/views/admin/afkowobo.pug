@@ -1,0 +1,69 @@
+extends ../members/_frame
+include ../_expeditieMedia
+
+block title
+    title Expeditie - Admin - Afkowobo
+
+block content
+    .row
+        .col-12.mb-4
+            .h1 Afkowobo Admin
+
+        if errMsgs.length + infoMsgs.length
+            .col-12.mb-4
+                each msg in errMsgs
+                    .alert.alert-danger= msg
+                each msg in infoMsgs
+                    .alert.alert-info= msg
+
+        .col-12.mb-4
+            hr
+            .h2.mb-3 Definitie toevoegen
+            form(method='POST' action='/leden/admin/afkowobo')
+                .form-row.align-items-center
+                    .col-12.col-md-3.mb-2
+                        input.form-control(type='text' name='afko' placeholder='Afko' required)
+                    .col-12.col-md-3.mb-2
+                        .form-array
+                            textarea.form-control.form-array-item.mb-2(placeholder='Definitie' name='definitions[]' rows='3' required)
+                            textarea.form-control.form-array-proto.mb-2(placeholder='Definitie' name='definitions[]' rows='3' required hidden disabled)
+                            button.form-array-add.btn.btn-secondary.me-2 +
+                            button.form-array-remove.btn.btn-secondary –
+                    .col-auto.col-md-3.mb-2.me-2
+                        input.form-control(type='text' name='file' placeholder='Bijlage Naam' size='30')
+                    .col-auto.mb-2
+                        button.btn.btn-primary(type='submit' name="action" value="add") Toevoegen
+
+        // TODO: discription of link formats etc. (markdown)
+
+        .col-12.mb-4
+            hr
+            .h2.mb-3 Bestaande definities aanpassen
+            table.table.table-sticky-header
+                thead
+                    tr
+                        th(style='min-width: 20rem') Afko
+                        th(style='min-width: 30rem; width: 100%;') Definities
+                        th(style='min-width: 17.5rem;') Bijlage Id
+                        th
+
+                tbody
+                    each afko, i in afkos
+                        tr
+                            td
+                                input.form-control(type='text' form=`f-${i}` name='afko' value=afko.afko required)
+                            td
+                                .form-array
+                                    each def in afko.definitions
+                                        textarea.form-control.form-array-item.mb-2(form=`f-${i}` name='definitions[]' rows='3' required)= def
+                                    textarea.form-control.form-array-proto.mb-2(form=`f-${i}` name='definitions[]' rows='3' required hidden disabled)
+                                    button.form-array-add.btn.btn-secondary.me-2 +
+                                    button.form-array-remove.btn.btn-secondary –
+                            td
+                                input.form-control(type='text' form=`f-${i}` name='file' value=afko.attachmentFile)
+                            td
+                                form.form-confirm(id=`f-${i}` method='POST' action=`/leden/admin/afkowobo`)
+                                    input(type='hidden' name='id' value=afko._id.toHexString())
+                                    button.btn.btn-info.mb-2(type='submit' name='action' value='change') Wijzigen
+                                    br
+                                    button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen
