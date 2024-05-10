@@ -289,16 +289,17 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       message: "Expeditie is beëindigd",
     }),
     zone: zTimeZone,
-    file: z.string(),
+    file: z
+      .any()
+      .refine((file) => file && typeof file == "object" && "buffer" in file, {
+        message: "Geen bestand gevonden",
+      }),
   });
 
   app.post(
     "/gpx",
     tryCatchAndRedirect(async (request) => {
       const input = await gpxUploadSchema.parseAsync(request.body);
-
-      // if (!file || typeof file != "object" || !("buffer" in file))
-      //   throw new Error("Geen bestand gevonden");
 
       void (await createManyLocations(
         await generateLocations(
