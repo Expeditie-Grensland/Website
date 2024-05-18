@@ -3,9 +3,5 @@
   "compilerOptions": {
     "noEmit": false,
     "typeRoots": ["./globals.d.ts"],
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "esModuleInterop": true
   }
 }

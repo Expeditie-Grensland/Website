@@ -82,6 +82,7 @@
     "postcss": "^8.4.38",
     "sass-embedded": "^1.74.1",
     "ts-unused-exports": "^10.0.1",
+    "tsx": "^4.10.5",
     "typescript": "^5.4.5"
   },
   "files": [
@@ -117,6 +118,12 @@
     "dbmigrate:create": "dotenv -- migrate-mongo create",
     "dbmigrate:up": "dotenv -- migrate-mongo up",
     "dbmigrate:down": "dotenv -- migrate-mongo down",
+    "db:migrations": "tsx build/db-migrate.ts list",
+    "db:create-migration": "tsx build/db-migrate.ts create",
+    "db:migrate": "tsx build/db-migrate.ts latest",
+    "db:migrate-up": "tsx build/db-migrate.ts up",
+    "db:migrate-down": "tsx build/db-migrate.ts down",
+    "db:generate": "kysely-codegen --url 'env(EG_DB_URL)' --out-file src/server/db/schema/types.ts",
     "clean": "concurrently -c auto -m 1 'npm:*:clean'",
     "check": "concurrently -c auto -m 1 'npm:check:*(!nibble)'",
     "check:types:server": "tsc --noEmit --project src/server/tsconfig.json",

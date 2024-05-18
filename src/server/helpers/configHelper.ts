@@ -14,6 +14,7 @@ const envSchema = z.object({
   EG_S3_BUCKET: z.string(),
   EG_S3_MIN_DELETE_AGE: z.coerce.number().int().default(90),
 
+  EG_DB_URL: z.string().startsWith("postgres://"),
   EG_MONGO_URL: z.string().startsWith("mongodb://"),
 
   EG_LDAP_URL: z.string().startsWith("ldap"),
