@@ -10,6 +10,7 @@ export type PersonType = "admin" | "guest" | "member";
 
 export interface Afko {
   afko: string;
+  attachment_file: string | null;
   definitions: Generated<string[]>;
   id: Generated<number>;
 }
@@ -91,6 +92,7 @@ export interface Quote {
 }
 
 export interface Word {
+  attachment_file: string | null;
   definitions: Generated<string[]>;
   id: Generated<number>;
   phonetic: string | null;

@@ -80,6 +80,7 @@ export const up = async (db: Kysely<any>) => {
     .addColumn("definitions", sql`text[]`, (col) =>
       col.notNull().defaultTo(sql`'{}'`)
     )
+    .addColumn("attachment_file", "text")
     .execute();
 
   await db.schema
@@ -112,6 +113,7 @@ export const up = async (db: Kysely<any>) => {
     .addColumn("definitions", sql`text[]`, (col) =>
       col.notNull().defaultTo(sql`'{}'`)
     )
+    .addColumn("attachment_file", "text")
     .execute();
 
   await db.schema
