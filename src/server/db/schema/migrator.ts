@@ -1,5 +1,5 @@
 import { FileMigrationProvider, Migrator } from "kysely";
-import db from "./database";
+import db from "./database.js";
 import path from "node:path";
 import fs from "node:fs/promises";
 
