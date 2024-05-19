@@ -1,1 +1,112 @@
-export interface DB {}
+import type { ColumnType } from "kysely";
+
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
+
+export type PersonTeam = "b" | "r";
+
+export type PersonType = "admin" | "guest" | "member";
+
+export interface Afko {
+  afko: string;
+  definitions: Generated<string[]>;
+  id: Generated<number>;
+}
+
+export interface EarnedPoint {
+  amount: number;
+  expeditie_id: string | null;
+  id: Generated<number>;
+  person_id: string;
+  time_stamp: number;
+  time_zone: string;
+}
+
+export interface Expeditie {
+  background_file: string | null;
+  countries: Generated<string[]>;
+  finished: Generated<boolean>;
+  id: string;
+  movie_file: string | null;
+  movie_restricted: Generated<boolean>;
+  name: string;
+  sequence_number: number;
+  show_map: Generated<boolean>;
+  subtitle: string;
+}
+
+export interface ExpeditieMovieEditor {
+  expeditie_id: string;
+  person_id: string;
+}
+
+export interface ExpeditiePerson {
+  expeditie_id: string;
+  person_id: string;
+}
+
+export interface Geolocation {
+  altitude: number | null;
+  expeditie_id: string;
+  id: Generated<number>;
+  latitude: number;
+  longitude: number;
+  person_id: string;
+  time_stamp: number;
+  time_zone: string;
+}
+
+export interface Geonode {
+  expeditie_id: string;
+  id: Generated<number>;
+  time_from: Generated<number>;
+  time_till: Generated<number>;
+}
+
+export interface GeonodePerson {
+  geonode_id: number;
+  person_id: string;
+}
+
+export interface Person {
+  first_name: string;
+  id: string;
+  initials: string;
+  last_name: string;
+  ldap_id: string | null;
+  sorting_name: string;
+  team: PersonTeam | null;
+  type: PersonType;
+}
+
+export interface Quote {
+  attachment_file: string | null;
+  context: string;
+  id: Generated<number>;
+  quote: string;
+  quotee: string;
+  time_stamp: number;
+  time_zone: string;
+}
+
+export interface Word {
+  definitions: Generated<string[]>;
+  id: Generated<number>;
+  phonetic: string | null;
+  word: string;
+}
+
+export interface DB {
+  afko: Afko;
+  earned_point: EarnedPoint;
+  expeditie: Expeditie;
+  expeditie_movie_editor: ExpeditieMovieEditor;
+  expeditie_person: ExpeditiePerson;
+  geolocation: Geolocation;
+  geonode: Geonode;
+  geonode_person: GeonodePerson;
+  person: Person;
+  quote: Quote;
+  word: Word;
+}
