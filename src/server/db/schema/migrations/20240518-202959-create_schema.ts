@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Kysely, sql } from "kysely";
 
-export const up = async (db: Kysely<unknown>) => {
+export const up = async (db: Kysely<any>) => {
   await db.schema
     .createTable("expeditie")
     .addColumn("id", "text", (col) => col.primaryKey())
@@ -209,7 +210,7 @@ export const up = async (db: Kysely<unknown>) => {
     .execute();
 };
 
-export const down = async (db: Kysely<unknown>) => {
+export const down = async (db: Kysely<any>) => {
   await db.schema.dropTable("expeditie").cascade().execute();
   await db.schema.dropTable("person").cascade().execute();
   await db.schema.dropTable("expeditie_person").execute();

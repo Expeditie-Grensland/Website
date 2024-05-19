@@ -25,7 +25,8 @@ const createMigration = async () => {
 
   await fs.writeFile(
     `src/server/db/schema/migrations/${name}.ts`,
-    `import { Kysely } from "kysely";
+    `/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Kysely } from "kysely";
 
 export const up = async (db: Kysely<unknown>) => {
 };
