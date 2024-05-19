@@ -7,7 +7,7 @@ import { getAllQuotes } from "../components/quotes/index.js";
 import { getAllWords } from "../components/words/index.js";
 import { authenticateUser } from "../helpers/auth.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
-import adminRoutes from "./admin.js";
+// import adminRoutes from "./admin.js";
 import { config } from "../helpers/configHelper.js";
 import packageJson from "../../../package.json" assert { type: "json" };
 import { getAllAfkos } from "../components/afkos/index.js";
@@ -21,7 +21,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
     }
   });
 
-  await app.register(adminRoutes, { prefix: "/admin" });
+  // await app.register(adminRoutes, { prefix: "/admin" });
 
   app.get("/login", async (request, reply) => {
     if (reply.locals.user) {
@@ -78,40 +78,40 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
           title: "Woordenboek",
           text: "Het Grote Woordenboek der Expediets",
           href: "/leden/woordenboek",
-          adminHref: "/leden/admin/woordenboek",
+          // adminHref: "/leden/admin/woordenboek",
         },
         {
           title: "Citaten",
           text: "De Lange Citatenlijst der Expeditie Grensland",
           href: "/leden/citaten",
-          adminHref: "/leden/admin/citaten",
+          // adminHref: "/leden/admin/citaten",
         },
         {
           title: "Afkowobo",
           text: "Het enige echte afkortingenwoordenboek der Expediets",
           href: "/leden/afkowobo",
-          adminHref: "/leden/admin/afkowobo",
+          // adminHref: "/leden/admin/afkowobo",
         },
         {
           title: "De Punt'n",
           text: "Welk team is het vurigst? Blauw, of Rood?",
           href: "/leden/punten",
-          adminHref: "/leden/admin/punten",
+          // adminHref: "/leden/admin/punten",
         },
         {
           title: "GPX Upload",
           text: "Omdat we nog steeds geen app hebben",
-          adminHref: "/leden/admin/gpx",
+          // adminHref: "/leden/admin/gpx",
         },
         {
           title: "Verhaalelementen",
           text: "Extra informatie op de kaart",
-          adminHref: "/leden/admin/story",
+          // adminHref: "/leden/admin/story",
         },
         {
           title: "Bestanden",
           text: "De Small Data",
-          adminHref: "/leden/admin/bestanden",
+          // adminHref: "/leden/admin/bestanden",
         },
         ...(config.EG_UMAMI_SHARE_URL
           ? [
