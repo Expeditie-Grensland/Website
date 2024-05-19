@@ -47,7 +47,7 @@ export interface ExpeditiePerson {
   person_id: string;
 }
 
-export interface Geolocation {
+export interface GeoLocation {
   altitude: number | null;
   expeditie_id: string;
   id: Generated<number>;
@@ -58,15 +58,15 @@ export interface Geolocation {
   time_zone: string;
 }
 
-export interface Geonode {
+export interface GeoNode {
   expeditie_id: string;
   id: Generated<number>;
   time_from: Generated<number>;
   time_till: Generated<number>;
 }
 
-export interface GeonodePerson {
-  geonode_id: number;
+export interface GeoNodePerson {
+  geo_node_id: number;
   person_id: string;
 }
 
@@ -105,9 +105,9 @@ export interface DB {
   expeditie: Expeditie;
   expeditie_movie_editor: ExpeditieMovieEditor;
   expeditie_person: ExpeditiePerson;
-  geolocation: Geolocation;
-  geonode: Geonode;
-  geonode_person: GeonodePerson;
+  geo_location: GeoLocation;
+  geo_node: GeoNode;
+  geo_node_person: GeoNodePerson;
   person: Person;
   quote: Quote;
   word: Word;

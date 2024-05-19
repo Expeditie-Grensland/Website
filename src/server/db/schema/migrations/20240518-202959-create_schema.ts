@@ -147,7 +147,7 @@ export const up = async (db: Kysely<any>) => {
     .execute();
 
   await db.schema
-    .createTable("geonode")
+    .createTable("geo_node")
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("expeditie_id", "text", (col) =>
       col
@@ -163,11 +163,11 @@ export const up = async (db: Kysely<any>) => {
     .execute();
 
   await db.schema
-    .createTable("geonode_person")
-    .addColumn("geonode_id", "integer", (col) =>
+    .createTable("geo_node_person")
+    .addColumn("geo_node_id", "integer", (col) =>
       col
         .notNull()
-        .references("geonode.id")
+        .references("geo_node.id")
         .onUpdate("cascade")
         .onDelete("cascade")
     )
@@ -178,11 +178,11 @@ export const up = async (db: Kysely<any>) => {
         .onUpdate("cascade")
         .onDelete("cascade")
     )
-    .addPrimaryKeyConstraint("geonode_person_pkey", ["geonode_id", "person_id"])
+    .addPrimaryKeyConstraint("geo_node_person_pkey", ["geo_node_id", "person_id"])
     .execute();
 
   await db.schema
-    .createTable("geolocation")
+    .createTable("geo_location")
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("expeditie_id", "text", (col) =>
       col
@@ -206,8 +206,8 @@ export const up = async (db: Kysely<any>) => {
     .execute();
 
   await db.schema
-    .createIndex("geolocation_expeditie_id")
-    .on("geolocation")
+    .createIndex("geo_location_expeditie_id")
+    .on("geo_location")
     .column("expeditie_id")
     .execute();
 };
@@ -221,9 +221,9 @@ export const down = async (db: Kysely<any>) => {
   await db.schema.dropTable("quote").execute();
   await db.schema.dropTable("afko").execute();
   await db.schema.dropTable("earned_point").execute();
-  await db.schema.dropTable("geonode").cascade().execute();
-  await db.schema.dropTable("geonode_person").execute();
-  await db.schema.dropTable("geolocation").execute();
+  await db.schema.dropTable("geo_node").cascade().execute();
+  await db.schema.dropTable("geo_node_person").execute();
+  await db.schema.dropTable("geo_location").execute();
 
   await db.schema.dropType("person_team").execute();
   await db.schema.dropType("person_type").execute();
