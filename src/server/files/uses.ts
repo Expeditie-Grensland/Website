@@ -1,8 +1,9 @@
 import { getAllExpedities } from "../components/expedities/index.js";
-import { getAllQuotes } from "../components/quotes/index.js";
 import { getAllStories } from "../components/storyElements/index.js";
 import { MediaStoryElement } from "../components/storyElements/model.js";
-import { getAllWords } from "../components/words/index.js";
+import { getAllAfkos } from "../db/afko.js";
+import { getAllQuotes } from "../db/quote.js";
+import { getAllWords } from "../db/word.js";
 import { getFileType } from "./files.js";
 
 export type FileUseType =
@@ -10,6 +11,7 @@ export type FileUseType =
   | "expeditie/movie"
   | "word/attachment"
   | "quote/attachment"
+  | "afko/attachment"
   | "story/media";
 
 export type FileUse = { type: FileUseType; name: string };
@@ -33,6 +35,7 @@ const getFileUses = async (): Promise<FileUses> => {
   const expedities = getAllExpedities();
   const words = getAllWords();
   const quotes = getAllQuotes();
+  const afkos = getAllAfkos();
   const stories = getAllStories();
 
   for (const exp of await expedities) {
@@ -41,10 +44,13 @@ const getFileUses = async (): Promise<FileUses> => {
   }
 
   for (const word of await words)
-    addUseIfFile("word/attachment", word.word, word.attachmentFile);
+    addUseIfFile("word/attachment", word.word, word.attachment_file);
 
   for (const quote of await quotes)
-    addUseIfFile("quote/attachment", quote.quote, quote.attachmentFile);
+    addUseIfFile("quote/attachment", quote.quote, quote.attachment_file);
+
+  for (const afko of await afkos)
+    addUseIfFile("afko/attachment", afko.afko, afko.attachment_file);
 
   for (const story of await stories) {
     if (story.type !== "media") continue;

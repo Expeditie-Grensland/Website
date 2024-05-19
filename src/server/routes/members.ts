@@ -1,16 +1,16 @@
-import { marked } from "marked";
 import { FastifyPluginAsync } from "fastify";
+import { marked } from "marked";
 import { getLuxonDate } from "../components/dateTime/dateHelpers.js";
 import { getAllPopulatedPoints } from "../components/earnedPoints/index.js";
 import { getAllMemberLinks } from "../components/memberLinks/index.js";
-import { getAllQuotes } from "../components/quotes/index.js";
-import { getAllWords } from "../components/words/index.js";
 import { authenticateUser } from "../helpers/auth.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
 // import adminRoutes from "./admin.js";
-import { config } from "../helpers/configHelper.js";
 import packageJson from "../../../package.json" assert { type: "json" };
-import { getAllAfkos } from "../components/afkos/index.js";
+import { getAllAfkos } from "../db/afko.js";
+import { getAllQuotes } from "../db/quote.js";
+import { getAllWords } from "../db/word.js";
+import { config } from "../helpers/configHelper.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
