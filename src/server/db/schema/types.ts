@@ -70,6 +70,14 @@ export interface GeoNodePerson {
   person_id: string;
 }
 
+export interface MemberLink {
+  description: Generated<string>;
+  id: Generated<number>;
+  index: number;
+  title: string;
+  url: string;
+}
+
 export interface Person {
   first_name: string;
   id: string;
@@ -108,6 +116,7 @@ export interface DB {
   geo_location: GeoLocation;
   geo_node: GeoNode;
   geo_node_person: GeoNodePerson;
+  member_link: MemberLink;
   person: Person;
   quote: Quote;
   word: Word;

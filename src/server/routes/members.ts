@@ -1,7 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
 import { marked } from "marked";
 import { getLuxonDate } from "../components/dateTime/dateHelpers.js";
-import { getAllMemberLinks } from "../components/memberLinks/index.js";
 import { authenticateUser } from "../helpers/auth.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
 // import adminRoutes from "./admin.js";
@@ -11,6 +10,7 @@ import { getFullEarnedPoints } from "../db/earned-point.js";
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
 import { config } from "../helpers/configHelper.js";
+import { getMemberLinks } from "../db/member-link.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -123,11 +123,11 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
             ]
           : []),
       ].concat(
-        (await getAllMemberLinks()).map((l) => {
+        (await getMemberLinks()).map((l) => {
           return {
             title: l.title,
-            text: l.text || "",
-            href: l.href,
+            text: l.description,
+            href: l.url,
             target: "_blank",
           };
         })
