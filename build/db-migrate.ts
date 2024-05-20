@@ -28,10 +28,10 @@ const createMigration = async () => {
     `/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Kysely } from "kysely";
 
-export const up = async (db: Kysely<unknown>) => {
+export const up = async (db: Kysely<any>) => {
 };
 
-export const down = async (db: Kysely<unknown>) => {
+export const down = async (db: Kysely<any>) => {
 };
 `
   );
