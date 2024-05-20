@@ -1,7 +1,7 @@
-import { getAllExpedities } from "../components/expedities/index.js";
 import { getAllStories } from "../components/storyElements/index.js";
 import { MediaStoryElement } from "../components/storyElements/model.js";
 import { getAllAfkos } from "../db/afko.js";
+import { getAllExpedities } from "../db/expeditie.js";
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
 import { getFileType } from "./files.js";
@@ -39,8 +39,8 @@ const getFileUses = async (): Promise<FileUses> => {
   const stories = getAllStories();
 
   for (const exp of await expedities) {
-    addUseIfFile("expeditie/background", exp.name, exp.backgroundFile);
-    addUseIfFile("expeditie/movie", exp.name, exp.movieFile);
+    addUseIfFile("expeditie/background", exp.name, exp.background_file);
+    addUseIfFile("expeditie/movie", exp.name, exp.movie_file);
   }
 
   for (const word of await words)
@@ -55,9 +55,7 @@ const getFileUses = async (): Promise<FileUses> => {
   for (const story of await stories) {
     if (story.type !== "media") continue;
 
-    const expeditieName =
-      (await expedities).find((exp) => exp._id.equals(story.expeditieId))
-        ?.name || "";
+    const expeditieName = ""; // FIXME: Update when pg is in here;
 
     for (const medium of (story as unknown as MediaStoryElement).media || [])
       addUseIfFile("story/media", expeditieName, medium.file);

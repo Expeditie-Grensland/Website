@@ -1,10 +1,10 @@
 import { onRequestHookHandler } from "fastify";
 import LdapAuth from "ldapauth-fork";
-import { getPersonByLdapId } from "../components/people/index.js";
+import { getPersonByLdapId } from "../db/person.js";
 import { config } from "./configHelper.js";
 
-export const noAdminRedirect: onRequestHookHandler = (request, reply) => {
-  if (!reply.locals.user?.isAdmin) reply.redirect(302, "/leden");
+export const noAdminRedirect: onRequestHookHandler = (_req, reply) => {
+  if (reply.locals.user?.type != "admin") reply.redirect(302, "/leden");
 };
 
 const ldap = new LdapAuth({

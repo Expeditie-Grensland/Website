@@ -1,7 +1,6 @@
 import input from "@inquirer/input";
 import select from "@inquirer/select";
 import { access, constants, stat } from "node:fs/promises";
-import { getAllExpedities } from "../components/expedities/index.js";
 import {
   convertFile,
   determinePrefix,
@@ -11,6 +10,7 @@ import {
 } from "../files/convert.js";
 import { convertFilm } from "../files/types/film.js";
 import { allConverters } from "../files/types/index.js";
+import { getAllExpedities } from "../db/expeditie.js";
 
 const type: "film" | "afbeelding" | "video" | "audio" = await select({
   message: "Type bestand",
@@ -63,9 +63,10 @@ if (type == "film" || itemType == "achtergrond" || itemType == "verhaal")
   expeditie = await select({
     message: "Expeditie",
     loop: false,
-    choices: (
-      await getAllExpedities()
-    ).map((x) => ({ name: x.name, value: x.nameShort })),
+    choices: (await getAllExpedities()).map((x) => ({
+      name: x.name,
+      value: x.id,
+    })),
   });
 
 const answersToName = (description: string) => {

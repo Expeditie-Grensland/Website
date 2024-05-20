@@ -10,11 +10,11 @@ import { join } from "node:path";
 import pug from "pug";
 import qs from "qs";
 import redis from "redis";
-import { getPersonById } from "../components/people/index.js";
 import { getFileType, getFileUrl } from "../files/files.js";
 import routes from "../routes/index.js";
 import { config } from "./configHelper.js";
 import { getHttpMessage } from "./errorCodes.js";
+import { getPerson } from "../db/person.js";
 
 export const setupMongooose = async () => {
   mongoose.set("debug", config.NODE_ENV === "development");
@@ -125,8 +125,7 @@ export const setupFastify = async () => {
       getFileType,
       getFileUrl,
       user:
-        (request.session.userId &&
-          (await getPersonById(request.session.userId))) ||
+        (request.session.userId && (await getPerson(request.session.userId))) ||
         undefined,
       umami:
         config.EG_UMAMI_SCRIPT_URL && config.EG_UMAMI_WEBSITE_ID

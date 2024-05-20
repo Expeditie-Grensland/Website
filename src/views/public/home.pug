@@ -7,7 +7,7 @@ block title
 block content
     .row
         .col
-            a.img-large.ratio(href=`/${expedities[0].nameShort}` draggable="false")
+            a.img-large.ratio(href=`/${expedities[0].id}` draggable="false")
                 +innerImage(expedities[0], "large")
 
 
@@ -16,5 +16,5 @@ block content
             span Voorgaande Expedities
         each expeditie in expedities.slice(1)
             .col-12.col-md-6.col-lg-4
-                a.img-small.ratio(href=`/${expeditie.nameShort}` draggable="false")
+                a.img-small.ratio(href=`/${expeditie.id}` draggable="false")
                     +innerImage(expeditie)

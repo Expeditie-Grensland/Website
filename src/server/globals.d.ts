@@ -1,12 +1,7 @@
 /* eslint-disable no-var */
-import mongoose from "mongoose";
-
-import { getPopulatedExpeditieByName } from "./components/expedities/index.ts";
-import {
-  getPersonByLdapId,
-  getPersonByUserName,
-} from "./components/people/index.ts";
+import { getFullExpeditie } from "./db/expeditie.js";
 import { getFileType, getFileUrl } from "./files/files.js";
+import { getPerson, getPersonByLdapId } from "./db/person.js";
 
 declare module "fastify" {
   export interface FastifyReply {
@@ -14,14 +9,14 @@ declare module "fastify" {
       getFileUrl: typeof getFileUrl;
       getFileType: typeof getFileType;
       user?: Awaited<ReturnType<typeof getPersonByLdapId>>;
-      person?: Awaited<ReturnType<typeof getPersonByUserName>>;
-      expeditie?: Awaited<ReturnType<typeof getPopulatedExpeditieByName>>;
+      person?: Awaited<ReturnType<typeof getPerson>>;
+      expeditie?: Awaited<ReturnType<typeof getFullExpeditie>>;
       umami?: { scriptUrl: string; websiteId: string };
     };
   }
 
   interface Session {
-    userId?: mongoose.Types.ObjectId;
+    userId?: string;
     returnTo?: string;
     infoMsg: string[];
     errorMsg: string[];

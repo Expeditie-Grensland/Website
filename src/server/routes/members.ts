@@ -1,13 +1,13 @@
 import { FastifyPluginAsync } from "fastify";
 import { marked } from "marked";
 import { getLuxonDate } from "../components/dateTime/dateHelpers.js";
-import { getAllPopulatedPoints } from "../components/earnedPoints/index.js";
 import { getAllMemberLinks } from "../components/memberLinks/index.js";
 import { authenticateUser } from "../helpers/auth.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
 // import adminRoutes from "./admin.js";
 import packageJson from "../../../package.json" assert { type: "json" };
 import { getAllAfkos } from "../db/afko.js";
+import { getFullEarnedPoints } from "../db/earned-point.js";
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
 import { config } from "../helpers/configHelper.js";
@@ -45,8 +45,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
       const body = request.body as { username: string; password: string }; // FIXME
 
       request.session.userId =
-        (await authenticateUser(body.username, body.password))?._id ||
-        undefined;
+        (await authenticateUser(body.username, body.password))?.id || undefined;
     } catch (e) {
       let errorMsg = "Error!";
 
@@ -185,16 +184,19 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get("/punten", async (request, reply) => {
-    const earnedPoints = (await getAllPopulatedPoints()).map((ep) => {
+    const earnedPoints = (await getFullEarnedPoints()).map((ep) => {
       return {
-        date: getLuxonDate(ep.dateTime).toLocaleString({
+        date: getLuxonDate({
+          stamp: ep.time_stamp,
+          zone: ep.time_zone,
+        }).toLocaleString({
           month: "2-digit",
           day: "2-digit",
         }),
         amount: ep.amount,
-        name: `${ep.personId.firstName} ${ep.personId.lastName}`,
-        team: ep.personId.team as string,
-        expeditie: ep.expeditieId ? `Expeditie ${ep.expeditieId.name}` : "",
+        name: `${ep.person_first_name} ${ep.person_last_name}`,
+        team: ep.team == "b" ? "Blauw" : "Rood",
+        expeditie: ep.expeditie_name ? `Expeditie ${ep.expeditie_name}` : "",
       };
     });
 

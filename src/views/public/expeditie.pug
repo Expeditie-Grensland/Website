@@ -6,7 +6,7 @@ block title
 
     meta(property="og:title" content=`Expeditie ${expeditie.name}`)
     meta(property="og:description" content=expeditie.subtitle)
-    meta(property="og:image" content=getFileUrl(expeditie.backgroundFile, "normaal.jpg"))
+    meta(property="og:image" content=getFileUrl(expeditie.background_file, "normaal.jpg"))
 
 block content
     .row
@@ -17,39 +17,39 @@ block content
 
     .row
         .col-12.col-md-4.order-md-2.sidebar.text-md-right
-            if expeditie.showMap
-                a.btn.btn-map.btn-outline-light.sidebar-item(href=`/${expeditie.nameShort}/kaart`) Open de kaart
+            if expeditie.show_map
+                a.btn.btn-map.btn-outline-light.sidebar-item(href=`/${expeditie.id}/kaart`) Open de kaart
 
-            if expeditie.movieEditorIds && expeditie.movieEditorIds.length > 0 && (!expeditie.movieRestricted || user)
+            if expeditie.movie_editors && expeditie.movie_editors.length > 0 && (!expeditie.movie_restricted || user)
                 div.sidebar-item
-                    span.sidebar-title= expeditie.movieEditorIds.length === 1 ? "Filmmonteur" : "Filmmonteurs"
-                    each person in expeditie.movieEditorIds
-                        span #{person.firstName} #{person.lastName}
+                    span.sidebar-title= expeditie.movie_editors.length === 1 ? "Filmmonteur" : "Filmmonteurs"
+                    each person in expeditie.movie_editors
+                        span #{person.first_name} #{person.last_name}
 
             div.sidebar-item
                 span.sidebar-title Deelnemers
-                each person in expeditie.personIds
+                each person in expeditie.people
                     span
-                        | #{person.firstName} #{person.lastName}
+                        | #{person.first_name} #{person.last_name}
                         |
                         if person.type === "guest"
                             span.sidebar-detail (gast)
 
-            if expeditie.movieFile && (!expeditie.movieRestricted || user) && getFileType(expeditie.movieFile) == "film-dash"
+            if expeditie.movie_file && (!expeditie.movie_restricted || user) && getFileType(expeditie.movie_file) == "film-dash"
                 div.sidebar-item
-                    a.sidebar-link(href=getFileUrl(expeditie.movieFile, "origineel.mp4") download=`Expeditie ${expeditie.name}.mp4`) Download film
+                    a.sidebar-link(href=getFileUrl(expeditie.movie_file, "origineel.mp4") download=`Expeditie ${expeditie.name}.mp4`) Download film
 
         .col-12.col-md-8.order-md-1
-            if expeditie.movieFile && (!expeditie.movieRestricted || user)
-                if getFileType(expeditie.movieFile) == "film-dash"
+            if expeditie.movie_file && (!expeditie.movie_restricted || user)
+                if getFileType(expeditie.movie_file) == "film-dash"
                     .ratio.ratio-16x9
-                        video#video.embed-responsive-item(controls poster=getFileUrl(expeditie.movieFile, "poster.jpg") preload="none" data-manifest-url=getFileUrl(expeditie.movieFile, "hls.m3u8") onplay=`this.onplay = null; umami.track('film-start', { film: '${expeditie.nameShort}' })`)
-                            source(src=getFileUrl(expeditie.movieFile, "720p30.mp4") type="video/mp4")
+                        video#video.embed-responsive-item(controls poster=getFileUrl(expeditie.movie_file, "poster.jpg") preload="none" data-manifest-url=getFileUrl(expeditie.movie_file, "hls.m3u8") onplay=`this.onplay = null; umami.track('film-start', { film: '${expeditie.id}' })`)
+                            source(src=getFileUrl(expeditie.movie_file, "720p30.mp4") type="video/mp4")
                             p Sorry, deze video wordt niet door je browser ondersteund.
-                if getFileType(expeditie.movieFile) == "film-hls"
+                if getFileType(expeditie.movie_file) == "film-hls"
                     .ratio.ratio-16x9
-                        video#video.embed-responsive-item(controls poster=getFileUrl(expeditie.movieFile, "poster.jpg") preload="none" data-manifest-url=getFileUrl(expeditie.movieFile, "index.m3u8") onplay=`this.onplay = null; umami.track('film-start', { film: '${expeditie.nameShort}' })`)
-                            source(src=getFileUrl(expeditie.movieFile, "progressive.mp4") type="video/mp4")
+                        video#video.embed-responsive-item(controls poster=getFileUrl(expeditie.movie_file, "poster.jpg") preload="none" data-manifest-url=getFileUrl(expeditie.movie_file, "index.m3u8") onplay=`this.onplay = null; umami.track('film-start', { film: '${expeditie.id}' })`)
+                            source(src=getFileUrl(expeditie.movie_file, "progressive.mp4") type="video/mp4")
                             p Sorry, deze video wordt niet door je browser ondersteund.
 
 
