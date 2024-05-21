@@ -1,6 +1,5 @@
 import { FastifyPluginAsync } from "fastify";
 import { marked } from "marked";
-import { getLuxonDate } from "../components/dateTime/dateHelpers.js";
 import { authenticateUser } from "../helpers/auth.js";
 import { getMessages, setMessage } from "../helpers/flash.js";
 // import adminRoutes from "./admin.js";
@@ -184,21 +183,17 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get("/punten", async (request, reply) => {
-    const earnedPoints = (await getFullEarnedPoints()).map((ep) => {
-      return {
-        date: getLuxonDate({
-          stamp: ep.time_stamp,
-          zone: ep.time_zone,
-        }).toLocaleString({
-          month: "2-digit",
-          day: "2-digit",
-        }),
-        amount: ep.amount,
-        name: `${ep.person_first_name} ${ep.person_last_name}`,
-        team: ep.team == "b" ? "Blauw" : "Rood",
-        expeditie: ep.expeditie_name ? `Expeditie ${ep.expeditie_name}` : "",
-      };
-    });
+    const earnedPoints = (await getFullEarnedPoints()).map((ep) => ({
+      date: new Date(ep.time_stamp * 1000).toLocaleString("nl-NL", {
+        timeZone: ep.time_zone,
+        month: "2-digit",
+        day: "2-digit",
+      }),
+      amount: ep.amount,
+      name: `${ep.person_first_name} ${ep.person_last_name}`,
+      team: ep.team == "b" ? "Blauw" : "Rood",
+      expeditie: ep.expeditie_name ? `Expeditie ${ep.expeditie_name}` : "",
+    }));
 
     const score = earnedPoints.reduce(
       (acc, cur) =>
