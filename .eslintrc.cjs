@@ -6,7 +6,7 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/stylistic",
   ],
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "import"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     tsconfigRootDir: __dirname,
