@@ -1,5 +1,6 @@
 import { sql } from "kysely";
 import db from "./schema/database.js";
+import { jsonAggTable } from "./schema/utils.js";
 
 export const getAllExpedities = () =>
   db
@@ -8,38 +9,43 @@ export const getAllExpedities = () =>
     .orderBy("sequence_number desc")
     .execute();
 
-export const getExpeditie = (id: string) =>
+export const getFullExpeditie = (id: string) =>
   db
     .selectFrom("expeditie")
+    .leftJoin(
+      (eb) =>
+        eb
+          .selectFrom("expeditie_person")
+          .innerJoin("person", "expeditie_person.person_id", "person.id")
+          .where("expeditie_id", "=", id)
+          .select([
+            "expeditie_id",
+            jsonAggTable("person", "person.id", {
+              orderBy: sql`CASE WHEN type='guest' then 1 ELSE 0 END, sorting_name`,
+            }).as("persons"),
+          ])
+          .groupBy("expeditie_id")
+          .as("_1"),
+      (join) => join.onTrue()
+    )
+    .leftJoin(
+      (eb) =>
+        eb
+          .selectFrom("expeditie_movie_editor")
+          .innerJoin("person", "expeditie_movie_editor.person_id", "person.id")
+          .where("expeditie_id", "=", id)
+          .select([
+            "expeditie_id",
+            jsonAggTable("person", "person.id", {
+              orderBy: sql`sorting_name`,
+            }).as("movie_editors"),
+          ])
+          .groupBy("expeditie_id")
+          .as("_2"),
+      (join) => join.onTrue()
+    )
     .where("id", "=", id)
-    .selectAll()
+    .selectAll("expeditie")
+    .select(["_1.persons", "_2.movie_editors"])
     .limit(1)
     .executeTakeFirst();
-
-export const getFullExpeditie = async (id: string) => {
-  const peopleProm = db
-    .selectFrom("expeditie_person")
-    .where("expeditie_id", "=", id)
-    .rightJoin("person", "person_id", "id")
-    .orderBy([sql`CASE WHEN type='guest' then 1 ELSE 0 END`, "sorting_name asc"])
-    .selectAll("person")
-    .execute();
-
-  const movieEditorsProm = db
-    .selectFrom("expeditie_movie_editor")
-    .where("expeditie_id", "=", id)
-    .rightJoin("person", "person_id", "id")
-    .orderBy("sorting_name asc")
-    .selectAll("person")
-    .execute();
-
-  const expeditie = await getExpeditie(id);
-
-  return (
-    expeditie && {
-      ...expeditie,
-      people: await peopleProm,
-      movie_editors: await movieEditorsProm,
-    }
-  );
-};

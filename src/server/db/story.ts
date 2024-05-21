@@ -25,7 +25,7 @@ export const getStories = (expeditieId: string) =>
     .where("expeditie_id", "=", expeditieId)
     .leftJoin("story_media", "story.id", "story_id")
     .selectAll("story")
-    .select(() => [jsonAggTable("story_media").as("media")])
+    .select(() => [jsonAggTable("story_media", "story_media.file").as("media")])
     .groupBy("story.id")
     .orderBy("time_stamp asc")
     .execute();

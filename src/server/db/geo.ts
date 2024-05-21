@@ -28,7 +28,7 @@ export const getNodesWithPersons = (expeditieId: string) =>
     .leftJoin("person", "geo_node_person.person_id", "person.id")
     .groupBy("geo_node.id")
     .selectAll("geo_node")
-    .select(() => [jsonAggTable("person").as("persons")])
+    .select(() => [jsonAggTable("person", "person.id").as("persons")])
     .execute();
 
 export const getNodeLocations = (
