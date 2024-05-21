@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Kysely } from "kysely";
-import { config } from "../../../helpers/configHelper";
+import { config } from "../../../helpers/configHelper.js";
 
 export const up = async (db: Kysely<any>) => {
   await db.schema

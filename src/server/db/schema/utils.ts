@@ -1,5 +1,5 @@
 import { Selectable, sql } from "kysely";
-import { DB } from "./types";
+import { DB } from "./types.js";
 
 export const jsonAggTable = <T extends keyof DB>(tableName: T) =>
   sql<Selectable<DB[T]>[]>`
