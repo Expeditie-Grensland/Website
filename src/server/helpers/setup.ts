@@ -5,20 +5,29 @@ import fastifyStatic from "@fastify/static";
 import fastifyView from "@fastify/view";
 import RedisStore from "connect-redis";
 import fastify, { FastifyInstance } from "fastify";
-import mongoose from "mongoose";
 import { join } from "node:path";
 import pug from "pug";
 import qs from "qs";
 import redis from "redis";
+import { getPerson } from "../db/person.js";
+import migrator from "../db/schema/migrator.js";
 import { getFileType, getFileUrl } from "../files/files.js";
 import routes from "../routes/index.js";
 import { config } from "./configHelper.js";
 import { getHttpMessage } from "./errorCodes.js";
-import { getPerson } from "../db/person.js";
 
-export const setupMongooose = async () => {
-  mongoose.set("debug", config.NODE_ENV === "development");
-  await mongoose.connect(config.EG_MONGO_URL);
+export const migrateDatabase = async () => {
+  const { results, error } = await migrator.migrateToLatest();
+
+  if (results?.length) {
+    console.info("Applied migrations:");
+    console.table(results, ["migrationName", "direction", "status"]);
+  }
+
+  if (error) {
+    console.error("Error applying database migrations");
+    throw error;
+  }
 };
 
 const setupSession = async (app: FastifyInstance) => {

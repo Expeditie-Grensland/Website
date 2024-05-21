@@ -37,10 +37,8 @@
     "ldapauth-fork": "^5.0.5",
     "luxon": "^3.4.4",
     "marked": "^12.0.1",
-    "migrate-mongo": "^11.0.0",
     "mime": "^4.0.1",
     "mongodb": "^6.6.2",
-    "mongoose": "8.3.1",
     "pg": "^8.11.5",
     "pino": "^8.20.0",
     "pug": "^3.0.2",
@@ -88,9 +86,7 @@
   },
   "files": [
     "pnpm-lock.yaml",
-    "dist",
-    "migrate-mongo-config.js",
-    "migrations"
+    "dist"
   ],
   "bin": {
     "expeditiegrensland-website": "dist/server/bin/expeditiegrensland-website.js",
@@ -115,10 +111,6 @@
     "dev:styles": "node build/styles.js dev",
     "dev:server": "node build/server.js dev",
     "dev:run": "sleep 1 && dotenv -- nodemon --watch 'dev/server/**/*' --exec 'node --enable-source-maps --icu-data-dir=node_modules/full-icu' dev/server/server.js",
-    "dbmigrate:status": "dotenv -- migrate-mongo status",
-    "dbmigrate:create": "dotenv -- migrate-mongo create",
-    "dbmigrate:up": "dotenv -- migrate-mongo up",
-    "dbmigrate:down": "dotenv -- migrate-mongo down",
     "db:migrations": "tsx build/db-migrate.ts list",
     "db:create-migration": "tsx build/db-migrate.ts create",
     "db:migrate": "tsx build/db-migrate.ts latest",

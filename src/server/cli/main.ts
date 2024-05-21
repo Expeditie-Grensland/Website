@@ -1,13 +1,9 @@
 import select from "@inquirer/select";
-import mongoose from "mongoose";
-import { config } from "../helpers/configHelper.js";
+import db from "../db/schema/database.js";
 
 global.cliMode = true;
 
 try {
-  console.info("Connecting to database...");
-  await mongoose.connect(config.EG_MONGO_URL);
-
   const command = await select({
     message: "Actie",
     choices: [
@@ -24,5 +20,5 @@ try {
   console.error("Er is een fout opgetreden.");
   console.error(err instanceof Error ? err.message : String(err));
 } finally {
-  await mongoose.disconnect();
+  await db.destroy();
 }
