@@ -1,11 +1,14 @@
 import { FastifyPluginAsync } from "fastify";
 import { getFullExpeditie } from "../db/expeditie.js";
 import {
+  getFirstNodeLocationAfter,
   getLocationCount,
   getNewestLocation,
   getNodeLocations,
-  getNodesWithPersonIds,
+  getNodesWithPersons,
 } from "../db/geo.js";
+import { getNewestStoryId, getStories, getStoryCount } from "../db/story.js";
+import { getFileUrl } from "../files/files.js";
 
 const HEADER_REV = "x-revision-id";
 
@@ -27,9 +30,8 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
   app.get("/", async (request, reply) => reply.view("public/expeditie"));
 
   app.get("/kaart", async (request, reply) => {
-    // const expeditie = reply.locals.expeditie!;
-
-    const storyCount = 0; // FIXME: Update with actual story count
+    const expeditie = reply.locals.expeditie!;
+    const storyCount = await getStoryCount(expeditie.id);
 
     return reply.view("expeditieMap", { hasStory: storyCount > 0 });
   });
@@ -50,7 +52,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
       [HEADER_REV]: newHeader,
     });
 
-    const nodes = await getNodesWithPersonIds(expeditie.id);
+    const nodes = await getNodesWithPersons(expeditie.id);
 
     let buf = Buffer.allocUnsafe(4);
 
@@ -78,104 +80,76 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
     return reply;
   });
 
-  // FIXME: Complete below to pg
+  app.get("/kaart/story", async (request, reply) => {
+    const expeditie = reply.locals.expeditie!;
 
-  // app.get("/kaart/story", async (request, reply) => {
-  //   const expeditie = reply.locals.expeditie!;
+    const storyCount = getStoryCount(expeditie.id);
+    const newestStory = getNewestStoryId(expeditie.id);
 
-  //   const storyCount = getStoryCountByExpeditie(expeditie._id);
+    reply.header("Content-Type", "application/json");
+    reply.header("Charset", "utf-8");
 
-  //   const lastStory = BaseStoryElementModel.find({ expeditieId: expeditie._id })
-  //     .sort({ _id: -1 })
-  //     .limit(1)
-  //     .exec()
-  //     .then((x) =>
-  //       x.length > 0
-  //         ? x[0]._id
-  //         : new mongoose.Types.ObjectId("000000000000000000000000")
-  //     );
+    const newHeader = `v1-${await storyCount}-${await newestStory}`;
 
-  //   reply.header("Content-Type", "application/json");
-  //   reply.header("Charset", "utf-8");
+    if (request.headers[HEADER_REV] === newHeader)
+      return reply.code(304).send();
 
-  //   const newHeader: Promise<string> = (async () =>
-  //     `v1-${await storyCount}-${(await lastStory).toHexString()}`)();
+    const [stories, nodes] = await Promise.all([
+      getStories(expeditie.id),
+      getNodesWithPersons(expeditie.id),
+    ]);
 
-  //   if (
-  //     request.headers[HEADER_REV] &&
-  //     request.headers[HEADER_REV] === (await newHeader)
-  //   )
-  //     return reply.code(304).send();
+    reply.header(HEADER_REV, newHeader);
 
-  //   const stories = getStoryByExpeditie(expeditie._id);
-  //   const nodes = await getPopulatedNodesByExpeditie(expeditie._id);
+    const result = {
+      nodes: nodes.map((node, index) => {
+        return {
+          id: node.id,
+          nodeNum: index,
+          timeFrom: node.time_from,
+          timeTill: node.time_till,
+          personNames: node.persons.map(
+            (p) => `${p.first_name} ${p.last_name}`
+          ),
+        };
+      }),
+      story: await Promise.all(
+        stories.map(async (story) => {
+          const nodeIdx = nodes.findIndex(
+            (node) =>
+              story.time_stamp >= node.time_from &&
+              story.time_stamp < node.time_till &&
+              node.persons.some((p) => p.id == story.person_id)
+          );
 
-  //   reply.header(HEADER_REV, await newHeader);
+          const storyLocation = await getFirstNodeLocationAfter(
+            nodes[nodeIdx],
+            story.time_stamp
+          );
 
-  //   const result = {
-  //     nodes: nodes.map((node, index) => {
-  //       return {
-  //         id: node._id.toHexString(),
-  //         nodeNum: index,
-  //         timeFrom: node.timeFrom,
-  //         timeTill: node.timeTill,
-  //         personNames: node.personIds.map(
-  //           (p) => `${p.firstName} ${p.lastName}`
-  //         ),
-  //       };
-  //     }),
-  //     story: await Promise.all(
-  //       (await stories).map(async (story) => {
-  //         const nodeIdx = nodes.findIndex(
-  //           (node) =>
-  //             story.dateTime.stamp >= node.timeFrom &&
-  //             story.dateTime.stamp < node.timeTill &&
-  //             node.personIds.some((p) => p._id.equals(story.personId))
-  //         );
+          return {
+            id: story.id,
+            nodeNum: nodeIdx,
+            dateTime: {
+              stamp: story.time_stamp,
+              zone: story.time_zone,
+            },
+            title: story.title,
+            text: story.text,
+            latitude: storyLocation?.latitude || 0,
+            longitude: storyLocation?.longitude || 0,
+            media: story.media.map((medium) => ({
+              file: getFileUrl(medium.file),
+              description: medium.description,
+            })),
+          };
+        })
+      ),
+      finished: expeditie.finished,
+    };
 
-  //         const storyLocation = (
-  //           await geoLocationModel
-  //             .find(
-  //               {
-  //                 expeditieId: expeditie._id,
-  //                 personId: { $in: nodes[nodeIdx].personIds.map((p) => p._id) },
-  //                 "dateTime.stamp": { $gte: story.dateTime.stamp },
-  //               },
-  //               { _id: false, longitude: true, latitude: true }
-  //             )
-  //             .sort({ "dateTime.stamp": 1 })
-  //             .limit(1)
-  //             .exec()
-  //         )[0];
-
-  //         const media =
-  //           (story as HydratedDocument<MediaStoryElement>).media || [];
-
-  //         return {
-  //           id: story._id.toHexString(),
-  //           type: story.type,
-  //           nodeNum: nodeIdx,
-  //           dateTime: {
-  //             stamp: story.dateTime.stamp,
-  //             zone: story.dateTime.zone,
-  //           },
-  //           title: (story as HydratedDocument<TextStoryElement>).title,
-  //           text: (story as HydratedDocument<TextStoryElement>).text,
-  //           name: (story as HydratedDocument<LocationStoryElement>).name,
-  //           latitude: storyLocation?.latitude || 0,
-  //           longitude: storyLocation?.longitude || 0,
-  //           media: media.map((medium) => ({
-  //             file: getFileUrl(medium.file),
-  //             description: medium.description,
-  //           })),
-  //         };
-  //       })
-  //     ),
-  //     finished: expeditie.finished,
-  //   };
-
-  //   return reply.send(JSON.stringify(result));
-  // });
+    return reply.send(JSON.stringify(result));
+  });
 };
 
 export default expeditieRoutes;

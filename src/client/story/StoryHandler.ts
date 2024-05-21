@@ -1,16 +1,13 @@
 import $ from 'jquery';
-import {GraphBuilder} from './graph/graphbuilder';
+import { DateTime } from 'luxon';
 import {
-    LocationStoryElement,
-    MediaStoryElement,
     Node,
-    StoryElement,
+    Story,
     StoryMedia,
-    StoryResult,
-    TextStoryElement
+    StoryResult
 } from '../helpers/retrieval';
-import {DateTime} from 'luxon';
-import {MapHandler} from "../map/MapHandler"
+import { MapHandler } from "../map/MapHandler";
+import { GraphBuilder } from './graph/graphbuilder';
 
 export class StoryHandler {
 
@@ -59,7 +56,7 @@ export class StoryHandler {
         // This renders the graph only after all images and videos are loaded.
         // Media aspect ratios are not known beforehand so they have to be loaded before the graph can be created with the correct size
         // FIXME determine media aspect ratio on upload and put it in the database
-        let mediaCount = result.story.reduce((acc, curr) => acc + (curr.type === 'media' ? curr.media.length : 0), 0)
+        let mediaCount = result.story.reduce((acc, curr) => acc + (curr.media ? curr.media.length : 0), 0)
 
         const onAllMediaLoaded = () => {
             console.log("All media loaded!")
@@ -115,51 +112,16 @@ export class StoryHandler {
         document.getElementById(storyId)?.scrollIntoView({block: "start", inline: "nearest", behavior: 'smooth'})
     }
 
-    private createStoryElement = (element: StoryElement, nodes: Node[]): JQuery<HTMLElement> => {
-        switch (element.type) {
-            case 'location': {
-                return this.createLocationStoryElement(element as LocationStoryElement, nodes);
-            }
-            case 'text': {
-                return this.createTextStoryElement(element as TextStoryElement, nodes);
-            }
-            case 'media': {
-                return this.createMediaStoryElement(element as MediaStoryElement, nodes);
-            }
-            default: return $('<p>').text('er is iets foutgegaan')
-        }
-    }
-
-    private createLocationStoryElement = (element: LocationStoryElement, nodes: Node[]): JQuery<HTMLElement> => {
-        return $('<div>')
+    private createStoryElement = (element: Story, nodes: Node[]): JQuery<HTMLElement> => {
+        const el = $('<div>')
             .attr('id', element.id)
             .addClass('storyElement')
             .addClass('card')
-            .addClass('location')
-            .append(this.createStoryElementHeader(element, element.name, nodes));
-    }
-
-    private createTextStoryElement = (element: TextStoryElement, nodes: Node[]): JQuery<HTMLElement> => {
-        return $('<div>')
-            .attr('id', element.id)
-            .addClass('storyElement')
-            .addClass('card')
-            .addClass('text')
-            .append(this.createStoryElementHeader(element, element.title, nodes))
-            .append($('<p>')
-                .text(element.text)
-            );
-    }
-
-    private createMediaStoryElement = (element: MediaStoryElement, nodes: Node[]): JQuery<HTMLElement> => {
-        const base = $('<div>')
-            .attr('id', element.id)
-            .addClass('storyElement')
-            .addClass('card')
-            .addClass('media')
             .append(this.createStoryElementHeader(element, element.title, nodes));
 
-        const content = element.media.map((medium) => {
+        if (element.text) el.append($('<p>').text(element.text));
+
+        const mediaContent = element.media.map((medium) => {
             const wrapper = $('<div>').addClass('media-wrapper').append(this.getMediaPlayer(medium));
 
             if (medium.description)
@@ -169,9 +131,9 @@ export class StoryHandler {
                 );
 
             return wrapper;
-        })
+        });
 
-        return base.append(content);
+        return el.append(mediaContent);
     }
 
     private getMediaPlayer = (media: StoryMedia) => {
@@ -213,7 +175,7 @@ export class StoryHandler {
         return dt.toLocaleString({ year: 'numeric', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }); // Absolute date
     };
 
-    private createStoryElementHeader = (element: StoryElement, title: string, nodes: Node[]): JQuery<HTMLElement> => {
+    private createStoryElementHeader = (element: Story, title: string, nodes: Node[]): JQuery<HTMLElement> => {
         const dt = DateTime.fromSeconds(element.dateTime.stamp, { locale: 'nl-NL' });
 
         return $('<div>')
@@ -243,7 +205,7 @@ export class StoryHandler {
             );
     }
 
-    private getPeopleNames = (element: StoryElement, nodes: Node[]): string => {
+    private getPeopleNames = (element: Story, nodes: Node[]): string => {
         const node = nodes.find(node => node.nodeNum === element.nodeNum);
 
         const names = node != null ? node.personNames.sort((p1, p2) => p1.localeCompare(p2)) : [];

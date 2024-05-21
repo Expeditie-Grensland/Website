@@ -1,5 +1,6 @@
 import { parseGpx } from "../helpers/gpx.js";
 import db from "./schema/database.js";
+import { jsonAggTable } from "./schema/utils.js";
 
 export const getNewestLocation = (expeditieId: string) =>
   db
@@ -19,30 +20,53 @@ export const getLocationCount = (expeditieId: string) =>
     .executeTakeFirst()
     .then((result) => result?.count || 0n);
 
-export const getNodesWithPersonIds = (expeditieId: string) =>
+export const getNodesWithPersons = (expeditieId: string) =>
   db
     .selectFrom("geo_node")
     .where("expeditie_id", "=", expeditieId)
-    .innerJoin("geo_node_person", "id", "geo_node_id")
+    .leftJoin("geo_node_person", "geo_node.id", "geo_node_person.geo_node_id")
+    .leftJoin("person", "geo_node_person.person_id", "person.id")
     .groupBy("geo_node.id")
     .selectAll("geo_node")
-    .select(({ fn }) => [
-      fn<string[]>("array_agg", ["person_id"]).as("person_ids"),
-    ])
+    .select(() => [jsonAggTable("person").as("persons")])
     .execute();
 
 export const getNodeLocations = (
-  node: Awaited<ReturnType<typeof getNodesWithPersonIds>>[number]
+  node: Awaited<ReturnType<typeof getNodesWithPersons>>[number]
 ) =>
   db
     .selectFrom("geo_location")
     .select(["id", "latitude", "longitude"])
     .where("expeditie_id", "=", node.expeditie_id)
-    .where("person_id", "in", node.person_ids)
+    .where(
+      "person_id",
+      "in",
+      node.persons.map((p) => p.id)
+    )
     .where("time_stamp", ">=", node.time_from)
     .where("time_stamp", "<", node.time_till)
     .orderBy("time_stamp asc")
     .execute();
+
+export const getFirstNodeLocationAfter = (
+  node: Awaited<ReturnType<typeof getNodesWithPersons>>[number],
+  afterStamp: number
+) =>
+  db
+    .selectFrom("geo_location")
+    .select(["id", "latitude", "longitude"])
+    .where("expeditie_id", "=", node.expeditie_id)
+    .where(
+      "person_id",
+      "in",
+      node.persons.map((p) => p.id)
+    )
+    .where("time_stamp", ">=", node.time_from)
+    .where("time_stamp", "<", node.time_till)
+    .where("time_stamp", ">=", afterStamp)
+    .orderBy("time_stamp asc")
+    .limit(1)
+    .executeTakeFirst();
 
 export const insertLocationsFromGpx = (
   gpxData: Buffer | string,

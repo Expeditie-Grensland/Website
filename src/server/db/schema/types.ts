@@ -99,6 +99,23 @@ export interface Quote {
   time_zone: string;
 }
 
+export interface Story {
+  expeditie_id: string;
+  id: Generated<number>;
+  person_id: string;
+  text: string | null;
+  time_stamp: number;
+  time_zone: string;
+  title: string;
+}
+
+export interface StoryMedia {
+  description: Generated<string>;
+  file: string;
+  id: Generated<number>;
+  story_id: number;
+}
+
 export interface Word {
   attachment_file: string | null;
   definitions: Generated<string[]>;
@@ -119,5 +136,7 @@ export interface DB {
   member_link: MemberLink;
   person: Person;
   quote: Quote;
+  story: Story;
+  story_media: StoryMedia;
   word: Word;
 }
