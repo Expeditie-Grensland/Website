@@ -1,5 +1,4 @@
 extends ../members/_frame
-include ../_expeditieMedia
 
 block title
     title Expeditie - Admin - Afkowobo
@@ -19,7 +18,7 @@ block content
         .col-12.mb-4
             hr
             .h2.mb-3 Definitie toevoegen
-            form(method='POST' action='/leden/admin/afkowobo')
+            form(method='POST' action='/leden/admin/afkowobo/add')
                 .form-row.align-items-center
                     .col-12.col-md-3.mb-2
                         input.form-control(type='text' name='afko' placeholder='Afko' required)
@@ -30,9 +29,9 @@ block content
                             button.form-array-add.btn.btn-secondary.me-2 +
                             button.form-array-remove.btn.btn-secondary –
                     .col-auto.col-md-3.mb-2.me-2
-                        input.form-control(type='text' name='file' placeholder='Bijlage Naam' size='30')
+                        input.form-control(type='text' name='attachment_file' placeholder='Bijlage Naam' size='30')
                     .col-auto.mb-2
-                        button.btn.btn-primary(type='submit' name="action" value="add") Toevoegen
+                        button.btn.btn-primary(type='submit') Toevoegen
 
         // TODO: discription of link formats etc. (markdown)
 
@@ -48,22 +47,20 @@ block content
                         th
 
                 tbody
-                    each afko, i in afkos
+                    each afko in afkos
                         tr
                             td
-                                input.form-control(type='text' form=`f-${i}` name='afko' value=afko.afko required)
+                                input.form-control(type='text' form=`f-${afko.id}` name='afko' value=afko.afko required)
                             td
                                 .form-array
                                     each def in afko.definitions
-                                        textarea.form-control.form-array-item.mb-2(form=`f-${i}` name='definitions[]' rows='3' required)= def
-                                    textarea.form-control.form-array-proto.mb-2(form=`f-${i}` name='definitions[]' rows='3' required hidden disabled)
+                                        textarea.form-control.form-array-item.mb-2(form=`f-${afko.id}` name='definitions[]' rows='3' required)= def
+                                    textarea.form-control.form-array-proto.mb-2(form=`f-${afko.id}` name='definitions[]' rows='3' required hidden disabled)
                                     button.form-array-add.btn.btn-secondary.me-2 +
                                     button.form-array-remove.btn.btn-secondary –
                             td
-                                input.form-control(type='text' form=`f-${i}` name='file' value=afko.attachmentFile)
+                                input.form-control(type='text' form=`f-${afko.id}` name='attachment_file' value=afko.attachment_file)
                             td
-                                form.form-confirm(id=`f-${i}` method='POST' action=`/leden/admin/afkowobo`)
-                                    input(type='hidden' name='id' value=afko._id.toHexString())
-                                    button.btn.btn-info.mb-2(type='submit' name='action' value='change') Wijzigen
-                                    br
-                                    button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen
+                                form.form-confirm(id=`f-${afko.id}` method='POST' action=`/leden/admin/afkowobo/update/${afko.id}`)
+                                    button.btn.btn-info.block.mb-2(type='submit') Wijzigen
+                                    button.btn.btn-danger.block(type='submit' formaction=`/leden/admin/afkowobo/delete/${afko.id}) Verwijderen

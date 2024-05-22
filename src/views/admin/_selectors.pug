@@ -1,0 +1,13 @@
+mixin expeditieOptions(e, allowEmpty=false)
+    option(selected=(e === undefined) disabled) Expeditie
+    if allowEmpty
+      option(selected=(e === null) value="-") Geen
+    each expeditie in expedities
+        option(selected=(e === expeditie.id) value=expeditie.id)= expeditie.name
+
+mixin personOptions(p, allowEmpty=false)
+    option(selected=(p === undefined) disabled) Persoon
+    if allowEmpty
+      option(selected=(e === null) value="-") Geen
+    each person in persons
+        option(selected=(p === person.id) value=person.id)= `${person.first_name} ${person.last_name}`

@@ -1,512 +1,455 @@
-// import mongoose, { HydratedDocument } from "mongoose";
-
-// import fastifyMultipart from "@fastify/multipart";
-// import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
-// import { ZodError, ZodTypeAny, z } from "zod";
-// import { fromZodError } from "zod-validation-error";
-// import {
-//   getISODate,
-//   getInternalFromISODate,
-//   isValidTimeZone,
-// } from "../components/dateTime/dateHelpers.js";
-// import {
-//   getAllPoints,
-//   getPointsById,
-// } from "../components/earnedPoints/index.js";
-// import {
-//   EarnedPoint,
-//   EarnedPointModel,
-// } from "../components/earnedPoints/model.js";
-// import {
-//   getAllExpedities,
-//   getExpeditieById,
-// } from "../components/expedities/index.js";
-// import { generateLocations } from "../components/geoLocations/gpxHelper.js";
-// import { createManyLocations } from "../components/geoLocations/index.js";
-// import { getAllPeople, getPersonById } from "../components/people/index.js";
-// import { getAllQuotes, getQuoteById } from "../components/quotes/index.js";
-// import { Quote, QuoteModel } from "../components/quotes/model.js";
-// import {
-//   getAllStories,
-//   getStoryById,
-// } from "../components/storyElements/index.js";
-// import {
-//   BaseStoryElement,
-//   BaseStoryElementModel,
-//   StoryElement,
-// } from "../components/storyElements/model.js";
-// import { getAllWords, getWordById } from "../components/words/index.js";
-// import { Word, WordModel } from "../components/words/model.js";
-// import { deleteS3Prefix, getS3Files } from "../files/s3.js";
-// import { getUsesForFiles } from "../files/uses.js";
-// import { getMessages, setMessage } from "../helpers/flash.js";
-// import { getAfkoById, getAllAfkos } from "../components/afkos/index.js";
-// import { Afko, AfkoModel } from "../components/afkos/model.js";
-
-// type GetById<T> = (
-//   id: mongoose.Types.ObjectId
-// ) => Promise<HydratedDocument<T> | null>;
-
-// const zDocument = <T>(getById: GetById<T>) =>
-//   z
-//     .string()
-//     .refine(mongoose.Types.ObjectId.isValid, {
-//       message: "Is geen geldige id",
-//     })
-//     .transform((val) => new mongoose.Types.ObjectId(val))
-//     .transform(async (id) => await getById(id))
-//     .refine((obj): obj is HydratedDocument<T> => !!obj, {
-//       message: "Item bestaat niet",
-//     });
-
-// const zOptionalWithNone = <T extends ZodTypeAny>(zObj: T) =>
-//   z.union([z.literal("none").transform(() => undefined), zObj]);
-
-// const zActionFromBody = z
-//   .object({
-//     action: z.enum(["add", "change", "delete"]),
-//   })
-//   .transform((x) => x.action);
-
-// const zDocumentFromBodyId = <T>(getById: GetById<T>) =>
-//   z
-//     .object({
-//       id: zDocument<T>(getById),
-//     })
-//     .transform(({ id }) => id!);
-
-// const zTimeZone = z
-//   .string()
-//   .refine(isValidTimeZone, { message: "Geen geldige tijdzone" });
-
-// const tryCatchAndRedirect =
-//   (func: (request: FastifyRequest, reply: FastifyReply) => Promise<string>) =>
-//   async (request: FastifyRequest, reply: FastifyReply) => {
-//     try {
-//       setMessage(request.session, "infoMsg", await func(request, reply));
-//     } catch (e) {
-//       let errorMsg = "Error!";
-
-//       if (typeof e === "string") errorMsg = e;
-//       else if (e instanceof ZodError) errorMsg = fromZodError(e).message;
-//       else if (e instanceof Error) errorMsg = e.message;
-
-//       setMessage(request.session, "errorMsg", errorMsg);
-//     }
-//     reply.redirect(302, request.url);
-//     return reply;
-//   };
-
-// const adminRoutes: FastifyPluginAsync = async (app) => {
-//   app.addHook("onRequest", async (request, reply) => {
-//     if (!reply.locals.user?.isAdmin) reply.redirect(302, "/leden");
-//   });
-
-//   await app.register(fastifyMultipart, {
-//     attachFieldsToBody: "keyValues",
-//     limits: {
-//       fileSize: 25000000,
-//     },
-//   });
-
-//   app.get("/citaten", async (request, reply) =>
-//     reply.view("admin/quotes", {
-//       fluidContainer: true,
-//       quotes: await getAllQuotes(),
-//       infoMsgs: getMessages(request.session, "infoMsg"),
-//       errMsgs: getMessages(request.session, "errorMsg"),
-//       getISODate,
-//     })
-//   );
-
-//   const quoteSchema = z.object({
-//     quote: z.string(),
-//     quotee: z.string(),
-//     context: z.string(),
-//     file: z.string().optional(),
-//     time: z.string(),
-//     zone: zTimeZone,
-//   });
-
-//   const quoteDocSchema = zDocumentFromBodyId<Quote>(getQuoteById);
-
-//   app.post(
-//     "/citaten",
-//     tryCatchAndRedirect(async (request) => {
-//       const action = zActionFromBody.parse(request.body);
-
-//       if (action === "delete") {
-//         const doc = await quoteDocSchema.parseAsync(request.body);
-//         const result = await doc.deleteOne();
-
-//         if (result.deletedCount !== 1)
-//           throw new Error("Citaat kon niet worden verwijderd");
-
-//         return `Citaat "${doc.quote}" is succesvol verwijderd`;
-//       }
-
-//       const input = await quoteSchema.parseAsync(request.body);
-
-//       const quote: Quote = {
-//         quote: input.quote,
-//         quotee: input.quotee,
-//         context: input.context,
-//         attachmentFile: input.file || undefined,
-//         dateTime: getInternalFromISODate(input.time, input.zone),
-//       };
-
-//       if (action === "change") {
-//         const doc = await quoteDocSchema.parseAsync(request.body);
-//         const result = await doc.overwrite(quote).save();
-//         return `Citaat "${result.quote}" is succesvol gewijzigd`;
-//       }
-
-//       const result = await new QuoteModel(quote).save();
-//       return `Citaat "${result.quote}" is successvol toegevoegd`;
-//     })
-//   );
-
-//   app.get("/woordenboek", async (request, reply) =>
-//     reply.view("admin/dictionary", {
-//       fluidContainer: true,
-//       words: await getAllWords(),
-//       infoMsgs: getMessages(request.session, "infoMsg"),
-//       errMsgs: getMessages(request.session, "errorMsg"),
-//     })
-//   );
-
-//   const wordSchema = z.object({
-//     word: z.string(),
-//     definitions: z.array(z.string().nonempty()).nonempty(),
-//     phonetic: z.string().optional(),
-//     file: z.string().optional(),
-//   });
-
-//   const wordDocSchema = zDocumentFromBodyId<Word>(getWordById);
-
-//   app.post(
-//     "/woordenboek",
-//     tryCatchAndRedirect(async (request) => {
-//       const action = zActionFromBody.parse(request.body);
-
-//       if (action === "delete") {
-//         const doc = await wordDocSchema.parseAsync(request.body);
-//         const result = await doc.deleteOne();
-
-//         if (result.deletedCount !== 1)
-//           throw new Error("Woord kon niet worden verwijderd");
-
-//         return `Woord "${doc.word}" is succesvol verwijderd`;
-//       }
-
-//       const input = await wordSchema.parseAsync(request.body);
-
-//       const word: Word = {
-//         word: input.word,
-//         definitions: input.definitions,
-//         phonetic: input.phonetic || undefined,
-//         attachmentFile: input.file || undefined,
-//       };
-
-//       if (action === "change") {
-//         const doc = await wordDocSchema.parseAsync(request.body);
-//         const result = await doc.overwrite(word).save();
-//         return `Woord "${result.word}" is succesvol gewijzigd`;
-//       }
-
-//       const result = await new WordModel(word).save();
-//       return `Woord "${result.word}" is successvol toegevoegd`;
-//     })
-//   );
-
-//   app.get("/afkowobo", async (request, reply) =>
-//     reply.view("admin/afkowobo", {
-//       fluidContainer: true,
-//       afkos: await getAllAfkos(),
-//       infoMsgs: getMessages(request.session, "infoMsg"),
-//       errMsgs: getMessages(request.session, "errorMsg"),
-//     })
-//   );
-
-//   const afkoSchema = z.object({
-//     afko: z.string(),
-//     definitions: z.array(z.string().nonempty()).nonempty(),
-//     file: z.string().optional(),
-//   });
-
-//   const afkoDocSchema = zDocumentFromBodyId<Afko>(getAfkoById);
-
-//   app.post(
-//     "/afkowobo",
-//     tryCatchAndRedirect(async (request) => {
-//       const action = zActionFromBody.parse(request.body);
-
-//       if (action === "delete") {
-//         const doc = await afkoDocSchema.parseAsync(request.body);
-//         const result = await doc.deleteOne();
-
-//         if (result.deletedCount !== 1)
-//           throw new Error("Afko kon niet worden verwijderd");
-
-//         return `Afko "${doc.afko}" is succesvol verwijderd`;
-//       }
-
-//       const input = await afkoSchema.parseAsync(request.body);
-
-//       const afko: Afko = {
-//         afko: input.afko,
-//         definitions: input.definitions,
-//         attachmentFile: input.file || undefined,
-//       };
-
-//       if (action === "change") {
-//         const doc = await afkoDocSchema.parseAsync(request.body);
-//         const result = await doc.overwrite(afko).save();
-//         return `Afko "${result.afko}" is succesvol gewijzigd`;
-//       }
-
-//       const result = await new AfkoModel(afko).save();
-//       return `Afko "${result.afko}" is successvol toegevoegd`;
-//     })
-//   );
-
-//   app.get("/punten", async (request, reply) =>
-//     reply.view("admin/earnedPoints", {
-//       fluidContainer: true,
-//       earnedPoints: await getAllPoints(),
-//       expedities: await getAllExpedities(),
-//       people: await getAllPeople(),
-//       infoMsgs: getMessages(request.session, "infoMsg"),
-//       errMsgs: getMessages(request.session, "errorMsg"),
-//       getISODate,
-//     })
-//   );
-
-//   const pointSchema = z.object({
-//     person: zDocument(getPersonById),
-//     expeditie: zOptionalWithNone(zDocument(getExpeditieById)),
-//     amount: z.coerce.number().int(),
-//     time: z.string(),
-//     zone: zTimeZone,
-//   });
-
-//   const pointDocSchema = zDocumentFromBodyId(getPointsById);
-
-//   app.post(
-//     "/punten",
-//     tryCatchAndRedirect(async (request) => {
-//       const action = zActionFromBody.parse(request.body);
-
-//       if (action === "delete") {
-//         const doc = await pointDocSchema.parseAsync(request.body);
-//         const result = await doc.deleteOne();
-
-//         if (result.deletedCount !== 1)
-//           throw new Error("Punt kon niet worden verwijderd");
-
-//         return "Punt is succesvol verwijderd";
-//       }
-
-//       const input = await pointSchema.parseAsync(request.body);
-
-//       const point: EarnedPoint = {
-//         personId: input.person._id,
-//         expeditieId: input.expeditie?._id,
-//         amount: input.amount,
-//         dateTime: getInternalFromISODate(input.time, input.zone),
-//       };
-
-//       if (action === "change") {
-//         const doc = await pointDocSchema.parseAsync(request.body);
-//         const result = await doc.overwrite(point).save();
-//         return `Punt "${result._id.toHexString()}" is succesvol gewijzigd`;
-//       }
-
-//       const result = await new EarnedPointModel(point).save();
-//       return `Punt "${result._id.toHexString()}" is successvol toegevoegd`;
-//     })
-//   );
-
-//   app.get("/gpx", async (request, reply) =>
-//     reply.view("admin/gpx", {
-//       expedities: await getAllExpedities(),
-//       people: await getAllPeople(),
-//       infoMsgs: getMessages(request.session, "infoMsg"),
-//       errMsgs: getMessages(request.session, "errorMsg"),
-//     })
-//   );
-
-//   const gpxUploadSchema = z.object({
-//     person: zDocument(getPersonById),
-//     expeditie: zDocument(getExpeditieById).refine((exp) => !exp.finished, {
-//       message: "Expeditie is beëindigd",
-//     }),
-//     zone: zTimeZone,
-//     file: z
-//       .any()
-//       .refine((file) => file && typeof file == "object" && "buffer" in file, {
-//         message: "Geen bestand gevonden",
-//       }),
-//   });
-
-//   app.post(
-//     "/gpx",
-//     tryCatchAndRedirect(async (request) => {
-//       const input = await gpxUploadSchema.parseAsync(request.body);
-
-//       void (await createManyLocations(
-//         await generateLocations(
-//           input.file,
-//           input.expeditie._id,
-//           input.person._id,
-//           input.zone
-//         )
-//       ));
-
-//       return "Locaties zijn succesvol geüpload";
-//     })
-//   );
-
-//   app.get("/story", async (request, reply) =>
-//     reply.view("admin/story", {
-//       fluidContainer: true,
-//       expedities: await getAllExpedities(),
-//       people: await getAllPeople(),
-//       stories: await getAllStories(),
-//       infoMsgs: getMessages(request.session, "infoMsg"),
-//       errMsgs: getMessages(request.session, "errorMsg"),
-//       getISODate,
-//     })
-//   );
-
-//   const storySchema = z
-//     .discriminatedUnion("type", [
-//       z.object({
-//         type: z.literal("text"),
-//         expeditie: zDocument(getExpeditieById),
-//         person: zDocument(getPersonById),
-//         time: z.string(),
-//         zone: zTimeZone,
-//         title: z.string().nonempty(),
-//         text: z.string().nonempty(),
-//       }),
-//       z.object({
-//         type: z.literal("location"),
-//         expeditie: zDocument(getExpeditieById),
-//         person: zDocument(getPersonById),
-//         time: z.string(),
-//         zone: zTimeZone,
-//         name: z.string().nonempty(),
-//       }),
-//       z.object({
-//         type: z.literal("media"),
-//         expeditie: zDocument(getExpeditieById),
-//         person: zDocument(getPersonById),
-//         time: z.string(),
-//         zone: zTimeZone,
-//         title: z.string(),
-//         files: z.array(z.string().nonempty()),
-//         descriptions: z.array(z.string()),
-//       }),
-//     ])
-//     .refine(
-//       (story) =>
-//         story.type !== "media" ||
-//         story.files.length === story.descriptions.length,
-//       {
-//         message: "Aantal bestanden en beschrijvingen is niet gelijk",
-//         path: ["descriptions"],
-//       }
-//     );
-
-//   const storyDocSchema = zDocumentFromBodyId<BaseStoryElement>(getStoryById);
-
-//   app.post(
-//     "/story",
-//     tryCatchAndRedirect(async (request) => {
-//       const action = zActionFromBody.parse(request.body);
-
-//       if (action === "delete") {
-//         const doc = await storyDocSchema.parseAsync(request.body);
-//         const result = await doc.deleteOne();
-
-//         if (result.deletedCount !== 1)
-//           throw new Error("Verhaal kon niet worden verwijderd");
-
-//         return "Verhaal is succesvol verwijderd";
-//       }
-
-//       const input = await storySchema.parseAsync(request.body);
-
-//       const baseStory = {
-//         type: input.type,
-//         expeditieId: input.expeditie._id,
-//         personId: input.person._id,
-//         dateTime: getInternalFromISODate(input.time, input.zone),
-//         index: 0,
-//       };
-
-//       let story: StoryElement;
-
-//       if (input.type === "text")
-//         story = {
-//           ...baseStory,
-//           title: input.title,
-//           text: input.text,
-//         };
-//       else if (input.type === "location")
-//         story = {
-//           ...baseStory,
-//           name: input.name,
-//         };
-//       else
-//         story = {
-//           ...baseStory,
-//           title: input.title,
-//           media: new mongoose.Types.DocumentArray(
-//             input.files.map((file, i) => ({
-//               file,
-//               description: input.descriptions[i],
-//             }))
-//           ),
-//         };
-
-//       if (action === "change") {
-//         const doc = await storyDocSchema.parseAsync(request.body);
-//         const result = await doc.overwrite(story).save();
-//         return `Verhaal "${result._id.toHexString()}" is succesvol gewijzigd`;
-//       }
-
-//       const result = await new BaseStoryElementModel(story).save();
-//       return `Verhaal "${result._id.toHexString()}" is successvol toegevoegd`;
-//     })
-//   );
-
-//   app.get("/bestanden", async (request, reply) =>
-//     reply.view("admin/files", {
-//       filesWithUses: await getUsesForFiles(await getS3Files()),
-//       infoMsgs: getMessages(request.session, "infoMsg"),
-//       errMsgs: getMessages(request.session, "errorMsg"),
-//     })
-//   );
-
-//   const filesSchema = z.object({
-//     key: z.string(),
-//   });
-
-//   app.post(
-//     "/bestanden",
-//     tryCatchAndRedirect(async (request) => {
-//       const action = zActionFromBody.parse(request.body);
-
-//       if (action !== "delete") throw new Error("Onverwachte actie");
-
-//       const { key } = await filesSchema.parseAsync(request.body);
-//       await deleteS3Prefix(key);
-
-//       return `Bestand '${key}' is successvol verwijderd`;
-//     })
-//   );
-// };
-
-// export default adminRoutes;
+import fastifyMultipart from "@fastify/multipart";
+import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
+import { ZodError, z } from "zod";
+import { fromZodError } from "zod-validation-error";
+import { addAfko, deleteAfko, getAllAfkos, updateAfko } from "../db/afko.js";
+import {
+  addEarnedPoint,
+  deleteEarnedPoint,
+  getAllEarnedPoints,
+  updateEarnedPoint,
+} from "../db/earned-point.js";
+import { getAllExpedities } from "../db/expeditie.js";
+import { getAllPersons } from "../db/person.js";
+import {
+  addQuote,
+  deleteQuote,
+  getAllQuotes,
+  updateQuote,
+} from "../db/quote.js";
+import {
+  addStory,
+  deleteStory,
+  getAllStories,
+  updateStory,
+} from "../db/story.js";
+import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
+import { deleteS3Prefix, getS3Files } from "../files/s3.js";
+import { getUsesForFiles } from "../files/uses.js";
+import { getMessages, setMessage } from "../helpers/flash.js";
+import {
+  getISODate,
+  isValidTimeZone,
+  parseISODateTimeStamp,
+} from "../helpers/time.js";
+import { insertLocationsFromGpx } from "../db/geo.js";
+
+const timeZoneSchema = z
+  .string()
+  .refine(isValidTimeZone, { message: "Geen geldige tijdzone" });
+
+const localTimeTransformer = <
+  T extends { time_local: string; time_zone: string },
+>({
+  time_local,
+  ...rest
+}: T) => ({
+  ...rest,
+  time_stamp: parseISODateTimeStamp(time_local, rest.time_zone),
+});
+
+const idParamsSchema = z.object({
+  id: z.coerce.number(),
+});
+
+const tryCatchAndRedirect =
+  (
+    redirectTo: string,
+    func: (request: FastifyRequest, reply: FastifyReply) => Promise<string>
+  ) =>
+  async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      setMessage(request.session, "infoMsg", await func(request, reply));
+    } catch (e) {
+      let errorMsg = "Error!";
+
+      if (typeof e === "string") errorMsg = e;
+      else if (e instanceof ZodError) errorMsg = fromZodError(e).message;
+      else if (e instanceof Error) errorMsg = e.message;
+
+      setMessage(request.session, "errorMsg", errorMsg);
+    }
+    reply.redirect(302, `/leden/admin${redirectTo}`);
+    return reply;
+  };
+
+const adminRoutes: FastifyPluginAsync = async (app) => {
+  app.addHook("onRequest", async (request, reply) => {
+    if (reply.locals.user?.type != "admin") reply.redirect(302, "/leden");
+  });
+
+  await app.register(fastifyMultipart, {
+    attachFieldsToBody: "keyValues",
+    limits: {
+      fileSize: 25000000,
+    },
+  });
+
+  app.get("/citaten", async (request, reply) =>
+    reply.view("admin/quotes", {
+      fluidContainer: true,
+      quotes: await getAllQuotes(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+      getISODate,
+    })
+  );
+
+  const quoteSchema = z
+    .object({
+      quote: z.string(),
+      quotee: z.string(),
+      context: z.string(),
+      attachment_file: z.string().optional(),
+      time_local: z.string(),
+      time_zone: timeZoneSchema,
+    })
+    .transform(localTimeTransformer);
+
+  app.post(
+    "/citaten/add",
+    tryCatchAndRedirect("/citaten", async (request) => {
+      const q = await addQuote(quoteSchema.parse(request.body));
+      return `"${q.quote}" is successvol toegevoegd`;
+    })
+  );
+
+  app.post(
+    "/citaten/update/:id",
+    tryCatchAndRedirect("/citaten", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const q = await updateQuote(id, quoteSchema.parse(request.body));
+      return `"${q.quote}" is successvol gewijzigd`;
+    })
+  );
+
+  app.post(
+    "/citaten/delete/:id",
+    tryCatchAndRedirect("/citaten", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const q = await deleteQuote(id);
+      return `"${q.quote}" is successvol verwijderd`;
+    })
+  );
+
+  app.get("/woordenboek", async (request, reply) =>
+    reply.view("admin/dictionary", {
+      fluidContainer: true,
+      words: await getAllWords(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+    })
+  );
+
+  const wordSchema = z.object({
+    word: z.string(),
+    definitions: z.array(z.string()).nonempty(),
+    phonetic: z.string().optional(),
+    attachment_file: z.string().optional(),
+  });
+
+  app.post(
+    "/woordenboek/add",
+    tryCatchAndRedirect("/woordenboek", async (request) => {
+      const w = await addWord(wordSchema.parse(request.body));
+      return `"${w.word}" is successvol toegevoegd`;
+    })
+  );
+
+  app.post(
+    "/woordenboek/update/:id",
+    tryCatchAndRedirect("/woordenboek", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const w = await updateWord(id, wordSchema.parse(request.body));
+      return `"${w.word}" is successvol gewijzigd`;
+    })
+  );
+
+  app.post(
+    "/woordenboek/delete/:id",
+    tryCatchAndRedirect("/woordenboek", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const w = await deleteWord(id);
+      return `"${w.word}" is successvol verwijderd`;
+    })
+  );
+
+  app.get("/afkowobo", async (request, reply) =>
+    reply.view("admin/afkowobo", {
+      fluidContainer: true,
+      afkos: await getAllAfkos(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+    })
+  );
+
+  const afkoSchema = z.object({
+    afko: z.string(),
+    definitions: z.array(z.string().nonempty()).nonempty(),
+    attachment_file: z.string().optional(),
+  });
+
+  app.post(
+    "/afkowobo/add",
+    tryCatchAndRedirect("/afkowobo", async (request) => {
+      const a = await addAfko(afkoSchema.parse(request.body));
+      return `"${a.afko}" is successvol toegevoegd`;
+    })
+  );
+
+  app.post(
+    "/afkowobo/update/:id",
+    tryCatchAndRedirect("/afkowobo", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const a = await updateAfko(id, afkoSchema.parse(request.body));
+      return `"${a.afko}" is successvol gewijzigd`;
+    })
+  );
+
+  app.post(
+    "/afkowobo/delete/:id",
+    tryCatchAndRedirect("/afkowobo", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const a = await deleteAfko(id);
+      return `"${a.afko}" is successvol verwijderd`;
+    })
+  );
+
+  app.get("/punten", async (request, reply) =>
+    reply.view("admin/earnedPoints", {
+      fluidContainer: true,
+      earnedPoints: await getAllEarnedPoints(),
+      expedities: await getAllExpedities(),
+      persons: await getAllPersons(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+      getISODate,
+    })
+  );
+
+  const pointSchema = z
+    .object({
+      person_id: z.string(),
+      expeditie_id: z.string().transform((x) => (x == "-" ? null : x)),
+      amount: z.coerce.number().int(),
+      time_local: z.string(),
+      time_zone: timeZoneSchema,
+    })
+    .transform(localTimeTransformer);
+
+  app.post(
+    "/punten/add",
+    tryCatchAndRedirect("/punten", async (request) => {
+      const earnedPoint = pointSchema.parse(request.body);
+      const p = await addEarnedPoint(earnedPoint);
+      return `${p.amount} punten zijn successvol toegevoegd`;
+    })
+  );
+
+  app.post(
+    "/punten/update/:id",
+    tryCatchAndRedirect("/punten", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const p = await updateEarnedPoint(id, pointSchema.parse(request.body));
+      return `${p.amount} punten zijn successvol gewijzigd`;
+    })
+  );
+
+  app.post(
+    "/punten/delete/:id",
+    tryCatchAndRedirect("/punten", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const p = await deleteEarnedPoint(id);
+      return `${p.amount} punten zijn successvol verwijderd`;
+    })
+  );
+
+  app.get("/gpx", async (request, reply) =>
+    reply.view("admin/gpx", {
+      expedities: await getAllExpedities(),
+      persons: await getAllPersons(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+    })
+  );
+
+  const gpxSchema = z.object({
+    person_id: z.string(),
+    expeditie_id: z.string(),
+    time_zone: timeZoneSchema,
+    file: z
+      .any()
+      .refine((file) => file && typeof file == "object" && "buffer" in file, {
+        message: "Geen bestand gevonden",
+      }),
+  });
+
+  app.post(
+    "/gpx/upload",
+    tryCatchAndRedirect("/gpx", async (request) => {
+      const { file, ...location } = gpxSchema.parse(request.body);
+      const count = await insertLocationsFromGpx(location, file);
+      return `${count} locaties zijn succesvol geüpload`;
+    })
+  );
+
+  app.get("/verhalen", async (request, reply) =>
+    reply.view("admin/story", {
+      fluidContainer: true,
+      expedities: await getAllExpedities(),
+      persons: await getAllPersons(),
+      stories: await getAllStories(),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+      getISODate,
+    })
+  );
+
+  const storySchema = z
+    .object({
+      expeditie_id: z.string(),
+      person_id: z.string(),
+      time_local: z.string(),
+      time_zone: timeZoneSchema,
+      title: z.string(),
+      text: z.string().optional(),
+      media_ids: z
+        .array(
+          z
+            .literal("")
+            .transform(() => undefined)
+            .or(z.coerce.number().int())
+        )
+        .default([]),
+      media_files: z.array(z.string()).default([]),
+      media_descriptions: z.array(z.string()).default([]),
+    })
+    .refine(
+      ({ media_ids, media_files, media_descriptions }) =>
+        media_ids.length === media_files.length &&
+        media_files.length == media_descriptions.length,
+      {
+        message: "Media aantallen zijn niet gelijk",
+        path: ["media_files"],
+      }
+    )
+    .transform(localTimeTransformer)
+    .transform(({ media_ids, media_files, media_descriptions, ...rest }) => ({
+      ...rest,
+      media: media_files.map((file, i) => ({
+        id: media_ids[i],
+        file,
+        description: media_descriptions[i],
+      })),
+    }));
+
+  app.post(
+    "/verhalen/add",
+    tryCatchAndRedirect("/verhalen", async (request) => {
+      const s = await addStory(storySchema.parse(request.body));
+      return `"${s.title}" is successvol toegevoegd`;
+    })
+  );
+
+  app.post(
+    "/verhalen/update/:id",
+    tryCatchAndRedirect("/verhalen", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const s = await updateStory(id, storySchema.parse(request.body));
+      return `"${s.title}" is successvol gewijzigd`;
+    })
+  );
+
+  app.post(
+    "/verhalen/delete/:id",
+    tryCatchAndRedirect("/verhalen", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const s = await deleteStory(id);
+      return `"${s.title}" is successvol verwijderd`;
+    })
+  );
+
+  // app.post(
+  //   "/story",
+  //   tryCatchAndRedirect(async (request) => {
+  //     const action = zActionFromBody.parse(request.body);
+
+  //     if (action === "delete") {
+  //       const doc = await storyDocSchema.parseAsync(request.body);
+  //       const result = await doc.deleteOne();
+
+  //       if (result.deletedCount !== 1)
+  //         throw new Error("Verhaal kon niet worden verwijderd");
+
+  //       return "Verhaal is succesvol verwijderd";
+  //     }
+
+  //     const input = await storySchema.parseAsync(request.body);
+
+  //     const baseStory = {
+  //       type: input.type,
+  //       expeditieId: input.expeditie._id,
+  //       personId: input.person._id,
+  //       dateTime: getInternalFromISODate(input.time, input.zone),
+  //       index: 0,
+  //     };
+
+  //     let story: StoryElement;
+
+  //     if (input.type === "text")
+  //       story = {
+  //         ...baseStory,
+  //         title: input.title,
+  //         text: input.text,
+  //       };
+  //     else if (input.type === "location")
+  //       story = {
+  //         ...baseStory,
+  //         name: input.name,
+  //       };
+  //     else
+  //       story = {
+  //         ...baseStory,
+  //         title: input.title,
+  //         media: new mongoose.Types.DocumentArray(
+  //           input.files.map((file, i) => ({
+  //             file,
+  //             description: input.descriptions[i],
+  //           }))
+  //         ),
+  //       };
+
+  //     if (action === "change") {
+  //       const doc = await storyDocSchema.parseAsync(request.body);
+  //       const result = await doc.overwrite(story).save();
+  //       return `Verhaal "${result._id.toHexString()}" is succesvol gewijzigd`;
+  //     }
+
+  //     const result = await new BaseStoryElementModel(story).save();
+  //     return `Verhaal "${result._id.toHexString()}" is successvol toegevoegd`;
+  //   })
+  // );
+
+  app.get("/bestanden", async (request, reply) =>
+    reply.view("admin/files", {
+      filesWithUses: await getUsesForFiles(await getS3Files()),
+      infoMsgs: getMessages(request.session, "infoMsg"),
+      errMsgs: getMessages(request.session, "errorMsg"),
+    })
+  );
+
+  const keyParamsSchema = z.object({
+    key: z.string().min(1),
+  });
+
+  app.post(
+    "/bestanden/delete/:key",
+    tryCatchAndRedirect("/bestanden", async (request) => {
+      const { key } = keyParamsSchema.parse(request.params);
+      await deleteS3Prefix(key);
+      return `Bestand '${key}' is successvol verwijderd`;
+    })
+  );
+};
+
+export default adminRoutes;

@@ -1,5 +1,4 @@
 extends ../members/_frame
-include ../_expeditieMedia
 
 block title
     title Expeditie - Admin - Woordenboek
@@ -19,7 +18,7 @@ block content
         .col-12.mb-4
             hr
             .h2.mb-3 Definitie toevoegen
-            form(method='POST' action='/leden/admin/woordenboek')
+            form(method='POST' action='/leden/admin/woordenboek/add')
                 .form-row.align-items-center
                     .col-12.col-md-3.mb-2
                         input.form-control(type='text' name='word' placeholder='Woord' required)
@@ -32,9 +31,9 @@ block content
                     .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='phonetic' placeholder='Phonetisch' size='30')
                     .col-auto.col-md-3.mb-2.me-2
-                        input.form-control(type='text' name='file' placeholder='Bijlage Naam' size='30')
+                        input.form-control(type='text' name='attachment_file' placeholder='Bijlage Naam' size='30')
                     .col-auto.mb-2
-                        button.btn.btn-primary(type='submit' name="action" value="add") Toevoegen
+                        button.btn.btn-primary(type='submit') Toevoegen
 
         // TODO: discription of link formats etc. (markdown)
 
@@ -51,24 +50,22 @@ block content
                         th
 
                 tbody
-                    each word, i in words
+                    each word in words
                         tr
                             td
-                                input.form-control(type='text' form=`f-${i}` name='word' value=word.word required)
+                                input.form-control(type='text' form=`f-${word.id}` name='word' value=word.word required)
                             td
                                 .form-array
                                     each def in word.definitions
-                                        textarea.form-control.form-array-item.mb-2(form=`f-${i}` name='definitions[]' rows='3' required)= def
-                                    textarea.form-control.form-array-proto.mb-2(form=`f-${i}` name='definitions[]' rows='3' required hidden disabled)
+                                        textarea.form-control.form-array-item.mb-2(form=`f-${word.id}` name='definitions[]' rows='3' required)= def
+                                    textarea.form-control.form-array-proto.mb-2(form=`f-${word.id}` name='definitions[]' rows='3' required hidden disabled)
                                     button.form-array-add.btn.btn-secondary.me-2 +
                                     button.form-array-remove.btn.btn-secondary –
                             td
-                                input.form-control(type='text' form=`f-${i}` name='phonetic' value=word.phonetic)
+                                input.form-control(type='text' form=`f-${word.id}` name='phonetic' value=word.phonetic)
                             td
-                                input.form-control(type='text' form=`f-${i}` name='file' value=word.attachmentFile)
+                                input.form-control(type='text' form=`f-${word.id}` name='attachment_file' value=word.attachment_file)
                             td
-                                form.form-confirm(id=`f-${i}` method='POST' action=`/leden/admin/woordenboek`)
-                                    input(type='hidden' name='id' value=word._id.toHexString())
-                                    button.btn.btn-info.mb-2(type='submit' name='action' value='change') Wijzigen
-                                    br
-                                    button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen
+                                form.form-confirm(id=`f-${word.id}` method='POST' action=`/leden/admin/woordenboek/update/${word.id}`)
+                                    button.btn.btn-info.block.mb-2(type='submit') Wijzigen
+                                    button.btn.btn-danger.block(type='submit' formaction=`/leden/admin/woordenboek/delete/${word.id}`) Verwijderen

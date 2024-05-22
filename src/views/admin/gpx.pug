@@ -1,19 +1,8 @@
 extends ../members/_frame
-include ../_expeditieMedia
+include _selectors
 
 block title
     title Expeditie - Admin - GPX Upload
-
-mixin expeditieOptions(e)
-    option(selected=(e === undefined) value='' disabled) Expeditie
-    each expeditie in expedities
-        if !expeditie.finished
-            option(selected=(e && e.equals(expeditie._id)) value=expeditie._id.toHexString())= expeditie.name
-
-mixin personOptions(p)
-    option(selected=(p === undefined) value='' disabled) Persoon
-    each person in people
-        option(selected=(p && p.equals(person._id)) value=person._id.toHexString())= `${person.firstName} ${person.lastName}`
 
 block content
     .row
@@ -28,18 +17,18 @@ block content
                     .alert.alert-info= msg
 
         .col-12.mb-4
-            form(method='POST' action='/leden/admin/gpx' enctype='multipart/form-data')
+            form(method='POST' action='/leden/admin/gpx/upload' enctype='multipart/form-data')
                 .form-row.align-items-center
                     .col-12.col-md-4.mb-2.me-md-2
                         input.form-control(name='file' type='file' accept='.gpx' required)
                     .col-auto.col-md-4.mb-2.me-2
-                        select.form-select(name='expeditie' required)
+                        select.form-select(name='expeditie_id' required)
                             +expeditieOptions()
                     .col-auto.col-md-4.mb-2.me-2
-                        select.form-select(name='person' required)
-                            +personOptions(user)
+                        select.form-select(name='person_id' required)
+                            +personOptions(user.id)
                     .col-auto.col-md-4.mb-2.me-2
                         label.form-label(for='timezone') Kies een geldige tijdzone uit de 'tz database'
-                        input#timezone.form-control(type='text' name='zone' placeholder='Tijdzone' value='Europe/Amsterdam' size=30 required)
+                        input#timezone.form-control(type='text' name='time_zone' placeholder='Tijdzone' value='Europe/Amsterdam' size=30 required)
                     .col-auto.col-md-4.mb-2
                         button.btn.btn-primary(type='submit') Uploaden

@@ -6,7 +6,7 @@ block title
 block content
     .row
         each link in links
-            if (link.href) || (link.adminHref && user.isAdmin)
+            if (link.href) || (link.adminHref && user.type == "admin")
                 .col-12.col-md-6.col-lg-4
                     .card.mb-3
                         .card-body
@@ -14,7 +14,7 @@ block content
                             p.card-text= link.text
                             if link.href
                                 a.card-link(href=link.href target=(link.target || false)) Open
-                            if link.adminHref && user.isAdmin
+                            if link.adminHref && user.type == "admin"
                                 a.card-link(href=link.adminHref) Admin
     if (user.isAdmin)
         .row.mt-3

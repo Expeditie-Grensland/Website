@@ -1,5 +1,4 @@
 extends ../members/_frame
-include ../_expeditieMedia
 
 block title
     title Expeditie - Admin - Bestanden
@@ -46,7 +45,7 @@ block content
                         th(style='min-width: 20rem') In gebruik als
 
                 tbody
-                    each file, i in filesWithUses
+                    each file in filesWithUses
                         tr
                             td.py-4=file.file
                             td=(fileTypes[file.type] || `Onbekend (${file.type})`)
@@ -71,6 +70,5 @@ block content
                                     each use in file.uses
                                         p.my-1=(useTypes[use.type] || "").replace("%", use.name)
                                 else
-                                    form.my-1.form-confirm(id=`f-${i}` method='POST' action=`/leden/admin/bestanden`)
-                                        input(type='hidden' name='key' value=file.file)
-                                        button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen
+                                    form.my-1.form-confirm(method='POST')
+                                        button.btn.btn-danger(type='submit' formaction=`/leden/admin/bestanden/delete/${file.file}`) Verwijderen

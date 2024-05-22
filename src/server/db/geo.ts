@@ -69,19 +69,15 @@ export const getFirstNodeLocationAfter = (
     .executeTakeFirst();
 
 export const insertLocationsFromGpx = (
-  gpxData: Buffer | string,
-  expeditieId: string,
-  personId: string,
-  timezone = "Europe/Amsterdam"
+  location: { expeditie_id: string; person_id: string; time_zone: string },
+  gpxData: Buffer | string
 ) =>
   db
     .insertInto("geo_location")
     .values(
       parseGpx(gpxData).map(({ time, __lat, __lon, ele }) => ({
-        expeditie_id: expeditieId,
-        person_id: personId,
+        ...location,
         time_stamp: Math.round(Date.parse(time) / 1000),
-        time_zone: timezone,
         latitude: __lat,
         longitude: __lon,
         altitude: ele,

@@ -1,5 +1,8 @@
 import db from "./schema/database.js";
 
+export const getAllPersons = () =>
+  db.selectFrom("person").selectAll().execute();
+
 export const getPerson = (id: string) =>
   db
     .selectFrom("person")

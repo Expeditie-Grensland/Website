@@ -1,5 +1,4 @@
 extends ../members/_frame
-include ../_expeditieMedia
 
 block title
     title Expeditie - Admin - Citaten
@@ -19,7 +18,7 @@ block content
         .col-12.mb-4
             hr
             .h2.mb-3 Citaat toevoegen
-            form(method='POST' action='/leden/admin/citaten')
+            form(method='POST' action='/leden/admin/citaten/add')
                 .form-row.align-items-center
                     .col-12.col-md-3.mb-2
                         textarea.form-control(rows='1' name='quote' placeholder='Citaat' required)
@@ -28,13 +27,13 @@ block content
                     .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='text' name='quotee' placeholder='Persoon' size='30' required)
                     .col-auto.col-md-3.mb-2.me-2
-                        input.form-control(type='datetime-local' name='time' placeholder='Lokale tijd' step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" size=30 required)
+                        input.form-control(type='datetime-local' name='time_local' placeholder='Lokale tijd' step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" size=30 required)
                     .col-auto.col-md-3.mb-2.me-2
-                        input.form-control(type='text' name='zone' placeholder='Tijdzone' size=30 required)
+                        input.form-control(type='text' name='time_zone' placeholder='Tijdzone' size=30 required value="Europe/Amsterdam")
                     .col-auto.col-md-3.mb-2.me-2
-                        input.form-control(type='text' name='file' placeholder='Bijlage Naam' size='30')
+                        input.form-control(type='text' name='attachment_file' placeholder='Bijlage Naam' size='30')
                     .col-auto.col-md-3.mb-2
-                        button.btn.btn-primary(type='submit' name="action" value="add") Toevoegen
+                        button.btn.btn-primary(type='submit') Toevoegen
 
         .col-12.mb-4
             hr
@@ -50,22 +49,20 @@ block content
                         th
 
                 tbody
-                    each quote, i in quotes
+                    each quote in quotes
                         tr
                             td
-                                textarea.form-control(form=`f-${i}` name='quote' rows='3' required)= quote.quote
+                                textarea.form-control(form=`f-${quote.id}` name='quote' rows='3' required)= quote.quote
                             td
-                                textarea.form-control(form=`f-${i}` name='context' rows='3' required)= quote.context
+                                textarea.form-control(form=`f-${quote.id}` name='context' rows='3' required)= quote.context
                             td
-                                input.form-control(type='text' form=`f-${i}` name='quotee' value=quote.quotee required)
+                                input.form-control(type='text' form=`f-${quote.id}` name='quotee' value=quote.quotee required)
                             td
-                                input.form-control.mb-2(type='datetime-local' form=`f-${i}` name='time' value=getISODate(quote.dateTime) step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" required)
-                                input.form-control(type='text' form=`f-${i}` name='zone' value=quote.dateTime.zone required)
+                                input.form-control.mb-2(type='datetime-local' form=`f-${quote.id}` name='time_local' value=getISODate(quote.time_stamp, quote.time_zone) step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" required)
+                                input.form-control(type='text' form=`f-${quote.id}` name='time_zone' value=quote.time_zone required)
                             td
-                                input.form-control(type='text' form=`f-${i}` name='file' value=quote.attachmentFile)
+                                input.form-control(type='text' form=`f-${quote.id}` name='attachment_file' value=quote.attachment_file)
                             td
-                                form.form-confirm(id=`f-${i}` method='POST' action=`/leden/admin/citaten`)
-                                    input(type='hidden' name='id' value=quote._id.toHexString())
-                                    button.btn.btn-info.mb-2(type='submit' name='action' value='change') Wijzigen
-                                    br
-                                    button.btn.btn-danger(type='submit' name='action' value='delete') Verwijderen
+                                form.form-confirm(id=`f-${quote.id}` method='POST' action=`/leden/admin/citaten/update/${quote.id}`)
+                                    button.btn.btn-info.block.mb-2(type='submit') Wijzigen
+                                    button.btn.btn-danger.block(type='submit' formaction=`/leden/admin/citaten/delete/${quote.id}`) Verwijderen

@@ -11,6 +11,7 @@ const db = new Kysely<DB>({
       connectionString: config.EG_DB_URL,
     }),
   }),
+  log: config.NODE_ENV === "development" ? ["query", "error"] : [],
 });
 
 export default db;

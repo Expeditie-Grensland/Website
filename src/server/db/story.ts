@@ -1,4 +1,6 @@
+import { Insertable, Updateable } from "kysely";
 import db from "./schema/database.js";
+import { Story, StoryMedia } from "./schema/types.js";
 import { jsonAggTable } from "./schema/utils.js";
 
 export const getStoryCount = (expeditieId: string) =>
@@ -30,6 +32,16 @@ export const getStories = (expeditieId: string) =>
     .orderBy("time_stamp asc")
     .execute();
 
+export const getAllStories = () =>
+  db
+    .selectFrom("story")
+    .leftJoin("story_media", "story.id", "story_id")
+    .selectAll("story")
+    .select(() => [jsonAggTable("story_media", "story_media.file").as("media")])
+    .groupBy("story.id")
+    .orderBy("time_stamp desc")
+    .execute();
+
 export const getAllStoryMedia = () =>
   db
     .selectFrom("story_media")
@@ -38,3 +50,82 @@ export const getAllStoryMedia = () =>
     .selectAll("story_media")
     .select("expeditie.name as expeditie_name")
     .execute();
+
+type WithMedia = {
+  media: Insertable<Omit<StoryMedia, "story_id">>[];
+};
+
+export const addStory = ({ media, ...story }: Insertable<Story> & WithMedia) =>
+  db.transaction().execute(async (trx) => {
+    const result = await trx
+      .insertInto("story")
+      .values(story)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+
+    if (media.length > 0) {
+      await trx
+        .insertInto("story_media")
+        .values(media.map((m) => ({ ...m, story_id: result.id })))
+        .execute();
+    }
+
+    return result;
+  });
+
+export const updateStory = (
+  id: number,
+  { media, ...story }: Updateable<Story> & WithMedia
+) =>
+  db.transaction().execute(async (trx) => {
+    const result = await trx
+      .updateTable("story")
+      .set(story)
+      .where("id", "=", id)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+
+    const updateMedia = media.filter(
+      (m): m is Omit<(typeof media)[number], "id"> & { id: number } =>
+        m.id !== undefined
+    );
+
+    await trx
+      .deleteFrom("story_media")
+      .where("story_id", "=", result.id)
+      .$if(updateMedia.length > 0, (qb) =>
+        qb.where(
+          "id",
+          "not in",
+          updateMedia.map((m) => m.id)
+        )
+      )
+      .execute();
+
+    for (const updateMedium of updateMedia) {
+      await trx
+        .updateTable("story_media")
+        .where("story_id", "=", id)
+        .where("id", "=", updateMedium.id)
+        .set(updateMedium)
+        .executeTakeFirstOrThrow();
+    }
+
+    const addMedia = media.filter((m) => m.id === undefined);
+
+    if (addMedia.length > 0) {
+      await trx
+        .insertInto("story_media")
+        .values(addMedia.map((m) => ({ ...m, story_id: result.id })))
+        .execute();
+    }
+
+    return result;
+  });
+
+export const deleteStory = (id: number) =>
+  db
+    .deleteFrom("story")
+    .where("id", "=", id)
+    .returningAll()
+    .executeTakeFirstOrThrow();
