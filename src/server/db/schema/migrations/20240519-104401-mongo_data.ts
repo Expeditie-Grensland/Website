@@ -161,23 +161,36 @@ export const up = async (db: Kysely<any>) => {
   console.info("Migrating locations");
 
   const locationCount = await mdb.collection("geolocations").countDocuments();
-  let i = 0;
-  for await (const location of mdb.collection("geolocations").find()) {
-    if (++i % 10000 == 0)
-      console.info(`${i}/${locationCount} locations migrated`);
+  let insertedCount = 0;
+  const locationBatch = [];
+
+  const locations = mdb.collection("geolocations").find();
+
+  for await (const location of locations) {
+    locationBatch.push(location);
+
+    if (locationBatch.length < 1000 && (await locations.hasNext())) continue;
 
     await db
       .insertInto("geo_location")
-      .values({
-        expeditie_id: expeditieIds.get(location.expeditieId.toHexString()),
-        person_id: personIds.get(location.personId.toHexString()),
-        time_stamp: location.dateTime.stamp,
-        time_zone: location.dateTime.zone,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        altitude: location.altitude,
-      })
+      .values(
+        locationBatch.map((location) => ({
+          expeditie_id: expeditieIds.get(location.expeditieId.toHexString()),
+          person_id: personIds.get(location.personId.toHexString()),
+          time_stamp: location.dateTime.stamp,
+          time_zone: location.dateTime.zone,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          altitude: location.altitude,
+        }))
+      )
       .execute();
+
+    insertedCount += locationBatch.length;
+    locationBatch.length = 0;
+
+    if (insertedCount % 25000 == 0 || insertedCount == locationCount)
+      console.info(`${insertedCount}/${locationCount} locations migrated`);
   }
 
   await mongo.close();
