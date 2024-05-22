@@ -1,8 +1,8 @@
 import { Vertex } from './vertex';
 import $ from 'jquery';
-import {StoryElement} from "../../helpers/retrieval"
 import {MapHandler} from "../../map/MapHandler"
 import {StoryHandler} from "../StoryHandler"
+import { Story } from '../../helpers/retrieval';
 
 export class Graph {
     private readonly roots: Vertex[];         // starting vertices
@@ -179,7 +179,7 @@ export class Graph {
 
     private svgElement = (type: string) => document.createElementNS('http://www.w3.org/2000/svg', type);
 
-    private generateCircle(x: number, y: number, color: string, storyElem: StoryElement) {
+    private generateCircle(x: number, y: number, color: string, storyElem: Story) {
         const circle = this.svgElement('circle');
         circle.setAttribute('class', 'graph-circle');
         circle.setAttribute('id', `circle-${storyElem.id}`);

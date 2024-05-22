@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import {Vertex} from './vertex';
 import {Graph} from './graph';
-import {Node, StoryElement} from '../../helpers/retrieval';
+import {Node, Story} from '../../helpers/retrieval';
 import {MapHandler} from "../../map/MapHandler"
 import {StoryHandler} from "../StoryHandler"
 
@@ -14,7 +14,7 @@ export class GraphBuilder {
         this.graph = null;
     }
 
-    public constructGraph(nodes: Node[], elements: StoryElement[], mapHandler: MapHandler, storyHandler: StoryHandler) {
+    public constructGraph(nodes: Node[], elements: Story[], mapHandler: MapHandler, storyHandler: StoryHandler) {
         if (nodes.length === 0 || elements.length === 0)
             return;
 
@@ -37,7 +37,7 @@ export class GraphBuilder {
         this.parentEl.appendChild(svg);
     }
 
-    private findRootNodes(nodes: Node[], storyElements: StoryElement[]): Vertex[] {
+    private findRootNodes(nodes: Node[], storyElements: Story[]): Vertex[] {
         const roots: Vertex[] = [];
         const knownPeople: string[] = [];
 
@@ -56,7 +56,7 @@ export class GraphBuilder {
         return roots;
     }
 
-    private populateChildren(parents: Vertex[], nodes: Node[], elements: StoryElement[]): Vertex[] {
+    private populateChildren(parents: Vertex[], nodes: Node[], elements: Story[]): Vertex[] {
         if (nodes.length == 0)
             return [];
 
@@ -126,7 +126,7 @@ export class GraphBuilder {
         return candidates;
     }
 
-    private createVertex(node: Node, elements: StoryElement[], children: Vertex[] | null = null): Vertex {
+    private createVertex(node: Node, elements: Story[], children: Vertex[] | null = null): Vertex {
         return new Vertex(node, elements.filter(el => el.nodeNum == node.nodeNum), children);
     }
 }

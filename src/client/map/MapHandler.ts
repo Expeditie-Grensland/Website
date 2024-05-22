@@ -173,7 +173,7 @@ export class MapHandler {
                             coordinates: [story.longitude, story.latitude]
                         },
                         properties: {
-                            title: story.type === "location" ? story.name : story.title,
+                            title: story.title,
                             nodeNum: story.nodeNum,
                             storyId: story.id,
                         },
