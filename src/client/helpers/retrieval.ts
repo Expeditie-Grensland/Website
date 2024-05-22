@@ -38,7 +38,6 @@ export interface Story {
 export interface StoryResult {
   nodes: Node[];
   story: Story[];
-  finished: boolean;
 }
 
 export const retrieveGeoJson = (

@@ -145,7 +145,6 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
           };
         })
       ),
-      finished: expeditie.finished,
     };
 
     return reply.send(JSON.stringify(result));
