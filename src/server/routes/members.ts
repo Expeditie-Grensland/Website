@@ -10,6 +10,7 @@ import { getAllWords } from "../db/word.js";
 import { config } from "../helpers/configHelper.js";
 import { getMemberLinks } from "../db/member-link.js";
 import adminRoutes from "./admin.js";
+import { getDateTime } from "../helpers/time.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -184,10 +185,9 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/punten", async (request, reply) => {
     const earnedPoints = (await getFullEarnedPoints()).map((ep) => ({
-      date: new Date(ep.time_stamp * 1000).toLocaleString("nl-NL", {
-        timeZone: ep.time_zone,
+      date: getDateTime(ep.time_stamp, ep.time_zone).toLocaleString({
         month: "2-digit",
-        day: "2-digit",
+        day: "2-digit"
       }),
       amount: ep.amount,
       name: `${ep.person_first_name} ${ep.person_last_name}`,
