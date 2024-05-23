@@ -15,13 +15,13 @@ block content
                             p.text-danger.text-center= message
 
                     form(action='/leden/login' method='POST' onsubmit=`umami.track('login', { gebruiker: document.getElementById('username').value })`)
-                        .form-group
+                        .form-group.mb-2
                             .input-group
                                 .input-group-text
                                     span.fas.fa-fw.fa-user
                                 input.form-control(type='text' id="username" name='username' placeholder='Gebruikersnaam' required autofocus)
 
-                        .form-group
+                        .form-group.mb-2
                             .input-group
                                 .input-group-text
                                     span.fas.fa-fw.fa-key
