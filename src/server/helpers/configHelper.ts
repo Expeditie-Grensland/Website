@@ -25,9 +25,6 @@ const envSchema = z.object({
   EG_LDAP_SEARCH_FILTER: z.string(),
   EG_LDAP_ID_FIELD: z.string(),
 
-  EG_REDIS_URL: z.string().startsWith("redis://").optional(),
-  EG_REDIS_PREFIX: z.string().default("expeditie-grensland:"),
-
   EG_SESSION_SECRET: z.string().min(128),
 
   EG_UMAMI_SCRIPT_URL: z.string().startsWith("https://").optional(),

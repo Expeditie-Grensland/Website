@@ -26,7 +26,6 @@ import {
 import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
 import { deleteS3Prefix, getS3Files } from "../files/s3.js";
 import { getUsesForFiles } from "../files/uses.js";
-import { getMessages, setMessage } from "../helpers/flash.js";
 import {
   getISODate,
   isValidTimeZone,
@@ -59,7 +58,7 @@ const tryCatchAndRedirect =
   ) =>
   async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      setMessage(request.session, "infoMsg", await func(request, reply));
+      request.flash("info", await func(request, reply));
     } catch (e) {
       let errorMsg = "Error!";
 
@@ -67,7 +66,7 @@ const tryCatchAndRedirect =
       else if (e instanceof ZodError) errorMsg = fromZodError(e).message;
       else if (e instanceof Error) errorMsg = e.message;
 
-      setMessage(request.session, "errorMsg", errorMsg);
+      request.flash("error", errorMsg);
     }
     reply.redirect(302, `/leden/admin${redirectTo}`);
     return reply;
@@ -89,8 +88,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     reply.view("admin/quotes", {
       fluidContainer: true,
       quotes: await getAllQuotes(),
-      infoMsgs: getMessages(request.session, "infoMsg"),
-      errMsgs: getMessages(request.session, "errorMsg"),
+      infoMsgs: reply.flash("info"),
+      errMsgs: reply.flash("error"),
       getISODate,
     })
   );
@@ -136,8 +135,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     reply.view("admin/dictionary", {
       fluidContainer: true,
       words: await getAllWords(),
-      infoMsgs: getMessages(request.session, "infoMsg"),
-      errMsgs: getMessages(request.session, "errorMsg"),
+      infoMsgs: reply.flash("info"),
+      errMsgs: reply.flash("error"),
     })
   );
 
@@ -178,8 +177,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     reply.view("admin/afkowobo", {
       fluidContainer: true,
       afkos: await getAllAfkos(),
-      infoMsgs: getMessages(request.session, "infoMsg"),
-      errMsgs: getMessages(request.session, "errorMsg"),
+      infoMsgs: reply.flash("info"),
+      errMsgs: reply.flash("error"),
     })
   );
 
@@ -221,8 +220,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       earnedPoints: await getAllEarnedPoints(),
       expedities: await getAllExpedities(),
       persons: await getAllPersons(),
-      infoMsgs: getMessages(request.session, "infoMsg"),
-      errMsgs: getMessages(request.session, "errorMsg"),
+      infoMsgs: reply.flash("info"),
+      errMsgs: reply.flash("error"),
       getISODate,
     })
   );
@@ -268,8 +267,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     reply.view("admin/gpx", {
       expedities: await getAllExpedities(),
       persons: await getAllPersons(),
-      infoMsgs: getMessages(request.session, "infoMsg"),
-      errMsgs: getMessages(request.session, "errorMsg"),
+      infoMsgs: reply.flash("info"),
+      errMsgs: reply.flash("error"),
     })
   );
 
@@ -299,8 +298,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       expedities: await getAllExpedities(),
       persons: await getAllPersons(),
       stories: await getAllStories(),
-      infoMsgs: getMessages(request.session, "infoMsg"),
-      errMsgs: getMessages(request.session, "errorMsg"),
+      infoMsgs: reply.flash("info"),
+      errMsgs: reply.flash("error"),
       getISODate,
     })
   );
@@ -433,8 +432,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   app.get("/bestanden", async (request, reply) =>
     reply.view("admin/files", {
       filesWithUses: await getUsesForFiles(await getS3Files()),
-      infoMsgs: getMessages(request.session, "infoMsg"),
-      errMsgs: getMessages(request.session, "errorMsg"),
+      infoMsgs: reply.flash("info"),
+      errMsgs: reply.flash("error"),
     })
   );
 

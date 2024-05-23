@@ -1,21 +1,21 @@
 import { FastifyPluginAsync } from "fastify";
 import { marked } from "marked";
-import { authenticateUser } from "../helpers/auth.js";
-import { getMessages, setMessage } from "../helpers/flash.js";
 import packageJson from "../../../package.json" assert { type: "json" };
 import { getAllAfkos } from "../db/afko.js";
 import { getFullEarnedPoints } from "../db/earned-point.js";
+import { getMemberLinks } from "../db/member-link.js";
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
+import { authenticateUser } from "../helpers/auth.js";
 import { config } from "../helpers/configHelper.js";
-import { getMemberLinks } from "../db/member-link.js";
-import adminRoutes from "./admin.js";
 import { getDateTime } from "../helpers/time.js";
+import adminRoutes from "./admin.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
     if (request.url !== "/leden/login" && !reply.locals.user) {
-      if (request.method === "GET") request.session.returnTo = request.url;
+      if (request.method === "GET")
+        request.session.set("returnTo", request.url);
 
       reply.redirect(302, "/leden/login");
     }
@@ -27,7 +27,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
     if (reply.locals.user) {
       if (request.session.returnTo) {
         reply.redirect(302, request.session.returnTo);
-        delete request.session.returnTo;
+        request.session.set("returnTo", undefined);
         return reply;
       }
 
@@ -36,7 +36,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
 
     return reply.view("members/login", {
       isLogin: true,
-      messages: getMessages(request.session, "errorMsg"),
+      messages: reply.flash("error"),
     });
   });
 
@@ -44,22 +44,24 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
     try {
       const body = request.body as { username: string; password: string }; // FIXME
 
-      request.session.userId =
-        (await authenticateUser(body.username, body.password))?.id || undefined;
-    } catch (e) {
+      request.session.set(
+        "userId",
+        (await authenticateUser(body.username, body.password))?.id || undefined
+      );
+    } catch (err) {
       let errorMsg = "Error!";
 
-      if (typeof e === "string") errorMsg = e;
-      else if (e instanceof Error) errorMsg = e.message;
+      if (typeof err === "string") errorMsg = err;
+      else if (err instanceof Error) errorMsg = err.message;
 
-      setMessage(request.session, "errorMsg", errorMsg);
+      request.flash("error", errorMsg);
     }
 
     return reply.redirect(302, "/leden/login");
   });
 
   app.get("/loguit", async (request, reply) => {
-    delete request.session.userId;
+    request.session.set("userId", undefined);
     reply.redirect(302, "/");
   });
 
@@ -187,7 +189,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
     const earnedPoints = (await getFullEarnedPoints()).map((ep) => ({
       date: getDateTime(ep.time_stamp, ep.time_zone).toLocaleString({
         month: "2-digit",
-        day: "2-digit"
+        day: "2-digit",
       }),
       amount: ep.amount,
       name: `${ep.person_first_name} ${ep.person_last_name}`,

@@ -14,12 +14,12 @@ declare module "fastify" {
       umami?: { scriptUrl: string; websiteId: string };
     };
   }
+}
 
-  interface Session {
-    userId?: string;
-    returnTo?: string;
-    infoMsg: string[];
-    errorMsg: string[];
+declare module "@fastify/secure-session" {
+  interface SessionData {
+    userId: string;
+    returnTo: string;
   }
 }
 

@@ -1,14 +1,12 @@
-import fastifyCookie from "@fastify/cookie";
+import fastifyFlash from "@fastify/flash";
 import fastifyFormbody from "@fastify/formbody";
-import fastifySession, { FastifySessionOptions } from "@fastify/session";
+import fastifySecureSession from "@fastify/secure-session";
 import fastifyStatic from "@fastify/static";
 import fastifyView from "@fastify/view";
-import RedisStore from "connect-redis";
 import fastify, { FastifyInstance } from "fastify";
 import { join } from "node:path";
 import pug from "pug";
 import qs from "qs";
-import redis from "redis";
 import { getPerson } from "../db/person.js";
 import migrator from "../db/schema/migrator.js";
 import { getFileType, getFileUrl } from "../files/files.js";
@@ -31,29 +29,18 @@ export const migrateDatabase = async () => {
 };
 
 const setupSession = async (app: FastifyInstance) => {
-  const sessionOptions: FastifySessionOptions = {
+  await app.register(fastifySecureSession, {
+    cookieName: "eg-session",
     secret: config.EG_SESSION_SECRET,
+    salt: "",
+    expiry: 30 * 24 * 60 * 60,
     cookie: {
-      secure: config.NODE_ENV === "production",
+      path: "/",
+      secure: true,
+      httpOnly: true,
     },
-    saveUninitialized: false,
-  };
-
-  if (config.EG_REDIS_URL) {
-    const redisClient = redis.createClient({
-      url: config.EG_REDIS_URL,
-    });
-    redisClient.connect().catch(console.error);
-
-    sessionOptions.store = new RedisStore({
-      client: redisClient,
-      prefix: config.EG_REDIS_PREFIX,
-      ttl: 2592000,
-    });
-  }
-
-  await app.register(fastifyCookie);
-  await app.register(fastifySession, sessionOptions);
+  });
+  await app.register(fastifyFlash);
 };
 
 const setupStaticRoutes = async (app: FastifyInstance) => {
