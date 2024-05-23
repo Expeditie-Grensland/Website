@@ -26,9 +26,9 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   app.get("/login", async (request, reply) => {
     if (reply.locals.user) {
       if (request.session.returnTo) {
-        reply.redirect(302, request.session.returnTo);
+        const returnTo = request.session.returnTo;
         request.session.set("returnTo", undefined);
-        return reply;
+        return reply.redirect(302, returnTo);
       }
 
       return reply.redirect(302, "/leden");
