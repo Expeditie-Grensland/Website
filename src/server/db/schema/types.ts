@@ -82,7 +82,7 @@ export interface Person {
   id: string;
   initials: string;
   last_name: string;
-  ldap_id: string | null;
+  password: string | null;
   sorting_name: string;
   team: PersonTeam | null;
   type: PersonType;

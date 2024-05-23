@@ -28,6 +28,7 @@
     "@fastify/view": "^9.0.0",
     "@inquirer/input": "^2.1.2",
     "@inquirer/select": "^2.2.2",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "fast-xml-parser": "^4.3.6",
     "fastify": "^4.26.2",
@@ -48,6 +49,7 @@
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^6.0.0",
     "@mapbox/mapbox-gl-language": "^1.0.1",
+    "@types/bcrypt": "^5.0.2",
     "@types/geojson": "^7946.0.14",
     "@types/jquery": "^3.5.29",
     "@types/luxon": "^3.4.2",

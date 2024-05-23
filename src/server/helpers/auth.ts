@@ -1,6 +1,6 @@
 import { onRequestHookHandler } from "fastify";
 import LdapAuth from "ldapauth-fork";
-import { getPersonByLdapId } from "../db/person.js";
+import { getPersonAndUpdatePassword } from "../db/person.js";
 import { config } from "./configHelper.js";
 
 export const noAdminRedirect: onRequestHookHandler = (_req, reply) => {
@@ -30,10 +30,10 @@ const ldapAuthenticate = (username: string, password: string) =>
   });
 
 export const authenticateUser = async (username: string, password: string) => {
-  const ldapId = await ldapAuthenticate(username, password);
-  const user = await getPersonByLdapId(ldapId);
+  const id = await ldapAuthenticate(username, password);
+  const user = await getPersonAndUpdatePassword(id, password);
 
-  if (!username) throw new Error("Gebruiker bestaat niet in database");
+  if (!user) throw new Error("Gebruiker bestaat niet in database");
 
   return user;
 };
