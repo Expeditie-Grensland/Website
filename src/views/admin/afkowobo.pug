@@ -62,5 +62,5 @@ block content
                                 input.form-control(type='text' form=`f-${afko.id}` name='attachment_file' value=afko.attachment_file)
                             td
                                 form.form-confirm(id=`f-${afko.id}` method='POST' action=`/leden/admin/afkowobo/update/${afko.id}`)
-                                    button.btn.btn-info.block.mb-2(type='submit') Wijzigen
-                                    button.btn.btn-danger.block(type='submit' formaction=`/leden/admin/afkowobo/delete/${afko.id}`) Verwijderen
+                                    button.btn.btn-info.d-block.mb-2(type='submit') Wijzigen
+                                    button.btn.btn-danger.d-block(type='submit' formaction=`/leden/admin/afkowobo/delete/${afko.id}`) Verwijderen

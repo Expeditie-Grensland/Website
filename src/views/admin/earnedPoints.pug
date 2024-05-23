@@ -65,5 +65,5 @@ block content
                                 input.form-control(type='text' form=`f-${ps.id}` name='time_zone' value=ps.time_zone required)
                             td
                                 form.form-confirm(id=`f-${ps.id}` method='POST' action=`/leden/admin/punten/update/${ps.id}`)
-                                    button.btn.btn-info.block.mb-2(type='submit') Wijzigen
-                                    button.btn.btn-danger.block(type='submit' formaction=`/leden/admin/punten/delete/${ps.id}`) Verwijderen
+                                    button.btn.btn-info.d-block.mb-2(type='submit') Wijzigen
+                                    button.btn.btn-danger.d-block(type='submit' formaction=`/leden/admin/punten/delete/${ps.id}`) Verwijderen
