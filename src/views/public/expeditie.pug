@@ -35,10 +35,6 @@ block content
                         if person.type === "guest"
                             span.sidebar-detail (gast)
 
-            if expeditie.movie_file && (!expeditie.movie_restricted || user) && getFileType(expeditie.movie_file) == "film-dash"
-                div.sidebar-item
-                    a.sidebar-link(href=getFileUrl(expeditie.movie_file, "origineel.mp4") download=`Expeditie ${expeditie.name}.mp4`) Download film
-
         .col-12.col-md-8.order-md-1
             if expeditie.movie_file && (!expeditie.movie_restricted || user)
                 if getFileType(expeditie.movie_file) == "film-dash"
