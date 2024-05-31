@@ -1,4 +1,5 @@
 import { build, context } from "esbuild";
+import { writeFile } from "fs/promises";
 
 const opts = ["dev", "dist"];
 const dir = process.argv[2];
@@ -24,10 +25,15 @@ const options = {
   bundle: true,
   target: "es2015",
   logLevel: "info",
+  metafile: dir == "dist",
 };
 
 if (isProd) {
-  await build({ ...options, minify: true });
+  const result = await build({ ...options, minify: true });
+  await writeFile(
+    `${dir}/static/scripts/esbuild-meta.json`,
+    JSON.stringify(result.metafile)
+  );
 } else {
   const ctx = await context({ ...options, sourcemap: true });
   await ctx.watch();
