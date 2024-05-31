@@ -138,16 +138,6 @@ export const deleteS3Prefix = async (prefix: string) => {
       })
     );
 
-    if (!listResponse.ContinuationToken) {
-      const time = listResponse.Contents?.at(0)?.LastModified?.getTime() || 0;
-      const daysAge = time && Math.floor((Date.now() - time) / 86_400_000);
-
-      if (daysAge <= config.EG_S3_MIN_DELETE_AGE)
-        throw new Error(
-          `Bestand '${prefix}' is te jong om te verwijderen (${daysAge} dagen < ${config.EG_S3_MIN_DELETE_AGE} dagen)`
-        );
-    }
-
     await Promise.all(
       listResponse.Contents?.map(({ Key }) =>
         client.send(
