@@ -14,7 +14,7 @@ block content
                         each message in messages
                             p.text-danger.text-center= message
 
-                    form(action='/leden/login' method='POST' onsubmit=`umami.track('login', { gebruiker: document.getElementById('username').value })`)
+                    form(action='/leden/login' method='POST' onsubmit=`window.umami?.track('login', { gebruiker: document.getElementById('username').value.toLowerCase() })`)
                         .form-group.mb-2
                             .input-group
                                 .input-group-text
