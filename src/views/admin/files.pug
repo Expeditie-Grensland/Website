@@ -9,7 +9,6 @@ mixin previewImg(url)
 
 block content
     - const fileTypes = {}
-    - fileTypes["film-hls"] = "Film in HLS-formaat"
     - fileTypes["film-dash"] = "Film in DASH-formaat"
     - fileTypes["afbeelding"] = "Afbeelding"
     - fileTypes["video"] = "Video"
@@ -54,9 +53,6 @@ block content
                                     when "afbeelding"
                                         a(href=getFileUrl(file.file, "normaal.jpg"))
                                             +previewImg(getFileUrl(file.file, "klein.jpg"))
-                                    when "film-hls"
-                                        a(href=getFileUrl(file.file, "progressive.mp4"))
-                                            +previewImg(getFileUrl(file.file, "poster.jpg"))
                                     when "film-dash"
                                         a(href=getFileUrl(file.file, "720p30.mp4"))
                                             +previewImg(getFileUrl(file.file, "poster.jpg"))
