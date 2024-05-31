@@ -1,11 +1,6 @@
-import { onRequestHookHandler } from "fastify";
 import LdapAuth from "ldapauth-fork";
 import { getPersonAndUpdatePassword } from "../db/person.js";
 import { config } from "./configHelper.js";
-
-export const noAdminRedirect: onRequestHookHandler = (_req, reply) => {
-  if (reply.locals.user?.type != "admin") reply.redirect(302, "/leden");
-};
 
 const ldap = new LdapAuth({
   url: config.EG_LDAP_URL,

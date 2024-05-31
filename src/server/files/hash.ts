@@ -4,17 +4,9 @@ import { readFileByChunk } from "./chunks.js";
 
 const CHUNK_SIZE = 256 * 1024 * 1024;
 
-export const newHash = () => createHash("md5");
+const newHash = () => createHash("md5");
 
-export const getBufferHash = async (buffer: Buffer, inHash?: Hash) => {
-  const hash = inHash || newHash();
-
-  hash.update(buffer);
-
-  return hash;
-};
-
-export const getFileHash = async (fileName: string, inHash?: Hash) => {
+const getFileHash = async (fileName: string, inHash?: Hash) => {
   const hash = inHash || newHash();
 
   await readFileByChunk(fileName, CHUNK_SIZE, async (buffer) => {

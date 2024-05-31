@@ -6,9 +6,9 @@ export const getDateTime = (stamp: number, zone: string) =>
 export const getISODate = (stamp: number, zone: string) =>
   getDateTime(stamp, zone).toISO({ includeOffset: false });
 
-export const getTimeStamp = (dateTime: DateTime) => dateTime.toSeconds();
+const getTimeStamp = (dateTime: DateTime) => dateTime.toSeconds();
 
-export const parseISODate = (isoDate: string, zone: string) => {
+const parseISODate = (isoDate: string, zone: string) => {
   const date = DateTime.fromISO(isoDate, { zone, locale: "nl-NL" });
   if (date.invalidExplanation) throw new Error(date.invalidExplanation);
   return date;

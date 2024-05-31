@@ -126,8 +126,8 @@
     "check:types:client": "tsc --noEmit --project src/client/tsconfig.json",
     "check:lint": "eslint . --ext ts,js,cjs,mjs",
     "check:nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
-    "check:unused:server": "ts-unused-exports src/server/tsconfig.json --maxIssues=9999999",
-    "check:unused:client": "ts-unused-exports src/client/tsconfig.json --maxIssues=9999999",
+    "check:unused:server": "ts-unused-exports src/server/tsconfig.json --allowUnusedTypes --ignoreFiles=src/server/db/schema/migrations/*",
+    "check:unused:client": "ts-unused-exports src/client/tsconfig.json --allowUnusedTypes",
     "stats": "node build/stats.js"
   }
 }

@@ -44,17 +44,6 @@ export const getS3Files = async () => {
   ).sort();
 };
 
-export const getPrefixDate = async (prefix: string) =>
-  (
-    await client.send(
-      new ListObjectsV2Command({
-        Bucket: config.EG_S3_BUCKET,
-        Prefix: prefix,
-        MaxKeys: 1,
-      })
-    )
-  ).Contents?.at(0)?.LastModified;
-
 const uploadS3FileSingle = async (
   file: FileHandle,
   key: string,
