@@ -2,11 +2,12 @@ import { sql } from "kysely";
 import db from "./schema/database.js";
 import { jsonAggTable } from "./schema/utils.js";
 
-export const getAllExpedities = () =>
+export const getAllExpedities = ({ noDrafts = false } = {}) =>
   db
     .selectFrom("expeditie")
     .selectAll()
     .orderBy("sequence_number desc")
+    .$if(noDrafts, (qb) => qb.where("draft", "=", false))
     .execute();
 
 export const getFullExpeditie = (id: string) =>

@@ -27,6 +27,7 @@ export interface EarnedPoint {
 export interface Expeditie {
   background_file: string | null;
   countries: Generated<string[]>;
+  draft: Generated<boolean>;
   id: string;
   movie_file: string | null;
   movie_restricted: Generated<boolean>;

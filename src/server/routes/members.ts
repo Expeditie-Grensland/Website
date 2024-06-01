@@ -74,6 +74,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
           title: "Hoofdpagina",
           text: "Alle Expedities (en verborgen videos)",
           href: "/",
+          adminHref: "/?concepten",
         },
         {
           title: "Woordenboek",

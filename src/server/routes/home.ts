@@ -5,7 +5,9 @@ const homeRoutes: FastifyPluginAsync = async (app) => {
   app.get("/", async (request, reply) =>
     reply.view("public/home", {
       isHome: true,
-      expedities: await getAllExpedities(),
+      expedities: await getAllExpedities({
+        noDrafts: !Object.hasOwn(request.query as object, "concepten"),
+      }),
     })
   );
 };
