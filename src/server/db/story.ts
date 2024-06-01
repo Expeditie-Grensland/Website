@@ -1,7 +1,7 @@
 import { Insertable, Updateable } from "kysely";
 import db from "./schema/database.js";
 import { Story, StoryMedia } from "./schema/types.js";
-import { jsonAggTable } from "./schema/utils.js";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
 
 export const getStoryCount = (expeditieId: string) =>
   db
@@ -25,20 +25,30 @@ export const getStories = (expeditieId: string) =>
   db
     .selectFrom("story")
     .where("expeditie_id", "=", expeditieId)
-    .leftJoin("story_media", "story.id", "story_id")
     .selectAll("story")
-    .select(() => [jsonAggTable("story_media", "story_media.file").as("media")])
-    .groupBy("story.id")
+    .select((eb) => [
+      jsonArrayFrom(
+        eb
+          .selectFrom("story_media")
+          .selectAll("story_media")
+          .whereRef("story_media.story_id", "=", "story.id")
+      ).as("media"),
+    ])
     .orderBy("time_stamp asc")
     .execute();
 
 export const getAllStories = () =>
   db
     .selectFrom("story")
-    .leftJoin("story_media", "story.id", "story_id")
     .selectAll("story")
-    .select(() => [jsonAggTable("story_media", "story_media.file").as("media")])
-    .groupBy("story.id")
+    .select((eb) => [
+      jsonArrayFrom(
+        eb
+          .selectFrom("story_media")
+          .selectAll("story_media")
+          .whereRef("story_media.story_id", "=", "story.id")
+      ).as("media"),
+    ])
     .orderBy("time_stamp desc")
     .execute();
 

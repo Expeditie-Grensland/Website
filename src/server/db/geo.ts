@@ -1,6 +1,6 @@
+import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { parseGpx } from "../helpers/gpx.js";
 import db from "./schema/database.js";
-import { jsonAggTable } from "./schema/utils.js";
 
 export const getNewestLocation = (expeditieId: string) =>
   db
@@ -24,11 +24,16 @@ export const getNodesWithPersons = (expeditieId: string) =>
   db
     .selectFrom("geo_node")
     .where("expeditie_id", "=", expeditieId)
-    .leftJoin("geo_node_person", "geo_node.id", "geo_node_person.geo_node_id")
-    .leftJoin("person", "geo_node_person.person_id", "person.id")
-    .groupBy("geo_node.id")
     .selectAll("geo_node")
-    .select(() => [jsonAggTable("person", "person.id").as("persons")])
+    .select((eb) => [
+      jsonArrayFrom(
+        eb
+          .selectFrom("geo_node_person")
+          .leftJoin("person", "geo_node_person.person_id", "person.id")
+          .selectAll("person")
+          .whereRef("geo_node_person.geo_node_id", "=", "geo_node.id")
+      ).as("persons"),
+    ])
     .execute();
 
 export const getNodeLocations = (
