@@ -4,9 +4,9 @@ import packageJson from "../../../package.json" assert { type: "json" };
 import { getAllAfkos } from "../db/afko.js";
 import { getFullEarnedPoints } from "../db/earned-point.js";
 import { getMemberLinks } from "../db/member-link.js";
+import { authenticatePerson } from "../db/person.js";
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
-import { authenticateUser } from "../helpers/auth.js";
 import { config } from "../helpers/configHelper.js";
 import { getDateTime } from "../helpers/time.js";
 import adminRoutes from "./admin.js";
@@ -43,11 +43,10 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   app.post("/login", async (request, reply) => {
     try {
       const body = request.body as { username: string; password: string }; // FIXME
+      const user = await authenticatePerson(body.username, body.password);
+      if (!user) throw new Error("Gebruikersnaam of wachtwoord is incorrect");
 
-      request.session.set(
-        "userId",
-        (await authenticateUser(body.username, body.password))?.id || undefined
-      );
+      request.session.set("userId", user.id);
     } catch (err) {
       let errorMsg = "Error!";
 

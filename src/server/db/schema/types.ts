@@ -79,6 +79,7 @@ export interface MemberLink {
 }
 
 export interface Person {
+  email: string | null;
   first_name: string;
   id: string;
   initials: string;
