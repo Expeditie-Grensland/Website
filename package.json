@@ -47,9 +47,11 @@
     "zod-validation-error": "^3.3.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.4.0",
     "@fullhuman/postcss-purgecss": "^6.0.0",
     "@mapbox/mapbox-gl-language": "^1.0.1",
     "@types/bcrypt": "^5.0.2",
+    "@types/eslint__js": "^8.42.3",
     "@types/geojson": "^7946.0.14",
     "@types/jquery": "^3.5.30",
     "@types/ldapjs": "^3.0.6",
@@ -59,8 +61,6 @@
     "@types/pg": "^8.11.6",
     "@types/pug": "^2.0.10",
     "@types/qs": "^6.9.15",
-    "@typescript-eslint/eslint-plugin": "^7.11.0",
-    "@typescript-eslint/parser": "^7.11.0",
     "autoprefixer": "^10.4.19",
     "bootstrap": "^5.3.3",
     "concurrently": "^8.2.2",
@@ -69,9 +69,9 @@
     "esbuild": "^0.21.4",
     "esbuild-sass-plugin": "^3.3.0",
     "eslint": "^8.57.0",
-    "eslint-nibble": "^8.1.0",
-    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-import-x": "^0.5.1",
     "geojson": "^0.5.0",
+    "globals": "^15.3.0",
     "globby": "^14.0.1",
     "hls.js": "1.5.9",
     "jquery": "^3.7.1",
@@ -83,7 +83,8 @@
     "sass-embedded": "^1.77.2",
     "ts-unused-exports": "^10.1.0",
     "tsx": "^4.11.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.11.0"
   },
   "files": [
     "pnpm-lock.yaml",
@@ -122,11 +123,10 @@
     "db:migrate-down": "concurrently -c auto -m 1 -n migrate,generate npm:db:migrate-only-down npm:db:generate",
     "db:generate": "kysely-codegen --url 'env(EG_DB_URL)' --out-file src/server/db/schema/types.ts",
     "clean": "concurrently -c auto -m 1 'npm:*:clean'",
-    "check": "concurrently -c auto -m 1 'npm:check:*(!nibble)'",
+    "check": "concurrently -c auto -m 1 'npm:check:*'",
     "check:types:server": "tsc --noEmit --project src/server/tsconfig.json",
     "check:types:client": "tsc --noEmit --project src/client/tsconfig.json",
-    "check:lint": "eslint . --ext ts,js,cjs,mjs",
-    "check:nibble": "eslint-nibble . --ext ts,js,cjs,mjs",
+    "check:lint": "eslint .",
     "check:unused:server": "ts-unused-exports src/server/tsconfig.json --allowUnusedTypes --ignoreFiles=src/server/db/schema/migrations/*",
     "check:unused:client": "ts-unused-exports src/client/tsconfig.json --allowUnusedTypes",
     "stats": "node build/stats.js"
