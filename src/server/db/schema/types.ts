@@ -24,6 +24,16 @@ export interface EarnedPoint {
   time_zone: string;
 }
 
+export interface EmailAccount {
+  password: string | null;
+  username: string | null;
+}
+
+export interface EmailAlias {
+  alias: string | null;
+  destination: string | null;
+}
+
 export interface Expeditie {
   background_file: string | null;
   countries: Generated<string[]>;
@@ -128,6 +138,8 @@ export interface Word {
 export interface DB {
   afko: Afko;
   earned_point: EarnedPoint;
+  email_account: EmailAccount;
+  email_alias: EmailAlias;
   expeditie: Expeditie;
   expeditie_movie_editor: ExpeditieMovieEditor;
   expeditie_person: ExpeditiePerson;
