@@ -21,15 +21,6 @@ const convert = async (
       platform() === "win32" && ["-hwaccel", "auto"],
       ["-i", resolve(inputFile)],
       [
-        // Origineel (zonder converteren)
-        ["-map_metadata", "-1"],
-        ["-movflags", "+faststart"],
-        ["-c:v", "copy"],
-        ["-bsf:v", "filter_units=remove_types=6"],
-        ["-c:a", "copy"],
-        "origineel.mp4",
-      ],
-      [
         // Dash
         ["-map_metadata", "-1"],
         ["-preset", "veryslow"],
