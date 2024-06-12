@@ -42,6 +42,7 @@ export const up = async (db: Kysely<any>) => {
 
   if (!config.EG_MONGO_URL) return;
 
+  // @ts-expect-error No MongoDB included
   const { MongoClient } = await import("mongodb");
   const mongo = new MongoClient(config.EG_MONGO_URL);
   await mongo.connect();

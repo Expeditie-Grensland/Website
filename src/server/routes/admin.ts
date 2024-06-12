@@ -368,67 +368,6 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     })
   );
 
-  // app.post(
-  //   "/story",
-  //   tryCatchAndRedirect(async (request) => {
-  //     const action = zActionFromBody.parse(request.body);
-
-  //     if (action === "delete") {
-  //       const doc = await storyDocSchema.parseAsync(request.body);
-  //       const result = await doc.deleteOne();
-
-  //       if (result.deletedCount !== 1)
-  //         throw new Error("Verhaal kon niet worden verwijderd");
-
-  //       return "Verhaal is succesvol verwijderd";
-  //     }
-
-  //     const input = await storySchema.parseAsync(request.body);
-
-  //     const baseStory = {
-  //       type: input.type,
-  //       expeditieId: input.expeditie._id,
-  //       personId: input.person._id,
-  //       dateTime: getInternalFromISODate(input.time, input.zone),
-  //       index: 0,
-  //     };
-
-  //     let story: StoryElement;
-
-  //     if (input.type === "text")
-  //       story = {
-  //         ...baseStory,
-  //         title: input.title,
-  //         text: input.text,
-  //       };
-  //     else if (input.type === "location")
-  //       story = {
-  //         ...baseStory,
-  //         name: input.name,
-  //       };
-  //     else
-  //       story = {
-  //         ...baseStory,
-  //         title: input.title,
-  //         media: new mongoose.Types.DocumentArray(
-  //           input.files.map((file, i) => ({
-  //             file,
-  //             description: input.descriptions[i],
-  //           }))
-  //         ),
-  //       };
-
-  //     if (action === "change") {
-  //       const doc = await storyDocSchema.parseAsync(request.body);
-  //       const result = await doc.overwrite(story).save();
-  //       return `Verhaal "${result._id.toHexString()}" is succesvol gewijzigd`;
-  //     }
-
-  //     const result = await new BaseStoryElementModel(story).save();
-  //     return `Verhaal "${result._id.toHexString()}" is successvol toegevoegd`;
-  //   })
-  // );
-
   app.get("/bestanden", async (request, reply) =>
     reply.view("admin/files", {
       filesWithUses: await getUsesForFiles(await getS3Files()),
