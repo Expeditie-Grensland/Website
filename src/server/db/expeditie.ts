@@ -6,7 +6,8 @@ export const getAllExpedities = ({ noDrafts = false } = {}) =>
   db
     .selectFrom("expeditie")
     .selectAll()
-    .orderBy("sequence_number desc")
+    .orderBy("start_date desc")
+    .orderBy("end_date desc")
     .$if(noDrafts, (qb) => qb.where("draft", "=", false))
     .execute();
 

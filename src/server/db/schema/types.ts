@@ -8,6 +8,8 @@ export type PersonTeam = "b" | "r";
 
 export type PersonType = "admin" | "guest" | "member";
 
+export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
 export interface Afko {
   afko: string;
   attachment_file: string | null;
@@ -38,12 +40,13 @@ export interface Expeditie {
   background_file: string | null;
   countries: Generated<string[]>;
   draft: Generated<boolean>;
+  end_date: Timestamp;
   id: string;
   movie_file: string | null;
   movie_restricted: Generated<boolean>;
   name: string;
-  sequence_number: number;
   show_map: Generated<boolean>;
+  start_date: Timestamp;
   subtitle: string;
 }
 
