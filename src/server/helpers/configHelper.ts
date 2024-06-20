@@ -1,3 +1,4 @@
+import sodium from "sodium-native";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
@@ -24,7 +25,13 @@ const envSchema = z
     EG_LDAP_SEARCH_FILTER: z.string(),
     EG_LDAP_ID_FIELD: z.string(),
 
-    EG_SESSION_SECRET: z.string().min(128),
+    EG_SECRET_KEY: z
+      .string()
+      .base64()
+      .transform((s) => Buffer.from(s, "base64"))
+      .refine((buf) => buf.length == sodium.crypto_secretbox_KEYBYTES, {
+        message: `key must be ${sodium.crypto_secretbox_KEYBYTES} bytes`,
+      }),
 
     EG_UMAMI_SCRIPT_URL: z.string().startsWith("https://").optional(),
     EG_UMAMI_WEBSITE_ID: z.string().length(36).optional(),

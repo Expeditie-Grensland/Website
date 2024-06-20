@@ -42,6 +42,7 @@
     "pino": "^9.2.0",
     "pug": "^3.0.3",
     "qs": "^6.12.1",
+    "sodium-native": "^4.1.1",
     "zod": "^3.23.8",
     "zod-validation-error": "^3.3.0"
   },
@@ -59,6 +60,7 @@
     "@types/pg": "^8.11.6",
     "@types/pug": "^2.0.10",
     "@types/qs": "^6.9.15",
+    "@types/sodium-native": "^2.3.9",
     "autoprefixer": "^10.4.19",
     "bootstrap": "^5.3.3",
     "concurrently": "^8.2.2",
@@ -127,6 +129,7 @@
     "check:lint": "eslint .",
     "check:unused:server": "ts-unused-exports src/server/tsconfig.json --allowUnusedTypes --ignoreFiles=src/server/db/schema/migrations/*",
     "check:unused:client": "ts-unused-exports src/client/tsconfig.json --allowUnusedTypes",
-    "stats": "node build/stats.js"
+    "stats": "node build/stats.js",
+    "util:generate-secret": "node build/util-generate-secret.js"
   }
 }

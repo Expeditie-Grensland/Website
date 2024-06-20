@@ -31,8 +31,7 @@ export const migrateDatabase = async () => {
 const setupSession = async (app: FastifyInstance) => {
   await app.register(fastifySecureSession, {
     cookieName: "eg-session",
-    secret: config.EG_SESSION_SECRET,
-    salt: "",
+    key: config.EG_SECRET_KEY,
     expiry: 30 * 24 * 60 * 60,
     cookie: {
       path: "/",
