@@ -8,7 +8,7 @@ export const getAllWords = () =>
 export const addWord = (word: Insertable<Word>) =>
   db.insertInto("word").values(word).returningAll().executeTakeFirstOrThrow();
 
-export const updateWord = (id: number, word: Updateable<Word>) =>
+export const updateWord = (id: string, word: Updateable<Word>) =>
   db
     .updateTable("word")
     .set(word)
@@ -16,7 +16,7 @@ export const updateWord = (id: number, word: Updateable<Word>) =>
     .returningAll()
     .executeTakeFirstOrThrow();
 
-export const deleteWord = (id: number) =>
+export const deleteWord = (id: string) =>
   db
     .deleteFrom("word")
     .where("id", "=", id)

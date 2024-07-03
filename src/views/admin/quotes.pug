@@ -21,6 +21,8 @@ block content
             form(method='POST' action='/leden/admin/citaten/add')
                 .form-row.align-items-center
                     .col-12.col-md-3.mb-2
+                        input.form-control(type='text' name='id' placeholder='Id' required)
+                    .col-12.col-md-3.mb-2
                         textarea.form-control(rows='1' name='quote' placeholder='Citaat' required)
                     .col-12.col-md-3.mb-2
                         textarea.form-control(rows='3' name='context' placeholder='Context' required)
@@ -41,6 +43,7 @@ block content
             table.table.table-sticky-header
                 thead
                     tr
+                        th(style='min-width: 15rem') Id
                         th(style='min-width: 20rem') Quote
                         th(style='min-width: 30rem; width: 100%;') Context
                         th(style='min-width: 15rem;') Persoon
@@ -51,6 +54,8 @@ block content
                 tbody
                     each quote in quotes
                         tr
+                            td
+                                input.form-control(type='text' form=`f-${quote.id}` name='id' value=quote.id required)
                             td
                                 textarea.form-control(form=`f-${quote.id}` name='quote' rows='3' required)= quote.quote
                             td

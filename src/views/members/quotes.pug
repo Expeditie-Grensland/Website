@@ -11,7 +11,7 @@ block content
 
     .row.pb-5
         each quote in quotes
-            .col-12.col-lg-9.pb-5(id=generateSimple(quote.quote))
+            .col-12.col-lg-9.pb-5(id=quote.id)
                 .h2.pb-2
                     span &ldquo;#{quote.quote}&rdquo;&#32;
                     small.text-muted &#8213;&nbsp;#{quote.quotee}

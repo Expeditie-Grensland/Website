@@ -8,7 +8,7 @@ export const getAllQuotes = () =>
 export const addQuote = (quote: Insertable<Quote>) =>
   db.insertInto("quote").values(quote).returningAll().executeTakeFirstOrThrow();
 
-export const updateQuote = (id: number, quote: Updateable<Quote>) =>
+export const updateQuote = (id: string, quote: Updateable<Quote>) =>
   db
     .updateTable("quote")
     .set(quote)
@@ -16,7 +16,7 @@ export const updateQuote = (id: number, quote: Updateable<Quote>) =>
     .returningAll()
     .executeTakeFirstOrThrow();
 
-export const deleteQuote = (id: number) =>
+export const deleteQuote = (id: string) =>
   db
     .deleteFrom("quote")
     .where("id", "=", id)

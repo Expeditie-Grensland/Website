@@ -14,7 +14,7 @@ export interface Afko {
   afko: string;
   attachment_file: string | null;
   definitions: Generated<string[]>;
-  id: Generated<number>;
+  id: string;
 }
 
 export interface EarnedPoint {
@@ -106,7 +106,7 @@ export interface Person {
 export interface Quote {
   attachment_file: string | null;
   context: string;
-  id: Generated<number>;
+  id: string;
   quote: string;
   quotee: string;
   time_stamp: number;
@@ -133,7 +133,7 @@ export interface StoryMedia {
 export interface Word {
   attachment_file: string | null;
   definitions: Generated<string[]>;
-  id: Generated<number>;
+  id: string;
   phonetic: string | null;
   word: string;
 }

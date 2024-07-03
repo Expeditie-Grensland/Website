@@ -137,34 +137,18 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
     })
   );
 
-  const renderer = new marked.Renderer();
-
-  const generateSimple = (word: string): string =>
-    word
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^0-9a-z]+/gi, "-");
-
-  renderer.link = (href, title, text): string => {
-    if (href == "w") {
-      href = `#${generateSimple(text)}`;
-    } else if (href != null && href.slice(0, 2) == "w:") {
-      href = `#${generateSimple(href.slice(2))}`;
-    }
-    return new marked.Renderer().link(href, title, text);
-  };
-
-  renderer.paragraph = (text): string => text;
-
   marked.use({
-    renderer,
+    useNewRenderer: true,
+    renderer: {
+      paragraph({ tokens }) {
+        return this.parser.parseInline(tokens);
+      },
+    },
   });
 
   app.get("/woordenboek", async (request, reply) =>
     reply.view("members/dictionary", {
       dictionary: await getAllWords(),
-      generateSimple,
       marked: (s: string) => marked(s),
     })
   );
@@ -172,7 +156,6 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   app.get("/citaten", async (request, reply) =>
     reply.view("members/quotes", {
       quotes: await getAllQuotes(),
-      generateSimple,
       marked: (s: string) => marked(s),
     })
   );
@@ -180,7 +163,6 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   app.get("/afkowobo", async (request, reply) =>
     reply.view("members/afkowobo", {
       afkos: await getAllAfkos(),
-      generateSimple,
       marked: (s: string) => marked(s),
     })
   );

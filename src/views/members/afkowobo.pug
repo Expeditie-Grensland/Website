@@ -11,7 +11,7 @@ block content
 
     .row.pb-5
         each afko in afkos
-            .col-12.col-xl-9.pb-4(id=generateSimple(afko.afko))
+            .col-12.col-xl-9.pb-4(id=afko.id)
                 .h2.pb-2
                     span #{afko.afko}&#32;
                 ol.serif

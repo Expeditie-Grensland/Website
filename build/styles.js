@@ -13,7 +13,6 @@ if (!opts.includes(dir))
 const isProd = dir === "dist";
 
 const files = {
-  dictionary: "src/styles/dictionary.sass",
   expeditieMap: "src/styles/expeditieMap.sass",
   members: "src/styles/members.sass",
   public: "src/styles/public.sass",

@@ -21,6 +21,8 @@ block content
             form(method='POST' action='/leden/admin/woordenboek/add')
                 .form-row.align-items-center
                     .col-12.col-md-3.mb-2
+                        input.form-control(type='text' name='id' placeholder='Id' required)
+                    .col-12.col-md-3.mb-2
                         input.form-control(type='text' name='word' placeholder='Woord' required)
                     .col-12.col-md-3.mb-2
                         .form-array
@@ -43,6 +45,7 @@ block content
             table.table.table-sticky-header
                 thead
                     tr
+                        th(style='min-width: 15rem') Id
                         th(style='min-width: 20rem') Woord
                         th(style='min-width: 30rem; width: 100%;') Definities
                         th(style='min-width: 12.5rem;') Phonetisch
@@ -52,6 +55,8 @@ block content
                 tbody
                     each word in words
                         tr
+                            td
+                                input.form-control(type='text' form=`f-${word.id}` name='id' value=word.id required)
                             td
                                 input.form-control(type='text' form=`f-${word.id}` name='word' value=word.word required)
                             td

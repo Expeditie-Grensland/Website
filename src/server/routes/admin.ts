@@ -37,18 +37,26 @@ const timeZoneSchema = z
   .string()
   .refine(isValidTimeZone, { message: "Geen geldige tijdzone" });
 
+const idSchema = z.string().regex(/^[a-z0-9-]+/, {
+  message: "Mag alleen kleine letters, cijfers en streepjes bevatten",
+});
+
+const idParamsSchema = z.object({
+  id: idSchema,
+});
+
+const numIdParamsSchema = z.object({
+  id: z.coerce.number(),
+});
+
 const localTimeTransformer = <
-  T extends { time_local: string; time_zone: string },
+  T extends { time_local: string; time_zone: string }
 >({
   time_local,
   ...rest
 }: T) => ({
   ...rest,
   time_stamp: parseISODateTimeStamp(time_local, rest.time_zone),
-});
-
-const idParamsSchema = z.object({
-  id: z.coerce.number(),
 });
 
 const tryCatchAndRedirect =
@@ -96,6 +104,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
   const quoteSchema = z
     .object({
+      id: idSchema,
       quote: z.string(),
       quotee: z.string(),
       context: z.string(),
@@ -141,6 +150,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   );
 
   const wordSchema = z.object({
+    id: idSchema,
     word: z.string(),
     definitions: z.array(z.string()).nonempty(),
     phonetic: z.string().optional(),
@@ -183,6 +193,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   );
 
   const afkoSchema = z.object({
+    id: idSchema,
     afko: z.string(),
     definitions: z.array(z.string().nonempty()).nonempty(),
     attachment_file: z.string().optional(),
@@ -248,7 +259,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   app.post(
     "/punten/update/:id",
     tryCatchAndRedirect("/punten", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
+      const { id } = numIdParamsSchema.parse(request.params);
       const p = await updateEarnedPoint(id, pointSchema.parse(request.body));
       return `${p.amount} punten zijn successvol gewijzigd`;
     })
@@ -257,7 +268,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   app.post(
     "/punten/delete/:id",
     tryCatchAndRedirect("/punten", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
+      const { id } = numIdParamsSchema.parse(request.params);
       const p = await deleteEarnedPoint(id);
       return `${p.amount} punten zijn successvol verwijderd`;
     })
@@ -353,7 +364,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   app.post(
     "/verhalen/update/:id",
     tryCatchAndRedirect("/verhalen", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
+      const { id } = numIdParamsSchema.parse(request.params);
       const s = await updateStory(id, storySchema.parse(request.body));
       return `"${s.title}" is successvol gewijzigd`;
     })
@@ -362,7 +373,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   app.post(
     "/verhalen/delete/:id",
     tryCatchAndRedirect("/verhalen", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
+      const { id } = numIdParamsSchema.parse(request.params);
       const s = await deleteStory(id);
       return `"${s.title}" is successvol verwijderd`;
     })

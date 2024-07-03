@@ -21,6 +21,8 @@ block content
             form(method='POST' action='/leden/admin/afkowobo/add')
                 .form-row.align-items-center
                     .col-12.col-md-3.mb-2
+                        input.form-control(type='text' name='id' placeholder='Id' required)
+                    .col-12.col-md-3.mb-2
                         input.form-control(type='text' name='afko' placeholder='Afko' required)
                     .col-12.col-md-3.mb-2
                         .form-array
@@ -41,6 +43,7 @@ block content
             table.table.table-sticky-header
                 thead
                     tr
+                        th(style='min-width: 15rem') Id
                         th(style='min-width: 20rem') Afko
                         th(style='min-width: 30rem; width: 100%;') Definities
                         th(style='min-width: 17.5rem;') Bijlage Id
@@ -49,6 +52,8 @@ block content
                 tbody
                     each afko in afkos
                         tr
+                            td
+                                input.form-control(type='text' form=`f-${afko.id}` name='id' value=afko.id required)
                             td
                                 input.form-control(type='text' form=`f-${afko.id}` name='afko' value=afko.afko required)
                             td

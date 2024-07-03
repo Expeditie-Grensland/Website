@@ -8,7 +8,7 @@ export const getAllAfkos = () =>
 export const addAfko = (afko: Insertable<Afko>) =>
   db.insertInto("afko").values(afko).returningAll().executeTakeFirstOrThrow();
 
-export const updateAfko = (id: number, afko: Updateable<Afko>) =>
+export const updateAfko = (id: string, afko: Updateable<Afko>) =>
   db
     .updateTable("afko")
     .set(afko)
@@ -16,7 +16,7 @@ export const updateAfko = (id: number, afko: Updateable<Afko>) =>
     .returningAll()
     .executeTakeFirstOrThrow();
 
-export const deleteAfko = (id: number) =>
+export const deleteAfko = (id: string) =>
   db
     .deleteFrom("afko")
     .where("id", "=", id)

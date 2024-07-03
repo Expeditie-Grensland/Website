@@ -11,7 +11,7 @@ block content
 
     .row.pb-5
         each word in dictionary
-            .col-12.col-xl-9.pb-4(id=generateSimple(word.word))
+            .col-12.col-xl-9.pb-4(id=word.id)
                 .h2.pb-2
                     span #{word.word}&#32;
                     if (word.phonetic)
