@@ -1,4 +1,4 @@
-import mapboxgl, {GeoJSONSource} from "mapbox-gl"
+import mapboxgl, {GeoJSONSource, IControl} from "mapbox-gl"
 import {ToggleLayerControl} from "./ToggleLayerControl"
 import $ from "jquery"
 import {GeoJsonResult, StoryResult} from "../helpers/retrieval"
@@ -53,7 +53,7 @@ export class MapHandler {
 
     private initControls = () => {
         this.map.addControl(new mapboxgl.NavigationControl());
-        this.map.addControl(new mapboxgl.ScaleControl());
+        this.map.addControl(new mapboxgl.ScaleControl() as IControl);
         this.map.addControl(new ToggleLayerControl('satellite'));
     }
 
@@ -65,7 +65,7 @@ export class MapHandler {
 
     private add3DBuildings = () => {
         // Insert the 3d building layer beneath any symbol layer.
-        const layers = this.map.getStyle().layers;
+        const layers = this.map.getStyle()?.layers ?? [];
         const labelLayerId = layers.find(
             (layer) => layer.type === 'symbol' && layer.layout!['text-field']
         )!.id;
@@ -144,15 +144,17 @@ export class MapHandler {
     }
 
     private addSatellite = () => {
+        this.map.addSource("mapbox-satellite", {
+            "type": "raster",
+            "url": "mapbox://mapbox.satellite",
+            "tileSize": 512
+        });
+
         // Add satellite layer
         this.map.addLayer({
             id: 'satellite',
-            source: {
-                "type": "raster",
-                "url": "mapbox://mapbox.satellite",
-                "tileSize": 512
-            },
-            'layout': {
+            source: "mapbox-satellite",
+            layout: {
                 // Make the layer invisible by default.
                 'visibility': 'none'
             },
@@ -311,7 +313,7 @@ export class MapHandler {
 
                     this.map.easeTo({
                         center: [coords[0], coords[1]],
-                        zoom: zoom,
+                        zoom: zoom ?? undefined,
                         padding: this.cameraPadding
                     });
                 }
