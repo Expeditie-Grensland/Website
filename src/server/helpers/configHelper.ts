@@ -17,14 +17,6 @@ const envSchema = z
 
     EG_DB_URL: z.string().startsWith("postgres://"),
 
-    EG_LDAP_URL: z.string().startsWith("ldap"),
-    EG_LDAP_BIND_DN: z.string(),
-    EG_LDAP_BIND_CREDENTIALS: z.string(),
-    EG_LDAP_SEARCH_BASE: z.string(),
-    EG_LDAP_SEARCH_SCOPE: z.enum(["base", "one", "sub"]),
-    EG_LDAP_SEARCH_FILTER: z.string(),
-    EG_LDAP_ID_FIELD: z.string(),
-
     EG_SECRET_KEY: z
       .string()
       .base64()

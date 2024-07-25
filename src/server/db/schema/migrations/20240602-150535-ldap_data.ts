@@ -7,6 +7,7 @@ export const up = async (db: Kysely<any>) => {
 
   if (!config.EG_LDAP_URL) return;
 
+  // @ts-expect-error No LDAPjs included
   const ldapjs = (await import("ldapjs")).default;
   const ldapClient = ldapjs.createClient({
     url: config.EG_LDAP_URL,
@@ -22,15 +23,18 @@ export const up = async (db: Kysely<any>) => {
         {
           scope: config.EG_LDAP_SEARCH_SCOPE,
         },
-        (err, res) => {
+        (err: any, res: any) => {
           if (err) return reject(err);
-          res.on("error", (err) => reject(err));
+          res.on("error", (err: any) => reject(err));
 
           const users: Record<string, Record<string, string[]>> = {};
 
-          res.on("searchEntry", (user) => {
+          res.on("searchEntry", (user: any) => {
             const attrs = Object.fromEntries(
-              user.pojo.attributes.map(({ type, values }) => [type, values])
+              user.pojo.attributes.map(({ type, values }: any) => [
+                type,
+                values,
+              ])
             );
 
             if (attrs.uid) users[attrs.uid[0]] = attrs;
