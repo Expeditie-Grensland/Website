@@ -19,7 +19,6 @@ export const getFullEarnedPoints = () =>
       "expeditie.name as expeditie_name",
       "person.first_name as person_first_name",
       "person.last_name as person_last_name",
-      "person.team as team",
     ])
     .orderBy("time_stamp desc")
     .execute();

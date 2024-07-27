@@ -22,6 +22,7 @@ export interface EarnedPoint {
   expeditie_id: string | null;
   id: Generated<number>;
   person_id: string;
+  team: PersonTeam | null;
   time_stamp: number;
   time_zone: string;
 }

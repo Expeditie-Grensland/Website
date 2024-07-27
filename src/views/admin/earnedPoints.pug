@@ -28,6 +28,11 @@ block content
                         select.form-select(name='expeditie_id' required)
                             +expeditieOptions(undefined, true)
                     .col-auto.col-md-3.mb-2.me-2
+                        select.form-select(name='team' required)
+                            option(selected disabled) Team
+                            option(value="b") Blauw
+                            option(value="r") Rood
+                    .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='number' name='amount' placeholder="Aantal punten" size=30 required)
                     .col-auto.col-md-3.mb-2.me-2
                         input.form-control(type='datetime-local' name='time_local' placeholder='Lokale tijd' step=1 pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?" size=30 required)
@@ -58,6 +63,11 @@ block content
                             td
                                 select.form-select(form=`f-${ps.id}` name='expeditie_id' required)
                                     +expeditieOptions(ps.expeditie_id || null, true)
+                            td
+                                select.form-select(form=`f-${ps.id}` name='team' required)
+                                    option(disabled) Team
+                                    option(selected=(ps.team == "b") value="b") Blauw
+                                    option(selected=(ps.team == "r") value="r") Rood
                             td
                                 input.form-control(type='number' form=`f-${ps.id}` name='amount' value=ps.amount required)
                             td
