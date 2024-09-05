@@ -138,7 +138,6 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
   );
 
   marked.use({
-    useNewRenderer: true,
     renderer: {
       paragraph({ tokens }) {
         return this.parser.parseInline(tokens);

@@ -49,6 +49,7 @@ export const determinePrefix = async (
 export const tryToDelete = async (dir: string) => {
   try {
     rm(dir, { recursive: true, force: true });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     /* ignore */
   }

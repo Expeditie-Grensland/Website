@@ -45,5 +45,13 @@ export default tsPlugin.config(
     languageOptions: {
       globals: globals.browser,
     },
+  },
+  {
+    files: ["eslint.config.js", "build/**/*"],
+    languageOptions: {
+      parserOptions: {
+        project: false,
+      },
+    },
   }
 );
