@@ -88,6 +88,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   await app.register(fastifyMultipart, {
     attachFieldsToBody: "keyValues",
     limits: {
+      files: 500,
+      fields: 500,
       fileSize: 25000000,
     },
   });
@@ -288,18 +290,20 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     person_id: z.string(),
     expeditie_id: z.string(),
     time_zone: timeZoneSchema,
-    file: z
-      .any()
-      .refine((file) => file && typeof file == "object" && "buffer" in file, {
-        message: "Geen bestand gevonden",
-      }),
+    file: z.array(z.instanceof(Buffer)),
   });
 
   app.post(
     "/gpx/upload",
     tryCatchAndRedirect("/gpx", async (request) => {
-      const { file, ...location } = gpxSchema.parse(request.body);
-      const count = await insertLocationsFromGpx(location, file);
+      const { file: files, ...location } = gpxSchema.parse(request.body);
+
+      let count = 0n;
+
+      for (const file of files) {
+        count += await insertLocationsFromGpx(location, file);
+      }
+
       return `${count} locaties zijn succesvol geüpload`;
     })
   );

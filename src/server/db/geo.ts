@@ -1,6 +1,8 @@
 import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { asyncMapInChunks } from "../helpers/chunk.js";
 import { parseGpx } from "../helpers/gpx.js";
 import db from "./schema/database.js";
+import { randomUUID } from "crypto";
 
 export const getNewestLocation = (expeditieId: string) =>
   db
@@ -73,20 +75,28 @@ export const getFirstNodeLocationAfter = (
     .limit(1)
     .executeTakeFirst();
 
-export const insertLocationsFromGpx = (
+export const insertLocationsFromGpx = async (
   location: { expeditie_id: string; person_id: string; time_zone: string },
   gpxData: Buffer | string
-) =>
-  db
-    .insertInto("geo_location")
-    .values(
-      parseGpx(gpxData).map(({ time, __lat, __lon, ele }) => ({
-        ...location,
-        time_stamp: Math.round(Date.parse(time) / 1000),
-        latitude: __lat,
-        longitude: __lon,
-        altitude: ele,
-      }))
-    )
-    .executeTakeFirst()
-    .then((result) => result.numInsertedOrUpdatedRows || 0n);
+) => {
+  const batch = randomUUID();
+
+  const gpsLocations = parseGpx(gpxData).map(({ time, __lat, __lon, ele }) => ({
+    ...location,
+    time_stamp: Math.round(Date.parse(time) / 1000),
+    latitude: __lat,
+    longitude: __lon,
+    altitude: ele,
+    batch,
+  }));
+
+  const insertedCounts = await asyncMapInChunks(gpsLocations, 1000, (locs) =>
+    db
+      .insertInto("geo_location")
+      .values(locs)
+      .executeTakeFirst()
+      .then((result) => result.numInsertedOrUpdatedRows || 0n)
+  );
+
+  return insertedCounts.reduce((acc, val) => acc + val);
+};

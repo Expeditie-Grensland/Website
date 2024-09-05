@@ -20,7 +20,7 @@ block content
             form(method='POST' action='/leden/admin/gpx/upload' enctype='multipart/form-data')
                 .form-row.align-items-center
                     .col-12.col-md-4.mb-2.me-md-2
-                        input.form-control(name='file' type='file' accept='.gpx' required)
+                        input.form-control(name='file' type='file' accept='.gpx' multiple required)
                     .col-auto.col-md-4.mb-2.me-2
                         select.form-select(name='expeditie_id' required)
                             +expeditieOptions()

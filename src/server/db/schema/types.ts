@@ -68,6 +68,7 @@ export interface ExpeditiePerson {
 
 export interface GeoLocation {
   altitude: number | null;
+  batch: string;
   expeditie_id: string;
   id: Generated<number>;
   latitude: number;
