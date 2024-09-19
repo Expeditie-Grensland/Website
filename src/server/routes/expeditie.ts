@@ -22,7 +22,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
 
     if (
       !expeditie.show_map &&
-      request.routerPath.startsWith("/:expeditieId/kaart")
+      request.routeOptions.url?.startsWith("/:expeditieId/kaart")
     )
       return reply.callNotFound();
   });

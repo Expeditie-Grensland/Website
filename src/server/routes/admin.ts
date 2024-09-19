@@ -76,13 +76,13 @@ const tryCatchAndRedirect =
 
       request.flash("error", errorMsg);
     }
-    reply.redirect(302, `/leden/admin${redirectTo}`);
+    reply.redirect(`/leden/admin${redirectTo}`);
     return reply;
   };
 
 const adminRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
-    if (reply.locals.user?.type != "admin") reply.redirect(302, "/leden");
+    if (reply.locals.user?.type != "admin") reply.redirect("/leden");
   });
 
   await app.register(fastifyMultipart, {

@@ -17,7 +17,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
       if (request.method === "GET")
         request.session.set("returnTo", request.url);
 
-      reply.redirect(302, "/leden/login");
+      reply.redirect("/leden/login");
     }
   });
 
@@ -28,10 +28,10 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
       if (request.session.returnTo) {
         const returnTo = request.session.returnTo;
         request.session.set("returnTo", undefined);
-        return reply.redirect(302, returnTo);
+        return reply.redirect(returnTo);
       }
 
-      return reply.redirect(302, "/leden");
+      return reply.redirect("/leden");
     }
 
     return reply.view("members/login", {
@@ -56,12 +56,12 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
       request.flash("error", errorMsg);
     }
 
-    return reply.redirect(302, "/leden/login");
+    return reply.redirect("/leden/login");
   });
 
   app.get("/loguit", async (request, reply) => {
     request.session.set("userId", undefined);
-    reply.redirect(302, "/");
+    reply.redirect("/");
   });
 
   app.get("/", async (request, reply) =>

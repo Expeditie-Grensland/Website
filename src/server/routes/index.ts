@@ -12,7 +12,7 @@ const routes: FastifyPluginAsync = async (app) => {
   ];
 
   for (const { from, to } of redirects)
-    app.get(from, (_, reply) => reply.redirect(301, to));
+    app.get(from, (_, reply) => reply.redirect(to, 301));
 
   await app.register(memberRoutes, { prefix: "/leden" });
 
