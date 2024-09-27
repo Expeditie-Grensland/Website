@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
 import { marked } from "marked";
-import packageJson from "../../../package.json" assert { type: "json" };
+import packageJson from "../../../package.json" with { type: "json" };
 import { getAllAfkos } from "../db/afko.js";
 import { getFullEarnedPoints } from "../db/earned-point.js";
 import { getMemberLinks } from "../db/member-link.js";

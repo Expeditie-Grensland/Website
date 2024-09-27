@@ -15,7 +15,7 @@ const options = {
   entryPoints: files,
   outdir: `${dir}/server/`,
   platform: "node",
-  target: "node20",
+  target: "node22",
   logLevel: "info",
 };
 
