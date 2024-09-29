@@ -16,16 +16,10 @@ block content
 
                     form(action='/leden/login' method='POST' onsubmit=`window.umami?.track('login', { gebruiker: document.getElementById('username').value.toLowerCase() })`)
                         .form-group.mb-2
-                            .input-group
-                                .input-group-text
-                                    span.fas.fa-fw.fa-user
-                                input.form-control(type='text' id="username" name='username' placeholder='Gebruikersnaam' required autofocus)
+                            input.form-control(type='text' id="username" name='username' placeholder='Gebruikersnaam' required autofocus)
 
                         .form-group.mb-2
-                            .input-group
-                                .input-group-text
-                                    span.fas.fa-fw.fa-key
-                                input.form-control(type='password' name='password' placeholder='Wachtwoord' required)
+                            input.form-control(type='password' name='password' placeholder='Wachtwoord' required)
 
                         .form-group
                             input.btn.btn-primary.btn-block(value='Log In' type='submit')
