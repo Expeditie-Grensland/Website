@@ -10,7 +10,7 @@ const worker: Worker = new Worker((document.getElementById('worker') as HTMLLink
 worker.postMessage(['retrieveAll', expeditieNameShort]);
 
 mapboxgl.accessToken =
-    'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY2o4NzV5amh5MTVidzJxcWhlbDNhMWlmOCJ9.DvTrMNuuFX3QZZ3boymWPw';
+    'pk.eyJ1IjoibWF1cmljZW1lZWRlbmRvcnAiLCJhIjoiY20zY3VjemN0MHBhdTJtczYyY2FxM2gzbCJ9.W72Jy31JQEFo5YRgcmaMng';
 
 // Crude way to disable stories features for small screen
 if (window.screen.availWidth < 1024 || window.screen.availHeight < 768) {
