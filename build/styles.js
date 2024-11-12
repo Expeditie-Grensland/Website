@@ -39,6 +39,7 @@ const options = {
     sassPlugin({
       cssImports: true,
       embedded: true,
+      quietDeps: true,
       transform: async (source) =>
         (await postcssProcessor.process(source, { from: undefined })).css,
     }),
