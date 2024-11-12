@@ -8,10 +8,7 @@ block styles
     link#worker(rel="prefetch" href="/static/scripts/expeditieMapWorker.js" as="worker")
 
 block scripts
-    script.
-        const expeditieNameShort = "!{expeditie.id}";
-        let hasStory = !{hasStory};
-
+    script const expeditieNameShort = "!{expeditie.id}", mbToken = "!{mapboxToken}"; let hasStory = !{hasStory};
     script(src="/static/scripts/expeditieMap.js")
 
 block body

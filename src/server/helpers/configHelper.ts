@@ -28,6 +28,8 @@ const envSchema = z
     EG_UMAMI_SCRIPT_URL: z.string().startsWith("https://").optional(),
     EG_UMAMI_WEBSITE_ID: z.string().length(36).optional(),
     EG_UMAMI_SHARE_URL: z.string().startsWith("https://").optional(),
+
+    EG_MAPBOX_TOKEN: z.string().startsWith("pk."),
   })
   .catchall(z.string().optional());
 
