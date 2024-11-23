@@ -106,6 +106,11 @@ export const setupFastify = async () => {
     includeViewExtension: true,
   });
 
+  app.decorateReply("sendHtml", function (html: string) {
+    this.header("Content-Type", "text/html; charset=utf-8");
+    this.send(html);
+  });
+
   await setupStaticRoutes(app);
 
   await app.register(fastifyFormbody, { parser: (str) => qs.parse(str) });

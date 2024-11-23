@@ -5,6 +5,8 @@ import { getPerson, authenticatePerson } from "./db/person.js";
 
 declare module "fastify" {
   export interface FastifyReply {
+    sendHtml: (html: string) => void;
+
     locals: {
       getFileUrl: typeof getFileUrl;
       getFileType: typeof getFileType;
