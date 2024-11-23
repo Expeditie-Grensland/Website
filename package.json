@@ -39,6 +39,8 @@
     "mime": "^4.0.4",
     "pg": "^8.13.1",
     "pino": "^9.5.0",
+    "preact": "^10.25.0",
+    "preact-render-to-string": "^6.5.11",
     "pug": "^3.0.3",
     "qs": "^6.13.0",
     "sodium-native": "^4.3.0",

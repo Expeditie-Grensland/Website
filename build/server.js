@@ -9,7 +9,7 @@ if (!opts.includes(dir))
 
 const isProd = dir === "dist";
 
-const files = await globby(["src/server/**/*.ts", "!src/server/**/*.d.ts"]);
+const files = await globby(["src/server/**/*.{ts,tsx}", "!src/server/**/*.d.ts"]);
 
 const options = {
   entryPoints: files,

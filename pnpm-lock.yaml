@@ -68,6 +68,12 @@ importers:
       pino:
         specifier: ^9.5.0
         version: 9.5.0
+      preact:
+        specifier: ^10.25.0
+        version: 10.25.0
+      preact-render-to-string:
+        specifier: ^6.5.11
+        version: 6.5.11(preact@10.25.0)
       pug:
         specifier: ^3.0.3
         version: 3.0.3
@@ -2317,6 +2323,14 @@ packages:
 
   potpack@2.0.0:
     resolution: {integrity: sha512-Q+/tYsFU9r7xoOJ+y/ZTtdVQwTWfzjbiXBDMM/JKUux3+QPP02iUuIoeBQ+Ot6oEDlC+/PGjB/5A3K7KKb7hcw==}
+
+  preact-render-to-string@6.5.11:
+    resolution: {integrity: sha512-ubnauqoGczeGISiOh6RjX0/cdaF8v/oDXIjO85XALCQjwQP+SB4RDXXtvZ6yTYSjG+PC1QRP2AhPgCEsM2EvUw==}
+    peerDependencies:
+      preact: '>=10'
+
+  preact@10.25.0:
+    resolution: {integrity: sha512-6bYnzlLxXV3OSpUxLdaxBmE7PMOu0aR3pG6lryK/0jmvcDFPlcXGQAt5DpK3RITWiDrfYZRI0druyaK/S9kYLg==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -5469,6 +5483,12 @@ snapshots:
   postgres-range@1.1.4: {}
 
   potpack@2.0.0: {}
+
+  preact-render-to-string@6.5.11(preact@10.25.0):
+    dependencies:
+      preact: 10.25.0
+
+  preact@10.25.0: {}
 
   prelude-ls@1.2.1: {}
 
