@@ -1,4 +1,4 @@
-import db from "./schema/database.js";
+import { getDb } from "./schema/database.js";
 
 export const getMemberLinks = () =>
-  db.selectFrom("member_link").selectAll().orderBy("index asc").execute();
+  getDb().selectFrom("member_link").selectAll().orderBy("index asc").execute();

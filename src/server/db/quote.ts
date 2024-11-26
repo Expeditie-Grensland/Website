@@ -1,15 +1,19 @@
 import { Insertable, Updateable } from "kysely";
-import db from "./schema/database.js";
+import { getDb } from "./schema/database.js";
 import { Quote } from "./schema/types.js";
 
 export const getAllQuotes = () =>
-  db.selectFrom("quote").selectAll().orderBy("time_stamp asc").execute();
+  getDb().selectFrom("quote").selectAll().orderBy("time_stamp asc").execute();
 
 export const addQuote = (quote: Insertable<Quote>) =>
-  db.insertInto("quote").values(quote).returningAll().executeTakeFirstOrThrow();
+  getDb()
+    .insertInto("quote")
+    .values(quote)
+    .returningAll()
+    .executeTakeFirstOrThrow();
 
 export const updateQuote = (id: string, quote: Updateable<Quote>) =>
-  db
+  getDb()
     .updateTable("quote")
     .set(quote)
     .where("id", "=", id)
@@ -17,7 +21,7 @@ export const updateQuote = (id: string, quote: Updateable<Quote>) =>
     .executeTakeFirstOrThrow();
 
 export const deleteQuote = (id: string) =>
-  db
+  getDb()
     .deleteFrom("quote")
     .where("id", "=", id)
     .returningAll()

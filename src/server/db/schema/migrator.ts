@@ -1,15 +1,21 @@
 import { FileMigrationProvider, Migrator } from "kysely";
-import db from "./database.js";
-import path from "node:path";
 import fs from "node:fs/promises";
+import path from "node:path";
+import { getDb } from "./database.js";
 
-const migrator = new Migrator({
-  db,
-  provider: new FileMigrationProvider({
-    path,
-    fs,
-    migrationFolder: path.join(import.meta.dirname, "migrations"),
-  }),
-});
+let migrator: Migrator;
 
-export default migrator;
+export const getMigrator = () => {
+  if (!migrator) {
+    migrator = new Migrator({
+      db: getDb(),
+      provider: new FileMigrationProvider({
+        path,
+        fs,
+        migrationFolder: path.join(import.meta.dirname, "migrations"),
+      }),
+    });
+  }
+
+  return migrator;
+};

@@ -1,5 +1,5 @@
 import select from "@inquirer/select";
-import db from "../db/schema/database.js";
+import { getDb } from "../db/schema/database.js";
 
 global.cliMode = true;
 
@@ -15,10 +15,12 @@ try {
     ],
   });
 
+  getDb();
+
   await import(`./${command}.js`);
 } catch (err) {
   console.error("Er is een fout opgetreden.");
   console.error(err instanceof Error ? err.message : String(err));
 } finally {
-  await db.destroy();
+  await getDb().destroy();
 }

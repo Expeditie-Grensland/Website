@@ -1,11 +1,11 @@
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { asyncMapInChunks } from "../helpers/chunk.js";
 import { parseGpx } from "../helpers/gpx.js";
-import db from "./schema/database.js";
+import { getDb } from "./schema/database.js";
 import { randomUUID } from "crypto";
 
 export const getNewestLocation = (expeditieId: string) =>
-  db
+  getDb()
     .selectFrom("geo_location")
     .where("expeditie_id", "=", expeditieId)
     .orderBy("id desc")
@@ -15,7 +15,7 @@ export const getNewestLocation = (expeditieId: string) =>
     .then((result) => result?.id || -1);
 
 export const getLocationCount = (expeditieId: string) =>
-  db
+  getDb()
     .selectFrom("geo_location")
     .where("expeditie_id", "=", expeditieId)
     .select(({ fn }) => [fn.countAll<bigint>().as("count")])
@@ -23,7 +23,7 @@ export const getLocationCount = (expeditieId: string) =>
     .then((result) => result?.count || 0n);
 
 export const getNodesWithPersons = (expeditieId: string) =>
-  db
+  getDb()
     .selectFrom("geo_node")
     .where("expeditie_id", "=", expeditieId)
     .selectAll("geo_node")
@@ -41,7 +41,7 @@ export const getNodesWithPersons = (expeditieId: string) =>
 export const getNodeLocations = (
   node: Awaited<ReturnType<typeof getNodesWithPersons>>[number]
 ) =>
-  db
+  getDb()
     .selectFrom("geo_location")
     .select(["id", "latitude", "longitude"])
     .where("expeditie_id", "=", node.expeditie_id)
@@ -59,7 +59,7 @@ export const getFirstNodeLocationAfter = (
   node: Awaited<ReturnType<typeof getNodesWithPersons>>[number],
   afterStamp: number
 ) =>
-  db
+  getDb()
     .selectFrom("geo_location")
     .select(["id", "latitude", "longitude"])
     .where("expeditie_id", "=", node.expeditie_id)
@@ -91,7 +91,7 @@ export const insertLocationsFromGpx = async (
   }));
 
   const insertedCounts = await asyncMapInChunks(gpsLocations, 1000, (locs) =>
-    db
+    getDb()
       .insertInto("geo_location")
       .values(locs)
       .executeTakeFirst()

@@ -1,6 +1,6 @@
 import { pbkdf2, randomBytes } from "crypto";
 import { bcrypt, bcryptVerify } from "hash-wasm";
-import db from "./schema/database.js";
+import { getDb } from "./schema/database.js";
 
 const hashPassword = async (password: string) =>
   await bcrypt({
@@ -13,10 +13,14 @@ const checkPassword = async (password: string, hash: string) =>
   await bcryptVerify({ password, hash });
 
 export const getAllPersons = () =>
-  db.selectFrom("person").selectAll().execute();
+  getDb().selectFrom("person").selectAll().execute();
 
 export const getPerson = (id: string) =>
-  db.selectFrom("person").where("id", "=", id).selectAll().executeTakeFirst();
+  getDb()
+    .selectFrom("person")
+    .where("id", "=", id)
+    .selectAll()
+    .executeTakeFirst();
 
 const pbkdf2HashRegex =
   /^\{PBKDF2-(?<digest>.*)\}(?<iterations>\d+)\$(?<salt>.+)\$(?<key>.+)$/;
@@ -45,7 +49,7 @@ export const authenticatePerson = async (id: string, password: string) => {
   const pbkdf2Check = await checkPbkdf2Password(password, user.password);
 
   if (pbkdf2Check) {
-    return await db
+    return await getDb()
       .updateTable("person")
       .set({ password: await hashPassword(password) })
       .where("id", "=", user.id)

@@ -8,14 +8,14 @@ import { join } from "node:path";
 import pug from "pug";
 import qs from "qs";
 import { getPerson } from "../db/person.js";
-import migrator from "../db/schema/migrator.js";
+import { getMigrator } from "../db/schema/migrator.js";
 import { getFileType, getFileUrl } from "../files/files.js";
 import routes from "../routes/index.js";
 import { config } from "./configHelper.js";
 import { getHttpMessage } from "./errorCodes.js";
 
 export const migrateDatabase = async () => {
-  const { results, error } = await migrator.migrateToLatest();
+  const { results, error } = await getMigrator().migrateToLatest();
 
   if (results?.length) {
     console.info("Applied migrations:");

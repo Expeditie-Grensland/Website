@@ -1,16 +1,16 @@
 import { Insertable, Updateable } from "kysely";
-import db from "./schema/database.js";
+import { getDb } from "./schema/database.js";
 import { EarnedPoint } from "./schema/types.js";
 
 export const getAllEarnedPoints = () =>
-  db
+  getDb()
     .selectFrom("earned_point")
     .selectAll()
     .orderBy("time_stamp desc")
     .execute();
 
 export const getFullEarnedPoints = () =>
-  db
+  getDb()
     .selectFrom("earned_point")
     .leftJoin("expeditie", "expeditie_id", "expeditie.id")
     .leftJoin("person", "person_id", "person.id")
@@ -24,7 +24,7 @@ export const getFullEarnedPoints = () =>
     .execute();
 
 export const addEarnedPoint = (earnedPoint: Insertable<EarnedPoint>) =>
-  db
+  getDb()
     .insertInto("earned_point")
     .values(earnedPoint)
     .returningAll()
@@ -34,7 +34,7 @@ export const updateEarnedPoint = (
   id: number,
   earnedPoint: Updateable<EarnedPoint>
 ) =>
-  db
+  getDb()
     .updateTable("earned_point")
     .set(earnedPoint)
     .where("id", "=", id)
@@ -42,7 +42,7 @@ export const updateEarnedPoint = (
     .executeTakeFirstOrThrow();
 
 export const deleteEarnedPoint = (id: number) =>
-  db
+  getDb()
     .deleteFrom("earned_point")
     .where("id", "=", id)
     .returningAll()

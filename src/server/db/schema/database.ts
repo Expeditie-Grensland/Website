@@ -5,13 +5,19 @@ import { DB } from "./types.js";
 
 pg.types.setTypeParser(pg.types.builtins.INT8, BigInt);
 
-const db = new Kysely<DB>({
-  dialect: new PostgresDialect({
-    pool: new pg.Pool({
-      connectionString: config.EG_DB_URL,
-    }),
-  }),
-  log: config.NODE_ENV === "development" ? ["query", "error"] : [],
-});
+let db: Kysely<DB>;
 
-export default db;
+export const getDb = () => {
+  if (!db) {
+    db = new Kysely<DB>({
+      dialect: new PostgresDialect({
+        pool: new pg.Pool({
+          connectionString: config.EG_DB_URL,
+        }),
+      }),
+      log: config.NODE_ENV === "development" ? ["query", "error"] : [],
+    });
+  }
+
+  return db;
+};

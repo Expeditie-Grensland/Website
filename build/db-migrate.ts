@@ -2,8 +2,8 @@ import "dotenv/config";
 
 import { MigrationResultSet } from "kysely";
 import fs from "node:fs/promises";
-import db from "../src/server/db/schema/database";
-import migrator from "../src/server/db/schema/migrator";
+import { getDb } from "../src/server/db/schema/database";
+import { getMigrator } from "../src/server/db/schema/migrator";
 
 const opts = ["create", "list", "latest", "up", "down"] as const;
 const choice = process.argv[2] as (typeof opts)[number];
@@ -58,19 +58,19 @@ switch (choice) {
     break;
 
   case "list":
-    console.table(await migrator.getMigrations(), ["name", "executedAt"]);
+    console.table(await getMigrator().getMigrations(), ["name", "executedAt"]);
     break;
 
   case "latest":
-    await printResults(migrator.migrateToLatest());
+    await printResults(getMigrator().migrateToLatest());
     break;
 
   case "up":
-    await printResults(migrator.migrateUp());
+    await printResults(getMigrator().migrateUp());
     break;
 
   case "down":
-    await printResults(migrator.migrateDown());
+    await printResults(getMigrator().migrateDown());
     break;
 
   default:
@@ -79,4 +79,4 @@ switch (choice) {
     );
 }
 
-await db.destroy();
+await getDb().destroy();

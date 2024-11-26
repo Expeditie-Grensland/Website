@@ -1,9 +1,9 @@
 import { sql } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
-import db from "./schema/database.js";
+import { getDb } from "./schema/database.js";
 
 export const getAllExpedities = ({ noDrafts = false } = {}) =>
-  db
+  getDb()
     .selectFrom("expeditie")
     .selectAll()
     .orderBy("start_date desc")
@@ -12,7 +12,7 @@ export const getAllExpedities = ({ noDrafts = false } = {}) =>
     .execute();
 
 export const getFullExpeditie = (id: string) =>
-  db
+  getDb()
     .selectFrom("expeditie")
     .where("id", "=", id)
     .selectAll("expeditie")
