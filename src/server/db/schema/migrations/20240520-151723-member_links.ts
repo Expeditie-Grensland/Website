@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Kysely } from "kysely";
-import { config } from "../../../helpers/configHelper.js";
 
 export const up = async (db: Kysely<any>) => {
   await db.schema
@@ -12,11 +11,11 @@ export const up = async (db: Kysely<any>) => {
     .addColumn("index", "integer", (col) => col.notNull())
     .execute();
 
-  if (!config.EG_MONGO_URL) return;
+  if (!process.env.EG_MONGO_URL) return;
 
   // @ts-expect-error No MongoDB included
   const { MongoClient } = await import("mongodb");
-  const mongo = new MongoClient(config.EG_MONGO_URL);
+  const mongo = new MongoClient(process.env.EG_MONGO_URL);
   await mongo.connect();
   const mdb = mongo.db();
 

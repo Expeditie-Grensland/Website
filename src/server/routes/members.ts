@@ -7,7 +7,7 @@ import { getMemberLinks } from "../db/member-link.js";
 import { authenticatePerson } from "../db/person.js";
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
-import { config } from "../helpers/configHelper.js";
+import { getUmamiConfig } from "../helpers/config.js";
 import { getDateTime } from "../helpers/time.js";
 import adminRoutes from "./admin.js";
 
@@ -114,12 +114,12 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
           text: "De Small Data",
           adminHref: "/leden/admin/bestanden",
         },
-        ...(config.EG_UMAMI_SHARE_URL
+        ...(getUmamiConfig()?.shareUrl
           ? [
               {
                 title: "Statistieken",
                 text: "Wie zijn onze fans?",
-                href: config.EG_UMAMI_SHARE_URL,
+                href: getUmamiConfig()!.shareUrl!,
                 target: "_blank",
               },
             ]

@@ -1,6 +1,6 @@
 import { Kysely, PostgresDialect } from "kysely";
 import pg from "pg";
-import { config } from "../../helpers/configHelper.js";
+import { getDbConfig, getNodeEnv } from "../../helpers/config.js";
 import { DB } from "./types.js";
 
 pg.types.setTypeParser(pg.types.builtins.INT8, BigInt);
@@ -12,10 +12,10 @@ export const getDb = () => {
     db = new Kysely<DB>({
       dialect: new PostgresDialect({
         pool: new pg.Pool({
-          connectionString: config.EG_DB_URL,
+          connectionString: getDbConfig().url,
         }),
       }),
-      log: config.NODE_ENV === "development" ? ["query", "error"] : [],
+      log: getNodeEnv() === "development" ? ["query", "error"] : [],
     });
   }
 

@@ -11,7 +11,12 @@ import { getPerson } from "../db/person.js";
 import { getMigrator } from "../db/schema/migrator.js";
 import { getFileType, getFileUrl } from "../files/files.js";
 import routes from "../routes/index.js";
-import { config } from "./configHelper.js";
+import {
+  getCryptoConfig,
+  getNodeEnv,
+  getServerConfig,
+  getUmamiConfig,
+} from "./config.js";
 import { getHttpMessage } from "./errorCodes.js";
 
 export const migrateDatabase = async () => {
@@ -31,7 +36,7 @@ export const migrateDatabase = async () => {
 const setupSession = async (app: FastifyInstance) => {
   await app.register(fastifySecureSession, {
     cookieName: "eg-session",
-    key: config.EG_SECRET_KEY,
+    key: getCryptoConfig().secretKey,
     expiry: 30 * 24 * 60 * 60,
     cookie: {
       path: "/",
@@ -43,7 +48,7 @@ const setupSession = async (app: FastifyInstance) => {
 };
 
 const setupStaticRoutes = async (app: FastifyInstance) => {
-  if (config.NODE_ENV === "development") {
+  if (getNodeEnv() === "development") {
     await app.register(fastifyStatic, {
       root: join(global.rootDir, "static"),
       prefix: "/static/",
@@ -83,7 +88,7 @@ const setupErrors = (app: FastifyInstance) => {
 export const setupFastify = async () => {
   const app = fastify({
     logger:
-      config.NODE_ENV === "development"
+      getNodeEnv() === "development"
         ? {
             level: "debug",
             transport: {
@@ -97,7 +102,7 @@ export const setupFastify = async () => {
         : {
             level: "info",
           },
-    trustProxy: config.NODE_ENV === "production",
+    trustProxy: getNodeEnv() === "production",
   });
 
   await app.register(fastifyView, {
@@ -127,13 +132,7 @@ export const setupFastify = async () => {
       user:
         (request.session.userId && (await getPerson(request.session.userId))) ||
         undefined,
-      umami:
-        config.EG_UMAMI_SCRIPT_URL && config.EG_UMAMI_WEBSITE_ID
-          ? {
-              scriptUrl: config.EG_UMAMI_SCRIPT_URL,
-              websiteId: config.EG_UMAMI_WEBSITE_ID,
-            }
-          : undefined,
+      umami: getUmamiConfig() || undefined,
     };
   });
 
@@ -142,6 +141,6 @@ export const setupFastify = async () => {
   await app.ready();
   await app.listen({
     host: "::",
-    port: config.EG_PORT,
+    port: getServerConfig().port,
   });
 };

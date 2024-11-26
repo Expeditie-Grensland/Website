@@ -1,7 +1,7 @@
-import { config } from "../helpers/configHelper.js";
+import { getFilesConfig } from "../helpers/config.js";
 
 export const getFileUrl = (...parts: string[]) =>
-  [config.EG_FILES_BASE_URL, ...parts].join("/");
+  [getFilesConfig().baseUrl, ...parts].join("/");
 
 export const getFileType = (file: string) =>
   file.slice(file.lastIndexOf(".") + 1);

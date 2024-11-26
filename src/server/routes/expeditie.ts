@@ -9,7 +9,7 @@ import {
 } from "../db/geo.js";
 import { getNewestStoryId, getStories, getStoryCount } from "../db/story.js";
 import { getFileUrl } from "../files/files.js";
-import { config } from "../helpers/configHelper.js";
+import { getMapboxConfig } from "../helpers/config.js";
 
 const HEADER_REV = "x-revision-id";
 
@@ -36,7 +36,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
 
     return reply.view("expeditieMap", {
       hasStory: storyCount > 0,
-      mapboxToken: config.EG_MAPBOX_TOKEN,
+      mapboxToken: getMapboxConfig().token,
     });
   });
 

@@ -1,27 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Kysely, sql } from "kysely";
-import { config } from "../../../helpers/configHelper.js";
 
 export const up = async (db: Kysely<any>) => {
   await db.schema.alterTable("person").addColumn("email", "text").execute();
 
-  if (!config.EG_LDAP_URL) return;
+  if (!process.env.EG_LDAP_URL) return;
 
   // @ts-expect-error No LDAPjs included
   const ldapjs = (await import("ldapjs")).default;
   const ldapClient = ldapjs.createClient({
-    url: config.EG_LDAP_URL,
-    bindDN: config.EG_LDAP_BIND_DN,
-    bindCredentials: config.EG_LDAP_BIND_CREDENTIALS,
+    url: process.env.EG_LDAP_URL,
+    bindDN: process.env.EG_LDAP_BIND_DN,
+    bindCredentials: process.env.EG_LDAP_BIND_CREDENTIALS,
     reconnect: true,
   });
 
   const ldapUsers = await new Promise<Record<string, Record<string, string[]>>>(
     (resolve, reject) => {
       ldapClient.search(
-        config.EG_LDAP_SEARCH_BASE,
+        process.env.EG_LDAP_SEARCH_BASE,
         {
-          scope: config.EG_LDAP_SEARCH_SCOPE,
+          scope: process.env.EG_LDAP_SEARCH_SCOPE,
         },
         (err: any, res: any) => {
           if (err) return reject(err);

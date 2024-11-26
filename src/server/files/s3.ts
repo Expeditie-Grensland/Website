@@ -11,24 +11,24 @@ import {
 } from "@aws-sdk/client-s3";
 import mime from "mime";
 import { FileHandle, open } from "node:fs/promises";
-import { config } from "../helpers/configHelper.js";
+import { getS3Config } from "../helpers/config.js";
 import { readFileHandleByChunk } from "./chunks.js";
 
 const CHUNK_SIZE = 256 * 1024 * 1024;
 
 const client = new S3Client({
-  endpoint: config.EG_S3_ENDPOINT,
-  region: config.EG_S3_REGION,
+  endpoint: getS3Config().endpoint,
+  region: getS3Config().region,
   credentials: {
-    accessKeyId: config.EG_S3_ACCESS_KEY_ID,
-    secretAccessKey: config.EG_S3_ACCESS_SECRET,
+    accessKeyId: getS3Config().accessKeyId,
+    secretAccessKey: getS3Config().accessSecret,
   },
 });
 
 export const getS3Files = async () => {
   const response = await client.send(
     new ListObjectsV2Command({
-      Bucket: config.EG_S3_BUCKET,
+      Bucket: getS3Config().bucket,
       Delimiter: "/",
     })
   );
@@ -53,7 +53,7 @@ const uploadS3FileSingle = async (
 
   await client.send(
     new PutObjectCommand({
-      Bucket: config.EG_S3_BUCKET,
+      Bucket: getS3Config().bucket,
       Key: key,
       Body: buffer,
       ContentType: type,
@@ -68,7 +68,7 @@ const uploadS3FileMultiPart = async (
 ) => {
   const createResponse = await client.send(
     new CreateMultipartUploadCommand({
-      Bucket: config.EG_S3_BUCKET,
+      Bucket: getS3Config().bucket,
       Key: key,
       ContentType: type,
     })
@@ -79,7 +79,7 @@ const uploadS3FileMultiPart = async (
   await readFileHandleByChunk(file, CHUNK_SIZE, async (buffer, num) => {
     const partResponse = await client.send(
       new UploadPartCommand({
-        Bucket: config.EG_S3_BUCKET,
+        Bucket: getS3Config().bucket,
         Key: key,
         UploadId: createResponse.UploadId!,
         PartNumber: num + 1,
@@ -92,7 +92,7 @@ const uploadS3FileMultiPart = async (
 
   await client.send(
     new CompleteMultipartUploadCommand({
-      Bucket: config.EG_S3_BUCKET,
+      Bucket: getS3Config().bucket,
       Key: key,
       UploadId: createResponse.UploadId!,
       MultipartUpload: {
@@ -119,7 +119,7 @@ export const deleteS3Prefix = async (prefix: string) => {
   do {
     listResponse = await client.send(
       new ListObjectsV2Command({
-        Bucket: config.EG_S3_BUCKET,
+        Bucket: getS3Config().bucket,
         Prefix: prefix,
         ContinuationToken:
           (listResponse && listResponse.NextContinuationToken) || undefined,
@@ -130,7 +130,7 @@ export const deleteS3Prefix = async (prefix: string) => {
     await Promise.all(
       listResponse.Contents?.map(({ Key }) =>
         client.send(
-          new DeleteObjectCommand({ Bucket: config.EG_S3_BUCKET, Key })
+          new DeleteObjectCommand({ Bucket: getS3Config().bucket, Key })
         )
       ) || []
     );
