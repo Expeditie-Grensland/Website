@@ -1,4 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
+import { renderExpeditieMapPage } from "../components/pages/public/expeditie-map.js";
+import { renderExpeditiePage } from "../components/pages/public/expeditie.js";
 import { getFullExpeditie } from "../db/expeditie.js";
 import {
   getFirstNodeLocationAfter,
@@ -9,7 +11,6 @@ import {
 } from "../db/geo.js";
 import { getNewestStoryId, getStories, getStoryCount } from "../db/story.js";
 import { getFileUrl } from "../files/files.js";
-import { getMapboxConfig } from "../helpers/config.js";
 
 const HEADER_REV = "x-revision-id";
 
@@ -28,17 +29,23 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
       return reply.callNotFound();
   });
 
-  app.get("/", async (request, reply) => reply.view("public/expeditie"));
+  app.get("/", async (request, reply) =>
+    reply.sendHtml(
+      renderExpeditiePage({
+        expeditie: reply.locals.expeditie!,
+        user: reply.locals.user,
+      })
+    )
+  );
 
-  app.get("/kaart", async (request, reply) => {
-    const expeditie = reply.locals.expeditie!;
-    const storyCount = await getStoryCount(expeditie.id);
-
-    return reply.view("expeditieMap", {
-      hasStory: storyCount > 0,
-      mapboxToken: getMapboxConfig().token,
-    });
-  });
+  app.get("/kaart", async (request, reply) =>
+    reply.sendHtml(
+      renderExpeditieMapPage({
+        expeditie: reply.locals.expeditie!,
+        hasStory: (await getStoryCount(reply.locals.expeditie!.id)) > 0,
+      })
+    )
+  );
 
   app.get("/kaart/binary", async (request, reply) => {
     const expeditie = reply.locals.expeditie!;

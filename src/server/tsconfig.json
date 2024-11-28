@@ -1,5 +1,10 @@
 {
   "extends": "../../tsconfig.json",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../../build/*.ts"
+  ],
   "compilerOptions": {
     "noEmit": false,
     "typeRoots": ["./globals.d.ts"],

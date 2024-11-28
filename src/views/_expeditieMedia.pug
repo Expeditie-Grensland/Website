@@ -1,18 +1,3 @@
-mixin innerImage(expeditie, size="small")
-    picture
-        if size === "large"
-            source(srcset=getFileUrl(expeditie.background_file, "klein.webp") media="(max-width: 650px)" type="image/webp")
-            source(srcset=getFileUrl(expeditie.background_file, "klein.jpg") media="(max-width: 650px)" type="image/jpeg")
-            source(srcset=getFileUrl(expeditie.background_file, "normaal.webp") type="image/webp")
-            img.img-bg(src=getFileUrl(expeditie.background_file, "normaal.jpg") draggable="false")
-        else
-            source(srcset=getFileUrl(expeditie.background_file, "klein.webp") type="image/webp")
-            img.img-bg(src=getFileUrl(expeditie.background_file, "klein.jpg") draggable="false")
-
-    .img-inner
-        span.h1= expeditie.name
-        span.h2= expeditie.subtitle
-
 mixin filePlayer(file)
     if file
         case file.split(".").pop()

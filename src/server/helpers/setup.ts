@@ -17,7 +17,8 @@ import {
   getServerConfig,
   getUmamiConfig,
 } from "./config.js";
-import { getHttpMessage } from "./errorCodes.js";
+import { getHttpError } from "./http-errors.js";
+import { renderErrorPage } from "../components/pages/public/error.js";
 
 export const migrateDatabase = async () => {
   const { results, error } = await getMigrator().migrateToLatest();
@@ -70,18 +71,23 @@ const setupErrors = (app: FastifyInstance) => {
   app.setErrorHandler(async (error, request, reply) => {
     reply.log.error(error);
 
-    return reply.code(error.statusCode || 500).view("public/error", {
-      code: error.statusCode || 500,
-      message: getHttpMessage(error.statusCode),
-      details: error.message,
-    });
+    reply.code(error.statusCode || 500).sendHtml(
+      renderErrorPage({
+        code: error.statusCode || 500,
+        description: getHttpError(error.statusCode),
+        details: error.message,
+      })
+    );
   });
 
   app.setNotFoundHandler(async (request, reply) =>
-    reply.code(404).view("public/error", {
-      code: 404,
-      message: getHttpMessage(404),
-    })
+    reply.code(404).sendHtml(
+      renderErrorPage({
+        code: 404,
+        description: getHttpError(404),
+        user: reply.locals.user,
+      })
+    )
   );
 };
 
@@ -103,6 +109,7 @@ export const setupFastify = async () => {
             level: "info",
           },
     trustProxy: getNodeEnv() === "production",
+    querystringParser: (str) => qs.parse(str),
   });
 
   await app.register(fastifyView, {

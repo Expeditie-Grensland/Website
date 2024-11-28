@@ -35,6 +35,7 @@ for (const [oldName, newName] of renames) {
 
 const filesToRewrite = await globby([
   "static/errorpages/*.html",
+  "server/components/**/*.js",
   "views/**/*.pug",
 ]);
 
