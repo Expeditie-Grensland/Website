@@ -120,7 +120,7 @@ export const setupFastify = async () => {
 
   app.decorateReply("sendHtml", function (html: string) {
     this.header("Content-Type", "text/html; charset=utf-8");
-    this.send(html);
+    this.send(`<!DOCTYPE html>${html}`);
   });
 
   await setupStaticRoutes(app);
