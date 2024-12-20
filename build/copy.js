@@ -3,7 +3,7 @@ import { watch } from "node:fs";
 
 const opts = ["dev", "dist"];
 const dir = process.argv[2];
-const subDirs = ["static", "views"];
+const subDirs = ["static"];
 
 if (!opts.includes(dir))
   throw new Error(`Invalid choice ${dir} (choose from: ${opts.join(", ")}})`);

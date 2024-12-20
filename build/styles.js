@@ -20,11 +20,7 @@ const files = {
 
 const postcssProcessor = postcss([
   purgecss({
-    content: [
-      "./src/server/components/**/*.tsx",
-      "./src/client/story/**/*.ts",
-      "./src/views/**/*.pug",
-    ],
+    content: ["./src/server/components/**/*.tsx", "./src/client/story/**/*.ts"],
     variables: true,
     safelist: {
       standard: ["satellite-icon"],

@@ -2,11 +2,10 @@ import fastifyFlash from "@fastify/flash";
 import fastifyFormbody from "@fastify/formbody";
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyStatic from "@fastify/static";
-import fastifyView from "@fastify/view";
 import fastify, { FastifyInstance } from "fastify";
 import { join } from "node:path";
-import pug from "pug";
 import qs from "qs";
+import { renderErrorPage } from "../components/pages/public/error.js";
 import { getPerson } from "../db/person.js";
 import { getMigrator } from "../db/schema/migrator.js";
 import { getFileType, getFileUrl } from "../files/files.js";
@@ -18,7 +17,6 @@ import {
   getUmamiConfig,
 } from "./config.js";
 import { getHttpError } from "./http-errors.js";
-import { renderErrorPage } from "../components/pages/public/error.js";
 
 export const migrateDatabase = async () => {
   const { results, error } = await getMigrator().migrateToLatest();
@@ -110,12 +108,6 @@ export const setupFastify = async () => {
           },
     trustProxy: getNodeEnv() === "production",
     querystringParser: (str) => qs.parse(str),
-  });
-
-  await app.register(fastifyView, {
-    engine: { pug },
-    root: join(global.rootDir, "views"),
-    includeViewExtension: true,
   });
 
   app.decorateReply("sendHtml", function (html: string) {
