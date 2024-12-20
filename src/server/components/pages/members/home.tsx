@@ -1,39 +1,40 @@
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { NavigationBar } from "../../page-structure/navigation-bar.js";
-import { Page } from "../../page-structure/page.js";
+import { HTMLAttributeAnchorTarget } from "preact/compat";
 import packageJson from "../../../../../package.json" with { type: "json" };
 import { getMemberLinks } from "../../../db/member-link.js";
 import { authenticatePerson } from "../../../db/person.js";
 import { getUmamiConfig } from "../../../helpers/config.js";
-import { HTMLAttributeAnchorTarget } from "preact/compat";
+import { NavigationBar } from "../../page-structure/navigation-bar.js";
+import { Page } from "../../page-structure/page.js";
 
 const LinkCard: FunctionComponent<{
   title: string;
   text: string;
-  href?: string;
-  target?: HTMLAttributeAnchorTarget;
-  adminHref?: string | false;
-}> = ({ title, text, href, target, adminHref }) => (
-  <div class="col-12 col-md-6 col-lg-4">
-    <div class="card mb-3">
-      <div class="card-body">
-        <h5 class="card-title">{title}</h5>
-        <p class="card-text">{text}</p>
-        {href && (
-          <a class="card-link" href={href} target={target}>
-            Open
-          </a>
-        )}
-        {adminHref && (
-          <a class="card-link" href={adminHref}>
-            Admin
-          </a>
-        )}
+  links: {
+    text?: string;
+    url: string;
+    target?: HTMLAttributeAnchorTarget;
+    when?: boolean;
+  }[];
+}> = ({ title, text, links }) =>
+  links.filter((link) => link.when !== false).length > 0 && (
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{title}</h5>
+          <p class="card-text">{text}</p>
+          {links
+            .filter((link) => link.when !== false)
+            .map(({ text: linkText = "Open", url, target }) => (
+              <a class="card-link" href={url} target={target}>
+                {linkText}
+              </a>
+            ))}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 
 const MembersHomePage: FunctionComponent<{
   memberLinks: Awaited<ReturnType<typeof getMemberLinks>>;
@@ -51,74 +52,127 @@ const MembersHomePage: FunctionComponent<{
         <LinkCard
           title="Hoofdpagina"
           text="Alle Expedities (en verborgen videos)"
-          href="/"
-          adminHref={user.type == "admin" && "/?concepten=1"}
+          links={[
+            { url: "/" },
+            {
+              text: "Concepten",
+              url: "/?concepten=1",
+              when: user.type == "admin",
+            },
+          ]}
         />
 
         <LinkCard
           title="Woordenboek"
           text="Het Grote Woordenboek der Expediets"
-          href="/leden/woordenboek"
-          adminHref={user.type == "admin" && "/leden/admin/woordenboek"}
+          links={[
+            { url: "/leden/woordenboek" },
+            {
+              text: "Admin",
+              url: "/leden/admin/woordenboek",
+              when: user.type == "admin",
+            },
+          ]}
         />
 
         <LinkCard
           title="Citaten"
           text="De Lange Citatenlijst der Expeditie Grensland"
-          href="/leden/citaten"
-          adminHref={user.type == "admin" && "/leden/admin/citaten"}
+          links={[
+            { url: "/leden/citaten" },
+            {
+              text: "Admin",
+              url: "/leden/admin/citaten",
+              when: user.type == "admin",
+            },
+          ]}
         />
 
         <LinkCard
           title="Afkowobo"
           text="Het enige echte afkortingenwoordenboek der Expediets"
-          href="/leden/afkowobo"
-          adminHref={user.type == "admin" && "/leden/admin/afkowobo"}
+          links={[
+            { url: "/leden/afkowobo" },
+            {
+              text: "Admin",
+              url: "/leden/admin/afkowobo",
+              when: user.type == "admin",
+            },
+          ]}
         />
 
         <LinkCard
           title="De Punt'n"
           text="Welk team is het vurigst? Blauw, of Rood?"
-          href="/leden/punten"
-          adminHref={user.type == "admin" && "/leden/admin/punten"}
+          links={[
+            { url: "/leden/punten" },
+            {
+              text: "Admin",
+              url: "/leden/admin/punten",
+              when: user.type == "admin",
+            },
+          ]}
+        />
+        <LinkCard
+          title="GPX Upload"
+          text="Omdat we nog steeds geen app hebben"
+          links={[
+            {
+              text: "Admin",
+              url: "/leden/admin/gpx",
+              when: user.type == "admin",
+            },
+          ]}
         />
 
-        {user.type == "admin" && (
-          <>
-            <LinkCard
-              title="GPX Upload"
-              text="Omdat we nog steeds geen app hebben"
-              adminHref="/leden/admin/gpx"
-            />
+        <LinkCard
+          title="Verhaalelementen"
+          text="Extra informatie op de kaart"
+          links={[
+            {
+              text: "Admin",
+              url: "/leden/admin/verhalen",
+              when: user.type == "admin",
+            },
+          ]}
+        />
 
-            <LinkCard
-              title="Verhaalelementen"
-              text="Extra informatie op de kaart"
-              adminHref="/leden/admin/verhalen"
-            />
+        <LinkCard
+          title="Bestanden"
+          text="De Small Data"
+          links={[
+            {
+              text: "Admin",
+              url: "/leden/admin/bestanden",
+              when: user.type == "admin",
+            },
+          ]}
+        />
 
-            <LinkCard
-              title="Bestanden"
-              text="De Small Data"
-              adminHref="/leden/admin/bestanden"
-            />
-          </>
-        )}
-
-        {getUmamiConfig()?.shareUrl && (
-          <LinkCard
-            title="Statistieken"
-            text="Wie zijn onze fans?"
-            href={getUmamiConfig()!.shareUrl!}
-            target="_blank"
-          />
-        )}
+        <LinkCard
+          title="Statistieken"
+          text="Wie zijn onze fans?"
+          links={[
+            {
+              text: "Open",
+              url: getUmamiConfig()?.shareUrl as string,
+              when: !!getUmamiConfig()?.shareUrl,
+              target: "_blank",
+            },
+          ]}
+        />
 
         {memberLinks.map((link) => (
           <LinkCard
             title={link.title}
             text={link.description}
-            href={link.url}
+            links={[
+              {
+                text: "Open",
+                url: link.url,
+                target: "_blank",
+              },
+            ]}
           />
         ))}
       </div>
