@@ -12,8 +12,14 @@ const hashPassword = async (password: string) =>
 const checkPassword = async (password: string, hash: string) =>
   await bcryptVerify({ password, hash });
 
-export const getAllPersons = () =>
-  getDb().selectFrom("person").selectAll().execute();
+export const getAllPersons = (membersOnly = false) =>
+  getDb()
+    .selectFrom("person")
+    .selectAll()
+    .$if(membersOnly, (qb) => qb.where("type", "in", ["admin", "member"]))
+    .orderBy("last_name")
+    .orderBy("first_name")
+    .execute();
 
 export const getPerson = (id: string) =>
   getDb()

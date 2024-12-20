@@ -2,6 +2,13 @@ import fastifyMultipart from "@fastify/multipart";
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { ZodError, z } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { renderAfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js";
+import { renderDictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
+import { renderFilesAdminPage } from "../components/pages/members/admin/files.js";
+import { renderGpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
+import { renderPointsAdminPage } from "../components/pages/members/admin/points.js";
+import { renderQuotesAdminPage } from "../components/pages/members/admin/quotes.js";
+import { renderStoryAdminPage } from "../components/pages/members/admin/story.js";
 import { addAfko, deleteAfko, getAllAfkos, updateAfko } from "../db/afko.js";
 import {
   addEarnedPoint,
@@ -10,6 +17,7 @@ import {
   updateEarnedPoint,
 } from "../db/earned-point.js";
 import { getAllExpedities } from "../db/expeditie.js";
+import { insertLocationsFromGpx } from "../db/geo.js";
 import { getAllPersons } from "../db/person.js";
 import {
   addQuote,
@@ -26,12 +34,7 @@ import {
 import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
 import { deleteS3Prefix, getS3Files } from "../files/s3.js";
 import { getUsesForFiles } from "../files/uses.js";
-import {
-  getISODate,
-  isValidTimeZone,
-  parseISODateTimeStamp,
-} from "../helpers/time.js";
-import { insertLocationsFromGpx } from "../db/geo.js";
+import { isValidTimeZone, parseISODateTimeStamp } from "../helpers/time.js";
 
 const timeZoneSchema = z
   .string()
@@ -50,7 +53,7 @@ const numIdParamsSchema = z.object({
 });
 
 const localTimeTransformer = <
-  T extends { time_local: string; time_zone: string }
+  T extends { time_local: string; time_zone: string },
 >({
   time_local,
   ...rest
@@ -95,13 +98,13 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.get("/citaten", async (request, reply) =>
-    reply.view("admin/quotes", {
-      fluidContainer: true,
-      quotes: await getAllQuotes(),
-      infoMsgs: reply.flash("info"),
-      errMsgs: reply.flash("error"),
-      getISODate,
-    })
+    reply.sendHtml(
+      renderQuotesAdminPage({
+        quotes: await getAllQuotes(),
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
   );
 
   const quoteSchema = z
@@ -143,12 +146,13 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get("/woordenboek", async (request, reply) =>
-    reply.view("admin/dictionary", {
-      fluidContainer: true,
-      words: await getAllWords(),
-      infoMsgs: reply.flash("info"),
-      errMsgs: reply.flash("error"),
-    })
+    reply.sendHtml(
+      renderDictionaryAdminPage({
+        words: await getAllWords(),
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
   );
 
   const wordSchema = z.object({
@@ -186,12 +190,13 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get("/afkowobo", async (request, reply) =>
-    reply.view("admin/afkowobo", {
-      fluidContainer: true,
-      afkos: await getAllAfkos(),
-      infoMsgs: reply.flash("info"),
-      errMsgs: reply.flash("error"),
-    })
+    reply.sendHtml(
+      renderAfkowoboAdminPage({
+        afkos: await getAllAfkos(),
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
   );
 
   const afkoSchema = z.object({
@@ -228,15 +233,15 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get("/punten", async (request, reply) =>
-    reply.view("admin/earnedPoints", {
-      fluidContainer: true,
-      earnedPoints: await getAllEarnedPoints(),
-      expedities: await getAllExpedities(),
-      persons: await getAllPersons(),
-      infoMsgs: reply.flash("info"),
-      errMsgs: reply.flash("error"),
-      getISODate,
-    })
+    reply.sendHtml(
+      renderPointsAdminPage({
+        points: await getAllEarnedPoints(),
+        expedities: await getAllExpedities(),
+        persons: await getAllPersons(true),
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
   );
 
   const pointSchema = z
@@ -278,12 +283,14 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get("/gpx", async (request, reply) =>
-    reply.view("admin/gpx", {
-      expedities: await getAllExpedities(),
-      persons: await getAllPersons(),
-      infoMsgs: reply.flash("info"),
-      errMsgs: reply.flash("error"),
-    })
+    reply.sendHtml(
+      renderGpxUploadAdminPage({
+        expedities: await getAllExpedities(),
+        persons: await getAllPersons(true),
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
   );
 
   const gpxSchema = z.object({
@@ -309,15 +316,15 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get("/verhalen", async (request, reply) =>
-    reply.view("admin/story", {
-      fluidContainer: true,
-      expedities: await getAllExpedities(),
-      persons: await getAllPersons(),
-      stories: await getAllStories(),
-      infoMsgs: reply.flash("info"),
-      errMsgs: reply.flash("error"),
-      getISODate,
-    })
+    reply.sendHtml(
+      renderStoryAdminPage({
+        stories: await getAllStories(),
+        expedities: await getAllExpedities(),
+        persons: await getAllPersons(true),
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
   );
 
   const storySchema = z
@@ -385,11 +392,13 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get("/bestanden", async (request, reply) =>
-    reply.view("admin/files", {
-      filesWithUses: await getUsesForFiles(await getS3Files()),
-      infoMsgs: reply.flash("info"),
-      errMsgs: reply.flash("error"),
-    })
+    reply.sendHtml(
+      renderFilesAdminPage({
+        filesWithUses: await getUsesForFiles(await getS3Files()),
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
   );
 
   const keyParamsSchema = z.object({

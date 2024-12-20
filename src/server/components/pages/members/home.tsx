@@ -94,7 +94,7 @@ const MembersHomePage: FunctionComponent<{
             <LinkCard
               title="Verhaalelementen"
               text="Extra informatie op de kaart"
-              adminHref="/ledne/admin/verhalen"
+              adminHref="/leden/admin/verhalen"
             />
 
             <LinkCard
