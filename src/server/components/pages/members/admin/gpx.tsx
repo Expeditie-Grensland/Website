@@ -2,13 +2,12 @@ import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { getAllExpedities } from "../../../../db/expeditie.js";
 import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
-import { InfoMessages } from "../../../admin/info-messages.js";
+import { AdminPage } from "../../../admin/admin-page.js";
+import { FileInput, TimezoneInput } from "../../../admin/form-inputs/basic.js";
 import {
-  ExpeditieSelectorOptions,
-  PersonSelectorOptions,
-} from "../../../admin/selector-options.js";
-import { NavigationBar } from "../../../page-structure/navigation-bar.js";
-import { Page } from "../../../page-structure/page.js";
+  ExpeditieSelector,
+  PersonSelector,
+} from "../../../admin/form-inputs/selector.js";
 
 const GpxUploadAdminPage: FunctionComponent<{
   expedities: Awaited<ReturnType<typeof getAllExpedities>>;
@@ -16,73 +15,51 @@ const GpxUploadAdminPage: FunctionComponent<{
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
 }> = ({ expedities, persons, user, messages }) => (
-  <Page
-    title="Expeditie - GPX Upload"
-    head={<link rel="stylesheet" href="/static/styles/members.css" />}
-    afterBody={<script src="/static/scripts/members.js" />}
-  >
-    <div class="container">
-      <NavigationBar type="members" backTo="members" user={user} />
+  <AdminPage
+    title="GPX Upload"
+    user={user}
+    messages={messages}
+    newAction={{ action: "/leden/admin/gpx/upload", label: "Uploaden" }}
+    multipart
+    columns={[
+      {
+        label: "Bestand",
+        render: (_, attrs) => (
+          <FileInput name="file" accept=".gpx" multiple required {...attrs} />
+        ),
+      },
 
-      <div class="row">
-        <div class="col-12 mb-4">
-          <div class="h1">GPX Upload</div>
-        </div>
+      {
+        label: "Expeditie",
+        render: (_, attrs) => (
+          <ExpeditieSelector
+            expedities={expedities}
+            name="expeditie_id"
+            {...attrs}
+          />
+        ),
+      },
 
-        <InfoMessages messages={messages} />
+      {
+        label: "Persoon",
+        render: (_, attrs) => (
+          <PersonSelector
+            persons={persons}
+            name="person_id"
+            value={user.id}
+            {...attrs}
+          />
+        ),
+      },
 
-        <div class="col-12 mb-4">
-          <form
-            method="POST"
-            action="/leden/admin/gpx/upload"
-            enctype="multipart/form-data"
-          >
-            <div class="form-row align-items-center">
-              <div class="col-12 col-md-4 mb-2 me-md-2">
-                <input
-                  class="form-control"
-                  name="file"
-                  type="file"
-                  accept=".gpx"
-                  multiple
-                  required
-                />
-              </div>
-              <div class="col-12 col-md-4 mb-2 me-md-2">
-                <select class="form-select" name="expeditie_id" required>
-                  <ExpeditieSelectorOptions expedities={expedities} />
-                </select>
-              </div>
-              <div class="col-12 col-md-4 mb-2 me-md-2">
-                <select class="form-select" name="person_id" required>
-                  <PersonSelectorOptions persons={persons} selected={user.id} />
-                </select>
-              </div>
-              <div class="col-12 col-md-4 mb-2 me-md-2">
-                <label class="form-label" for="timezone">
-                  Kies een geldige tijdzone uit de 'tz database'
-                </label>
-                <input
-                  id="timezone"
-                  class="form-control"
-                  type="text"
-                  name="time_zone"
-                  placeholder="Tijdzone"
-                  value="Europe/Amsterdam"
-                  required
-                />
-              </div>
-              <div class="col-12 col-md-4 mb-2">
-                <button class="btn btn-primary" type="submit">
-                  Uploaden
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </Page>
+      {
+        label: "Tijdzone",
+        render: (_, attrs) => (
+          <TimezoneInput name="time_zone" required {...attrs} />
+        ),
+      },
+    ]}
+  />
 );
 
 export const renderGpxUploadAdminPage = (

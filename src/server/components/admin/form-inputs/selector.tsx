@@ -1,48 +1,49 @@
 import { FunctionComponent } from "preact";
-import { getAllExpedities } from "../../db/expeditie.js";
-import { getAllPersons } from "../../db/person.js";
+import { getAllExpedities } from "../../../db/expeditie.js";
+import { getAllPersons } from "../../../db/person.js";
 
-type AllSelectorOptions = {
-  selected?: string | undefined | null;
+type BasicSelector = {
+  name: string;
+  form?: string;
+  value?: string | undefined | null;
   allowEmpty?: boolean;
 };
 
-type SelectorOptions<T extends { id: string }> = {
-  text: string;
-  options: T[];
-  optionText: (option: T) => string;
-} & AllSelectorOptions;
-
-const SelectorOptions = <T extends { id: string }>({
+const Selector = <T extends { id: string }>({
   text,
   options,
   optionText,
-  selected,
+  value: value,
   allowEmpty,
-}: SelectorOptions<T>) => (
-  <>
-    <option selected={selected === undefined} disabled>
+  ...rest
+}: {
+  text: string;
+  options: T[];
+  optionText: (option: T) => string;
+} & BasicSelector) => (
+  <select class="form-select" required {...rest}>
+    <option selected={value === undefined} disabled>
       {text}
     </option>
     {allowEmpty && (
-      <option selected={selected === null} value="-">
+      <option selected={value === null} value="-">
         Geen
       </option>
     )}
     {options.map((option) => (
-      <option selected={selected === option.id} value={option.id}>
+      <option selected={value === option.id} value={option.id}>
         {optionText(option)}
       </option>
     ))}
-  </>
+  </select>
 );
 
-export const ExpeditieSelectorOptions: FunctionComponent<
+export const ExpeditieSelector: FunctionComponent<
   {
     expedities: Awaited<ReturnType<typeof getAllExpedities>>;
-  } & AllSelectorOptions
+  } & BasicSelector
 > = ({ expedities, ...rest }) => (
-  <SelectorOptions
+  <Selector
     text="Expeditie"
     options={expedities}
     optionText={(expeditie) => expeditie.name}
@@ -50,12 +51,12 @@ export const ExpeditieSelectorOptions: FunctionComponent<
   />
 );
 
-export const PersonSelectorOptions: FunctionComponent<
+export const PersonSelector: FunctionComponent<
   {
     persons: Awaited<ReturnType<typeof getAllPersons>>;
-  } & AllSelectorOptions
+  } & BasicSelector
 > = ({ persons, ...rest }) => (
-  <SelectorOptions
+  <Selector
     text="Persoon"
     options={persons}
     optionText={(person) => `${person.first_name} ${person.last_name}`}
@@ -63,10 +64,10 @@ export const PersonSelectorOptions: FunctionComponent<
   />
 );
 
-export const TeamSelectorOptions: FunctionComponent<
-  { teams: ("r" | "g" | "b")[] } & AllSelectorOptions
+export const TeamSelector: FunctionComponent<
+  { teams: ("r" | "g" | "b")[] } & BasicSelector
 > = ({ teams = ["r", "g", "b"], ...rest }) => (
-  <SelectorOptions
+  <Selector
     text="Team"
     options={(
       [

@@ -3,9 +3,7 @@ import { render } from "preact-render-to-string";
 import { authenticatePerson } from "../../../../db/person.js";
 import { getFileUrl } from "../../../../files/files.js";
 import { getUsesForFiles } from "../../../../files/uses.js";
-import { InfoMessages } from "../../../admin/info-messages.js";
-import { NavigationBar } from "../../../page-structure/navigation-bar.js";
-import { Page } from "../../../page-structure/page.js";
+import { AdminPage } from "../../../admin/admin-page.js";
 
 const getFileTypeText = (type: string) => {
   switch (type) {
@@ -72,81 +70,69 @@ const FilesAdminPage: FunctionComponent<{
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
 }> = ({ filesWithUses, user, messages }) => (
-  <Page
-    title="Expeditie - Bestanden Admin"
-    head={<link rel="stylesheet" href="/static/styles/members.css" />}
-    afterBody={<script src="/static/scripts/members.js" />}
-  >
-    <div class="container">
-      <NavigationBar type="members" backTo="members" user={user} />
+  <AdminPage
+    title="Bestanden Admin"
+    user={user}
+    messages={messages}
+    items={filesWithUses}
+    itemKey="file"
+    columns={[
+      {
+        label: "Sleutel (prefix)",
+        style: { minWidth: "25rem" },
+        render: (file) => <div class="py-4">{file?.file}</div>,
+      },
 
-      <div class="row">
-        <div class="col-12 mb-4">
-          <div class="h1">Bestanden Admin</div>
-        </div>
+      {
+        label: "Type",
+        style: { minWidth: "15rem" },
+        render: (file) => file && getFileTypeText(file.type),
+      },
 
-        <InfoMessages messages={messages} />
+      {
+        label: "Preview",
+        style: { width: "10rem" },
+        render: (file) =>
+          file && (
+            <a href={getFileMainUrl(file.file, file.type)}>
+              {getFileImagePreviewUrl(file.file, file.type) ? (
+                <div style={{ width: "7.5rem", height: "5rem" }}>
+                  <img
+                    class="w-100 h-100 object-fit-cover"
+                    src={getFileImagePreviewUrl(file.file, file.type)}
+                    alt="Preview"
+                  />
+                </div>
+              ) : (
+                "Link"
+              )}
+            </a>
+          ),
+      },
 
-        <div class="col-12 mb-4">
-          <hr />
-          <div class="h2 mb-3">Lijst van bestanden op S3</div>
-
-          <table class="table table-sticky-header">
-            <thead>
-              <tr>
-                <th style={{ minWidth: "25rem" }}>Sleutel (prefix)</th>
-                <th style={{ minWidth: "15rem" }}>Type</th>
-                <th style={{ width: "10rem" }}>Preview</th>
-                <th style={{ minWidth: "20rem" }}>In gebruik als</th>
-                <th />
-              </tr>
-            </thead>
-
-            <tbody>
-              {filesWithUses.map((file) => (
-                <tr>
-                  <td class="py-4">{file.file}</td>
-                  <td>{getFileTypeText(file.type)}</td>
-                  <td>
-                    <a href={getFileMainUrl(file.file, file.type)}>
-                      {getFileImagePreviewUrl(file.file, file.type) ? (
-                        <div style={{ width: "7.5rem", height: "5rem" }}>
-                          <img
-                            class="w-100 h-100 object-fit-cover"
-                            src={getFileImagePreviewUrl(file.file, file.type)}
-                            alt="Preview"
-                          />
-                        </div>
-                      ) : (
-                        "Link"
-                      )}
-                    </a>
-                  </td>
-                  <td>
-                    {file.uses ? (
-                      file.uses.map((use) => (
-                        <p class="my-1">{getUseTypeText(use.type, use.name)}</p>
-                      ))
-                    ) : (
-                      <form class="my-1 form-confirm" method="POST">
-                        <button
-                          class="btn btn-danger"
-                          type="submit"
-                          formAction={`/leden/admin/bestanden/delete/${file.file}`}
-                        >
-                          Verwijderen
-                        </button>
-                      </form>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </Page>
+      {
+        label: "In gebruik als",
+        style: { minWidth: "20rem" },
+        render: (file) =>
+          file &&
+          (file.uses ? (
+            file.uses.map((use) => (
+              <p class="my-1">{getUseTypeText(use.type, use.name)}</p>
+            ))
+          ) : (
+            <form class="my-1 form-confirm" method="POST">
+              <button
+                class="btn btn-danger"
+                type="submit"
+                formAction={`/leden/admin/bestanden/delete/${file.file}`}
+              >
+                Verwijderen
+              </button>
+            </form>
+          )),
+      },
+    ]}
+  />
 );
 
 export const renderFilesAdminPage = (
