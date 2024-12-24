@@ -1,9 +1,8 @@
-import { marked } from "marked";
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { getAllAfkos } from "../../../db/afko.js";
 import { authenticatePerson } from "../../../db/person.js";
-import { MediaPlayer } from "../../media/media-player.js";
+import { DictionaryEntry } from "../../members/dictionary-entry.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
@@ -29,28 +28,12 @@ const AfkowoboPage: FunctionComponent<{
 
       <div class="row pb-5">
         {afkos.map((afko) => (
-          <>
-            <div id={afko.id} class="col-12 col-xl-9 pb-4">
-              <div class="h2 pb-2">{afko.afko}</div>
-
-              <ol class="serif">
-                {afko.definitions.map((definition) => (
-                  <li
-                    class="pb-1"
-                    dangerouslySetInnerHTML={{
-                      __html: marked(definition) as string,
-                    }}
-                  />
-                ))}
-              </ol>
-            </div>
-
-            {afko.attachment_file && (
-              <div class="col-12 col-xl-3 pb-4">
-                <MediaPlayer file={afko.attachment_file} />
-              </div>
-            )}
-          </>
+          <DictionaryEntry
+            id={afko.id}
+            term={afko.afko}
+            descriptions={afko.definitions}
+            attachmentFile={afko.attachment_file}
+          />
         ))}
       </div>
     </div>

@@ -1,9 +1,8 @@
-import { marked } from "marked";
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { authenticatePerson } from "../../../db/person.js";
 import { getAllQuotes } from "../../../db/quote.js";
-import { MediaPlayer } from "../../media/media-player.js";
+import { DictionaryEntry } from "../../members/dictionary-entry.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
@@ -27,26 +26,13 @@ const QuotesPage: FunctionComponent<{
 
       <div class="row pb-5">
         {quotes.map((quote) => (
-          <>
-            <div id={quote.id} class="col-12 col-xl-9 pb-5">
-              <div class="h2 pb-2">
-                “{quote.quote}”{" "}
-                <small class="text-muted">―&nbsp;{quote.quotee}</small>
-              </div>
-
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: marked(quote.context) as string,
-                }}
-              />
-            </div>
-
-            {quote.attachment_file && (
-              <div class="col-12 col-xl-3 pb-4">
-                <MediaPlayer file={quote.attachment_file} />
-              </div>
-            )}
-          </>
+          <DictionaryEntry
+            id={quote.id}
+            term={quote.quote}
+            smallTerm={`―\u00A0${quote.quotee}`}
+            descriptions={quote.context}
+            attachmentFile={quote.attachment_file}
+          />
         ))}
       </div>
     </div>
