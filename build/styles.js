@@ -1,8 +1,8 @@
+import { purgeCSSPlugin } from "@fullhuman/postcss-purgecss";
+import autoprefixer from "autoprefixer";
 import { build, context } from "esbuild";
 import { sassPlugin } from "esbuild-sass-plugin";
 import postcss from "postcss";
-import autoprefixer from "autoprefixer";
-import purgecss from "@fullhuman/postcss-purgecss";
 
 const opts = ["dev", "dist"];
 const dir = process.argv[2];
@@ -19,7 +19,7 @@ const files = {
 };
 
 const postcssProcessor = postcss([
-  purgecss({
+  purgeCSSPlugin({
     content: ["./src/server/components/**/*.tsx", "./src/client/story/**/*.ts"],
     variables: true,
     safelist: {

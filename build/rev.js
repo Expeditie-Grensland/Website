@@ -20,6 +20,7 @@ const getNewName = (file) => {
 const filesToRev = await globby([
   "static/scripts/**/*",
   "!static/scripts/worker.js",
+  "!static/scripts/esbuild-meta.json",
   "static/images/**/*",
   "static/styles/**/*",
 ]);
