@@ -7,6 +7,69 @@ import { Page } from "../../page-structure/page.js";
 import { PersonTeam } from "../../../db/schema/types.js";
 import { getDateTime } from "../../../helpers/time.js";
 
+const HeaderRow: FunctionComponent<{ name?: string | null }> = ({ name }) => (
+  <div class="row pt-3 pb-2">
+    <div class="col-12">
+      <div class="pnt-exp-h">
+        <span class="text-muted text-uppercase font-weight-bold">
+          {name && `Expeditie ${name}`}
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
+const PointRow: FunctionComponent<{
+  point: Awaited<ReturnType<typeof getFullEarnedPoints>>[number];
+}> = ({ point }) => {
+  const amount = <strong class="pnt-points">+{point.amount}</strong>;
+  const person = (
+    <span>
+      {point.person_first_name} {point.person_last_name}
+    </span>
+  );
+  const date = (
+    <span class="text-muted">
+      (
+      {getDateTime(point.time_stamp, point.time_zone).toLocaleString({
+        month: "2-digit",
+        day: "2-digit",
+      })}
+      )
+    </span>
+  );
+
+  return (
+    <div class="row pb-1">
+      <div class={`col-12 ${point.team == "r" ? "text-end" : "text-start"}`}>
+        {point.team == "b" ? (
+          <>
+            {amount} {person} {date}
+          </>
+        ) : (
+          <>
+            {date} {person} {amount}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const TeamFlag: FunctionComponent<{ team: "r" | "b" }> = ({ team }) => {
+  const name = team == "b" ? "Team Blauw" : "Team Rood";
+  return (
+    <figure class="figure pnt-team">
+      <img
+        class="figure-img rounded"
+        src={`/static/images/${team == "b" ? "KZ" : "KG"}.png`}
+        alt={name}
+      />
+      <figcaption class="figure-caption text-center">{name}</figcaption>
+    </figure>
+  );
+};
+
 const PointsPage: FunctionComponent<{
   points: Awaited<ReturnType<typeof getFullEarnedPoints>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
@@ -28,16 +91,7 @@ const PointsPage: FunctionComponent<{
 
         <div class="row align-items-start d-flex pb-4">
           <div class="col-auto me-auto">
-            <figure class="figure pnt-team">
-              <img
-                class="figure-img rounded"
-                src="/static/images/KZ.png"
-                alt="Team Blauw"
-              />
-              <figcaption class="figure-caption text-center">
-                Team Blauw
-              </figcaption>
-            </figure>
+            <TeamFlag team="b" />
           </div>
 
           <div class="col-auto ms-auto me-auto">
@@ -49,77 +103,17 @@ const PointsPage: FunctionComponent<{
           </div>
 
           <div class="col-auto ms-auto">
-            <figure class="figure pnt-team">
-              <img
-                class="figure-img rounded"
-                src="/static/images/KG.png"
-                alt="Team Rood"
-              />
-              <figcaption class="figure-caption text-center">
-                Team Rood
-              </figcaption>
-            </figure>
+            <TeamFlag team="r" />
           </div>
         </div>
 
         {points.map((point, i) => (
           <>
             {(i === 0 || point.expeditie_id != points[i - 1].expeditie_id) && (
-              <div class="row pt-3 pb-2">
-                <div class="col-12">
-                  <div class="pnt-exp-h">
-                    <span class="text-muted text-uppercase font-weight-bold">
-                      {point.expeditie_name &&
-                        `Expeditie ${point.expeditie_name}`}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <HeaderRow name={point.expeditie_name} />
             )}
 
-            <div class="row pb-1">
-              {point.team == "b" && (
-                <div class="col-12">
-                  <span>
-                    <strong class="pnt-points">+{point.amount} </strong>
-                    <span>
-                      {point.person_first_name} {point.person_last_name}{" "}
-                    </span>
-                    <span class="text-muted">
-                      (
-                      {getDateTime(
-                        point.time_stamp,
-                        point.time_zone
-                      ).toLocaleString({
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}
-                      )
-                    </span>
-                  </span>
-                </div>
-              )}
-
-              {point.team == "r" && (
-                <div class="col-12 text-end">
-                  <span class="text-muted">
-                    (
-                    {getDateTime(
-                      point.time_stamp,
-                      point.time_zone
-                    ).toLocaleString({
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
-                    ){" "}
-                  </span>
-                  <span>
-                    {point.person_first_name} {point.person_last_name}{" "}
-                  </span>
-                  <strong class="pnt-points">+{point.amount}</strong>
-                </div>
-              )}
-            </div>
+            <PointRow point={point} />
           </>
         ))}
 
