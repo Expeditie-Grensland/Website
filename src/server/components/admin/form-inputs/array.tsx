@@ -29,6 +29,11 @@ export const FormInputArray = <Value,>({
     </div>
 
     <button class="form-array-add btn btn-secondary me-2">+</button>
-    <button class="form-array-remove btn btn-secondary">–</button>
+    <button
+      class="form-array-remove btn btn-secondary"
+      disabled={values.length == 0 || (!allowEmpty && values.length == 1)}
+    >
+      –
+    </button>
   </div>
 );

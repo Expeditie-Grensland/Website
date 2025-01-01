@@ -1,5 +1,4 @@
 import { Vertex } from './vertex';
-import $ from 'jquery';
 import {MapHandler} from "../../map/MapHandler"
 import {StoryHandler} from "../StoryHandler"
 import { Story } from '../../helpers/retrieval';
@@ -16,7 +15,7 @@ export class Graph {
         this.storyHandler = storyHandler;
     }
 
-    private static calculateY(header: HTMLElement): number {
+    private static calculateY(header: Element): number {
         const headerRect = header.getBoundingClientRect();
         return (headerRect.top + headerRect.bottom) / 2.0;
     }
@@ -80,7 +79,7 @@ export class Graph {
         return nodes;
     }
 
-    public toSVGGraph(htmlStoryElements: HTMLElement, nodeColors: string[]): SVGElement {
+    public toSVGGraph(htmlStoryElements: Element, nodeColors: string[]): SVGElement {
         const svg = this.svgElement('svg');
 
         const layers = this.getAllLayers();
@@ -98,9 +97,9 @@ export class Graph {
                     continue;
 
                 const vertexIdx = layer.indexOf(vertex);
-                const firstStoryElement = $('#' + storyElements[0].id + ' h1')[0];
-                const lastStoryElement = $('#' + storyElements[storyElements.length - 1].id + ' h1')[0];
-
+                const firstStoryElement = document.getElementById(storyElements[0].id)!.getElementsByTagName("h1").item(0)!
+                const lastStoryElement = document.getElementById(storyElements[storyElements.length - 1].id)!.getElementsByTagName("h1").item(0)!
+                
                 const x = Graph.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace);
                 const y1 = Graph.calculateY(firstStoryElement);
                 const y2 = Graph.calculateY(lastStoryElement);
@@ -119,7 +118,7 @@ export class Graph {
                 const parentStoryElements = parent.getStoryElements().sort((a, b) => a.dateTime.stamp - b.dateTime.stamp);
                 const parentIdx = layer.indexOf(parent);
                 const parentEnd = parentStoryElements[parentStoryElements.length - 1];
-                const parentHeader = $('#' + parentEnd.id + ' h1')[0];
+                const parentHeader = document.getElementById(parentEnd.id)!.getElementsByTagName("h1").item(0)!
 
                 const x1 = Graph.calculateX(parentIdx, layer.length, svgWidth, horizontalSpace);
                 const y1 = Graph.calculateY(parentHeader);
@@ -130,7 +129,7 @@ export class Graph {
                     const childStoryElements = child.getStoryElements().sort((a, b) => a.dateTime.stamp - b.dateTime.stamp);
                     const childIdx = childLayer.indexOf(child);
                     const childStart = childStoryElements[0];
-                    const childHeader = $('#' + childStart.id + ' h1')[0];
+                    const childHeader = document.getElementById(childStart.id)!.getElementsByTagName("h1").item(0)!
 
                     const x2 = Graph.calculateX(childIdx, childLayer.length, svgWidth, horizontalSpace);
                     const y2 = Graph.calculateY(childHeader);
@@ -147,8 +146,8 @@ export class Graph {
 
                 for (const storyElement of storyElements) {
                     const node = vertex.getStoryNode();
-                    const header = $('#' + storyElement.id + ' h1')![0];
-
+                    const header = document.getElementById(storyElement.id)!.getElementsByTagName("h1").item(0)!
+                    
                     const vertexIdx = layer.indexOf(vertex);
                     const x = Graph.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace);
                     const y = Graph.calculateY(header);
@@ -158,7 +157,7 @@ export class Graph {
             }
         }
         const graphTop = htmlStoryElements.getBoundingClientRect().top;
-        const svgHeight = htmlStoryElements.getBoundingClientRect().height - 16; // 16px  padding
+        const svgHeight = htmlStoryElements.getBoundingClientRect().height - 16;
 
         svg.setAttribute('width', svgWidth.toString());
         svg.setAttribute('height', svgHeight.toString());
