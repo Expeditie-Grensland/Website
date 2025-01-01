@@ -8,7 +8,11 @@ chdir("dist/static");
 console.log("## Static file sizes" + EOL);
 
 const staticFiles = (
-  await globby(["scripts/**/*.*", "styles/**/*.*", "images/**/*.*"])
+  await globby([
+    "**/*.*",
+    "!errorpages/**/*.*",
+    "!favicons/**/*.*",
+  ])
 ).toSorted();
 
 const printTable = (headers, aligns, tableRows) => {
