@@ -15,12 +15,6 @@ export interface Node {
   timeTill: number;
   personNames: string[];
 }
-
-export interface StoryMedia {
-    file: string;
-    description: string;
-}
-
 export interface Story {
   id: string; // TODO: should not be necessary
   nodeNum: number;
@@ -31,8 +25,6 @@ export interface Story {
   latitude: number;
   longitude: number;
   title: string;
-  text: string;
-  media: StoryMedia[];
 }
 
 export interface StoryResult {

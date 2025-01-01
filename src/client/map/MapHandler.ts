@@ -1,46 +1,41 @@
-import mapboxgl, {GeoJSONSource, IControl} from "mapbox-gl"
-import {ToggleLayerControl} from "./ToggleLayerControl"
-import $ from "jquery"
-import {GeoJsonResult, StoryResult} from "../helpers/retrieval"
-import {Feature, Point} from "geojson"
-import {StoryHandler} from "../story/StoryHandler"
+import { Feature, Point } from "geojson"
+import mapboxgl, { CameraOptions, GeoJSONSource } from "mapbox-gl"
+import { GeoJsonResult, StoryResult } from "../helpers/retrieval"
+import { StoryHandler } from "../story/StoryHandler"
+import { CenterRouteControl, SatelliteControl } from "./controls"
 
 
 export class MapHandler {
 
     public map = new mapboxgl.Map({
         container: 'map',
-        projection: {
-            name: 'globe'
-        },
+        projection: "globe",
         style: 'mapbox://styles/mapbox/outdoors-v12',
         center: [7.048, 53.0545],
         zoom: 2,
-        antialias: true
+        antialias: true,
+        performanceMetricsCollection: false
     });
     private latLngBounds: mapboxgl.LngLatBounds | null = null
 
-    private hasStory: boolean
 
     private nodeColors: string[]
 
     private hoveringFeatureId: string | null = null
 
-    public cameraPadding: mapboxgl.CameraOptions['padding'];
+    public getCameraPadding = (): CameraOptions["padding"] => ({
+        top: 20,
+        bottom: 20,
+        left: window.screen.availWidth < 1100 ? 20 : 4 + (document.getElementById("story-wrapper")?.offsetWidth || 16),
+        right: 20
+    })
 
-    constructor(hasStory: boolean, nodeColors: string[]) {
-        this.hasStory = hasStory;
+    constructor(nodeColors: string[]) {
         this.nodeColors = nodeColors;
-        this.cameraPadding = {
-            top: 20,
-            bottom: 20,
-            left: this.hasStory ? $(window).innerWidth()! * 0.35 : 20,
-            right: 20
-        };
         this.initControls();
 
         this.map.on('load', this.onMapLoad);
-        this.map.on('error', (e: mapboxgl.ErrorEvent) => {
+        this.map.on('error', (e) => {
             console.error('Map error: ' + e.error);
         });
     }
@@ -53,8 +48,9 @@ export class MapHandler {
 
     private initControls = () => {
         this.map.addControl(new mapboxgl.NavigationControl());
-        this.map.addControl(new mapboxgl.ScaleControl() as IControl);
-        this.map.addControl(new ToggleLayerControl('satellite'));
+        this.map.addControl(new mapboxgl.ScaleControl());
+        this.map.addControl(new CenterRouteControl(this));
+        this.map.addControl(new SatelliteControl(this));
     }
 
     private onMapLoad = () => {
@@ -314,7 +310,7 @@ export class MapHandler {
                     this.map.easeTo({
                         center: [coords[0], coords[1]],
                         zoom: zoom ?? undefined,
-                        padding: this.cameraPadding
+                        padding: this.getCameraPadding()
                     });
                 }
             );
@@ -338,7 +334,7 @@ export class MapHandler {
             this.map.flyTo({
                 center: [coords[0], coords[1]],
                 zoom: 13,
-                padding: this.cameraPadding
+                padding: this.getCameraPadding()
             });
 
             this.storyHandler?.scrollToStoryElement(id);
@@ -390,10 +386,8 @@ export class MapHandler {
         if (this.latLngBounds == null)
             return
 
-        console.log(this.cameraPadding)
         this.map.fitBounds(this.latLngBounds, {
-            padding: this.cameraPadding,
-            animate: true
+            padding: this.getCameraPadding(),
         });
     }
 

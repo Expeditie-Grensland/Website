@@ -4,17 +4,11 @@ import {StoryHandler} from './story/StoryHandler';
 import {MapHandler} from "./map/MapHandler"
 
 declare const expeditieNameShort: string, mbToken: string;
-declare let hasStory: boolean;
 
 const worker: Worker = new Worker((document.getElementById('worker') as HTMLLinkElement).href);
 worker.postMessage(['retrieveAll', expeditieNameShort]);
 
 mapboxgl.accessToken = mbToken;
-
-// Crude way to disable stories features for small screen
-if (window.screen.availWidth < 1024 || window.screen.availHeight < 768) {
-    hasStory = false;
-}
 
 const nodeColors = [
     '#2962ff',
@@ -28,8 +22,8 @@ const nodeColors = [
     '#00b8d4',
 ]
 
-const mapHandler = new MapHandler(hasStory, nodeColors);
-const storyHandler = new StoryHandler(hasStory, nodeColors, mapHandler);
+const mapHandler = new MapHandler(nodeColors);
+const storyHandler = new StoryHandler(nodeColors, mapHandler);
 
 mapHandler.setStoryHandler(storyHandler);
 
@@ -40,7 +34,7 @@ worker.onmessage = (event) => {
             console.log("Expeditie route added!")
             break;
         case 'story':
-            if (!hasStory) {
+            if (!document.getElementById("story-wrapper")) {
                 console.log("No story to display")
                 return
             }

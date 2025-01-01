@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import {Vertex} from './vertex';
 import {Graph} from './graph';
 import {Node, Story} from '../../helpers/retrieval';
@@ -33,7 +32,7 @@ export class GraphBuilder {
 
         const svg = this.graph.toSVGGraph(storyElements, nodeColors);
 
-        $(this.parentEl).empty();
+        this.parentEl.innerHTML = "";
         this.parentEl.appendChild(svg);
     }
 

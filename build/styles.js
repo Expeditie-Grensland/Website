@@ -23,8 +23,7 @@ const postcssProcessor = postcss([
     content: ["./src/server/components/**/*.tsx", "./src/client/story/**/*.ts"],
     variables: true,
     safelist: {
-      standard: ["satellite-icon"],
-      deep: [/^mapboxgl/],
+      deep: [/^mapboxgl/, /^mapicon-/],
     },
   }),
   autoprefixer({ env: "> 1% in NL, not dead", cascade: false }),
@@ -35,6 +34,7 @@ const options = {
   outdir: `${dir}/static/styles/`,
   bundle: true,
   logLevel: "info",
+  external: ["/static/*"],
   plugins: [
     sassPlugin({
       cssImports: true,

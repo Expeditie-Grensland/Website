@@ -211,7 +211,7 @@ export class Graph {
             this.mapHandler.map.flyTo({
                 center: [storyElem.longitude, storyElem.latitude],
                 zoom: 13,
-                padding: this.mapHandler.cameraPadding
+                padding: this.mapHandler.getCameraPadding()
             });
             this.storyHandler.scrollToStoryElement(storyElem.id);
         }

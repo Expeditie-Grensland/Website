@@ -10,7 +10,6 @@ import {
   getNodesWithPersons,
 } from "../db/geo.js";
 import { getNewestStoryId, getStories, getStoryCount } from "../db/story.js";
-import { getFileUrl } from "../files/files.js";
 
 const HEADER_REV = "x-revision-id";
 
@@ -42,7 +41,8 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
     reply.sendHtml(
       renderExpeditieMapPage({
         expeditie: reply.locals.expeditie!,
-        hasStory: (await getStoryCount(reply.locals.expeditie!.id)) > 0,
+        stories: await getStories(reply.locals.expeditie!.id),
+        nodes: await getNodesWithPersons(reply.locals.expeditie!.id),
       })
     )
   );
@@ -146,13 +146,8 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
               zone: story.time_zone,
             },
             title: story.title,
-            text: story.text,
             latitude: storyLocation?.latitude || 0,
             longitude: storyLocation?.longitude || 0,
-            media: story.media.map((medium) => ({
-              file: getFileUrl(medium.file),
-              description: medium.description,
-            })),
           };
         })
       ),
