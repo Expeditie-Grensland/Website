@@ -26,7 +26,7 @@ export class MapHandler {
     public getCameraPadding = (): CameraOptions["padding"] => ({
         top: 20,
         bottom: 20,
-        left: window.screen.availWidth < 1100 ? 20 : 4 + (document.getElementById("story-wrapper")?.offsetWidth || 16),
+        left: (window.innerWidth < 1100) ? 20 : 4 + (document.getElementById("story-wrapper")?.offsetWidth || 16),
         right: 20
     })
 
@@ -383,6 +383,7 @@ export class MapHandler {
     }
 
     public resetBounds = () => {
+        console.log(this.getCameraPadding())
         if (this.latLngBounds == null)
             return
 
