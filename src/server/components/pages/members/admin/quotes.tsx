@@ -8,7 +8,7 @@ import {
   TextAreaInput,
   TextInput,
   TimezoneInput,
-} from "../../../admin/form-inputs/basic.js";
+} from "../../../admin/form-inputs.js";
 
 const QuotesAdminPage: FunctionComponent<{
   quotes: Awaited<ReturnType<typeof getAllQuotes>>;

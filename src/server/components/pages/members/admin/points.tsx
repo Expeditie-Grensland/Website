@@ -8,12 +8,12 @@ import {
   LocalTimeInput,
   NumberInput,
   TimezoneInput,
-} from "../../../admin/form-inputs/basic.js";
+} from "../../../admin/form-inputs.js";
 import {
-  ExpeditieSelector,
-  PersonSelector,
-  TeamSelector,
-} from "../../../admin/form-inputs/selector.js";
+  ExpeditieInput,
+  PersonInput,
+  TeamInput
+} from "../../../admin/form-inputs.js";
 
 const PointsAdminPage: FunctionComponent<{
   points: Awaited<ReturnType<typeof getAllEarnedPoints>>;
@@ -35,7 +35,7 @@ const PointsAdminPage: FunctionComponent<{
         label: "Persoon",
         style: { minWidth: "20rem" },
         render: (point, attrs) => (
-          <PersonSelector
+          <PersonInput
             persons={persons}
             value={point?.person_id}
             name="person_id"
@@ -48,7 +48,7 @@ const PointsAdminPage: FunctionComponent<{
         label: "Expeditie",
         style: { minWidth: "20rem" },
         render: (point, attrs) => (
-          <ExpeditieSelector
+          <ExpeditieInput
             expedities={expedities}
             value={point?.expeditie_id}
             name="expeditie_id"
@@ -62,7 +62,7 @@ const PointsAdminPage: FunctionComponent<{
         label: "Team",
         style: { minWidth: "10rem" },
         render: (point, attrs) => (
-          <TeamSelector
+          <TeamInput
             teams={["b", "r"]}
             name="team"
             value={point?.team}

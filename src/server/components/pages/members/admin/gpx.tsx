@@ -3,11 +3,11 @@ import { render } from "preact-render-to-string";
 import { getAllExpedities } from "../../../../db/expeditie.js";
 import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
-import { FileInput, TimezoneInput } from "../../../admin/form-inputs/basic.js";
+import { FileInput, TimezoneInput } from "../../../admin/form-inputs.js";
 import {
-  ExpeditieSelector,
-  PersonSelector,
-} from "../../../admin/form-inputs/selector.js";
+  ExpeditieInput,
+  PersonInput
+} from "../../../admin/form-inputs.js";
 
 const GpxUploadAdminPage: FunctionComponent<{
   expedities: Awaited<ReturnType<typeof getAllExpedities>>;
@@ -32,7 +32,7 @@ const GpxUploadAdminPage: FunctionComponent<{
       {
         label: "Expeditie",
         render: (_, attrs) => (
-          <ExpeditieSelector
+          <ExpeditieInput
             expedities={expedities}
             name="expeditie_id"
             {...attrs}
@@ -43,7 +43,7 @@ const GpxUploadAdminPage: FunctionComponent<{
       {
         label: "Persoon",
         render: (_, attrs) => (
-          <PersonSelector
+          <PersonInput
             persons={persons}
             name="person_id"
             value={user.id}

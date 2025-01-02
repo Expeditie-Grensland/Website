@@ -3,8 +3,8 @@ import { render } from "preact-render-to-string";
 import { authenticatePerson } from "../../../../db/person.js";
 import { getAllWords } from "../../../../db/word.js";
 import { AdminPage } from "../../../admin/admin-page.js";
-import { FormInputArray } from "../../../admin/form-inputs/array.js";
-import { TextAreaInput, TextInput } from "../../../admin/form-inputs/basic.js";
+import { FormInputArray } from "../../../admin/form-inputs.js";
+import { TextAreaInput, TextInput } from "../../../admin/form-inputs.js";
 
 const DictionaryAdminPage: FunctionComponent<{
   words: Awaited<ReturnType<typeof getAllWords>>;

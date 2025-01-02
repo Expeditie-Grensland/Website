@@ -3,13 +3,13 @@ import { render } from "preact-render-to-string";
 import { getAllExpeditiesWithPeopleIds } from "../../../../db/expeditie.js";
 import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
-import { FormInputArray } from "../../../admin/form-inputs/array.js";
+import { FormInputArray } from "../../../admin/form-inputs.js";
 import {
   CheckInput,
   DateInput,
   TextInput,
-} from "../../../admin/form-inputs/basic.js";
-import { PersonSelector } from "../../../admin/form-inputs/selector.js";
+} from "../../../admin/form-inputs.js";
+import { PersonInput } from "../../../admin/form-inputs.js";
 
 const ExpeditiesAdminPage: FunctionComponent<{
   expedities: Awaited<ReturnType<typeof getAllExpeditiesWithPeopleIds>>;
@@ -95,7 +95,7 @@ const ExpeditiesAdminPage: FunctionComponent<{
         render: (expeditie, attrs) => (
           <FormInputArray values={expeditie?.persons} {...attrs}>
             {(person, attrs) => (
-              <PersonSelector
+              <PersonInput
                 persons={persons}
                 placeholder="Deelnemer"
                 name="persons[]"
@@ -181,7 +181,7 @@ const ExpeditiesAdminPage: FunctionComponent<{
             {...attrs}
           >
             {(person, attrs) => (
-              <PersonSelector
+              <PersonInput
                 persons={persons}
                 placeholder="Filmmonteur"
                 name="movie_editors[]"

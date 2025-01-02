@@ -4,18 +4,18 @@ import { getAllExpedities } from "../../../../db/expeditie.js";
 import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
 import { getAllStories } from "../../../../db/story.js";
 import { AdminPage } from "../../../admin/admin-page.js";
-import { FormInputArray } from "../../../admin/form-inputs/array.js";
+import { FormInputArray } from "../../../admin/form-inputs.js";
 import {
   HiddenInput,
   LocalTimeInput,
   TextAreaInput,
   TextInput,
   TimezoneInput,
-} from "../../../admin/form-inputs/basic.js";
+} from "../../../admin/form-inputs.js";
 import {
-  ExpeditieSelector,
-  PersonSelector,
-} from "../../../admin/form-inputs/selector.js";
+  ExpeditieInput,
+  PersonInput
+} from "../../../admin/form-inputs.js";
 
 const StoryAdminPage: FunctionComponent<{
   stories: Awaited<ReturnType<typeof getAllStories>>;
@@ -37,7 +37,7 @@ const StoryAdminPage: FunctionComponent<{
         label: "Expeditie",
         style: { minWidth: "12.5rem" },
         render: (story, attrs) => (
-          <ExpeditieSelector
+          <ExpeditieInput
             expedities={expedities}
             value={story?.expeditie_id}
             name="expeditie_id"
@@ -51,7 +51,7 @@ const StoryAdminPage: FunctionComponent<{
         label: "Persoon",
         style: { minWidth: "12.5rem" },
         render: (story, attrs) => (
-          <PersonSelector
+          <PersonInput
             persons={persons}
             value={story?.person_id}
             name="person_id"
