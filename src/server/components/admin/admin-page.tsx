@@ -3,9 +3,6 @@ import { JSX } from "preact/jsx-runtime";
 import { authenticatePerson } from "../../db/person.js";
 import { NavigationBar } from "../page-structure/navigation-bar.js";
 import { Page } from "../page-structure/page.js";
-import { ExistingItemsForm } from "./existing-items-form.js";
-import { InfoMessages } from "./info-messages.js";
-import { NewItemForm } from "./new-item-form.js";
 
 type AdminPageProps<Value> = {
   title: string;
@@ -66,28 +63,87 @@ export const AdminPage = <Value,>({
           <div class="h1">{title}</div>
         </div>
 
-        <InfoMessages messages={messages} />
+        {messages["error"]?.length || messages["info"]?.length ? (
+          <div class="col-12 mb-4">
+            {messages["error"]?.map((msg) => (
+              <div class="alert alert-danger">{msg}</div>
+            ))}
+            {messages["info"]?.map((msg) => (
+              <div class="alert alert-info">{msg}</div>
+            ))}
+          </div>
+        ) : undefined}
 
         {newAction && (
           <div class="col-12 mb-4">
-            <NewItemForm
+            <form
               action={newAction.action}
-              buttonText={newAction.label}
-              multipart={multipart}
+              method="POST"
+              encType={multipart ? "multipart/form-data" : undefined}
             >
-              {columns.map((column) => column.render(undefined, {}))}
-            </NewItemForm>
+              {columns.map((column) => (
+                <div class="col-12 col-md-4 mb-2 me-md-2">
+                  <label class="small">{column.label}</label>
+                  {column.render(undefined, {})}
+                </div>
+              ))}
+
+              <div class="col-12 col-md-4 mb-2">
+                <button class="btn btn-primary" type="submit">
+                  {newAction.label || "Toevoegen"}
+                </button>
+              </div>
+            </form>
           </div>
         )}
 
         {items && itemKey && (
           <div class="col-12 mb-4">
-            <ExistingItemsForm
-              items={items}
-              itemKey={itemKey}
-              columns={columns}
-              actions={actions}
-            />
+            <table class="table table-sticky-header">
+              <thead>
+                <tr>
+                  {columns.map((column) => (
+                    <th style={column.style}>{column.label}</th>
+                  ))}
+
+                  {actions && <th />}
+                </tr>
+              </thead>
+
+              <tbody>
+                {items.map((item) => (
+                  <tr>
+                    {columns.map((column) => (
+                      <td>
+                        {column.render(item, {
+                          form: `form-${item[itemKey]}`,
+                        })}
+                      </td>
+                    ))}
+
+                    {actions && (
+                      <td>
+                        <form
+                          class="form-confirm"
+                          id={`form-${item[itemKey]}`}
+                          method="POST"
+                        >
+                          {actions.map((action) => (
+                            <button
+                              class={`btn d-block ${action.style == "danger" ? "btn-danger" : "btn-primary"}`}
+                              type="submit"
+                              formAction={action.action(item)}
+                            >
+                              {action.label}
+                            </button>
+                          ))}
+                        </form>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
