@@ -113,6 +113,19 @@ const MembersHomePage: FunctionComponent<{
             },
           ]}
         />
+
+        <LinkCard
+          title="Expedities"
+          text="Voor als we weer op pad gaan"
+          links={[
+            {
+              text: "Admin",
+              url: "/leden/admin/expedities",
+              when: user.type == "admin",
+            },
+          ]}
+        />
+        
         <LinkCard
           title="GPX Upload"
           text="Omdat we nog steeds geen app hebben"

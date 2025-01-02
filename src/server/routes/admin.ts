@@ -4,6 +4,7 @@ import { ZodError, z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { renderAfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js";
 import { renderDictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
+import { renderExpeditiesAdminPage } from "../components/pages/members/admin/expedities.js";
 import { renderFilesAdminPage } from "../components/pages/members/admin/files.js";
 import { renderGpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
 import { renderPointsAdminPage } from "../components/pages/members/admin/points.js";
@@ -16,7 +17,13 @@ import {
   getAllEarnedPoints,
   updateEarnedPoint,
 } from "../db/earned-point.js";
-import { getAllExpedities } from "../db/expeditie.js";
+import {
+  addExpeditie,
+  deleteExpeditie,
+  getAllExpedities,
+  getAllExpeditiesWithPeopleIds,
+  updateExpeditie,
+} from "../db/expeditie.js";
 import { insertLocationsFromGpx } from "../db/geo.js";
 import { getAllPersons } from "../db/person.js";
 import {
@@ -52,6 +59,8 @@ const numIdParamsSchema = z.object({
   id: z.coerce.number(),
 });
 
+const checkboxSchema = z.preprocess((value) => value == "on", z.boolean());
+
 const localTimeTransformer = <
   T extends { time_local: string; time_zone: string },
 >({
@@ -61,6 +70,11 @@ const localTimeTransformer = <
   ...rest,
   time_stamp: parseISODateTimeStamp(time_local, rest.time_zone),
 });
+
+const dateSchema = z
+  .string()
+  .date()
+  .transform((string) => new Date(string));
 
 const tryCatchAndRedirect =
   (
@@ -279,6 +293,61 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       const { id } = numIdParamsSchema.parse(request.params);
       const p = await deleteEarnedPoint(id);
       return `${p.amount} punten zijn successvol verwijderd`;
+    })
+  );
+
+  app.get("/expedities", async (request, reply) =>
+    reply.sendHtml(
+      renderExpeditiesAdminPage({
+        expedities: await getAllExpeditiesWithPeopleIds(),
+        persons: await getAllPersons(),
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
+  );
+
+  const expeditieSchema = z.object({
+    id: idSchema,
+    name: z.string(),
+    subtitle: z.string(),
+    draft: checkboxSchema,
+    start_date: dateSchema,
+    end_date: dateSchema,
+    persons: z.array(z.string()).nonempty(),
+    show_map: checkboxSchema,
+    countries: z.array(z.string()).nonempty(),
+    background_file: z.string().optional(),
+    movie_file: z.string().optional(),
+    movie_restricted: checkboxSchema,
+    movie_editors: z.array(z.string()).default([]),
+  });
+
+  app.post(
+    "/expedities/add",
+    tryCatchAndRedirect("/expedities", async (request) => {
+      const expeditie = expeditieSchema.parse(request.body);
+      const result = await addExpeditie(expeditie);
+      return `Expeditie ${result.name} is successvol toegevoegd`;
+    })
+  );
+
+  app.post(
+    "/expedities/update/:id",
+    tryCatchAndRedirect("/expedities", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const expeditie = expeditieSchema.parse(request.body);
+      const result = await updateExpeditie(id, expeditie);
+      return `Expeditie ${result.name} is successvol gewijzigd`;
+    })
+  );
+
+  app.post(
+    "/expedities/delete/:id",
+    tryCatchAndRedirect("/expedities", async (request) => {
+      const { id } = idParamsSchema.parse(request.params);
+      const result = await deleteExpeditie(id);
+      return `Expeditie ${result.name} is successvol verwijderd`;
     })
   );
 

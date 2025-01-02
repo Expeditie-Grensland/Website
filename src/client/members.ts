@@ -18,8 +18,8 @@ Array.from(document.getElementsByClassName("form-array-add")).forEach(
       newItem.classList.remove("form-array-proto");
       newItem.classList.add("form-array-item");
 
-      Array.from(newItem.querySelectorAll(":disabled")).forEach(
-        (disabledInput) => disabledInput.removeAttribute("disabled")
+      Array.from(newItem.children).forEach((child) =>
+        child.removeAttribute("disabled")
       );
 
       formArray.insertBefore(newItem, protoItem);

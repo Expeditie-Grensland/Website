@@ -39,6 +39,30 @@ export const HiddenInput: FunctionComponent<BasicInput<string | number>> = ({
   ...rest
 }) => <input type="hidden" {...rest} />;
 
+export const CheckInput: FunctionComponent<BasicInput<boolean>> = ({
+  value,
+  ...rest
+}) => (
+  <div class="form-check">
+    <input type="checkbox" class="form-check-input" checked={value} {...rest} />
+  </div>
+);
+
+export const DateInput: FunctionComponent<BasicInput<Date>> = ({
+  placeholder = "Datum",
+  value,
+  ...rest
+}) => (
+  <input
+    type="date"
+    pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+    class="form-control"
+    placeholder={placeholder}
+    value={value?.toISOString().slice(0, 10)}
+    {...rest}
+  />
+);
+
 export const LocalTimeInput: FunctionComponent<
   BasicInput<{
     stamp: number;

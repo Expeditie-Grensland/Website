@@ -6,24 +6,25 @@ type BasicSelector = {
   name: string;
   form?: string;
   value?: string | undefined | null;
+  placeholder?: string;
   allowEmpty?: boolean;
 };
 
 const Selector = <T extends { id: string }>({
-  text,
+  placeholder,
   options,
   optionText,
   value: value,
   allowEmpty,
   ...rest
 }: {
-  text: string;
+  placeholder: string;
   options: T[];
   optionText: (option: T) => string;
 } & BasicSelector) => (
   <select class="form-select" required {...rest}>
     <option selected={value === undefined} disabled>
-      {text}
+      {placeholder}
     </option>
     {allowEmpty && (
       <option selected={value === null} value="-">
@@ -42,9 +43,9 @@ export const ExpeditieSelector: FunctionComponent<
   {
     expedities: Awaited<ReturnType<typeof getAllExpedities>>;
   } & BasicSelector
-> = ({ expedities, ...rest }) => (
+> = ({ expedities, placeholder = "Expeditie", ...rest }) => (
   <Selector
-    text="Expeditie"
+    placeholder={placeholder}
     options={expedities}
     optionText={(expeditie) => expeditie.name}
     {...rest}
@@ -55,9 +56,9 @@ export const PersonSelector: FunctionComponent<
   {
     persons: Awaited<ReturnType<typeof getAllPersons>>;
   } & BasicSelector
-> = ({ persons, ...rest }) => (
+> = ({ persons, placeholder = "Persoon", ...rest }) => (
   <Selector
-    text="Persoon"
+    placeholder={placeholder}
     options={persons}
     optionText={(person) => `${person.first_name} ${person.last_name}`}
     {...rest}
@@ -66,9 +67,9 @@ export const PersonSelector: FunctionComponent<
 
 export const TeamSelector: FunctionComponent<
   { teams: ("r" | "g" | "b")[] } & BasicSelector
-> = ({ teams = ["r", "g", "b"], ...rest }) => (
+> = ({ teams = ["r", "g", "b"], placeholder = "Team", ...rest }) => (
   <Selector
-    text="Team"
+    placeholder={placeholder}
     options={(
       [
         { id: "r", name: "Rood" },
