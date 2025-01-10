@@ -10,41 +10,41 @@ export const DictionaryEntry: FunctionComponent<{
   attachmentFile?: string | null;
 }> = ({ id, term, smallTerm, attachmentFile, descriptions }) => (
   <>
-    <div id={id} class="col-12 col-xl-9 pb-4">
-      <div class="h2 pb-2">
-        {term}
+    <div id={id} class="dict-entry">
+      <div class="dict-text">
+        <span class="dict-term">{term}</span>
         {smallTerm && (
           <>
             {" "}
-            <small class="text-muted">{smallTerm}</small>
+            <span class="dict-small">{smallTerm}</span>
           </>
+        )}
+
+        <div class="dict-term"></div>
+        {descriptions instanceof Array ? (
+          <ol>
+            {descriptions.map((description) => (
+              <li
+                dangerouslySetInnerHTML={{
+                  __html: marked(description) as string,
+                }}
+              />
+            ))}
+          </ol>
+        ) : (
+          <span
+            dangerouslySetInnerHTML={{
+              __html: marked(descriptions) as string,
+            }}
+          />
         )}
       </div>
 
-      {descriptions instanceof Array ? (
-        <ol class="serif">
-          {descriptions.map((description) => (
-            <li
-              class="pb-1"
-              dangerouslySetInnerHTML={{
-                __html: marked(description) as string,
-              }}
-            />
-          ))}
-        </ol>
-      ) : (
-        <span
-          dangerouslySetInnerHTML={{
-            __html: marked(descriptions) as string,
-          }}
-        />
+      {attachmentFile && (
+        <div class="dict-media">
+          <MediaPlayer file={attachmentFile} />
+        </div>
       )}
     </div>
-
-    {attachmentFile && (
-      <div class="col-12 col-xl-3 pb-4">
-        <MediaPlayer file={attachmentFile} />
-      </div>
-    )}
   </>
 );

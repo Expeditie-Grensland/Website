@@ -19,19 +19,17 @@ const LinkCard: FunctionComponent<{
   }[];
 }> = ({ title, text, links }) =>
   links.filter((link) => link.when !== false).length > 0 && (
-    <div class="col-12 col-md-6 col-lg-4">
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">{title}</h5>
-          <p class="card-text">{text}</p>
-          {links
-            .filter((link) => link.when !== false)
-            .map(({ text: linkText = "Open", url, target }) => (
-              <a class="card-link" href={url} target={target}>
-                {linkText}
-              </a>
-            ))}
-        </div>
+    <div class="link-card">
+      <h1>{title}</h1>
+      <p>{text}</p>
+      <div class="link-card-links">
+        {links
+          .filter((link) => link.when !== false)
+          .map(({ text: linkText = "Open", url, target }) => (
+            <a href={url} target={target}>
+              {linkText}
+            </a>
+          ))}
       </div>
     </div>
   );
@@ -48,14 +46,14 @@ const MembersHomePage: FunctionComponent<{
     <div class="container">
       <NavigationBar type="members" user={user} />
 
-      <div class="row">
+      <div class="grid-3">
         <LinkCard
           title="Hoofdpagina"
           text="Alle Expedities (en verborgen videos)"
           links={[
             { url: "/" },
             {
-              text: "Concepten",
+              text: "Inclusief concepten",
               url: "/?concepten=1",
               when: user.type == "admin",
             },
@@ -125,7 +123,7 @@ const MembersHomePage: FunctionComponent<{
             },
           ]}
         />
-        
+
         <LinkCard
           title="GPX Upload"
           text="Omdat we nog steeds geen app hebben"
@@ -191,9 +189,7 @@ const MembersHomePage: FunctionComponent<{
       </div>
 
       {user.type == "admin" && (
-        <div class="row mt-3">
-          <span class="members-very-light">Versie: {packageJson.version}</span>
-        </div>
+        <div class="version-text">Versie: {packageJson.version}</div>
       )}
     </div>
   </Page>

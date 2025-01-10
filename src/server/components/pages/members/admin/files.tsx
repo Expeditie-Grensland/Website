@@ -75,12 +75,11 @@ const FilesAdminPage: FunctionComponent<{
     user={user}
     messages={messages}
     items={filesWithUses}
-    itemKey="file"
     columns={[
       {
         label: "Sleutel (prefix)",
         style: { minWidth: "25rem" },
-        render: (file) => <div class="py-4">{file?.file}</div>,
+        render: (file) => file?.file,
       },
 
       {
@@ -91,18 +90,15 @@ const FilesAdminPage: FunctionComponent<{
 
       {
         label: "Preview",
-        style: { width: "10rem" },
+        style: { minWidth: "10rem", maxWidth: "10rem" },
         render: (file) =>
           file && (
-            <a href={getFileMainUrl(file.file, file.type)}>
+            <a class="file-preview" href={getFileMainUrl(file.file, file.type)}>
               {getFileImagePreviewUrl(file.file, file.type) ? (
-                <div style={{ width: "7.5rem", height: "5rem" }}>
-                  <img
-                    class="w-100 h-100 object-fit-cover"
-                    src={getFileImagePreviewUrl(file.file, file.type)}
-                    alt="Preview"
-                  />
-                </div>
+                <img
+                  src={getFileImagePreviewUrl(file.file, file.type)}
+                  alt="Preview"
+                />
               ) : (
                 "Link"
               )}
@@ -116,13 +112,11 @@ const FilesAdminPage: FunctionComponent<{
         render: (file) =>
           file &&
           (file.uses ? (
-            file.uses.map((use) => (
-              <p class="my-1">{getUseTypeText(use.type, use.name)}</p>
-            ))
+            file.uses.map((use) => <p>{getUseTypeText(use.type, use.name)}</p>)
           ) : (
-            <form class="my-1 form-confirm" method="POST">
+            <form class="form-confirm" method="POST">
               <button
-                class="btn btn-danger"
+                class="button-danger"
                 type="submit"
                 formAction={`/leden/admin/bestanden/delete/${file.file}`}
               >

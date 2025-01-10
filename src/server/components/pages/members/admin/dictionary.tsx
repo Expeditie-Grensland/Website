@@ -18,7 +18,6 @@ const DictionaryAdminPage: FunctionComponent<{
     messages={messages}
     newAction={{ action: "/leden/admin/woordenboek/add" }}
     items={words}
-    itemKey="id"
     columns={[
       {
         label: "Id",

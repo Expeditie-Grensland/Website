@@ -1,0 +1,13 @@
+.button-outline {
+  --x-text-color: var(--text-color);
+  --x-bg-color: transparent;
+  --x-border-color: var(--text-color);
+
+  --x-text-color-hover: var(--bg-color);
+  --x-bg-color-hover: var(--text-color);
+  --x-border-color-hover: var(--text-color);
+
+  --x-text-color-active: var(--bg-color);
+  --x-bg-color-active: var(--text-color);
+  --x-border-color-active: var(--text-color);
+}

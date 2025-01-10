@@ -2,73 +2,9 @@ import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { getFullEarnedPoints } from "../../../db/earned-point.js";
 import { authenticatePerson } from "../../../db/person.js";
+import { formatTimeDayMonth, formatTimeFull } from "../../../helpers/time.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
-import { PersonTeam } from "../../../db/schema/types.js";
-import { getDateTime } from "../../../helpers/time.js";
-
-const HeaderRow: FunctionComponent<{ name?: string | null }> = ({ name }) => (
-  <div class="row pt-3 pb-2">
-    <div class="col-12">
-      <div class="pnt-exp-h">
-        <span class="text-muted text-uppercase font-weight-bold">
-          {name && `Expeditie ${name}`}
-        </span>
-      </div>
-    </div>
-  </div>
-);
-
-const PointRow: FunctionComponent<{
-  point: Awaited<ReturnType<typeof getFullEarnedPoints>>[number];
-}> = ({ point }) => {
-  const amount = <strong class="pnt-points">+{point.amount}</strong>;
-  const person = (
-    <span>
-      {point.person_first_name} {point.person_last_name}
-    </span>
-  );
-  const date = (
-    <span class="text-muted">
-      (
-      {getDateTime(point.time_stamp, point.time_zone).toLocaleString({
-        month: "2-digit",
-        day: "2-digit",
-      })}
-      )
-    </span>
-  );
-
-  return (
-    <div class="row pb-1">
-      <div class={`col-12 ${point.team == "r" ? "text-end" : "text-start"}`}>
-        {point.team == "b" ? (
-          <>
-            {amount} {person} {date}
-          </>
-        ) : (
-          <>
-            {date} {person} {amount}
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const TeamFlag: FunctionComponent<{ team: "r" | "b" }> = ({ team }) => {
-  const name = team == "b" ? "Team Blauw" : "Team Rood";
-  return (
-    <figure class="figure pnt-team">
-      <img
-        class="figure-img rounded"
-        src={`/static/images/${team == "b" ? "KZ" : "KG"}.png`}
-        alt={name}
-      />
-      <figcaption class="figure-caption text-center">{name}</figcaption>
-    </figure>
-  );
-};
 
 const PointsPage: FunctionComponent<{
   points: Awaited<ReturnType<typeof getFullEarnedPoints>>;
@@ -76,8 +12,19 @@ const PointsPage: FunctionComponent<{
 }> = ({ points, user }) => {
   const teamScores = points.reduce(
     (acc, cur) =>
-      Object.assign(acc, { [cur.team]: (acc[cur.team] || 0) + cur.amount }),
-    {} as Record<PersonTeam, number>
+      Object.assign(acc, { [cur.team]: acc[cur.team] + cur.amount }),
+    { b: 0, r: 0 }
+  );
+
+  const pointsByExpeditie = points.reduce(
+    (acc, cur) =>
+      acc.length == 0 || acc.at(-1)!.name != cur.expeditie_name
+        ? [...acc, { name: cur.expeditie_name, points: [cur] }]
+        : [
+            ...acc.slice(0, -1),
+            { name: cur.expeditie_name, points: [...acc.at(-1)!.points, cur] },
+          ],
+    [] as { name: string | null; points: typeof points }[]
   );
 
   return (
@@ -89,35 +36,46 @@ const PointsPage: FunctionComponent<{
       <div class="container">
         <NavigationBar type="members" backTo="members" user={user} />
 
-        <div class="row align-items-start d-flex pb-4">
-          <div class="col-auto me-auto">
-            <TeamFlag team="b" />
-          </div>
+        <div class="points-teams">
+          <figure class="points-flag">
+            <img src={`/static/images/kazakhstan.svg`} alt="Team Blauw" />
+            <figcaption>Team Blauw</figcaption>
+          </figure>
 
-          <div class="col-auto ms-auto me-auto">
-            <h1 class="display-4">
-              <span class="pnt-score no-wrap text-end">{teamScores.b}</span>
-              <span class="pnt-dash text-center">–</span>
-              <span class="pnt-score no-wrap text-start">{teamScores.r}</span>
-            </h1>
-          </div>
+          <div class="points-b">{teamScores.b}</div>
+          <div class="points-dash">–</div>
+          <div class="points-r">{teamScores.r}</div>
 
-          <div class="col-auto ms-auto">
-            <TeamFlag team="r" />
-          </div>
+          <figure class="points-flag">
+            <img src={`/static/images/kyrgyzstan.svg`} alt="Team Rood" />
+            <figcaption>Team Rood</figcaption>
+          </figure>
         </div>
 
-        {points.map((point, i) => (
-          <>
-            {(i === 0 || point.expeditie_id != points[i - 1].expeditie_id) && (
-              <HeaderRow name={point.expeditie_name} />
-            )}
+        {pointsByExpeditie.map(({ name, points }) => (
+          <div class="points-group">
+            <div class="points-expeditie">
+              <h1>{name && `Expeditie ${name}`}</h1>
+            </div>
 
-            <PointRow point={point} />
-          </>
+            {points.map((point) => (
+              <div
+                class={`point-row ${point.team == "b" ? "point-row-b" : "point-row-r"}`}
+              >
+                <div class="point-amount">+{point.amount}</div>
+                <div class="point-person">
+                  {point.person_first_name} {point.person_last_name}
+                </div>
+                <div
+                  class="point-date"
+                  title={formatTimeFull(point.time_stamp, point.time_zone)}
+                >
+                  ({formatTimeDayMonth(point.time_stamp, point.time_zone)})
+                </div>
+              </div>
+            ))}
+          </div>
         ))}
-
-        <div class="row pb-5" />
       </div>
     </Page>
   );

@@ -18,24 +18,18 @@ const AfkowoboPage: FunctionComponent<{
     <div class="container">
       <NavigationBar type="members" backTo="members" user={user} />
 
-      <div class="row pb-5">
-        <div class="col-12">
-          <div class="h1">
-            Het enige echte afkortingenwoordenboek der Expediets
-          </div>
-        </div>
-      </div>
+      <h1 class="page-title">
+        Het enige echte afkortingenwoordenboek der Expediets
+      </h1>
 
-      <div class="row pb-5">
-        {afkos.map((afko) => (
-          <DictionaryEntry
-            id={afko.id}
-            term={afko.afko}
-            descriptions={afko.definitions}
-            attachmentFile={afko.attachment_file}
-          />
-        ))}
-      </div>
+      {afkos.map((afko) => (
+        <DictionaryEntry
+          id={afko.id}
+          term={afko.afko}
+          descriptions={afko.definitions}
+          attachmentFile={afko.attachment_file}
+        />
+      ))}
     </div>
   </Page>
 );

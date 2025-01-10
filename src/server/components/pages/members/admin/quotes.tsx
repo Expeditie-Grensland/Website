@@ -22,7 +22,6 @@ const QuotesAdminPage: FunctionComponent<{
     messages={messages}
     newAction={{ action: "/leden/admin/citaten/add" }}
     items={quotes}
-    itemKey="id"
     columns={[
       {
         label: "Id",

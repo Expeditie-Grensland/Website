@@ -1,0 +1,19 @@
+[class*="message-"] {
+  padding: 1rem;
+  color: var(--x-text-color);
+  background: var(--x-bg-color);
+  border: 1px solid var(--x-border-color);
+  border-radius: 0.375rem;
+}
+
+.message-error {
+  --x-text-color: #58151c;
+  --x-bg-color: #f8d7da;
+  --x-border-color: #f1aeb5;
+}
+
+.message-info {
+  --x-text-color: #055160;
+  --x-bg-color: #cff4fc;
+  --x-border-color: #9eeaf9;
+}

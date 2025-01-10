@@ -5,30 +5,9 @@ import { getNodesWithPersons } from "../../../db/geo.js";
 import { getAllStories } from "../../../db/story.js";
 import { getFileType, getFileUrl } from "../../../files/files.js";
 import { getMapboxConfig } from "../../../helpers/config.js";
-import { getDateTime } from "../../../helpers/time.js";
+import { formatTimeFull, formatTimeNicely } from "../../../helpers/time.js";
 import { ClientVariable } from "../../page-structure/client-variable.js";
 import { Page } from "../../page-structure/page.js";
-
-// FIXME: Relative and short-format dates/times
-const visualDateString = (stamp: number, zone: string) =>
-  getDateTime(stamp, zone).toLocaleString({
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-const completeDateString = (stamp: number, zone: string) =>
-  getDateTime(stamp, zone).toLocaleString({
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZoneName: "long",
-  });
 
 const peopleNames = (
   node?: Awaited<ReturnType<typeof getNodesWithPersons>>[number]
@@ -49,9 +28,9 @@ const StoryElement: FunctionComponent<{
         <h1>{story.title}</h1>
         <p
           class="time"
-          title={completeDateString(story.time_stamp, story.time_zone)}
+          title={formatTimeFull(story.time_stamp, story.time_zone)}
         >
-          {visualDateString(story.time_stamp, story.time_zone)}
+          {formatTimeNicely(story.time_stamp, story.time_zone)}
         </p>
       </div>
       <p class="people">{peopleNames(node)}</p>
@@ -115,7 +94,7 @@ const ExpeditieMapPage: FunctionComponent<{
             content={getFileUrl(expeditie.background_file, "normaal.jpg")}
           />
         )}
-        <link rel="stylesheet" href="/static/styles/expeditieMap.css" />
+        <link rel="stylesheet" href="/static/styles/expeditie-map.css" />
         <link
           id="worker"
           rel="prefetch"

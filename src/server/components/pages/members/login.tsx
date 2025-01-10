@@ -2,6 +2,7 @@ import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
+import { PasswordInput, TextInput } from "../../admin/form-inputs.js";
 
 const LoginPage: FunctionComponent<{
   messages: string[];
@@ -14,55 +15,28 @@ const LoginPage: FunctionComponent<{
     <div class="container">
       <NavigationBar type="no-user" backTo="home" />
 
-      <div class="row">
-        <div class="col-12 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
-          <div class="card">
-            <div class="card-body">
-              <h4 class="card-title">Inloggen</h4>
-              <hr />
-              {messages?.map((message) => (
-                <p class="text-danger text-center">{message}</p>
-              ))}
+      <form
+        class="login-form"
+        action="/leden/login"
+        method="POST"
+        onSubmit="window.umami?.track('login', { gebruiker: document.getElementById('username').value.toLowerCase() })"
+      >
+        <h1 class="page-title">Inloggen</h1>
 
-              <form
-                action="/leden/login"
-                method="POST"
-                onSubmit="window.umami?.track('login', { gebruiker: document.getElementById('username').value.toLowerCase() })"
-              >
-                <div class="form-group mb-2">
-                  <input
-                    class="form-control"
-                    type="text"
-                    id="username"
-                    name="username"
-                    placeholder="Gebruikersnaam"
-                    required
-                    autoFocus
-                  />
-                </div>
+        {messages?.map((message) => <div class="error-text">{message}</div>)}
 
-                <div class="form-group mb-2">
-                  <input
-                    class="form-control"
-                    type="password"
-                    name="password"
-                    placeholder="Wachtwoord"
-                    required
-                  />
-                </div>
+        <TextInput
+          name="username"
+          placeholder="Gebruikersnaam"
+          required
+          autoFocus
+        />
+        <PasswordInput name="password" placeholder="Wachtwoord" required />
 
-                <div class="form-group">
-                  <input
-                    class="btn btn-primary btn-block"
-                    value="Log In"
-                    type="submit"
-                  />
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+        <button class="button-main" type="submit">
+          Log in
+        </button>
+      </form>
     </div>
   </Page>
 );

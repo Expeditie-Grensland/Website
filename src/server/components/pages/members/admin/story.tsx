@@ -12,10 +12,7 @@ import {
   TextInput,
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
-import {
-  ExpeditieInput,
-  PersonInput
-} from "../../../admin/form-inputs.js";
+import { ExpeditieInput, PersonInput } from "../../../admin/form-inputs.js";
 
 const StoryAdminPage: FunctionComponent<{
   stories: Awaited<ReturnType<typeof getAllStories>>;
@@ -31,7 +28,6 @@ const StoryAdminPage: FunctionComponent<{
     messages={messages}
     newAction={{ action: "/leden/admin/verhalen/add" }}
     items={stories}
-    itemKey="id"
     columns={[
       {
         label: "Expeditie",
@@ -114,7 +110,7 @@ const StoryAdminPage: FunctionComponent<{
         label: "Media",
         style: { minWidth: "17.5rem" },
         render: (story, attrs) => (
-          <FormInputArray allowEmpty values={story?.media} {...attrs}>
+          <FormInputArray minSize={0} values={story?.media} {...attrs}>
             {(medium, attrs) => (
               <>
                 <HiddenInput name="media_ids[]" value={medium?.id} {...attrs} />

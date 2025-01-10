@@ -188,7 +188,6 @@ export class Graph {
         circle.setAttribute('stroke', color);
         circle.setAttribute('fill', '#fff');
         circle.setAttribute('stroke-width', '5');
-        circle.setAttribute('style', 'cursor: pointer');
 
         // increase radius on hover
         circle.onmouseenter = () => {

@@ -29,7 +29,6 @@ const PointsAdminPage: FunctionComponent<{
     messages={messages}
     newAction={{ action: "/leden/admin/punten/add" }}
     items={points}
-    itemKey="id"
     columns={[
       {
         label: "Persoon",

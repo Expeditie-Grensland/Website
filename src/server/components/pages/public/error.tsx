@@ -17,27 +17,21 @@ const ErrorPage: FunctionComponent<{
     head={<link rel="stylesheet" href="/static/styles/public.css" />}
     afterBody={<script src="/static/scripts/public.js" />}
   >
-    <div class="container text-center">
-      <NavigationBar type={staticRender ? "no-user" : "public"} user={user} />
+    <div class="container">
+      <NavigationBar
+        backTo="home"
+        type={staticRender ? "no-user" : "public"}
+        user={user}
+      />
 
-      <div class="row">
-        <div class="col">
-          <TitleImage
-            size="large"
-            colour="#b00"
-            title="Corrupt!"
-            subtitle={`Code ${code}: ${description}`}
-          />
-        </div>
-      </div>
+      <TitleImage
+        size="large"
+        colour="#b00"
+        title="Corrupt!"
+        subtitle={`Code ${code}: ${description}`}
+      />
 
-      {details && (
-        <div class="row">
-          <div class="col">
-            <span class="error-details">{details}</span>
-          </div>
-        </div>
-      )}
+      {details && <div class="error-details">{details}</div>}
     </div>
   </Page>
 );

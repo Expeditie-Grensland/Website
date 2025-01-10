@@ -11,31 +11,36 @@ type BasicInput<Value> = {
   value?: Value | undefined;
   hidden?: boolean;
   disabled?: boolean;
+  autoFocus?: boolean;
 };
 
 export const TextInput: FunctionComponent<BasicInput<string>> = ({
   ...rest
-}) => <input type="text" class="form-control" {...rest} />;
+}) => <input type="text" class="input" {...rest} />;
+
+export const PasswordInput: FunctionComponent<BasicInput<string>> = ({
+  ...rest
+}) => <input type="password" class="input" {...rest} />;
 
 export const TextAreaInput: FunctionComponent<BasicInput<string>> = ({
   value,
   ...rest
 }) => (
-  <textarea class="form-control" {...rest}>
+  <textarea class="input" {...rest}>
     {value}
   </textarea>
 );
 
 export const NumberInput: FunctionComponent<BasicInput<number>> = ({
   ...rest
-}) => <input type="number" class="form-control" {...rest} />;
+}) => <input type="number" class="input" {...rest} />;
 
 export const FileInput: FunctionComponent<
   BasicInput<undefined> & {
     accept?: string;
     multiple?: boolean;
   }
-> = ({ ...rest }) => <input type="file" class="form-control" {...rest} />;
+> = ({ ...rest }) => <input type="file" class="input" {...rest} />;
 
 export const HiddenInput: FunctionComponent<BasicInput<string | number>> = ({
   ...rest
@@ -45,8 +50,8 @@ export const CheckInput: FunctionComponent<BasicInput<boolean>> = ({
   value,
   ...rest
 }) => (
-  <div class="form-check">
-    <input type="checkbox" class="form-check-input" checked={value} {...rest} />
+  <div>
+    <input type="checkbox" class="input-check" checked={value} {...rest} />
   </div>
 );
 
@@ -58,7 +63,7 @@ export const DateInput: FunctionComponent<BasicInput<Date>> = ({
   <input
     type="date"
     pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
-    class="form-control"
+    class="input"
     placeholder={placeholder}
     value={value?.toISOString().slice(0, 10)}
     {...rest}
@@ -75,7 +80,7 @@ export const LocalTimeInput: FunctionComponent<
     type="datetime-local"
     pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}([0-9]{2})?"
     step={1}
-    class="form-control"
+    class="input"
     placeholder={placeholder}
     value={value && getISODate(value.stamp, value.zone)}
     {...rest}
@@ -96,8 +101,8 @@ const Selector = <T extends { id: string }>({
   options: T[];
   optionText: (option: T) => string;
 } & BasicSelector) => (
-  <select class="form-select" required {...rest}>
-    <option selected={value === undefined} disabled>
+  <select class="input" required {...rest}>
+    <option selected={value === undefined} disabled value="">
       {placeholder}
     </option>
     {allowEmpty && (
@@ -172,7 +177,7 @@ export const TimezoneInput: FunctionComponent<BasicInput<string>> = ({
 
 type FormInputArrayProps<Value> = {
   values?: Value[];
-  allowEmpty?: boolean;
+  minSize?: number;
 
   children: (
     value: Value | undefined,
@@ -185,12 +190,15 @@ type FormInputArrayProps<Value> = {
 
 export const FormInputArray = <Value,>({
   values = [],
-  allowEmpty,
+  minSize = 1,
   children,
   ...attrs
 }: FormInputArrayProps<Value>) => (
-  <div class={allowEmpty ? "form-array form-array-allow-empty" : "form-array"}>
-    {(values.length == 0 && !allowEmpty ? [undefined] : values).map((value) => (
+  <div class="form-array" data-min-size={minSize}>
+    {[
+      ...values,
+      ...Array(Math.max(0, minSize - values.length)).fill(undefined),
+    ].map((value) => (
       <div class="form-array-item">{children(value, attrs)}</div>
     ))}
 
@@ -198,12 +206,14 @@ export const FormInputArray = <Value,>({
       {children(undefined, { disabled: true, ...attrs })}
     </div>
 
-    <button class="form-array-add btn btn-secondary me-2">+</button>
-    <button
-      class="form-array-remove btn btn-secondary"
-      disabled={values.length == 0 || (!allowEmpty && values.length == 1)}
-    >
-      –
-    </button>
+    <div>
+      <button class="form-array-add button-gray">+</button>
+      <button
+        class="form-array-remove button-gray"
+        disabled={values.length <= minSize}
+      >
+        –
+      </button>
+    </div>
   </div>
 );

@@ -14,17 +14,13 @@ const MemberPage: FunctionComponent<{
     head={<link rel="stylesheet" href="/static/styles/public.css" />}
     afterBody={<script src="/static/scripts/public.js" />}
   >
-    <div class="container text-center">
+    <div class="container">
       <NavigationBar type="public" backTo="home" user={user} />
 
-      <div class="row">
-        <div class="col">
-          <TitleImage
-            size="large"
-            title={`${person.first_name} ${person.last_name}`}
-          />
-        </div>
-      </div>
+      <TitleImage
+        size="large"
+        title={`${person.first_name} ${person.last_name}`}
+      />
     </div>
   </Page>
 );

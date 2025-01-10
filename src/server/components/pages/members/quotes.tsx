@@ -18,23 +18,17 @@ const QuotesPage: FunctionComponent<{
     <div class="container">
       <NavigationBar type="members" backTo="members" user={user} />
 
-      <div class="row pb-5">
-        <div class="col-12">
-          <div class="h1">De Lange Citatenlijst der Expeditie Grensland</div>
-        </div>
-      </div>
+      <h1 class="page-title">De Lange Citatenlijst der Expeditie Grensland</h1>
 
-      <div class="row pb-5">
-        {quotes.map((quote) => (
-          <DictionaryEntry
-            id={quote.id}
-            term={quote.quote}
-            smallTerm={`―\u00A0${quote.quotee}`}
-            descriptions={quote.context}
-            attachmentFile={quote.attachment_file}
-          />
-        ))}
-      </div>
+      {quotes.map((quote) => (
+        <DictionaryEntry
+          id={quote.id}
+          term={`“${quote.quote}”`}
+          smallTerm={`― ${quote.quotee}`}
+          descriptions={quote.context}
+          attachmentFile={quote.attachment_file}
+        />
+      ))}
     </div>
   </Page>
 );

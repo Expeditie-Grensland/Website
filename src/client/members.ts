@@ -7,7 +7,7 @@ Array.from(document.getElementsByClassName("form-array-add")).forEach(
     addElement.addEventListener("click", (event) => {
       if (!(event.target instanceof HTMLElement)) return;
 
-      const formArray = event.target.parentElement!;
+      const formArray = event.target.parentElement!.parentElement!;
       const protoItem = formArray
         .getElementsByClassName("form-array-proto")
         .item(0)! as HTMLElement;
@@ -38,15 +38,14 @@ Array.from(document.getElementsByClassName("form-array-remove")).forEach(
     removeElement.addEventListener("click", (event) => {
       if (!(event.target instanceof HTMLElement)) return;
 
-      const formArray = event.target.parentElement!;
+      const formArray = event.target.parentElement!.parentElement!;
+      const minSize = parseInt(formArray.dataset.minSize!);
+
       const items = formArray.getElementsByClassName("form-array-item");
-      const allowEmpty = formArray.classList.contains("form-array-allow-empty");
 
-      if (items.length < (allowEmpty ? 2 : 3))
-        event.target.setAttribute("disabled", "");
+      if (items.length > minSize) items.item(items.length - 1)!.remove();
 
-      if (items.length > (allowEmpty ? 0 : 1))
-        items.item(items.length - 1)!.remove();
+      if (items.length <= minSize) event.target.setAttribute("disabled", "");
 
       return false;
     })

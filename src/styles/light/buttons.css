@@ -1,0 +1,41 @@
+.button-main {
+  --x-text-color: #fff;
+  --x-bg-color: #0d6efd;
+  --x-border-color: #0d6efd;
+
+  --x-text-color-hover: #fff;
+  --x-bg-color-hover: #0b5ed7;
+  --x-border-color-hover: #0a58ca;
+
+  --x-text-color-active: #fff;
+  --x-bg-color-active: #0a58ca;
+  --x-border-color-active: #0a53be;
+}
+
+.button-danger {
+  --x-text-color: #fff;
+  --x-bg-color: #dc3545;
+  --x-border-color: #dc3545;
+
+  --x-text-color-hover: #fff;
+  --x-bg-color-hover: #bb2d3b;
+  --x-border-color-hover: #b02a37;
+
+  --x-text-color-active: #fff;
+  --x-bg-color-active: #b02a37;
+  --x-border-color-active: #a52834;
+}
+
+.button-gray {
+  --x-text-color: #fff;
+  --x-bg-color: #6c757d;
+  --x-border-color: #6c757d;
+
+  --x-text-color-hover: #fff;
+  --x-bg-color-hover: #5c636a;
+  --x-border-color-hover: #565e64;
+
+  --x-text-color-active: #fff;
+  --x-bg-color-active: #565e64;
+  --x-border-color-active: #51585e;
+}

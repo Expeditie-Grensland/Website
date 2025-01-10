@@ -6,42 +6,27 @@ export const NavigationBar: FunctionComponent<{
   backTo?: "home" | "members";
   user?: Awaited<ReturnType<typeof authenticatePerson>> | null;
 }> = ({ type, backTo, user }) => (
-  <nav
-    class={`navbar navbar-expand ${type == "public" ? "navbar-dark" : "navbar-light"}`}
-  >
-    {backTo && (
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" href={backTo == "home" ? "/" : "/leden"}>
-            &larr;&nbsp;{backTo == "home" ? "Home" : "Leden"}
-          </a>
-        </li>
-      </ul>
-    )}
+  <nav class="navbar">
+    <div class="navbar-left">
+      {backTo && (
+        <a href={backTo == "home" ? "/" : "/leden"}>
+          &larr;&nbsp;{backTo == "home" ? "Home" : "Leden"}
+        </a>
+      )}
+    </div>
 
-    {type == "public" && (
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/leden">
-            {user ? `${user.first_name} ${user.last_name}` : "Log In"}
-          </a>
-        </li>
-      </ul>
-    )}
+    <div class="navbar-right">
+      {type == "public" && (
+        <a href="/leden">
+          {user ? `${user.first_name} ${user.last_name}` : "Log In"}
+        </a>
+      )}
 
-    {type == "members" && user && (
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link disabled">
-            {user.first_name} {user.last_name}
-          </a>
-        </li>
-        <li class="nav-item ps-2">
-          <a class="nav-link" href="/leden/loguit">
-            Log Uit
-          </a>
-        </li>
-      </ul>
-    )}
+      {type == "members" && user && (
+        <span>
+          {user.first_name} {user.last_name} <a href="/leden/loguit">Log Uit</a>
+        </span>
+      )}
+    </div>
   </nav>
 );

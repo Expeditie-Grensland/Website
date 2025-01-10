@@ -1,0 +1,19 @@
+:root {
+  --bg-color: #fff;
+  --text-color: #111;
+  --text-muted-color: #6a6a6a;
+  --text-mutest-color: #aaa;
+
+  --border-light-color: #e0e0e0;
+  --bg-light-color: #f4f4f4;
+
+  --navlink-color: #6a6a6a;
+  --navlink-color-hover: #444;
+  --navlink-color-active: #2a2a2a;
+  --navtext-color: #aaa;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+}

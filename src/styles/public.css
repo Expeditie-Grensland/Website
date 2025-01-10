@@ -1,0 +1,127 @@
+@import "./common/reset.css";
+@import "./common/containers.css";
+@import "./common/button.css";
+
+@import "./dark/colors.css";
+@import "./dark/buttons.css";
+
+.titleimg {
+  display: block;
+  position: relative;
+  box-shadow: var(--big-shadow);
+}
+
+a.titleimg:hover {
+  box-shadow: var(--big-shadow-hover);
+}
+
+a,
+a * {
+  transition: all 0.2s ease-in-out;
+}
+
+a.titleimg:hover .titleimg-bg {
+  filter: brightness(0.85);
+}
+
+.titleimg-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+}
+
+.titleimg-text {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+
+  background: #00000073;
+  text-shadow: 0 0 0.75em #000;
+  padding: 1rem 0.5rem;
+
+  text-align: center;
+  line-height: 1.2;
+}
+
+.titleimg h1 {
+  font-size: 2rem;
+}
+
+.titleimg h2 {
+  font-size: 1.2rem;
+}
+
+.titleimg-large {
+  aspect-ratio: 20 / 17;
+  margin-bottom: 4.5rem;
+}
+
+.titleimg-small {
+  aspect-ratio: 20 / 13;
+}
+
+.midtitle {
+  text-align: center;
+  font-size: 1.4rem;
+}
+
+.with-sidebar {
+  display: flex;
+  flex-flow: row-reverse wrap;
+  gap: 1.5rem;
+}
+
+.with-sidebar > * {
+  flex: 0 0 100%;
+}
+
+.video-player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  box-shadow: var(--big-shadow);
+}
+
+.sidebar {
+  text-align: center;
+}
+
+.sidebar > :not(:last-child) {
+  margin-bottom: 2rem;
+}
+
+.sidebar-title,
+.sidebar-detail,
+.error-details {
+  color: var(--text-muted-color);
+}
+
+@media (min-width: 768px) {
+  .titleimg-large {
+    aspect-ratio: 5 / 2;
+    font-size: 1.6rem;
+  }
+
+  .titleimg-large .titleimg-text {
+    padding: 2.5rem 1rem;
+  }
+
+  .titleimg-large h1 {
+    font-size: 3rem;
+  }
+
+  .titleimg-large h2 {
+    font-size: 1.6rem;
+  }
+
+  .with-sidebar > * {
+    flex: 1 0 0px;
+  }
+
+  .sidebar {
+    flex: 0 0 33.3%;
+  }
+}

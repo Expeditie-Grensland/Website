@@ -5,7 +5,7 @@ export const MediaPlayer: FunctionComponent<{ file: string }> = ({ file }) => {
   switch (getFileType(file)) {
     case "audio":
       return (
-        <audio class="mw-100" controls preload="none">
+        <audio class="media-player" controls preload="none">
           <source src={getFileUrl(file, "audio.mp3")} type="audio/mpeg" />
         </audio>
       );
@@ -13,7 +13,7 @@ export const MediaPlayer: FunctionComponent<{ file: string }> = ({ file }) => {
     case "video":
       return (
         <video
-          class="mw-100"
+          class="media-player"
           controls
           preload="none"
           poster={getFileUrl(file, "poster.jpg")}
@@ -23,9 +23,9 @@ export const MediaPlayer: FunctionComponent<{ file: string }> = ({ file }) => {
       );
 
     case "afbeelding":
-      return <img src={getFileUrl(file, "normaal.jpg")} />;
+      return <img class="media-player" src={getFileUrl(file, "normaal.jpg")} />;
 
     default:
-      return <span>Niet ondersteund bestandstype</span>;
+      return <div class="media-player">Niet ondersteund bestandstype</div>;
   }
 };

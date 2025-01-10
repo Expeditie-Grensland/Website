@@ -17,8 +17,7 @@ export const getAllPersons = (membersOnly = false) =>
     .selectFrom("person")
     .selectAll()
     .$if(membersOnly, (qb) => qb.where("type", "in", ["admin", "member"]))
-    .orderBy("last_name")
-    .orderBy("first_name")
+    .orderBy("sorting_name")
     .execute();
 
 export const getPerson = (id: string) =>

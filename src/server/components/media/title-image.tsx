@@ -15,20 +15,20 @@ export const TitleImage: FunctionComponent<{
         <>
           <source
             srcset={getFileUrl(file, "klein.webp")}
-            media="(max-width: 650px)"
+            media="(max-width: 500px)"
             type="image/webp"
           />
 
           <source
             srcset={getFileUrl(file, "klein.jpg")}
-            media="(max-width: 650px)"
+            media="(max-width: 500px)"
             type="image/jpeg"
           />
 
           <source srcset={getFileUrl(file, "normaal.webp")} type="image/webp" />
 
           <img
-            class="img-bg"
+            class="titleimg-bg"
             src={getFileUrl(file, "normaal.jpg")}
             draggable={false}
           />
@@ -40,7 +40,7 @@ export const TitleImage: FunctionComponent<{
           <source srcset={getFileUrl(file, "klein.webp")} type="image/webp" />
 
           <img
-            class="img-bg"
+            class="titleimg-bg"
             src={getFileUrl(file, "klein.jpg")}
             draggable={false}
           />
@@ -50,27 +50,24 @@ export const TitleImage: FunctionComponent<{
   );
 
   const titles = (
-    <div class="img-inner">
-      <span class="h1">{title}</span>
-      {subtitle && <span class="h2">{subtitle}</span>}
+    <div class="titleimg-text">
+      <h1>{title}</h1>
+      {subtitle && <h2>{subtitle}</h2>}
     </div>
   );
 
+  const props = {
+    class: `titleimg ${size == "large" ? "titleimg-large" : "titleimg-small"}`,
+    style: { backgroundColor: colour },
+  };
+
   return link ? (
-    <a
-      class={`${size == "large" ? "img-large" : "img-small"} ratio`}
-      href={link}
-      draggable={false}
-      style={{ backgroundColor: colour }}
-    >
+    <a href={link} draggable={false} {...props}>
       {picture}
       {titles}
     </a>
   ) : (
-    <div
-      class={`${size == "large" ? "img-large" : "img-small"} ratio`}
-      style={{ backgroundColor: colour }}
-    >
+    <div {...props}>
       {picture}
       {titles}
     </div>

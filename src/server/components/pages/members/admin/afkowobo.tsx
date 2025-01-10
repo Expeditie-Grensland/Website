@@ -18,7 +18,6 @@ const AfkowoboAdminPage: FunctionComponent<{
     messages={messages}
     newAction={{ action: "/leden/admin/afkowobo/add" }}
     items={afkos}
-    itemKey="id"
     columns={[
       {
         label: "Id",

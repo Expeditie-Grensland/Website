@@ -1,0 +1,114 @@
+.admin-new-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 36rem;
+}
+
+.inputs-with-label,
+.form-array,
+.form-array-item,
+.table-inputs,
+.admin-items-table form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputs-with-label > label {
+  font-size: 0.9rem;
+}
+
+.form-array-add {
+  margin-right: 0.5rem;
+}
+
+.admin-new-form + .admin-items-table {
+  margin-top: 4rem;
+}
+
+.admin-items-table {
+  width: 100%;
+}
+
+.admin-items-table th,
+.admin-items-table td {
+  padding: 1rem 0.5rem;
+  border-bottom: 1px solid var(--border-light-color);
+}
+
+.admin-items-table th {
+  vertical-align: bottom;
+  font-weight: bold;
+
+  position: sticky;
+  top: 0px;
+  z-index: 100;
+  background: var(--bg-light-color);
+}
+
+.input {
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-color);
+  border: 1px solid var(--border-light-color);
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+  appearance: none;
+}
+
+.input[type="file"] {
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.input::file-selector-button {
+  padding: 0.375rem 0.75rem;
+  margin: -0.375rem 0.75rem -0.375rem -0.75rem;
+  background: var(--bg-light-color);
+  border: none;
+  border-right: 1px solid var(--border-light-color);
+  border-radius: 0;
+  transition: all 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.input:hover::file-selector-button {
+  background: var(--border-light-color);
+}
+
+select.input {
+  padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+  background: no-repeat padding-box right 0.75rem center / auto 1rem
+    url("/static/icons/angle-down.svg") var(--bg-color);
+}
+
+.input::placeholder,
+select.input:invalid,
+select.input > *:disabled {
+  opacity: 1;
+  color: var(--text-mutest-color);
+}
+
+select.input > *:not(:disabled) {
+  color: var(--text-color);
+}
+
+.input-check {
+  width: 1rem;
+  height: 1rem;
+  background: no-repeat center / contain;
+  border: 1px solid var(--border-light-color);
+  border-radius: 0.25rem;
+  appearance: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.input-check:checked {
+  border: 1px solid #0d6efd;
+  background: no-repeat center / contain url("/static/icons/check.svg") #0d6efd;
+}
+
+.input:focus-visible,
+.input-check:focus-visible {
+  box-shadow: 0 0 0 0.25rem var(--border-light-color);
+}

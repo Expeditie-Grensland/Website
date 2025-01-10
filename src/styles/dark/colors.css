@@ -1,0 +1,20 @@
+:root {
+  --bg-color: #333;
+  --text-color: #fafafa;
+  --text-muted-color: #a1a1a1;
+
+  --border-light-color: #555;
+
+  --navlink-color: #a1a1a1;
+  --navlink-color-hover: #c7c7c7;
+  --navlink-color-active: #e1e1e1;
+  --navtext-color: #616161;
+
+  --big-shadow: 0 0 30px -10px #000;
+  --big-shadow-hover: 0 0 30px -5px #000;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+}

@@ -18,23 +18,17 @@ const DictionaryPage: FunctionComponent<{
     <div class="container">
       <NavigationBar type="members" backTo="members" user={user} />
 
-      <div class="row pb-5">
-        <div class="col-12">
-          <div class="h1">Het Grote Woordenboek der Expediets</div>
-        </div>
-      </div>
+      <h1 class="page-title">Het Grote Woordenboek der Expediets</h1>
 
-      <div class="row pb-5">
-        {words.map((word) => (
-          <DictionaryEntry
-            id={word.id}
-            term={word.word}
-            smallTerm={word.phonetic && `[${word.phonetic}]`}
-            descriptions={word.definitions}
-            attachmentFile={word.attachment_file}
-          />
-        ))}
-      </div>
+      {words.map((word) => (
+        <DictionaryEntry
+          id={word.id}
+          term={word.word}
+          smallTerm={word.phonetic && `[${word.phonetic}]`}
+          descriptions={word.definitions}
+          attachmentFile={word.attachment_file}
+        />
+      ))}
     </div>
   </Page>
 );

@@ -24,7 +24,6 @@ const ExpeditiesAdminPage: FunctionComponent<{
     messages={messages}
     newAction={{ action: "/leden/admin/expedities/add" }}
     items={expedities}
-    itemKey="id"
     columns={[
       {
         label: "Id, naam & ondertitel",
@@ -177,7 +176,7 @@ const ExpeditiesAdminPage: FunctionComponent<{
         render: (expeditie, attrs) => (
           <FormInputArray
             values={expeditie?.movie_editors}
-            allowEmpty
+            minSize={0}
             {...attrs}
           >
             {(person, attrs) => (

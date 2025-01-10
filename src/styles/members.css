@@ -1,0 +1,64 @@
+@import "./common/reset.css";
+@import "./common/containers.css";
+@import "./common/button.css";
+
+@import "./light/colors.css";
+@import "./light/buttons.css";
+@import "./light/inputs.css";
+@import "./light/messages.css";
+
+@import "./members/dictionary.css";
+@import "./members/link-card.css";
+@import "./members/points.css";
+
+a {
+  color: #0d6efd;
+}
+
+a[href]:hover,
+a[href]:focus {
+  text-decoration: underline;
+}
+
+.version-text {
+  color: var(--text-mutest-color);
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.media-player {
+  width: 100%;
+}
+
+.file-preview:has(> img) {
+  display: block;
+  width: 7.5rem;
+  height: 5rem;
+}
+
+.file-preview > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin: auto;
+}
+
+.file-preview:hover > img {
+  filter: brightness(0.85);
+}
+
+.login-form {
+  max-width: 24rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 auto;
+}
+
+.login-form > .error-text {
+  color: #dc3545;
+}

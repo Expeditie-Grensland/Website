@@ -1,0 +1,86 @@
+.points-teams {
+  display: flex;
+  text-align: center;
+  flex-wrap: wrap;
+  font-size: 3rem;
+}
+
+.points-flag {
+  flex: 0 0 auto;
+  color: var(--text-muted-color);
+  font-size: 0.9rem;
+}
+
+.points-flag > img {
+  width: 130px;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.points-b, .points-r {
+  flex: 1 0 auto;
+  width: 1fr;
+}
+
+.points-b {
+  text-align: right;
+}
+
+.points-r {
+  text-align: left;
+}
+
+.points-dash {
+  flex: 0 0 1.25em;
+}
+
+.points-expeditie {
+  text-align: center;
+  position: relative;
+
+  font-size: 0.9rem;
+  color: var(--text-muted-color);
+}
+
+.points-expeditie::before {
+  border-top: 2px solid var(--border-light-color);
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  z-index: -1;
+}
+
+.points-expeditie h1 {
+  display: inline-block;
+  text-align: center;
+  background: var(--bg-color);
+  padding: 0 1rem;
+}
+
+.point-row {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  line-height: 1;
+}
+
+.point-row-r {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.point-row > * {
+  flex: none;
+}
+
+.point-amount {
+  flex: 0 0 2rem;
+  font-weight: bold;
+}
+
+.point-date {
+  color: var(--text-muted-color);
+}
