@@ -1,4 +1,4 @@
-import { FileHandle, open } from "fs/promises";
+import { FileHandle, open } from "node:fs/promises";
 
 export const readFileHandleByChunk = async (
   file: FileHandle,

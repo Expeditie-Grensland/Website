@@ -1,5 +1,5 @@
 import { build, context } from "esbuild";
-import { writeFile } from "fs/promises";
+import { writeFile } from "node:fs/promises";
 
 const opts = ["dev", "dist"];
 const dir = process.argv[2];

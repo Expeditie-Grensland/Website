@@ -10,6 +10,7 @@ import {
   getNodesWithPersons,
 } from "../db/geo.js";
 import { getNewestStoryId, getStories, getStoryCount } from "../db/story.js";
+import { promiseAllProps } from "../helpers/async.js";
 
 const HEADER_REV = "x-revision-id";
 
@@ -39,21 +40,25 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/kaart", async (request, reply) =>
     reply.sendHtml(
-      renderExpeditieMapPage({
-        expeditie: reply.locals.expeditie!,
-        stories: await getStories(reply.locals.expeditie!.id),
-        nodes: await getNodesWithPersons(reply.locals.expeditie!.id),
-      })
+      renderExpeditieMapPage(
+        await promiseAllProps({
+          expeditie: reply.locals.expeditie!,
+          stories: getStories(reply.locals.expeditie!.id),
+          nodes: getNodesWithPersons(reply.locals.expeditie!.id),
+        })
+      )
     )
   );
 
   app.get("/kaart/binary", async (request, reply) => {
     const expeditie = reply.locals.expeditie!;
 
-    const locationCount = getLocationCount(expeditie.id);
-    const lastLocation = getNewestLocation(expeditie.id);
+    const [locationCount, lastLocation] = await Promise.all([
+      getLocationCount(expeditie.id),
+      getNewestLocation(expeditie.id),
+    ]);
 
-    const newHeader = `v1-${await locationCount}-${await lastLocation}`;
+    const newHeader = `v1-${locationCount}-${lastLocation}`;
 
     if (request.headers[HEADER_REV] === newHeader)
       return reply.code(304).send();
@@ -94,13 +99,15 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
   app.get("/kaart/story", async (request, reply) => {
     const expeditie = reply.locals.expeditie!;
 
-    const storyCount = getStoryCount(expeditie.id);
-    const newestStory = getNewestStoryId(expeditie.id);
+    const [storyCount, newestStory] = await Promise.all([
+      getStoryCount(expeditie.id),
+      getNewestStoryId(expeditie.id),
+    ]);
 
     reply.header("Content-Type", "application/json");
     reply.header("Charset", "utf-8");
 
-    const newHeader = `v1-${await storyCount}-${await newestStory}`;
+    const newHeader = `v1-${storyCount}-${newestStory}`;
 
     if (request.headers[HEADER_REV] === newHeader)
       return reply.code(304).send();

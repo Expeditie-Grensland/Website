@@ -41,6 +41,7 @@ import {
 import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
 import { deleteS3Prefix, getS3Files } from "../files/s3.js";
 import { getUsesForFiles } from "../files/uses.js";
+import { promiseAllProps } from "../helpers/async.js";
 import { isValidTimeZone, parseISODateTimeStamp } from "../helpers/time.js";
 
 const timeZoneSchema = z
@@ -248,13 +249,15 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/punten", async (request, reply) =>
     reply.sendHtml(
-      renderPointsAdminPage({
-        points: await getAllEarnedPoints(),
-        expedities: await getAllExpedities(),
-        persons: await getAllPersons(true),
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
+      renderPointsAdminPage(
+        await promiseAllProps({
+          points: getAllEarnedPoints(),
+          expedities: getAllExpedities(),
+          persons: getAllPersons(true),
+          user: reply.locals.user!,
+          messages: reply.flash() as Record<string, string[]>,
+        })
+      )
     )
   );
 
@@ -298,12 +301,14 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/expedities", async (request, reply) =>
     reply.sendHtml(
-      renderExpeditiesAdminPage({
-        expedities: await getAllExpeditiesWithPeopleIds(),
-        persons: await getAllPersons(),
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
+      renderExpeditiesAdminPage(
+        await promiseAllProps({
+          expedities: getAllExpeditiesWithPeopleIds(),
+          persons: getAllPersons(),
+          user: reply.locals.user!,
+          messages: reply.flash() as Record<string, string[]>,
+        })
+      )
     )
   );
 
@@ -353,12 +358,14 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/gpx", async (request, reply) =>
     reply.sendHtml(
-      renderGpxUploadAdminPage({
-        expedities: await getAllExpedities(),
-        persons: await getAllPersons(true),
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
+      renderGpxUploadAdminPage(
+        await promiseAllProps({
+          expedities: getAllExpedities(),
+          persons: getAllPersons(true),
+          user: reply.locals.user!,
+          messages: reply.flash() as Record<string, string[]>,
+        })
+      )
     )
   );
 
@@ -386,13 +393,15 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/verhalen", async (request, reply) =>
     reply.sendHtml(
-      renderStoryAdminPage({
-        stories: await getAllStories(),
-        expedities: await getAllExpedities(),
-        persons: await getAllPersons(true),
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
+      renderStoryAdminPage(
+        await promiseAllProps({
+          stories: getAllStories(),
+          expedities: getAllExpedities(),
+          persons: getAllPersons(true),
+          user: reply.locals.user!,
+          messages: reply.flash() as Record<string, string[]>,
+        })
+      )
     )
   );
 
