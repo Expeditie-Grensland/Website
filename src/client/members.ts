@@ -1,52 +1,60 @@
-Array.from(document.getElementsByClassName("form-confirm")).forEach((form) =>
-  form.addEventListener("submit", () => confirm("Weet je het zeker?"))
-);
+document
+  .querySelectorAll(".form-confirm")
+  .forEach((form) =>
+    form.addEventListener("submit", () => confirm("Weet je het zeker?"))
+  );
 
-Array.from(document.getElementsByClassName("form-array-add")).forEach(
-  (addElement) =>
-    addElement.addEventListener("click", (event) => {
-      if (!(event.target instanceof HTMLElement)) return;
+const updateRemoveDisabled = (formArray: HTMLElement) => {
+  const buttons = formArray.querySelectorAll(
+    ".form-array-row > .form-array-remove"
+  );
 
-      const formArray = event.target.parentElement!.parentElement!;
-      const protoItem = formArray
-        .getElementsByClassName("form-array-proto")
-        .item(0)! as HTMLElement;
+  buttons.forEach((button) => {
+    if (buttons.length <= (parseInt(formArray.dataset.minSize!) || 0)) {
+      button.setAttribute("disabled", "");
+    } else {
+      button.removeAttribute("disabled");
+    }
+  });
+};
 
-      const newItem = protoItem.cloneNode(true) as HTMLElement;
-      newItem.removeAttribute("hidden");
-      newItem.removeAttribute("disabled");
-      newItem.classList.remove("form-array-proto");
-      newItem.classList.add("form-array-item");
+const onRemove = (event: Event) => {
+  event.preventDefault();
 
-      Array.from(newItem.children).forEach((child) =>
-        child.removeAttribute("disabled")
-      );
+  const arrayRow = (event.target as HTMLElement).parentElement!;
+  const formArray = arrayRow.parentElement!;
 
-      formArray.insertBefore(newItem, protoItem);
+  arrayRow.remove();
+  updateRemoveDisabled(formArray);
+};
 
-      formArray
-        .getElementsByClassName("form-array-remove")
-        .item(0)!
-        .removeAttribute("disabled");
+document
+  .querySelectorAll(".form-array-remove")
+  .forEach((el) => el.addEventListener("click", onRemove));
 
-      return false;
-    })
-);
+const onAdd = (event: Event) => {
+  event.preventDefault();
 
-Array.from(document.getElementsByClassName("form-array-remove")).forEach(
-  (removeElement) =>
-    removeElement.addEventListener("click", (event) => {
-      if (!(event.target instanceof HTMLElement)) return;
+  const formArray = (event.target as HTMLElement).parentElement!;
+  const protoRow = formArray.querySelector(".form-array-proto")!;
 
-      const formArray = event.target.parentElement!.parentElement!;
-      const minSize = parseInt(formArray.dataset.minSize!);
+  const newRow = protoRow.cloneNode(true) as HTMLElement;
+  newRow.removeAttribute("hidden");
+  newRow.className = "form-array-row";
 
-      const items = formArray.getElementsByClassName("form-array-item");
+  newRow
+    .querySelectorAll(".form-array-item > *")
+    .forEach((child) => child.removeAttribute("disabled"));
 
-      if (items.length > minSize) items.item(items.length - 1)!.remove();
+  newRow
+    .querySelector(".form-array-remove")!
+    .addEventListener("click", onRemove);
 
-      if (items.length <= minSize) event.target.setAttribute("disabled", "");
+  formArray.insertBefore(newRow, protoRow);
 
-      return false;
-    })
-);
+  updateRemoveDisabled(formArray);
+};
+
+document
+  .querySelectorAll(".form-array-add")
+  .forEach((el) => el.addEventListener("click", onAdd));

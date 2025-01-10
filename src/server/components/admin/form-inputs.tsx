@@ -199,15 +199,21 @@ export const FormInputArray = <Value,>({
       ...values,
       ...Array(Math.max(0, minSize - values.length)).fill(undefined),
     ].map((value) => (
-      <div class="form-array-item">{children(value, attrs)}</div>
+      <div class="form-array-row">
+        <div class="form-array-item">{children(value, attrs)}</div>
+        <button
+          class="form-array-remove button-gray"
+          disabled={values.length <= minSize}
+        >
+          –
+        </button>
+      </div>
     ))}
 
     <div class="form-array-proto" hidden>
-      {children(undefined, { disabled: true, ...attrs })}
-    </div>
-
-    <div>
-      <button class="form-array-add button-gray">+</button>
+      <div class="form-array-item">
+        {children(undefined, { disabled: true, ...attrs })}
+      </div>
       <button
         class="form-array-remove button-gray"
         disabled={values.length <= minSize}
@@ -215,5 +221,7 @@ export const FormInputArray = <Value,>({
         –
       </button>
     </div>
+
+    <button class="form-array-add button-gray">+</button>
   </div>
 );

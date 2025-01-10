@@ -19,8 +19,17 @@
   font-size: 0.9rem;
 }
 
+.form-array-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.form-array-item {
+  flex: 1 0 auto;
+}
+
 .form-array-add {
-  margin-right: 0.5rem;
+  align-self: start;
 }
 
 .admin-new-form + .admin-items-table {
