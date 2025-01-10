@@ -1,4 +1,3 @@
-import 'core-js/features/promise';
 import mapboxgl from 'mapbox-gl';
 import {StoryHandler} from './story/StoryHandler';
 import {MapHandler} from "./map/MapHandler"

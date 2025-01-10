@@ -47,7 +47,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
-    "@mapbox/mapbox-gl-language": "^1.0.1",
     "@types/eslint__js": "^8.42.3",
     "@types/geojson": "^7946.0.15",
     "@types/luxon": "^3.4.2",
@@ -56,7 +55,6 @@
     "@types/qs": "^6.9.17",
     "@types/sodium-native": "^2.3.9",
     "concurrently": "^9.1.0",
-    "core-js": "^3.39.0",
     "esbuild": "^0.24.2",
     "eslint": "^9.17.0",
     "eslint-plugin-import-x": "^4.6.1",
@@ -68,7 +66,6 @@
     "mapbox-gl": "^3.9.1",
     "nodemon": "^3.1.9",
     "pino-pretty": "^13.0.0",
-    "ts-unused-exports": "^11.0.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.2"
@@ -114,8 +111,6 @@
     "check:types:server": "tsc --noEmit --project src/server/tsconfig.json",
     "check:types:client": "tsc --noEmit --project src/client/tsconfig.json",
     "check:lint": "eslint .",
-    "check:unused:server": "ts-unused-exports src/server/tsconfig.json --allowUnusedTypes --ignoreFiles=src/server/db/schema/migrations/*",
-    "check:unused:client": "ts-unused-exports src/client/tsconfig.json --allowUnusedTypes",
     "stats": "node build/stats.js",
     "util:generate-secret": "node build/util-generate-secret.js"
   }
