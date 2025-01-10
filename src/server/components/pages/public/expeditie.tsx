@@ -6,6 +6,7 @@ import { getFileType, getFileUrl } from "../../../files/files.js";
 import { TitleImage } from "../../media/title-image.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
+import { formatDateRange } from "../../../helpers/time.js";
 
 const ExpeditiePage: FunctionComponent<{
   expeditie: NonNullable<Awaited<ReturnType<typeof getFullExpeditie>>>;
@@ -50,6 +51,13 @@ const ExpeditiePage: FunctionComponent<{
               Open de kaart
             </a>
           )}
+
+          <div>
+            <div class="sidebar-title">Data</div>
+            <div>
+              {formatDateRange(expeditie.start_date, expeditie.end_date)}
+            </div>
+          </div>
 
           {expeditie.movie_editors &&
             expeditie.movie_editors.length > 0 &&

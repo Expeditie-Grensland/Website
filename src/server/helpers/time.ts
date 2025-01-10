@@ -42,3 +42,22 @@ export const parseISODateTimeStamp = (isoDate: string, zone: string) =>
   getTimeStamp(parseISODate(isoDate, zone));
 
 export const isValidTimeZone = (zone: string) => Info.isValidIANAZone(zone);
+
+export const formatDateRange = (startDate: Date, endDate: Date) => {
+  const endDateFormat: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+
+  const yearSame = startDate.getFullYear() == endDate.getFullYear();
+  const monthSame = yearSame && startDate.getMonth() == endDate.getMonth();
+
+  const startDateFormat: Intl.DateTimeFormatOptions = {
+    year: yearSame ? undefined : "numeric",
+    month: monthSame ? undefined : "long",
+    day: "numeric",
+  };
+
+  return `${startDate.toLocaleString("nl-NL", startDateFormat)} – ${endDate.toLocaleString("nl-NL", endDateFormat)}`;
+};
