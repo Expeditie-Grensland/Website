@@ -57,7 +57,6 @@
     "@types/sodium-native": "^2.3.9",
     "concurrently": "^9.1.0",
     "core-js": "^3.39.0",
-    "dotenv-cli": "^8.0.0",
     "esbuild": "^0.24.2",
     "eslint": "^9.17.0",
     "eslint-plugin-import-x": "^4.6.1",
@@ -79,12 +78,12 @@
     "dist"
   ],
   "bin": {
-    "expeditiegrensland-website": "dist/server/bin/expeditiegrensland-website.js",
-    "expeditiegrensland-cli": "dist/server/bin/expeditiegrensland-cli.js"
+    "expeditiegrensland-website": "dist/server/server.js",
+    "expeditiegrensland-cli": "dist/server/cli/main.js"
   },
   "scripts": {
-    "start": "dotenv -- node dist/server/server.js",
-    "cli": "dotenv -- node dist/server/cli/main.js",
+    "start": "node dist/server/server.js",
+    "start-cli": "node dist/server/cli/main.js",
     "build": "concurrently -c auto -m 1 --pad-prefix 'npm:build:*(!run)'",
     "build:clean": "node build/clean.js dist",
     "build:copy": "node build/copy.js dist",
@@ -100,7 +99,7 @@
     "dev:client": "node build/client.js dev",
     "dev:styles": "node build/styles.js dev",
     "dev:server": "node build/server.js dev",
-    "dev:run": "sleep 1 && dotenv -- nodemon --watch 'dev/server/**/*' --exec 'node --enable-source-maps --icu-data-dir=node_modules/full-icu' dev/server/server.js",
+    "dev:run": "sleep 1 && nodemon --watch 'dev/server/**/*' --exec 'node --enable-source-maps --icu-data-dir=node_modules/full-icu' dev/server/server.js",
     "db:migrations": "tsx build/db-migrate.ts list",
     "db:create-migration": "tsx build/db-migrate.ts create",
     "db:migrate-only": "tsx build/db-migrate.ts latest",

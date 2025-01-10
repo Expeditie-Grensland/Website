@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import { MigrationResultSet } from "kysely";
 import fs from "node:fs/promises";
 import { getDb } from "../src/server/db/schema/database";

@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import sodium from "sodium-native";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";

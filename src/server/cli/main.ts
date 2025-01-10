@@ -4,6 +4,8 @@ import { getDb } from "../db/schema/database.js";
 global.cliMode = true;
 
 try {
+  getDb();
+
   const command = await select({
     message: "Actie",
     choices: [
@@ -14,8 +16,6 @@ try {
       },
     ],
   });
-
-  getDb();
 
   await import(`./${command}.js`);
 } catch (err) {
