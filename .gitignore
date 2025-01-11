@@ -2,6 +2,7 @@ node_modules/
 
 /dev/
 /dist/
+/meta/
 .env
 
 .idea/

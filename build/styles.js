@@ -1,4 +1,5 @@
 import { build, context } from "esbuild";
+import { mkdir, writeFile } from "node:fs/promises";
 
 const opts = ["dev", "dist"];
 const dir = process.argv[2];
@@ -20,10 +21,19 @@ const options = {
   bundle: true,
   logLevel: "info",
   external: ["/static/*"],
+  metafile: dir == "dist",
 };
 
 if (isProd) {
-  await build({ ...options, minify: true });
+  const result = await build({ ...options, minify: true });
+
+  if (result.metafile) {
+    await mkdir("meta/", { recursive: true });
+    await writeFile(
+      "meta/esbuild-styles.json",
+      JSON.stringify(result.metafile)
+    );
+  }
 } else {
   const ctx = await context({ ...options, sourcemap: true });
   await ctx.watch();
