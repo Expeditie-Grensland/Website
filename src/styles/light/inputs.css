@@ -24,8 +24,12 @@
   gap: 0.5rem;
 }
 
+.form-array-remove {
+  align-self: center;
+}
+
 .form-array-item {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
 }
 
 .form-array-add {
@@ -57,6 +61,7 @@
 }
 
 .input {
+  width: 100%;
   padding: 0.375rem 0.75rem;
   background: var(--bg-color);
   border: 1px solid var(--border-light-color);
@@ -103,8 +108,8 @@ select.input > *:not(:disabled) {
 }
 
 .input-check {
-  width: 1rem;
-  height: 1rem;
+  width: 1.25rem;
+  height: 1.25rem;
   background: no-repeat center / contain;
   border: 1px solid var(--border-light-color);
   border-radius: 0.25rem;

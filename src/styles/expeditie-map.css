@@ -2,6 +2,10 @@
 
 @import "mapbox-gl/dist/mapbox-gl";
 
+body {
+  background: #333;
+}
+
 #map {
   width: 100%;
   height: 100%;
@@ -53,12 +57,14 @@ div a {
 #story-title {
   margin-bottom: 8px;
 }
+
 #story-title h1 {
   margin: 0;
+  font-size: 2rem;
 }
-#story-title .subtitle {
-  color: #404040;
-  margin: 0 0 8px 0;
+
+#story-title h2 {
+  font-size: 1.2rem;
 }
 
 #story {
@@ -103,13 +109,13 @@ div a {
   display: inline-block;
   text-align: right;
   margin: 0;
-  font-size: 0.7em;
+  font-size: 0.8em;
 }
 
 .story-element .people {
   margin-top: 0;
   margin-bottom: 0;
-  font-size: 0.7em;
+  font-size: 0.8em;
 }
 
 .story-element .media-wrapper {
@@ -120,9 +126,9 @@ div a {
   width: 100%;
 }
 
-.story-element .media-description {
-  margin-top: 0;
-  font-size: smaller;
+.story-element .media-description { 
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
 }
 
 .card {

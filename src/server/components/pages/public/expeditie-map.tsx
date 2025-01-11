@@ -116,8 +116,8 @@ const ExpeditieMapPage: FunctionComponent<{
     {stories.length > 0 && (
       <div id="story-wrapper">
         <div id="story-title" class="card">
-          <p class="subtitle">{expeditie.subtitle}</p>
-          <h1>{expeditie.name}</h1>
+          <h1>Expeditie {expeditie.name}</h1>
+          <h2>{expeditie.subtitle}</h2>
         </div>
 
         <div id="story">
