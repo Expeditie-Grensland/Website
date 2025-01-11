@@ -35,7 +35,7 @@ jobs:
         run: npm run --silent check
 
       - name: Run build
-        run: npm run --silent build-withmeta
+        run: npm run --silent build
 
       - name: Check statistics
         run: npm run --silent stats >> $GITHUB_STEP_SUMMARY
