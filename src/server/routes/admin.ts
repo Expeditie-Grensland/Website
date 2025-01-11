@@ -1,6 +1,11 @@
 import fastifyMultipart from "@fastify/multipart";
-import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
-import { ZodError, z } from "zod";
+import {
+  FastifyInstance,
+  FastifyPluginAsync,
+  FastifyReply,
+  FastifyRequest,
+} from "fastify";
+import { output, ZodError, ZodTypeAny } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { renderAfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js";
 import { renderDictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
@@ -42,47 +47,25 @@ import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
 import { deleteS3Prefix, getS3Files } from "../files/s3.js";
 import { getUsesForFiles } from "../files/uses.js";
 import { promiseAllProps } from "../helpers/async.js";
-import { isValidTimeZone, parseISODateTimeStamp } from "../helpers/time.js";
+import { afkoSchema } from "../validation-schemas/admin/afko.js";
+import { pointSchema } from "../validation-schemas/admin/earned-point.js";
+import { expeditieSchema } from "../validation-schemas/admin/expeditie.js";
+import { gpxSchema } from "../validation-schemas/admin/gpx.js";
+import {
+  idParamsSchema,
+  keyParamsSchema,
+  numIdParamsSchema,
+} from "../validation-schemas/admin/params.js";
+import { quoteSchema } from "../validation-schemas/admin/quote.js";
+import { storySchema } from "../validation-schemas/admin/story.js";
+import { wordSchema } from "../validation-schemas/admin/word.js";
 
-const timeZoneSchema = z
-  .string()
-  .refine(isValidTimeZone, { message: "Geen geldige tijdzone" });
-
-const idSchema = z.string().regex(/^[a-z0-9-]+/, {
-  message: "Mag alleen kleine letters, cijfers en streepjes bevatten",
-});
-
-const idParamsSchema = z.object({
-  id: idSchema,
-});
-
-const numIdParamsSchema = z.object({
-  id: z.coerce.number(),
-});
-
-const checkboxSchema = z.preprocess((value) => value == "on", z.boolean());
-
-const localTimeTransformer = <
-  T extends { time_local: string; time_zone: string },
->({
-  time_local,
-  ...rest
-}: T) => ({
-  ...rest,
-  time_stamp: parseISODateTimeStamp(time_local, rest.time_zone),
-});
-
-const dateSchema = z
-  .string()
-  .date()
-  .transform((string) => new Date(string));
-
-const tryCatchAndRedirect =
-  (
+const flashAndRedirect =
+  <Req extends FastifyRequest, Rep extends FastifyReply>(
     redirectTo: string,
-    func: (request: FastifyRequest, reply: FastifyReply) => Promise<string>
+    func: (request: Req, reply: Rep) => Promise<string>
   ) =>
-  async (request: FastifyRequest, reply: FastifyReply) => {
+  async (request: Req, reply: Rep) => {
     try {
       request.flash("info", await func(request, reply));
     } catch (e) {
@@ -98,6 +81,90 @@ const tryCatchAndRedirect =
     return reply;
   };
 
+type RegisterAdminRoute = <
+  Schema extends ZodTypeAny,
+  ParamSchema extends ZodTypeAny,
+>(
+  app: FastifyInstance,
+  prefix: string,
+
+  opts: {
+    schema?: Schema;
+    paramSchema?: ParamSchema;
+
+    renderPage: (opts: {
+      user: NonNullable<FastifyReply["locals"]["user"]>;
+      messages: Record<string, string[]>;
+    }) => Promise<string>;
+
+    addPath?: string;
+    onAdd?: (obj: output<Schema>) => Promise<string>;
+
+    updatePath?: string;
+    onUpdate?: (
+      params: output<ParamSchema>,
+      obj: output<Schema>
+    ) => Promise<string>;
+
+    deletePath?: string;
+    onDelete?: (params: output<ParamSchema>) => Promise<string>;
+  }
+) => void;
+
+const registerAdminRoute: RegisterAdminRoute = (
+  app,
+  prefix,
+  {
+    schema,
+    paramSchema,
+
+    renderPage,
+
+    addPath = "/add",
+    onAdd,
+
+    updatePath = "/update/:id",
+    onUpdate,
+
+    deletePath = "/delete/:id",
+    onDelete,
+  }
+) => {
+  app.get(prefix, async (_req, reply) =>
+    reply.sendHtml(
+      await renderPage({
+        user: reply.locals.user!,
+        messages: reply.flash() as Record<string, string[]>,
+      })
+    )
+  );
+
+  if (schema && onAdd) {
+    app.post(
+      `${prefix}${addPath}`,
+      flashAndRedirect(prefix, ({ body }) => onAdd(schema.parse(body)))
+    );
+  }
+
+  if (schema && paramSchema && onUpdate) {
+    app.post(
+      `${prefix}${updatePath}`,
+      flashAndRedirect(prefix, ({ body, params }) =>
+        onUpdate(paramSchema.parse(params), schema.parse(body))
+      )
+    );
+  }
+
+  if (paramSchema && onDelete) {
+    app.post(
+      `${prefix}${deletePath}`,
+      flashAndRedirect(prefix, ({ params }) =>
+        onDelete(paramSchema.parse(params))
+      )
+    );
+  }
+};
+
 const adminRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
     if (reply.locals.user?.type != "admin") reply.redirect("/leden");
@@ -112,385 +179,181 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   });
 
-  app.get("/citaten", async (request, reply) =>
-    reply.sendHtml(
-      renderQuotesAdminPage({
-        quotes: await getAllQuotes(),
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
-    )
-  );
+  registerAdminRoute(app, "/woordenboek", {
+    schema: wordSchema,
+    paramSchema: idParamsSchema,
 
-  const quoteSchema = z
-    .object({
-      id: idSchema,
-      quote: z.string(),
-      quotee: z.string(),
-      context: z.string(),
-      attachment_file: z.string().optional(),
-      time_local: z.string(),
-      time_zone: timeZoneSchema,
-    })
-    .transform(localTimeTransformer);
-
-  app.post(
-    "/citaten/add",
-    tryCatchAndRedirect("/citaten", async (request) => {
-      const q = await addQuote(quoteSchema.parse(request.body));
-      return `"${q.quote}" is successvol toegevoegd`;
-    })
-  );
-
-  app.post(
-    "/citaten/update/:id",
-    tryCatchAndRedirect("/citaten", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
-      const q = await updateQuote(id, quoteSchema.parse(request.body));
-      return `"${q.quote}" is successvol gewijzigd`;
-    })
-  );
-
-  app.post(
-    "/citaten/delete/:id",
-    tryCatchAndRedirect("/citaten", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
-      const q = await deleteQuote(id);
-      return `"${q.quote}" is successvol verwijderd`;
-    })
-  );
-
-  app.get("/woordenboek", async (request, reply) =>
-    reply.sendHtml(
+    renderPage: async ({ user, messages }) =>
       renderDictionaryAdminPage({
         words: await getAllWords(),
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
-    )
-  );
+        user,
+        messages,
+      }),
 
-  const wordSchema = z.object({
-    id: idSchema,
-    word: z.string(),
-    definitions: z.array(z.string()).nonempty(),
-    phonetic: z.string().optional(),
-    attachment_file: z.string().optional(),
+    onAdd: async (word) =>
+      `Woord "${(await addWord(word)).word}" is toegevoegd`,
+
+    onUpdate: async ({ id }, word) =>
+      `Woord "${(await updateWord(id, word)).word}" is gewijzigd`,
+
+    onDelete: async ({ id }) =>
+      `Woord "${(await deleteWord(id)).word}" is verwijderd`,
   });
 
-  app.post(
-    "/woordenboek/add",
-    tryCatchAndRedirect("/woordenboek", async (request) => {
-      const w = await addWord(wordSchema.parse(request.body));
-      return `"${w.word}" is successvol toegevoegd`;
-    })
-  );
+  registerAdminRoute(app, "/citaten", {
+    schema: quoteSchema,
+    paramSchema: idParamsSchema,
 
-  app.post(
-    "/woordenboek/update/:id",
-    tryCatchAndRedirect("/woordenboek", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
-      const w = await updateWord(id, wordSchema.parse(request.body));
-      return `"${w.word}" is successvol gewijzigd`;
-    })
-  );
+    renderPage: async ({ user, messages }) =>
+      renderQuotesAdminPage({
+        quotes: await getAllQuotes(),
+        user,
+        messages,
+      }),
 
-  app.post(
-    "/woordenboek/delete/:id",
-    tryCatchAndRedirect("/woordenboek", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
-      const w = await deleteWord(id);
-      return `"${w.word}" is successvol verwijderd`;
-    })
-  );
+    onAdd: async (quote) =>
+      `Citaat "${(await addQuote(quote)).quote}" is toegevoegd`,
 
-  app.get("/afkowobo", async (request, reply) =>
-    reply.sendHtml(
+    onUpdate: async ({ id }, quote) =>
+      `Citaat "${(await updateQuote(id, quote)).quote}" is gewijzigd`,
+
+    onDelete: async ({ id }) =>
+      `Citaat "${(await deleteQuote(id)).quote}" is verwijderd`,
+  });
+
+  registerAdminRoute(app, "/afkowobo", {
+    schema: afkoSchema,
+    paramSchema: idParamsSchema,
+
+    renderPage: async ({ user, messages }) =>
       renderAfkowoboAdminPage({
         afkos: await getAllAfkos(),
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
-    )
-  );
+        user,
+        messages,
+      }),
 
-  const afkoSchema = z.object({
-    id: idSchema,
-    afko: z.string(),
-    definitions: z.array(z.string().nonempty()).nonempty(),
-    attachment_file: z.string().optional(),
+    onAdd: async (afko) => `Afko "${(await addAfko(afko)).afko}" is toegevoegd`,
+
+    onUpdate: async ({ id }, afko) =>
+      `Afko "${(await updateAfko(id, afko)).afko}" is gewijzigd`,
+
+    onDelete: async ({ id }) =>
+      `Afko "${(await deleteAfko(id)).afko}" is verwijderd`,
   });
 
-  app.post(
-    "/afkowobo/add",
-    tryCatchAndRedirect("/afkowobo", async (request) => {
-      const a = await addAfko(afkoSchema.parse(request.body));
-      return `"${a.afko}" is successvol toegevoegd`;
-    })
-  );
+  registerAdminRoute(app, "/punten", {
+    schema: pointSchema,
+    paramSchema: numIdParamsSchema,
 
-  app.post(
-    "/afkowobo/update/:id",
-    tryCatchAndRedirect("/afkowobo", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
-      const a = await updateAfko(id, afkoSchema.parse(request.body));
-      return `"${a.afko}" is successvol gewijzigd`;
-    })
-  );
-
-  app.post(
-    "/afkowobo/delete/:id",
-    tryCatchAndRedirect("/afkowobo", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
-      const a = await deleteAfko(id);
-      return `"${a.afko}" is successvol verwijderd`;
-    })
-  );
-
-  app.get("/punten", async (request, reply) =>
-    reply.sendHtml(
+    renderPage: async ({ user, messages }) =>
       renderPointsAdminPage(
         await promiseAllProps({
           points: getAllEarnedPoints(),
           expedities: getAllExpedities(),
           persons: getAllPersons(true),
-          user: reply.locals.user!,
-          messages: reply.flash() as Record<string, string[]>,
+          user,
+          messages,
         })
-      )
-    )
-  );
+      ),
 
-  const pointSchema = z
-    .object({
-      person_id: z.string(),
-      expeditie_id: z.string().transform((x) => (x == "-" ? null : x)),
-      team: z.enum(["r", "b"]),
-      amount: z.coerce.number().int(),
-      time_local: z.string(),
-      time_zone: timeZoneSchema,
-    })
-    .transform(localTimeTransformer);
+    onAdd: async (point) =>
+      `${(await addEarnedPoint(point)).amount} punten zijn toegevoegd`,
 
-  app.post(
-    "/punten/add",
-    tryCatchAndRedirect("/punten", async (request) => {
-      const earnedPoint = pointSchema.parse(request.body);
-      const p = await addEarnedPoint(earnedPoint);
-      return `${p.amount} punten zijn successvol toegevoegd`;
-    })
-  );
+    onUpdate: async ({ id }, point) =>
+      `${(await updateEarnedPoint(id, point)).amount} punten zijn gewijzigd`,
 
-  app.post(
-    "/punten/update/:id",
-    tryCatchAndRedirect("/punten", async (request) => {
-      const { id } = numIdParamsSchema.parse(request.params);
-      const p = await updateEarnedPoint(id, pointSchema.parse(request.body));
-      return `${p.amount} punten zijn successvol gewijzigd`;
-    })
-  );
+    onDelete: async ({ id }) =>
+      `${(await deleteEarnedPoint(id)).amount} punten zijn verwijderd`,
+  });
 
-  app.post(
-    "/punten/delete/:id",
-    tryCatchAndRedirect("/punten", async (request) => {
-      const { id } = numIdParamsSchema.parse(request.params);
-      const p = await deleteEarnedPoint(id);
-      return `${p.amount} punten zijn successvol verwijderd`;
-    })
-  );
+  registerAdminRoute(app, "/expedities", {
+    schema: expeditieSchema,
+    paramSchema: idParamsSchema,
 
-  app.get("/expedities", async (request, reply) =>
-    reply.sendHtml(
+    renderPage: async ({ user, messages }) =>
       renderExpeditiesAdminPage(
         await promiseAllProps({
           expedities: getAllExpeditiesWithPeopleIds(),
           persons: getAllPersons(),
-          user: reply.locals.user!,
-          messages: reply.flash() as Record<string, string[]>,
+          user,
+          messages,
         })
-      )
-    )
-  );
+      ),
 
-  const expeditieSchema = z.object({
-    id: idSchema,
-    name: z.string(),
-    subtitle: z.string(),
-    draft: checkboxSchema,
-    start_date: dateSchema,
-    end_date: dateSchema,
-    persons: z.array(z.string()).nonempty(),
-    show_map: checkboxSchema,
-    countries: z.array(z.string()).nonempty(),
-    background_file: z.string().optional(),
-    movie_file: z.string().optional(),
-    movie_restricted: checkboxSchema,
-    movie_editors: z.array(z.string()).default([]),
+    onAdd: async (exp) =>
+      `Expeditie ${(await addExpeditie(exp)).name} is toegevoegd`,
+
+    onUpdate: async ({ id }, exp) =>
+      `Expeditie ${(await updateExpeditie(id, exp)).name} is gewijzigd`,
+
+    onDelete: async ({ id }) =>
+      `Expeditie ${(await deleteExpeditie(id)).name} is verwijderd`,
   });
 
-  app.post(
-    "/expedities/add",
-    tryCatchAndRedirect("/expedities", async (request) => {
-      const expeditie = expeditieSchema.parse(request.body);
-      const result = await addExpeditie(expeditie);
-      return `Expeditie ${result.name} is successvol toegevoegd`;
-    })
-  );
+  registerAdminRoute(app, "/gpx", {
+    schema: gpxSchema,
 
-  app.post(
-    "/expedities/update/:id",
-    tryCatchAndRedirect("/expedities", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
-      const expeditie = expeditieSchema.parse(request.body);
-      const result = await updateExpeditie(id, expeditie);
-      return `Expeditie ${result.name} is successvol gewijzigd`;
-    })
-  );
-
-  app.post(
-    "/expedities/delete/:id",
-    tryCatchAndRedirect("/expedities", async (request) => {
-      const { id } = idParamsSchema.parse(request.params);
-      const result = await deleteExpeditie(id);
-      return `Expeditie ${result.name} is successvol verwijderd`;
-    })
-  );
-
-  app.get("/gpx", async (request, reply) =>
-    reply.sendHtml(
+    renderPage: async ({ user, messages }) =>
       renderGpxUploadAdminPage(
         await promiseAllProps({
           expedities: getAllExpedities(),
           persons: getAllPersons(true),
-          user: reply.locals.user!,
-          messages: reply.flash() as Record<string, string[]>,
+          user,
+          messages,
         })
-      )
-    )
-  );
+      ),
 
-  const gpxSchema = z.object({
-    person_id: z.string(),
-    expeditie_id: z.string(),
-    time_zone: timeZoneSchema,
-    file: z.array(z.instanceof(Buffer)),
-  });
-
-  app.post(
-    "/gpx/upload",
-    tryCatchAndRedirect("/gpx", async (request) => {
-      const { file: files, ...location } = gpxSchema.parse(request.body);
-
+    addPath: "/upload",
+    onAdd: async ({ file: files, ...location }) => {
       let count = 0n;
 
       for (const file of files) {
         count += await insertLocationsFromGpx(location, file);
       }
 
-      return `${count} locaties zijn succesvol geüpload`;
-    })
-  );
+      return `${count} locaties zijn geüpload`;
+    },
+  });
 
-  app.get("/verhalen", async (request, reply) =>
-    reply.sendHtml(
+  registerAdminRoute(app, "/verhalen", {
+    schema: storySchema,
+    paramSchema: numIdParamsSchema,
+
+    renderPage: async ({ user, messages }) =>
       renderStoryAdminPage(
         await promiseAllProps({
           stories: getAllStories(),
           expedities: getAllExpedities(),
           persons: getAllPersons(true),
-          user: reply.locals.user!,
-          messages: reply.flash() as Record<string, string[]>,
+          user,
+          messages,
         })
-      )
-    )
-  );
+      ),
 
-  const storySchema = z
-    .object({
-      expeditie_id: z.string(),
-      person_id: z.string(),
-      time_local: z.string(),
-      time_zone: timeZoneSchema,
-      title: z.string(),
-      text: z.string().optional(),
-      media_ids: z
-        .array(
-          z
-            .literal("")
-            .transform(() => undefined)
-            .or(z.coerce.number().int())
-        )
-        .default([]),
-      media_files: z.array(z.string()).default([]),
-      media_descriptions: z.array(z.string()).default([]),
-    })
-    .refine(
-      ({ media_ids, media_files, media_descriptions }) =>
-        media_ids.length === media_files.length &&
-        media_files.length == media_descriptions.length,
-      {
-        message: "Media aantallen zijn niet gelijk",
-        path: ["media_files"],
-      }
-    )
-    .transform(localTimeTransformer)
-    .transform(({ media_ids, media_files, media_descriptions, ...rest }) => ({
-      ...rest,
-      media: media_files.map((file, i) => ({
-        id: media_ids[i],
-        file,
-        description: media_descriptions[i],
-      })),
-    }));
+    onAdd: async (story) =>
+      `Verhaal "${(await addStory(story)).title}" is toegevoegd`,
 
-  app.post(
-    "/verhalen/add",
-    tryCatchAndRedirect("/verhalen", async (request) => {
-      const s = await addStory(storySchema.parse(request.body));
-      return `"${s.title}" is successvol toegevoegd`;
-    })
-  );
+    onUpdate: async ({ id }, story) =>
+      `Verhaal "${(await updateStory(id, story)).title}" is gewijzigd`,
 
-  app.post(
-    "/verhalen/update/:id",
-    tryCatchAndRedirect("/verhalen", async (request) => {
-      const { id } = numIdParamsSchema.parse(request.params);
-      const s = await updateStory(id, storySchema.parse(request.body));
-      return `"${s.title}" is successvol gewijzigd`;
-    })
-  );
-
-  app.post(
-    "/verhalen/delete/:id",
-    tryCatchAndRedirect("/verhalen", async (request) => {
-      const { id } = numIdParamsSchema.parse(request.params);
-      const s = await deleteStory(id);
-      return `"${s.title}" is successvol verwijderd`;
-    })
-  );
-
-  app.get("/bestanden", async (request, reply) =>
-    reply.sendHtml(
-      renderFilesAdminPage({
-        filesWithUses: await getUsesForFiles(await getS3Files()),
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
-    )
-  );
-
-  const keyParamsSchema = z.object({
-    key: z.string().min(1),
+    onDelete: async ({ id }) =>
+      `Verhaal "${(await deleteStory(id)).title}" is verwijderd`,
   });
 
-  app.post(
-    "/bestanden/delete/:key",
-    tryCatchAndRedirect("/bestanden", async (request) => {
-      const { key } = keyParamsSchema.parse(request.params);
-      await deleteS3Prefix(key);
-      return `Bestand '${key}' is successvol verwijderd`;
-    })
-  );
+  registerAdminRoute(app, "/bestanden", {
+    paramSchema: keyParamsSchema,
+
+    renderPage: async ({ user, messages }) =>
+      renderFilesAdminPage({
+        filesWithUses: await getUsesForFiles(await getS3Files()),
+        user,
+        messages,
+      }),
+
+    deletePath: "/delete/:key",
+    onDelete: async ({ key }) =>
+      `Bestand "${await deleteS3Prefix(key)}" is verwijderd`,
+  });
 };
 
 export default adminRoutes;

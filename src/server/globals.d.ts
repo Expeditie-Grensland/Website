@@ -1,6 +1,5 @@
 /* eslint-disable no-var */
 import { getFullExpeditie } from "./db/expeditie.js";
-import { getFileType, getFileUrl } from "./files/files.js";
 import { getPerson, authenticatePerson } from "./db/person.js";
 
 declare module "fastify" {
@@ -8,12 +7,9 @@ declare module "fastify" {
     sendHtml: (html: string) => void;
 
     locals: {
-      getFileUrl: typeof getFileUrl;
-      getFileType: typeof getFileType;
       user?: Awaited<ReturnType<typeof authenticatePerson>>;
       person?: Awaited<ReturnType<typeof getPerson>>;
       expeditie?: Awaited<ReturnType<typeof getFullExpeditie>>;
-      umami?: { scriptUrl: string; websiteId: string };
     };
   }
 }

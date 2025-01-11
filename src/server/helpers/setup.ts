@@ -8,14 +8,8 @@ import qs from "qs";
 import { renderErrorPage } from "../components/pages/public/error.js";
 import { getPerson } from "../db/person.js";
 import { getMigrator } from "../db/schema/migrator.js";
-import { getFileType, getFileUrl } from "../files/files.js";
 import routes from "../routes/index.js";
-import {
-  getCryptoConfig,
-  getNodeEnv,
-  getServerConfig,
-  getUmamiConfig,
-} from "./config.js";
+import { getCryptoConfig, getNodeEnv, getServerConfig } from "./config.js";
 import { getHttpError } from "./http-errors.js";
 
 export const migrateDatabase = async () => {
@@ -126,12 +120,9 @@ export const setupFastify = async () => {
   app.addHook("onRequest", async (request, reply) => {
     reply.locals = {
       ...reply.locals,
-      getFileType,
-      getFileUrl,
       user:
         (request.session.userId && (await getPerson(request.session.userId))) ||
         undefined,
-      umami: getUmamiConfig() || undefined,
     };
   });
 
