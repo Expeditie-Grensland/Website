@@ -40,7 +40,8 @@ jobs:
       - name: Check statistics
         run: npm run --silent stats >> $GITHUB_STEP_SUMMARY
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload build metadata
+        uses: actions/upload-artifact@v4
         with:
           name: Build-Metadata
           path: meta/
