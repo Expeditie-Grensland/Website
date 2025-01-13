@@ -5,14 +5,12 @@ import { getAllExpedities } from "../../../../db/expeditie.js";
 import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
+  ExpeditieInput,
   LocalTimeInput,
   NumberInput,
-  TimezoneInput,
-} from "../../../admin/form-inputs.js";
-import {
-  ExpeditieInput,
   PersonInput,
-  TeamInput
+  SelectorInput,
+  TimezoneInput,
 } from "../../../admin/form-inputs.js";
 
 const PointsAdminPage: FunctionComponent<{
@@ -61,9 +59,13 @@ const PointsAdminPage: FunctionComponent<{
         label: "Team",
         style: { minWidth: "10rem" },
         render: (point, attrs) => (
-          <TeamInput
-            teams={["b", "r"]}
+          <SelectorInput
+            placeholder="Team"
             name="team"
+            options={[
+              { id: "b", text: "Blauw" },
+              { id: "r", text: "Rood" },
+            ]}
             value={point?.team}
             {...attrs}
           />

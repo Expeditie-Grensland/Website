@@ -87,20 +87,18 @@ export const LocalTimeInput: FunctionComponent<
   />
 );
 
-type BasicSelector = BasicInput<string | null> & { allowEmpty?: boolean };
+type BaseSelectorInput = BasicInput<string | null> & { allowEmpty?: boolean };
 
-const Selector = <T extends { id: string }>({
+export const SelectorInput = ({
   placeholder,
   options,
-  optionText,
-  value: value,
+  value,
   allowEmpty,
   ...rest
 }: {
   placeholder: string;
-  options: T[];
-  optionText: (option: T) => string;
-} & BasicSelector) => (
+  options: { id: string; text: string }[];
+} & BaseSelectorInput) => (
   <select class="input" required {...rest}>
     <option selected={value === undefined} disabled value="">
       {placeholder}
@@ -112,7 +110,7 @@ const Selector = <T extends { id: string }>({
     )}
     {options.map((option) => (
       <option selected={value === option.id} value={option.id}>
-        {optionText(option)}
+        {option.text}
       </option>
     ))}
   </select>
@@ -121,12 +119,11 @@ const Selector = <T extends { id: string }>({
 export const ExpeditieInput: FunctionComponent<
   {
     expedities: Awaited<ReturnType<typeof getAllExpedities>>;
-  } & BasicSelector
+  } & BaseSelectorInput
 > = ({ expedities, placeholder = "Expeditie", ...rest }) => (
-  <Selector
+  <SelectorInput
     placeholder={placeholder}
-    options={expedities}
-    optionText={(expeditie) => expeditie.name}
+    options={expedities.map(({ id, name }) => ({ id, text: name }))}
     {...rest}
   />
 );
@@ -134,29 +131,14 @@ export const ExpeditieInput: FunctionComponent<
 export const PersonInput: FunctionComponent<
   {
     persons: Awaited<ReturnType<typeof getAllPersons>>;
-  } & BasicSelector
+  } & BaseSelectorInput
 > = ({ persons, placeholder = "Persoon", ...rest }) => (
-  <Selector
+  <SelectorInput
     placeholder={placeholder}
-    options={persons}
-    optionText={(person) => `${person.first_name} ${person.last_name}`}
-    {...rest}
-  />
-);
-
-export const TeamInput: FunctionComponent<
-  { teams: ("r" | "g" | "b")[] } & BasicSelector
-> = ({ teams = ["r", "g", "b"], placeholder = "Team", ...rest }) => (
-  <Selector
-    placeholder={placeholder}
-    options={(
-      [
-        { id: "r", name: "Rood" },
-        { id: "b", name: "Blauw" },
-        { id: "g", name: "Groen" },
-      ] as const
-    ).filter((team) => teams.includes(team.id))}
-    optionText={(team) => team.name}
+    options={persons.map((p) => ({
+      id: p.id,
+      text: `${p.first_name} ${p.last_name}`,
+    }))}
     {...rest}
   />
 );
@@ -166,10 +148,12 @@ export const TimezoneInput: FunctionComponent<BasicInput<string>> = ({
   value = "Europe/Amsterdam",
   ...rest
 }) => (
-  <Selector
+  <SelectorInput
     placeholder={placeholder}
-    options={Intl.supportedValuesOf("timeZone").map((zone) => ({ id: zone }))}
-    optionText={({ id }) => id}
+    options={Intl.supportedValuesOf("timeZone").map((zone) => ({
+      id: zone,
+      text: zone,
+    }))}
     value={value}
     {...rest}
   />
