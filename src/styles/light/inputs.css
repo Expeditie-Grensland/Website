@@ -24,6 +24,10 @@
   gap: 0.5rem;
 }
 
+.form-array-item:has(> *:not([hidden]) + *:not([hidden])) {
+  margin-bottom: 0.5rem;
+}
+
 .form-array-remove {
   align-self: center;
 }

@@ -83,6 +83,8 @@ const setupErrors = (app: FastifyInstance) => {
   );
 };
 
+const querystringParser = (str: string) => qs.parse(str, { allowDots: true });
+
 export const setupFastify = async () => {
   const app = fastify({
     logger:
@@ -101,7 +103,7 @@ export const setupFastify = async () => {
             level: "info",
           },
     trustProxy: getNodeEnv() === "production",
-    querystringParser: (str) => qs.parse(str),
+    querystringParser,
   });
 
   app.decorateReply("sendHtml", function (html: string) {
@@ -111,7 +113,7 @@ export const setupFastify = async () => {
 
   await setupStaticRoutes(app);
 
-  await app.register(fastifyFormbody, { parser: (str) => qs.parse(str) });
+  await app.register(fastifyFormbody, { parser: querystringParser });
 
   await setupSession(app);
 

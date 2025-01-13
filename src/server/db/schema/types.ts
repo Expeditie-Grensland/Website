@@ -100,6 +100,15 @@ export interface Person {
   type: PersonType;
 }
 
+export interface PersonAddress {
+  country: string;
+  id: Generated<number>;
+  line_1: string;
+  line_2: string;
+  name: string | null;
+  person_id: string;
+}
+
 export interface Quote {
   attachment_file: string | null;
   context: string;
@@ -146,6 +155,7 @@ export interface DB {
   geo_node_person: GeoNodePerson;
   member_link: MemberLink;
   person: Person;
+  person_address: PersonAddress;
   quote: Quote;
   story: Story;
   story_media: StoryMedia;

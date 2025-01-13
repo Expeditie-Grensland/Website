@@ -2,7 +2,8 @@ import { pbkdf2, randomBytes } from "crypto";
 import { bcrypt, bcryptVerify } from "hash-wasm";
 import { getDb } from "./schema/database.js";
 import { Insertable, Updateable } from "kysely";
-import { Person } from "./schema/types.js";
+import { Person, PersonAddress } from "./schema/types.js";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
 
 const hashPassword = async (password: string) =>
   await bcrypt({
@@ -29,20 +30,103 @@ export const getPerson = (id: string) =>
     .selectAll()
     .executeTakeFirst();
 
-export const addPerson = (person: Insertable<Person>) =>
+export const getAllPersonsWithAddresses = (membersOnly = false) =>
   getDb()
-    .insertInto("person")
-    .values(person)
-    .returningAll()
-    .executeTakeFirstOrThrow();
+    .selectFrom("person")
+    .selectAll()
+    .$if(membersOnly, (qb) => qb.where("type", "in", ["admin", "member"]))
+    .orderBy("sorting_name")
+    .select((eb) => [
+      jsonArrayFrom(
+        eb
+          .selectFrom("person_address")
+          .selectAll("person_address")
+          .whereRef("person_address.person_id", "=", "person.id")
+          .orderBy("name asc")
+          .orderBy("id asc")
+      ).as("addresses"),
+    ])
+    .execute();
 
-export const updatePerson = (id: string, person: Updateable<Person>) =>
+type WithAddresses = {
+  addresses: Insertable<Omit<PersonAddress, "person_id">>[];
+};
+
+export const addPerson = ({
+  addresses,
+  ...person
+}: Insertable<Person> & WithAddresses) =>
   getDb()
-    .updateTable("person")
-    .where("id", "=", id)
-    .set(person)
-    .returningAll()
-    .executeTakeFirstOrThrow();
+    .transaction()
+    .execute(async (trx) => {
+      const result = await trx
+        .insertInto("person")
+        .values(person)
+        .returningAll()
+        .executeTakeFirstOrThrow();
+
+      if (addresses.length > 0) {
+        await trx
+          .insertInto("person_address")
+          .values(addresses.map((a) => ({ ...a, person_id: result.id })))
+          .execute();
+      }
+
+      return result;
+    });
+
+export const updatePerson = (
+  id: string,
+  { addresses, ...person }: Updateable<Person> & WithAddresses
+) =>
+  getDb()
+    .transaction()
+    .execute(async (trx) => {
+      console.dir({ ...person, addresses });
+
+      const result = await trx
+        .updateTable("person")
+        .where("id", "=", id)
+        .set(person)
+        .returningAll()
+        .executeTakeFirstOrThrow();
+
+      const updateAddresses = addresses.filter(
+        (a): a is typeof a & { id: number } => a.id !== undefined
+      );
+
+      await trx
+        .deleteFrom("person_address")
+        .where("person_id", "=", result.id)
+        .$if(updateAddresses.length > 0, (qb) =>
+          qb.where(
+            "id",
+            "not in",
+            updateAddresses.map((a) => a.id)
+          )
+        )
+        .execute();
+
+      for (const address of updateAddresses) {
+        await trx
+          .updateTable("person_address")
+          .where("person_id", "=", id)
+          .where("id", "=", address.id)
+          .set(address)
+          .executeTakeFirstOrThrow();
+      }
+
+      const addAddresses = addresses.filter((a) => a.id == undefined);
+
+      if (addAddresses.length > 0) {
+        await trx
+          .insertInto("person_address")
+          .values(addAddresses.map((a) => ({ ...a, person_id: result.id })))
+          .execute();
+      }
+
+      return result;
+    });
 
 export const deletePerson = (id: string) =>
   getDb()

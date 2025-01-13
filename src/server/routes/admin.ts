@@ -12,6 +12,7 @@ import { renderDictionaryAdminPage } from "../components/pages/members/admin/dic
 import { renderExpeditiesAdminPage } from "../components/pages/members/admin/expedities.js";
 import { renderFilesAdminPage } from "../components/pages/members/admin/files.js";
 import { renderGpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
+import { renderPersonsAdminPage } from "../components/pages/members/admin/person.js";
 import { renderPointsAdminPage } from "../components/pages/members/admin/points.js";
 import { renderQuotesAdminPage } from "../components/pages/members/admin/quotes.js";
 import { renderStoryAdminPage } from "../components/pages/members/admin/story.js";
@@ -34,6 +35,7 @@ import {
   addPerson,
   deletePerson,
   getAllPersons,
+  getAllPersonsWithAddresses,
   updatePerson,
 } from "../db/person.js";
 import {
@@ -61,11 +63,10 @@ import {
   keyParamsSchema,
   numIdParamsSchema,
 } from "../validation-schemas/admin/params.js";
+import { personSchema } from "../validation-schemas/admin/person.js";
 import { quoteSchema } from "../validation-schemas/admin/quote.js";
 import { storySchema } from "../validation-schemas/admin/story.js";
 import { wordSchema } from "../validation-schemas/admin/word.js";
-import { personSchema } from "../validation-schemas/admin/person.js";
-import { renderPersonsAdminPage } from "../components/pages/members/admin/person.js";
 
 const flashAndRedirect =
   <Req extends FastifyRequest, Rep extends FastifyReply>(
@@ -157,7 +158,10 @@ const registerAdminRoute: RegisterAdminRoute = (
     app.post(
       `${prefix}${updatePath}`,
       flashAndRedirect(prefix, ({ body, params }) =>
-        onUpdate(paramSchema.parse(params), schema.parse(body))
+        {
+          console.dir(body);
+          return onUpdate(paramSchema.parse(params), schema.parse(body));
+        }
       )
     );
   }
@@ -280,7 +284,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     renderPage: async ({ user, messages }) =>
       renderPersonsAdminPage(
         await promiseAllProps({
-          persons: getAllPersons(),
+          persons: getAllPersonsWithAddresses(),
           user,
           messages,
         })

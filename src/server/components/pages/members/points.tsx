@@ -13,7 +13,7 @@ const PointsPage: FunctionComponent<{
   const teamScores = points.reduce(
     (acc, cur) =>
       Object.assign(acc, { [cur.team]: acc[cur.team] + cur.amount }),
-    { b: 0, r: 0 }
+    { blue: 0, red: 0, green: 0 }
   );
 
   const pointsByExpeditie = points.reduce(
@@ -42,9 +42,9 @@ const PointsPage: FunctionComponent<{
             <figcaption>Team Blauw</figcaption>
           </figure>
 
-          <div class="points-b">{teamScores.b}</div>
+          <div class="points-b">{teamScores.blue}</div>
           <div class="points-dash">–</div>
-          <div class="points-r">{teamScores.r}</div>
+          <div class="points-r">{teamScores.red}</div>
 
           <figure class="points-flag">
             <img src={`/static/images/kyrgyzstan.svg`} alt="Team Rood" />
@@ -60,7 +60,7 @@ const PointsPage: FunctionComponent<{
 
             {points.map((point) => (
               <div
-                class={`point-row ${point.team == "b" ? "point-row-b" : "point-row-r"}`}
+                class={`point-row ${point.team == "blue" ? "point-row-b" : "point-row-r"}`}
               >
                 <div class="point-amount">+{point.amount}</div>
                 <div class="point-person">

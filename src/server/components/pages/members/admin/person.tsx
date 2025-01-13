@@ -1,15 +1,20 @@
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
+import {
+  authenticatePerson,
+  getAllPersonsWithAddresses,
+} from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   EmailInput,
+  FormInputArray,
+  HiddenInput,
   SelectorInput,
   TextInput,
 } from "../../../admin/form-inputs.js";
 
 const PersonsAdminPage: FunctionComponent<{
-  persons: Awaited<ReturnType<typeof getAllPersons>>;
+  persons: Awaited<ReturnType<typeof getAllPersonsWithAddresses>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
 }> = ({ persons, user, messages }) => (
@@ -47,6 +52,7 @@ const PersonsAdminPage: FunctionComponent<{
               value={person?.first_name}
               {...attrs}
             />
+
             <TextInput
               name="last_name"
               placeholder="Achternaam"
@@ -54,6 +60,7 @@ const PersonsAdminPage: FunctionComponent<{
               value={person?.last_name}
               {...attrs}
             />
+
             <TextInput
               name="sorting_name"
               placeholder="Sorteernaam"
@@ -61,6 +68,7 @@ const PersonsAdminPage: FunctionComponent<{
               value={person?.sorting_name}
               {...attrs}
             />
+
             <TextInput
               name="initials"
               placeholder="Initialen"
@@ -89,6 +97,7 @@ const PersonsAdminPage: FunctionComponent<{
               value={person?.type}
               {...attrs}
             />
+
             <SelectorInput
               name="team"
               placeholder="Team"
@@ -115,6 +124,55 @@ const PersonsAdminPage: FunctionComponent<{
             value={person?.email || undefined}
             {...attrs}
           />
+        ),
+      },
+
+      {
+        label: "Adressen",
+        style: { minWidth: "12.5rem" },
+        render: (person, attrs) => (
+          <FormInputArray minSize={0} values={person?.addresses} {...attrs}>
+            {(address, attrs) => (
+              <>
+                <HiddenInput
+                  name="addresses.id[]"
+                  value={address?.id}
+                  {...attrs}
+                />
+
+                <TextInput
+                  name="addresses.name[]"
+                  placeholder="Naam (als niet zelf)"
+                  value={address?.name || undefined}
+                  {...attrs}
+                />
+
+                <TextInput
+                  name="addresses.line_1[]"
+                  placeholder="Adresregel 1"
+                  required
+                  value={address?.line_1}
+                  {...attrs}
+                />
+
+                <TextInput
+                  name="addresses.line_2[]"
+                  placeholder="Adresregel 2"
+                  required
+                  value={address?.line_2}
+                  {...attrs}
+                />
+
+                <TextInput
+                  name="addresses.country[]"
+                  placeholder="Land"
+                  required
+                  value={address?.country}
+                  {...attrs}
+                />
+              </>
+            )}
+          </FormInputArray>
         ),
       },
     ]}
