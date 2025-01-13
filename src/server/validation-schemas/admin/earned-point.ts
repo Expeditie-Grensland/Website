@@ -5,7 +5,7 @@ export const pointSchema = z
   .object({
     person_id: z.string(),
     expeditie_id: z.string().transform((x) => (x == "-" ? null : x)),
-    team: z.enum(["r", "b"]),
+    team: z.enum(["red", "blue"]),
     amount: z.coerce.number().int(),
     time_local: z.string(),
     time_zone: timeZoneSchema,

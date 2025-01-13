@@ -125,6 +125,18 @@ const MembersHomePage: FunctionComponent<{
         />
 
         <LinkCard
+          title="Personen"
+          text="Alle leden en niet-leden"
+          links={[
+            {
+              text: "Admin",
+              url: "/leden/admin/personen",
+              when: user.type == "admin",
+            },
+          ]}
+        />
+
+        <LinkCard
           title="GPX Upload"
           text="Omdat we nog steeds geen app hebben"
           links={[

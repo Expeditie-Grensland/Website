@@ -30,7 +30,12 @@ import {
   updateExpeditie,
 } from "../db/expeditie.js";
 import { insertLocationsFromGpx } from "../db/geo.js";
-import { getAllPersons } from "../db/person.js";
+import {
+  addPerson,
+  deletePerson,
+  getAllPersons,
+  updatePerson,
+} from "../db/person.js";
 import {
   addQuote,
   deleteQuote,
@@ -59,6 +64,8 @@ import {
 import { quoteSchema } from "../validation-schemas/admin/quote.js";
 import { storySchema } from "../validation-schemas/admin/story.js";
 import { wordSchema } from "../validation-schemas/admin/word.js";
+import { personSchema } from "../validation-schemas/admin/person.js";
+import { renderPersonsAdminPage } from "../components/pages/members/admin/person.js";
 
 const flashAndRedirect =
   <Req extends FastifyRequest, Rep extends FastifyReply>(
@@ -264,6 +271,35 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
     onDelete: async ({ id }) =>
       `${(await deleteEarnedPoint(id)).amount} punten zijn verwijderd`,
+  });
+
+  registerAdminRoute(app, "/personen", {
+    schema: personSchema,
+    paramSchema: idParamsSchema,
+
+    renderPage: async ({ user, messages }) =>
+      renderPersonsAdminPage(
+        await promiseAllProps({
+          persons: getAllPersons(),
+          user,
+          messages,
+        })
+      ),
+
+    onAdd: async (person) => {
+      const { first_name, last_name } = await addPerson(person);
+      return `${first_name} ${last_name} is toegevoegd`;
+    },
+
+    onUpdate: async ({ id }, person) => {
+      const { first_name, last_name } = await updatePerson(id, person);
+      return `${first_name} ${last_name} is gewijzigd`;
+    },
+
+    onDelete: async ({ id }) => {
+      const { first_name, last_name } = await deletePerson(id);
+      return `${first_name} ${last_name} is verwijderd`;
+    },
   });
 
   registerAdminRoute(app, "/expedities", {

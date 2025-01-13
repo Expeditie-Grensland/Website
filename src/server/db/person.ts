@@ -1,6 +1,8 @@
 import { pbkdf2, randomBytes } from "crypto";
 import { bcrypt, bcryptVerify } from "hash-wasm";
 import { getDb } from "./schema/database.js";
+import { Insertable, Updateable } from "kysely";
+import { Person } from "./schema/types.js";
 
 const hashPassword = async (password: string) =>
   await bcrypt({
@@ -26,6 +28,28 @@ export const getPerson = (id: string) =>
     .where("id", "=", id)
     .selectAll()
     .executeTakeFirst();
+
+export const addPerson = (person: Insertable<Person>) =>
+  getDb()
+    .insertInto("person")
+    .values(person)
+    .returningAll()
+    .executeTakeFirstOrThrow();
+
+export const updatePerson = (id: string, person: Updateable<Person>) =>
+  getDb()
+    .updateTable("person")
+    .where("id", "=", id)
+    .set(person)
+    .returningAll()
+    .executeTakeFirstOrThrow();
+
+export const deletePerson = (id: string) =>
+  getDb()
+    .deleteFrom("person")
+    .where("id", "=", id)
+    .returningAll()
+    .executeTakeFirstOrThrow();
 
 const pbkdf2HashRegex =
   /^\{PBKDF2-(?<digest>.*)\}(?<iterations>\d+)\$(?<salt>.+)\$(?<key>.+)$/;

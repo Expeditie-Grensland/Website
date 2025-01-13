@@ -35,6 +35,10 @@ export const NumberInput: FunctionComponent<BasicInput<number>> = ({
   ...rest
 }) => <input type="number" class="input" {...rest} />;
 
+export const EmailInput: FunctionComponent<BasicInput<string>> = ({
+  ...rest
+}) => <input type="email" class="input" {...rest} />;
+
 export const FileInput: FunctionComponent<
   BasicInput<undefined> & {
     accept?: string;

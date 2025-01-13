@@ -63,8 +63,8 @@ const PointsAdminPage: FunctionComponent<{
             placeholder="Team"
             name="team"
             options={[
-              { id: "b", text: "Blauw" },
-              { id: "r", text: "Rood" },
+              { id: "blue", text: "Blauw" },
+              { id: "red", text: "Rood" },
             ]}
             value={point?.team}
             {...attrs}

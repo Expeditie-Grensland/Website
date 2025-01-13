@@ -9,9 +9,9 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
-export type PersonTeam = "b" | "r";
+export type PersonTeam = "blue" | "green" | "red";
 
-export type PersonType = "admin" | "guest" | "member";
+export type PersonType = "admin" | "former" | "guest" | "member";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
