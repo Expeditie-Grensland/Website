@@ -9,8 +9,14 @@ import { renderErrorPage } from "../components/pages/public/error.js";
 import { getPerson } from "../db/person.js";
 import { getMigrator } from "../db/schema/migrator.js";
 import routes from "../routes/index.js";
-import { getCryptoConfig, getNodeEnv, getServerConfig } from "./config.js";
+import {
+  getCryptoConfig,
+  getDevSslConfig,
+  getNodeEnv,
+  getServerConfig,
+} from "./config.js";
 import { getHttpError } from "./http-errors.js";
+import { readFile } from "node:fs/promises";
 
 export const migrateDatabase = async () => {
   const { results, error } = await getMigrator().migrateToLatest();
@@ -104,6 +110,12 @@ export const setupFastify = async () => {
           },
     trustProxy: getNodeEnv() === "production",
     querystringParser,
+    https: getDevSslConfig()
+      ? {
+          key: await readFile(getDevSslConfig()!.key),
+          cert: await readFile(getDevSslConfig()!.cert),
+        }
+      : null,
   });
 
   app.decorateReply("sendHtml", function (html: string) {

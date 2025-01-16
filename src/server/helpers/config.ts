@@ -17,6 +17,20 @@ const configSchemas = z.object({
     })
     .transform((env) => ({ port: env.EG_PORT })),
 
+  devSsl: z
+    .object({
+      EG_DEV_SSL_KEY: z.string().optional(),
+      EG_DEV_SSL_CERT: z.string().optional(),
+    })
+    .transform((env) =>
+      env.EG_DEV_SSL_KEY && env.EG_DEV_SSL_CERT
+        ? {
+            key: env.EG_DEV_SSL_KEY,
+            cert: env.EG_DEV_SSL_CERT,
+          }
+        : null
+    ),
+
   files: z
     .object({
       EG_FILES_BASE_URL: z.string(),
@@ -100,6 +114,7 @@ const getConfig = <Name extends ConfigName>(name: Name) => {
 
 export const getNodeEnv = () => getConfig("environment");
 export const getServerConfig = () => getConfig("server");
+export const getDevSslConfig = () => getConfig("devSsl");
 export const getFilesConfig = () => getConfig("files");
 export const getS3Config = () => getConfig("s3");
 export const getDbConfig = () => getConfig("db");
