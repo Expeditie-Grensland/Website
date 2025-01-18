@@ -11,7 +11,7 @@ body {
   height: 100%;
 }
 
-#story-wrapper {
+#storyline {
   position: absolute;
   left: 0;
   top: 0;
@@ -24,11 +24,11 @@ body {
 }
 
 @media (max-width: 1099px) {
-  #map:has(+ #story-wrapper) {
+  #map:has(+ #storyline) {
     height: 75%;
   }
 
-  #story-wrapper {
+  #storyline {
     position: static;
     width: 100%;
     height: auto;
@@ -41,7 +41,7 @@ div a {
 }
 
 @media (min-width: 1100px) {
-  #map:has(+ #story-wrapper) .mapboxgl-ctrl-bottom-left {
+  #map:has(+ #storyline) .mapboxgl-ctrl-bottom-left {
     left: 40%;
   }
 }
@@ -54,86 +54,106 @@ div a {
   background: center/65% url("/static/icons/maximize.svg");
 }
 
-#story-title {
+.storyline-header {
   margin-bottom: 8px;
+  padding: 16px;
 }
 
-#story-title h1 {
+.storyline-header h1 {
   margin: 0;
   font-size: 2rem;
 }
 
-#story-title h2 {
+.storyline-header h2 {
   font-size: 1.2rem;
 }
 
-#story {
+.storyline-content {
   display: flex;
 }
 
-#graph {
+#storyline-graph {
   min-width: 100px;
-  padding: 0;
 }
 
-#graph .graph-circle {
+#storyline-graph .graph-circle {
   cursor: pointer;
   transition: r 0.1s ease;
 }
 
-#story-elements {
+#stories {
   width: 100%;
   margin-left: 16px;
   align-self: start;
 }
 
-.story-element {
+.story {
   scroll-margin: 16px;
+  padding: 16px;
 }
 
-.story-element + .story-element {
+.story + .story {
   margin-top: 16px;
 }
 
-.story-element .header {
+.story-header {
   display: flex;
   justify-content: space-between;
 }
 
-.story-element h1 {
+.story h1 {
   margin: 0;
   font-size: 1.5em;
 }
 
-.story-element .time {
+.story-time {
   display: inline-block;
   text-align: right;
   margin: 0;
   font-size: 0.8em;
 }
 
-.story-element .people {
+.story-people {
   margin-top: 0;
   margin-bottom: 0;
   font-size: 0.8em;
 }
 
-.story-element .media-wrapper {
+.story-media {
   margin-top: 16px;
 }
 
-.story-element .media-preview {
+.story-media > video,
+.story-media > img {
   width: 100%;
 }
 
-.story-element .media-description { 
+.story-media > p {
   margin-top: 0.5rem;
   font-size: 0.8rem;
 }
 
-.card {
+#storyline-graph,
+.storyline-header,
+.story {
   background: #f5f5f5e6;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   border-radius: 5px;
-  padding: 16px;
+}
+
+.graph-circle {
+  cursor: "pointer";
+  r: 8;
+  fill: #fff;
+  stroke-width: 5;
+}
+
+.graph-circle:hover,
+.graph-circle.hover {
+  r: 12;
+}
+
+.graph-line {
+  stroke-width: 5;
+  fill: none;
 }

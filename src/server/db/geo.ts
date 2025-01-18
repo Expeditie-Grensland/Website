@@ -1,8 +1,8 @@
+import { randomUUID } from "crypto";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { asyncMapInChunks } from "../helpers/chunk.js";
 import { parseGpx } from "../helpers/gpx.js";
 import { getDb } from "./schema/database.js";
-import { randomUUID } from "crypto";
 
 export const getNewestLocation = (expeditieId: string) =>
   getDb()
@@ -21,6 +21,15 @@ export const getLocationCount = (expeditieId: string) =>
     .select(({ fn }) => [fn.countAll<bigint>().as("count")])
     .executeTakeFirst()
     .then((result) => result?.count || 0n);
+
+export const getLocationsVersionString = async (expeditieId: string) => {
+  const [locationCount, lastLocation] = await Promise.all([
+    getLocationCount(expeditieId),
+    getNewestLocation(expeditieId),
+  ]);
+
+  return `v1-${locationCount}-${lastLocation}`;
+};
 
 export const getNodesWithPersons = (expeditieId: string) =>
   getDb()

@@ -1,53 +1,45 @@
-import {
-    StoryResult
-} from '../helpers/retrieval';
-import { MapHandler } from "../map/MapHandler";
-import { GraphBuilder } from './graph/graphbuilder';
+import { Map } from "mapbox-gl";
+import { GraphBuilder } from "./graph/graphbuilder";
+import { NodesAndStories } from "../expeditie-map";
 
 export class StoryHandler {
-    private nodeColors: string[]
-    private mapHandler: MapHandler
-    private graphBuilder: GraphBuilder
-    private hoveringStoryId: string | null = null
+  private map: Map;
+  private graphBuilder: GraphBuilder;
 
-    constructor(nodeColors: string[], mapHandler: MapHandler) {
-        this.nodeColors = nodeColors;
-        this.mapHandler = mapHandler;
-        this.graphBuilder = new GraphBuilder(document.getElementById('graph')!);
-    }
+  constructor(map: Map) {
+    this.map = map;
+    this.graphBuilder = new GraphBuilder(
+      document.getElementById("storyline-graph")!
+    );
+  }
 
-    public renderStory = (result: StoryResult) => {
-        const storyWrapper = document.getElementById("story-wrapper");
-        if (!storyWrapper) return;
+  public renderStory = ({ nodes, stories }: NodesAndStories) => {
+    const storyline = document.getElementById("storyline");
+    if (!storyline) return;
 
-        this.graphBuilder.constructGraph(result.nodes, result.story, this.mapHandler, this);
+    this.graphBuilder.constructGraph(nodes, stories, this.map, this);
 
-        const renderGraph = () => {
-            this.graphBuilder.drawSVG(document.getElementById('story-elements')!, this.nodeColors);
-        }
+    const renderGraph = () => {
+      this.graphBuilder.drawSVG(document.getElementById("stories")!);
+    };
 
-        renderGraph();
-        new ResizeObserver(renderGraph).observe(document.getElementById("story-elements")!);
-    }
+    renderGraph();
+    new ResizeObserver(renderGraph).observe(
+      document.getElementById("stories")!
+    );
+  };
 
-    public resetHoveringStory = () => {
-        if (this.hoveringStoryId != null) {
-            document.getElementById(`circle-${this.hoveringStoryId}`)?.setAttribute('r', '8');
-            this.hoveringStoryId = null;
-        }
-    }
+  public resetHoveringStory = () => {
+    document
+      .querySelectorAll(".graph-circle")
+      .forEach((el) => el.classList.remove("hover"));
+  };
 
-    public setHoveringStory = (featureId: string) => {
-        if (this.hoveringStoryId === featureId)
-            return;
+  public setHoveringStory = (featureId: number) => {
+    document.getElementById(`circle-${featureId}`)?.classList.add("hover");
+  };
 
-        this.resetHoveringStory();
-        // set feature state to increase circle size on hover
-        this.hoveringStoryId = featureId;
-        document.getElementById(`circle-${this.hoveringStoryId}`)?.setAttribute('r', '12');
-    }
-
-    public scrollToStoryElement = (storyId: string) => {
-        document.getElementById(storyId)?.scrollIntoView({block: "start", inline: "nearest", behavior: 'smooth'})
-    }
+  public scrollToStory = (storyId: string) => {
+    document.getElementById(`story-${storyId}`)?.scrollIntoView();
+  };
 }

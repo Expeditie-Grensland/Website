@@ -1,16 +1,11 @@
 import { IControl, Map } from "mapbox-gl";
-import { MapHandler } from "./MapHandler";
+import { zoomToRoute } from "./view";
 
 abstract class MapControl implements IControl {
-  mapHandler: MapHandler;
   container?: HTMLElement;
 
   abstract title: string;
   abstract iconClass: string;
-
-  constructor(mapHandler: MapHandler) {
-    this.mapHandler = mapHandler;
-  }
 
   onAdd = (map: Map) => {
     this.container = document.createElement("div");
@@ -57,7 +52,7 @@ export class CenterRouteControl extends MapControl {
   title = "Centreer route";
   iconClass = "mapicon-center-route";
 
-  onClick = () => {
-    this.mapHandler.resetBounds();
+  onClick = (map: Map) => {
+    zoomToRoute(map);
   };
 }

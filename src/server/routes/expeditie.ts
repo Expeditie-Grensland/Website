@@ -3,13 +3,15 @@ import { renderExpeditieMapPage } from "../components/pages/public/expeditie-map
 import { renderExpeditiePage } from "../components/pages/public/expeditie.js";
 import { getFullExpeditie } from "../db/expeditie.js";
 import {
-  getFirstNodeLocationAfter,
   getLocationCount,
   getNewestLocation,
   getNodeLocations,
   getNodesWithPersons,
 } from "../db/geo.js";
-import { getNewestStoryId, getStories, getStoryCount } from "../db/story.js";
+import {
+  getNodesAndStoriesForClient,
+  getStories
+} from "../db/story.js";
 import { promiseAllProps } from "../helpers/async.js";
 
 const HEADER_REV = "x-revision-id";
@@ -45,6 +47,9 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
           expeditie: reply.locals.expeditie!,
           stories: getStories(reply.locals.expeditie!.id),
           nodes: getNodesWithPersons(reply.locals.expeditie!.id),
+          nodesAndStories: getNodesAndStoriesForClient(
+            reply.locals.expeditie!.id
+          ),
         })
       )
     )
@@ -94,73 +99,6 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
     reply.raw.end();
 
     return reply;
-  });
-
-  app.get("/kaart/story", async (request, reply) => {
-    const expeditie = reply.locals.expeditie!;
-
-    const [storyCount, newestStory] = await Promise.all([
-      getStoryCount(expeditie.id),
-      getNewestStoryId(expeditie.id),
-    ]);
-
-    reply.header("Content-Type", "application/json");
-    reply.header("Charset", "utf-8");
-
-    const newHeader = `v1-${storyCount}-${newestStory}`;
-
-    if (request.headers[HEADER_REV] === newHeader)
-      return reply.code(304).send();
-
-    const [stories, nodes] = await Promise.all([
-      getStories(expeditie.id),
-      getNodesWithPersons(expeditie.id),
-    ]);
-
-    reply.header(HEADER_REV, newHeader);
-
-    const result = {
-      nodes: nodes.map((node, index) => {
-        return {
-          id: node.id,
-          nodeNum: index,
-          timeFrom: node.time_from,
-          timeTill: node.time_till,
-          personNames: node.persons.map(
-            (p) => `${p.first_name} ${p.last_name}`
-          ),
-        };
-      }),
-      story: await Promise.all(
-        stories.map(async (story) => {
-          const nodeIdx = nodes.findIndex(
-            (node) =>
-              story.time_stamp >= node.time_from &&
-              story.time_stamp < node.time_till &&
-              node.persons.some((p) => p.id == story.person_id)
-          );
-
-          const storyLocation = await getFirstNodeLocationAfter(
-            nodes[nodeIdx],
-            story.time_stamp
-          );
-
-          return {
-            id: story.id,
-            nodeNum: nodeIdx,
-            dateTime: {
-              stamp: story.time_stamp,
-              zone: story.time_zone,
-            },
-            title: story.title,
-            latitude: storyLocation?.latitude || 0,
-            longitude: storyLocation?.longitude || 0,
-          };
-        })
-      ),
-    };
-
-    return reply.send(JSON.stringify(result));
   });
 };
 

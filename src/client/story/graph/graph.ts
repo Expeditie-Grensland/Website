@@ -1,27 +1,40 @@
-import { Vertex } from './vertex';
-import {MapHandler} from "../../map/MapHandler"
-import {StoryHandler} from "../StoryHandler"
-import { Story } from '../../helpers/retrieval';
+import { Map } from 'mapbox-gl';
+import { GeoNode, Story } from '../../expeditie-map';
+import { nodeColors } from '../../expeditie-map/colors';
+import { resetStoryPointHover, setStoryPointHover } from '../../expeditie-map/data-layers';
+import { createSvgElement, setElementAttributes } from '../../helpers/elements';
+import { StoryHandler } from "../StoryHandler";
+
+export type Vertex = {
+    node: GeoNode;
+    stories: Story[];
+    children?: Vertex[];
+  };
 
 export class Graph {
     private readonly roots: Vertex[];         // starting vertices
 
-    private mapHandler: MapHandler;
+    private map: Map;
     private storyHandler: StoryHandler;
 
-    public constructor(roots: Vertex[], mapHandler: MapHandler, storyHandler: StoryHandler) {
+    public constructor(roots: Vertex[], map: Map, storyHandler: StoryHandler) {
         this.roots = roots;
-        this.mapHandler = mapHandler;
+        this.map = map;
         this.storyHandler = storyHandler;
     }
 
-    private static calculateY(header: Element): number {
-        const headerRect = header.getBoundingClientRect();
-        return (headerRect.top + headerRect.bottom) / 2.0;
+    private static calculateY(story: Story) {
+        const { top, bottom } = document.querySelector(`#story-${story.id} h1`)!.getBoundingClientRect();
+        return (top + bottom) / 2.0;
     }
 
-    private static calculateX(vertexIndex: number, layerSize: number, svgWidth: number, nodeDistance: number): number {
+    private static getNodeDistance(): number {
+        return 70;
+    }
+
+    private static calculateX(vertexIndex: number, layerSize: number, svgWidth: number): number {
         const svgMiddle = svgWidth / 2;
+        const nodeDistance = this.getNodeDistance();
 
         if (layerSize % 2 == 0) { // even amount of vertices in layer
             if (vertexIndex == 0)
@@ -47,94 +60,75 @@ export class Graph {
     public getAllLayers(): Vertex[][] {
         const nodes = [this.roots];
 
-        let level = 0;
-        while (true) {
+        for (let level = 0;; level++) {
             const nextLevel: Vertex[] = [];
 
             for (const node of nodes[level]) {
-                const children = node.getChildren();
-
-                if (children != null)
-                    nextLevel.push(...children);
+                if (node.children)
+                    nextLevel.push(...node.children);
             }
 
             if (nextLevel.length === 0)
                 break;
 
             // nodes are sorted in the order in which they start.
-            nextLevel.sort((a, b) => a.getStoryNode().timeFrom - b.getStoryNode().timeFrom);
+            nextLevel.sort((a, b) => a.node.timeFrom - b.node.timeFrom);
 
             // deduplicate
             const uniqueNextLevel: Vertex[] = [];
             for (const vertex of nextLevel) {
-                if (uniqueNextLevel.some(v => v.getStoryNode().id === vertex.getStoryNode().id))
+                if (uniqueNextLevel.some(v => v.node.id === vertex.node.id))
                     continue;
                 uniqueNextLevel.push(vertex);
             }
 
             nodes.push(uniqueNextLevel);
-            ++level;
         }
 
         return nodes;
     }
 
-    public toSVGGraph(htmlStoryElements: Element, nodeColors: string[]): SVGElement {
-        const svg = this.svgElement('svg');
+    public toSVGGraph(htmlStoriesElement: Element): SVGElement {
+        const svg = createSvgElement('svg');
 
         const layers = this.getAllLayers();
-        const maxLayerSize = this.maxLayerSize(layers);
-        const horizontalSpace = 70;
-        const svgWidth = Math.max(maxLayerSize * horizontalSpace, 100);
+        const maxLayerSize = layers.reduce((max, layer) => Math.max(max, layer.length), 0)
+        const svgWidth = Math.max(maxLayerSize * Graph.getNodeDistance(), 100);
 
         for (const layer of layers) {
             // draw straight lines
             for (const vertex of layer) {
-                const node = vertex.getStoryNode();
-                const storyElements = vertex.getStoryElements();
+                const { node, stories } = vertex;
 
-                if (storyElements.length <= 1)
+                if (stories.length <= 1)
                     continue;
-
-                const vertexIdx = layer.indexOf(vertex);
-                const firstStoryElement = document.getElementById(storyElements[0].id)!.getElementsByTagName("h1").item(0)!
-                const lastStoryElement = document.getElementById(storyElements[storyElements.length - 1].id)!.getElementsByTagName("h1").item(0)!
                 
-                const x = Graph.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace);
-                const y1 = Graph.calculateY(firstStoryElement);
-                const y2 = Graph.calculateY(lastStoryElement);
+                const x = Graph.calculateX(layer.indexOf(vertex), layer.length, svgWidth);
+                const y1 = Graph.calculateY(stories[0]);
+                const y2 = Graph.calculateY(stories[stories.length - 1]);
 
                 svg.appendChild(this.generateLine(x, y1, x, y2, nodeColors[node.nodeNum], 'none'));
             }
 
             // draw corners
             for (const parent of layer) {
-                if (parent.getChildren() == null)
+                const { children } = parent;
+
+                if (!children)
                     continue;
 
-                const layerIdx = layers.indexOf(layer);
-                const childLayer = layers[layerIdx + 1];
+                const childLayer = layers[layers.indexOf(layer) + 1];
 
-                const parentStoryElements = parent.getStoryElements().sort((a, b) => a.dateTime.stamp - b.dateTime.stamp);
-                const parentIdx = layer.indexOf(parent);
-                const parentEnd = parentStoryElements[parentStoryElements.length - 1];
-                const parentHeader = document.getElementById(parentEnd.id)!.getElementsByTagName("h1").item(0)!
+                const parentStories = parent.stories.sort((a, b) => a.timeStamp - b.timeStamp);
 
-                const x1 = Graph.calculateX(parentIdx, layer.length, svgWidth, horizontalSpace);
-                const y1 = Graph.calculateY(parentHeader);
-
-                const children = parent.getChildren()!;
+                const x1 = Graph.calculateX(layer.indexOf(parent), layer.length, svgWidth);
+                const y1 = Graph.calculateY(parentStories[parentStories.length - 1]);
 
                 for (const child of children) {
-                    const childStoryElements = child.getStoryElements().sort((a, b) => a.dateTime.stamp - b.dateTime.stamp);
-                    const childIdx = childLayer.indexOf(child);
-                    const childStart = childStoryElements[0];
-                    const childHeader = document.getElementById(childStart.id)!.getElementsByTagName("h1").item(0)!
+                    const x2 = Graph.calculateX(childLayer.indexOf(child), childLayer.length, svgWidth);
+                    const y2 = Graph.calculateY(child.stories.sort((a, b) => a.timeStamp - b.timeStamp)[0]);
 
-                    const x2 = Graph.calculateX(childIdx, childLayer.length, svgWidth, horizontalSpace);
-                    const y2 = Graph.calculateY(childHeader);
-
-                    const color = children.length > 1 ? nodeColors[child.getStoryNode().nodeNum] : nodeColors[parent.getStoryNode().nodeNum];
+                    const color = children.length > 1 ? nodeColors[child.node.nodeNum] : nodeColors[parent.node.nodeNum];
 
                     svg.appendChild(this.generateLine(x1, y1, x2, y2, color, children.length > 1 ? 'begin' : 'end'));
                 }
@@ -142,87 +136,60 @@ export class Graph {
 
             // draw circles
             for (const vertex of layer) {
-                const storyElements = vertex.getStoryElements();
+                const stories = vertex.stories;
 
-                for (const storyElement of storyElements) {
-                    const node = vertex.getStoryNode();
-                    const header = document.getElementById(storyElement.id)!.getElementsByTagName("h1").item(0)!
+                for (const story of stories) {
+                    const node = vertex.node;
                     
-                    const vertexIdx = layer.indexOf(vertex);
-                    const x = Graph.calculateX(vertexIdx, layer.length, svgWidth, horizontalSpace);
-                    const y = Graph.calculateY(header);
+                    const x = Graph.calculateX(layer.indexOf(vertex), layer.length, svgWidth);
+                    const y = Graph.calculateY(story);
 
-                    svg.appendChild(this.generateCircle(x, y, nodeColors[node.nodeNum], storyElement));
+                    svg.appendChild(this.generateCircle(x, y, nodeColors[node.nodeNum], story));
                 }
             }
         }
-        const graphTop = htmlStoryElements.getBoundingClientRect().top;
-        const svgHeight = htmlStoryElements.getBoundingClientRect().height - 16;
+        const graphTop = htmlStoriesElement.getBoundingClientRect().top;
+        const svgHeight = htmlStoriesElement.getBoundingClientRect().height - 16;
 
-        svg.setAttribute('width', svgWidth.toString());
-        svg.setAttribute('height', svgHeight.toString());
-        svg.setAttribute('viewBox', '0 ' + graphTop + ' ' + svgWidth + ' ' + svgHeight);
+        setElementAttributes(svg, {
+            width: svgWidth.toString(),
+            height: svgHeight.toString(),
+            viewBox: `0 ${graphTop} ${svgWidth} ${svgHeight}`
+        });
 
         return svg;
     }
 
-    private maxLayerSize(layers: Vertex[][] = this.getAllLayers()): number {
-        let max = 0;
+    private generateCircle(x: number, y: number, color: string, story: Story) {
+        const circle = createSvgElement('circle', {
+            class: "graph-circle",
+            id: `circle-${story.id}`,
+            cx: x.toString(),
+            cy: y.toString(),
+            stroke: color,
+        });
 
-        for (const layer of layers)
-            if (layer.length > max)
-                max = layer.length;
+        circle.addEventListener("mouseenter", () => {
+            setStoryPointHover(this.map, story.id);
+        })
 
-        return max;
-    }
+        circle.addEventListener("mouseleave", () => {
+            resetStoryPointHover(this.map);
+        })
 
-    private svgElement = (type: string) => document.createElementNS('http://www.w3.org/2000/svg', type);
-
-    private generateCircle(x: number, y: number, color: string, storyElem: Story) {
-        const circle = this.svgElement('circle');
-        circle.setAttribute('class', 'graph-circle');
-        circle.setAttribute('id', `circle-${storyElem.id}`);
-        circle.setAttribute('cx', x.toString());
-        circle.setAttribute('cy', y.toString());
-        circle.setAttribute('r', '8');
-        circle.setAttribute('stroke', color);
-        circle.setAttribute('fill', '#fff');
-        circle.setAttribute('stroke-width', '5');
-
-        // increase radius on hover
-        circle.onmouseenter = () => {
-            circle.setAttribute('r', '12');
-            this.mapHandler.map.getCanvas().style.cursor = 'pointer';
-        }
-        circle.onmouseover = () => {
-            this.mapHandler.setHoveringFeature(storyElem.id);
-        }
-        circle.onmouseleave = () => {
-            circle.setAttribute('r', '8');
-            this.mapHandler.map.getCanvas().style.cursor = '';
-            this.mapHandler.resetHoveringFeature();
-        }
-
-
-        // zoom map when clicking on story element circle
-        circle.onclick = () => {
-            this.mapHandler.map.flyTo({
-                center: [storyElem.longitude, storyElem.latitude],
+        // zoom map when clicking on circle
+        circle.addEventListener("click", () => {
+            this.map.flyTo({
+                center: [story.longitude, story.latitude],
                 zoom: 13,
-                padding: this.mapHandler.getCameraPadding()
             });
-            this.storyHandler.scrollToStoryElement(storyElem.id);
-        }
+            this.storyHandler.scrollToStory(`${story.id}`);
+        });
 
         return circle;
     }
 
     private generateLine(xA: number, yA: number, xB: number, yB: number, color: string, curve: 'none' | 'begin' | 'end') {
-        const path = this.svgElement('path');
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', color);
-        path.setAttribute('stroke-width', '5');
-
         let pathProps = `M ${xA} ${yA} `;
 
         if (curve === 'none') {
@@ -238,7 +205,10 @@ export class Graph {
             else pathProps += `a 20 20 0 0 0 20 20 H ${xB}`;
         }
 
-        path.setAttribute('d', pathProps);
-        return path;
+        return createSvgElement("path", {
+            class: "graph-line",
+            stroke: color,
+            "d": pathProps
+        })
     }
 }

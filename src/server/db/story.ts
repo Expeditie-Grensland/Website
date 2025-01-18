@@ -2,6 +2,7 @@ import { Insertable, Updateable } from "kysely";
 import { getDb } from "./schema/database.js";
 import { Story, StoryMedia } from "./schema/types.js";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { getFirstNodeLocationAfter, getNodesWithPersons } from "./geo.js";
 
 export const getStoryCount = (expeditieId: string) =>
   getDb()
@@ -143,3 +144,45 @@ export const deleteStory = (id: number) =>
     .where("id", "=", id)
     .returningAll()
     .executeTakeFirstOrThrow();
+
+export const getNodesAndStoriesForClient = async (expeditieId: string) => {
+  const [stories, nodes] = await Promise.all([
+    getStories(expeditieId),
+    getNodesWithPersons(expeditieId),
+  ]);
+
+  return {
+    nodes: nodes.map((node, index) => {
+      return {
+        id: node.id,
+        nodeNum: index,
+        timeFrom: node.time_from,
+        timeTill: node.time_till,
+        persons: node.persons.map((p) => p.id),
+      };
+    }),
+    stories: await Promise.all(
+      stories.map(async (story) => {
+        const nodeIdx = nodes.findIndex(
+          (node) =>
+            story.time_stamp >= node.time_from &&
+            story.time_stamp < node.time_till &&
+            node.persons.some((p) => p.id == story.person_id)
+        );
+
+        const storyLocation = await getFirstNodeLocationAfter(
+          nodes[nodeIdx],
+          story.time_stamp
+        );
+
+        return {
+          id: story.id,
+          nodeNum: nodeIdx,
+          timeStamp: story.time_stamp,
+          latitude: storyLocation?.latitude || 0,
+          longitude: storyLocation?.longitude || 0,
+        };
+      })
+    ),
+  };
+};

@@ -2,7 +2,10 @@ import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { getFullExpeditie } from "../../../db/expeditie.js";
 import { getNodesWithPersons } from "../../../db/geo.js";
-import { getAllStories } from "../../../db/story.js";
+import {
+  getAllStories,
+  getNodesAndStoriesForClient,
+} from "../../../db/story.js";
 import { getFileType, getFileUrl } from "../../../files/files.js";
 import { getMapboxConfig } from "../../../helpers/config.js";
 import { formatTimeFull, formatTimeNicely } from "../../../helpers/time.js";
@@ -18,31 +21,30 @@ const peopleNames = (
       ?.toSorted((p1, p2) => p1?.localeCompare(p2)) || []
   );
 
-const StoryElement: FunctionComponent<{
+const Story: FunctionComponent<{
   story: Awaited<ReturnType<typeof getAllStories>>[number];
   node?: Awaited<ReturnType<typeof getNodesWithPersons>>[number];
 }> = ({ story, node }) => (
-  <div id={`${story.id}`} class="story-element card">
-    <div class="title">
-      <div class="header">
+  <div id={`story-${story.id}`} class="story">
+    <div class="story-title">
+      <div class="story-header">
         <h1>{story.title}</h1>
         <p
-          class="time"
+          class="story-time"
           title={formatTimeFull(story.time_stamp, story.time_zone)}
         >
           {formatTimeNicely(story.time_stamp, story.time_zone)}
         </p>
       </div>
-      <p class="people">{peopleNames(node)}</p>
+      <p class="story-people">{peopleNames(node)}</p>
     </div>
 
     {story.text && <p>{story.text}</p>}
 
     {story.media.map((medium) => (
-      <div class="media-wrapper">
+      <div class="story-media">
         {getFileType(medium.file) == "video" && (
           <video
-            class="media-preview"
             controls
             preload="none"
             poster={getFileUrl(medium.file, "poster.jpg")}
@@ -54,15 +56,10 @@ const StoryElement: FunctionComponent<{
           </video>
         )}
         {getFileType(medium.file) == "afbeelding" && (
-          <img
-            class="media-preview"
-            src={getFileUrl(medium.file, "normaal.jpg")}
-          />
+          <img src={getFileUrl(medium.file, "normaal.jpg")} />
         )}
 
-        {medium.description && (
-          <p class="media-description">{medium.description}</p>
-        )}
+        {medium.description && <p>{medium.description}</p>}
       </div>
     ))}
   </div>
@@ -83,7 +80,8 @@ const ExpeditieMapPage: FunctionComponent<{
   expeditie: NonNullable<Awaited<ReturnType<typeof getFullExpeditie>>>;
   stories: Awaited<ReturnType<typeof getAllStories>>;
   nodes: Awaited<ReturnType<typeof getNodesWithPersons>>;
-}> = ({ expeditie, stories, nodes }) => (
+  nodesAndStories: Awaited<ReturnType<typeof getNodesAndStoriesForClient>>;
+}> = ({ expeditie, stories, nodes, nodesAndStories }) => (
   <Page
     title={`Expeditie ${expeditie.name} Kaart`}
     head={
@@ -96,38 +94,39 @@ const ExpeditieMapPage: FunctionComponent<{
         )}
         <link rel="stylesheet" href="/static/styles/expeditie-map.css" />
         <link
-          id="worker"
-          rel="prefetch"
-          href="/static/scripts/expeditieMapWorker.js"
-          as="worker"
+          rel="preload"
+          href={`/${expeditie.id}/kaart/binary`}
+          as="fetch"
+          crossOrigin="use-credentials"
         />
       </>
     }
     afterBody={
       <>
-        <ClientVariable name="expeditieNameShort" value={expeditie.id} />
+        <ClientVariable
+          name="routeLink"
+          value={`/${expeditie.id}/kaart/binary`}
+        />
         <ClientVariable name="mbToken" value={getMapboxConfig().token} />
-        <script src="/static/scripts/expeditieMap.js" />
+        <ClientVariable name="nodesAndStories" value={nodesAndStories} />
+        <script src="/static/scripts/expeditie-map.js" />
       </>
     }
   >
     <div id="map" />
 
     {stories.length > 0 && (
-      <div id="story-wrapper">
-        <div id="story-title" class="card">
+      <div id="storyline">
+        <div class="storyline-header">
           <h1>Expeditie {expeditie.name}</h1>
           <h2>{expeditie.subtitle}</h2>
         </div>
 
-        <div id="story">
-          <div id="graph" class="card" />
-          <div id="story-elements">
+        <div class="storyline-content">
+          <div id="storyline-graph" />
+          <div id="stories">
             {stories.map((story) => (
-              <StoryElement
-                story={story}
-                node={getNodeForStory(story, nodes)}
-              />
+              <Story story={story} node={getNodeForStory(story, nodes)} />
             ))}
           </div>
         </div>

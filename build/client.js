@@ -14,8 +14,7 @@ const files = {
   public: "src/client/public.ts",
   members: "src/client/members.ts",
   expeditie: "src/client/expeditie.ts",
-  expeditieMap: "src/client/expeditieMap.ts",
-  expeditieMapWorker: "src/client/expeditieMapWorker.ts",
+  "expeditie-map": "src/client/expeditie-map.ts",
   worker: "src/client/worker/index.ts",
 };
 
