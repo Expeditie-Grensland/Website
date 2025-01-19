@@ -59,24 +59,27 @@ export interface ExpeditiePerson {
 export interface GeoLocation {
   altitude: number | null;
   batch: string;
-  expeditie_id: string;
   id: Generated<number>;
   latitude: number;
   longitude: number;
-  person_id: string;
+  node_id: number;
   time_stamp: number;
   time_zone: string;
 }
 
 export interface GeoNode {
+  description: string | null;
   expeditie_id: string;
   id: Generated<number>;
-  time_from: Generated<number>;
-  time_till: Generated<number>;
+}
+
+export interface GeoNodeEdge {
+  child_id: number;
+  parent_id: number;
 }
 
 export interface GeoNodePerson {
-  geo_node_id: number;
+  node_id: number;
   person_id: string;
 }
 
@@ -120,9 +123,8 @@ export interface Quote {
 }
 
 export interface Story {
-  expeditie_id: string;
   id: Generated<number>;
-  person_id: string;
+  node_id: number;
   text: string | null;
   time_stamp: number;
   time_zone: string;
@@ -152,6 +154,7 @@ export interface DB {
   expeditie_person: ExpeditiePerson;
   geo_location: GeoLocation;
   geo_node: GeoNode;
+  geo_node_edge: GeoNodeEdge;
   geo_node_person: GeoNodePerson;
   member_link: MemberLink;
   person: Person;

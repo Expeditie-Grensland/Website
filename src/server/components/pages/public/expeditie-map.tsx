@@ -1,11 +1,9 @@
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
+import { MapNode, MapStory } from "../../../common-types/expeditie-map.js";
 import { getFullExpeditie } from "../../../db/expeditie.js";
-import { getNodesWithPersons } from "../../../db/geo.js";
-import {
-  getAllStories,
-  getNodesAndStoriesForClient,
-} from "../../../db/story.js";
+import { getExpeditieNodes } from "../../../db/geo.js";
+import { getExpeditieStories } from "../../../db/story.js";
 import { getFileType, getFileUrl } from "../../../files/files.js";
 import { getMapboxConfig } from "../../../helpers/config.js";
 import { formatTimeFull, formatTimeNicely } from "../../../helpers/time.js";
@@ -13,7 +11,7 @@ import { ClientVariable } from "../../page-structure/client-variable.js";
 import { Page } from "../../page-structure/page.js";
 
 const peopleNames = (
-  node?: Awaited<ReturnType<typeof getNodesWithPersons>>[number]
+  node?: Awaited<ReturnType<typeof getExpeditieNodes>>[number]
 ) =>
   new Intl.ListFormat("nl-NL", { style: "short", type: "conjunction" }).format(
     node?.persons
@@ -22,8 +20,8 @@ const peopleNames = (
   );
 
 const Story: FunctionComponent<{
-  story: Awaited<ReturnType<typeof getAllStories>>[number];
-  node?: Awaited<ReturnType<typeof getNodesWithPersons>>[number];
+  story: Awaited<ReturnType<typeof getExpeditieStories>>[number];
+  node?: Awaited<ReturnType<typeof getExpeditieNodes>>[number];
 }> = ({ story, node }) => (
   <div id={`story-${story.id}`} class="story">
     <div class="story-title">
@@ -65,23 +63,11 @@ const Story: FunctionComponent<{
   </div>
 );
 
-const getNodeForStory = (
-  story: Awaited<ReturnType<typeof getAllStories>>[number],
-  nodes: Awaited<ReturnType<typeof getNodesWithPersons>>
-): Awaited<ReturnType<typeof getNodesWithPersons>>[number] | undefined =>
-  nodes.filter(
-    (node) =>
-      node.persons.some((p) => p.id == story.person_id) &&
-      node.time_from <= story.time_stamp &&
-      node.time_till > story.time_stamp
-  )[0];
-
 const ExpeditieMapPage: FunctionComponent<{
   expeditie: NonNullable<Awaited<ReturnType<typeof getFullExpeditie>>>;
-  stories: Awaited<ReturnType<typeof getAllStories>>;
-  nodes: Awaited<ReturnType<typeof getNodesWithPersons>>;
-  nodesAndStories: Awaited<ReturnType<typeof getNodesAndStoriesForClient>>;
-}> = ({ expeditie, stories, nodes, nodesAndStories }) => (
+  stories: Awaited<ReturnType<typeof getExpeditieStories>>;
+  nodes: Awaited<ReturnType<typeof getExpeditieNodes>>;
+}> = ({ expeditie, stories, nodes }) => (
   <Page
     title={`Expeditie ${expeditie.name} Kaart`}
     head={
@@ -108,7 +94,29 @@ const ExpeditieMapPage: FunctionComponent<{
           value={`/${expeditie.id}/kaart/binary`}
         />
         <ClientVariable name="mbToken" value={getMapboxConfig().token} />
-        <ClientVariable name="nodesAndStories" value={nodesAndStories} />
+        <ClientVariable
+          name="nodes"
+          value={nodes.map(
+            (node, idx): MapNode => ({
+              id: node.id,
+              childIds: node.child_ids,
+              nodeNum: idx,
+            })
+          )}
+        />
+        <ClientVariable
+          name="stories"
+          value={stories.map(
+            (story): MapStory => ({
+              id: story.id,
+              nodeId: story.node_id,
+              timeStamp: story.time_stamp,
+              lng: story.longitude || 0,
+              lat: story.latitude || 0,
+              nodeNum: nodes.findIndex((node) => node.id == story.node_id)
+            })
+          )}
+        />
         <script src="/static/scripts/expeditie-map.js" />
       </>
     }
@@ -126,7 +134,10 @@ const ExpeditieMapPage: FunctionComponent<{
           <div id="storyline-graph" />
           <div id="stories">
             {stories.map((story) => (
-              <Story story={story} node={getNodeForStory(story, nodes)} />
+              <Story
+                story={story}
+                node={nodes.find((node) => node.id == story.node_id)}
+              />
             ))}
           </div>
         </div>

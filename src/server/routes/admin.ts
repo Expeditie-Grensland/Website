@@ -30,7 +30,7 @@ import {
   getAllExpeditiesWithPeopleIds,
   updateExpeditie,
 } from "../db/expeditie.js";
-import { insertLocationsFromGpx } from "../db/geo.js";
+import { getAllNodes, insertLocationsFromGpx } from "../db/geo.js";
 import {
   addPerson,
   deletePerson,
@@ -157,12 +157,10 @@ const registerAdminRoute: RegisterAdminRoute = (
   if (schema && paramSchema && onUpdate) {
     app.post(
       `${prefix}${updatePath}`,
-      flashAndRedirect(prefix, ({ body, params }) =>
-        {
-          console.dir(body);
-          return onUpdate(paramSchema.parse(params), schema.parse(body));
-        }
-      )
+      flashAndRedirect(prefix, ({ body, params }) => {
+        console.dir(body);
+        return onUpdate(paramSchema.parse(params), schema.parse(body));
+      })
     );
   }
 
@@ -336,8 +334,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     renderPage: async ({ user, messages }) =>
       renderGpxUploadAdminPage(
         await promiseAllProps({
-          expedities: getAllExpedities(),
-          persons: getAllPersons(true),
+          nodes: getAllNodes(),
           user,
           messages,
         })
@@ -363,8 +360,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       renderStoryAdminPage(
         await promiseAllProps({
           stories: getAllStories(),
-          expedities: getAllExpedities(),
-          persons: getAllPersons(true),
+          nodes: getAllNodes(),
           user,
           messages,
         })

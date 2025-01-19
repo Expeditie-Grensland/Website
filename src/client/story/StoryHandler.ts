@@ -1,6 +1,6 @@
 import { Map } from "mapbox-gl";
+import { MapNode, MapStory } from "../../server/common-types/expeditie-map";
 import { GraphBuilder } from "./graph/graphbuilder";
-import { NodesAndStories } from "../expeditie-map";
 
 export class StoryHandler {
   private map: Map;
@@ -13,7 +13,7 @@ export class StoryHandler {
     );
   }
 
-  public renderStory = ({ nodes, stories }: NodesAndStories) => {
+  public renderStory = (nodes: MapNode[], stories: MapStory[]) => {
     const storyline = document.getElementById("storyline");
     if (!storyline) return;
 

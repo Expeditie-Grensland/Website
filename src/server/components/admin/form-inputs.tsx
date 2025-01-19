@@ -2,6 +2,7 @@ import { ComponentChildren, FunctionComponent } from "preact";
 import { getAllExpedities } from "../../db/expeditie.js";
 import { getAllPersons } from "../../db/person.js";
 import { getISODate } from "../../helpers/time.js";
+import { getAllNodes } from "../../db/geo.js";
 
 type BasicInput<Value> = {
   name: string;
@@ -91,7 +92,9 @@ export const LocalTimeInput: FunctionComponent<
   />
 );
 
-type BaseSelectorInput = BasicInput<string | null> & { allowEmpty?: boolean };
+type BaseSelectorInput = BasicInput<string | null> & {
+  allowEmpty?: boolean;
+};
 
 export const SelectorInput = ({
   placeholder,
@@ -142,6 +145,21 @@ export const PersonInput: FunctionComponent<
     options={persons.map((p) => ({
       id: p.id,
       text: `${p.first_name} ${p.last_name}`,
+    }))}
+    {...rest}
+  />
+);
+
+export const NodeInput: FunctionComponent<
+  {
+    nodes: Awaited<ReturnType<typeof getAllNodes>>;
+  } & BaseSelectorInput
+> = ({ nodes, placeholder = "Nodes", ...rest }) => (
+  <SelectorInput
+    placeholder={placeholder}
+    options={nodes.map((n) => ({
+      id: `${n.id}`,
+      text: `${n.expeditie_name}${n.description ? `: ${n.description}` : ""} (${n.id})`,
     }))}
     {...rest}
   />

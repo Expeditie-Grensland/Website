@@ -4,37 +4,22 @@ import { asyncMapInChunks } from "../helpers/chunk.js";
 import { parseGpx } from "../helpers/gpx.js";
 import { getDb } from "./schema/database.js";
 
-export const getNewestLocation = (expeditieId: string) =>
+export const getRouteVersion = (expeditieId: string) =>
   getDb()
     .selectFrom("geo_location")
-    .where("expeditie_id", "=", expeditieId)
-    .orderBy("id desc")
-    .select("id")
-    .limit(1)
+    .leftJoin("geo_node", "geo_location.node_id", "geo_node.id")
+    .select(({ fn }) => [
+      fn.count("geo_location.id").as("count"),
+      fn.max("geo_location.id").as("max"),
+    ])
+    .where("geo_node.expeditie_id", "=", expeditieId)
     .executeTakeFirst()
-    .then((result) => result?.id || -1);
+    .then((val) => (val ? `v2c${val.count}m${val.max}` : "v2none"));
 
-export const getLocationCount = (expeditieId: string) =>
-  getDb()
-    .selectFrom("geo_location")
-    .where("expeditie_id", "=", expeditieId)
-    .select(({ fn }) => [fn.countAll<bigint>().as("count")])
-    .executeTakeFirst()
-    .then((result) => result?.count || 0n);
-
-export const getLocationsVersionString = async (expeditieId: string) => {
-  const [locationCount, lastLocation] = await Promise.all([
-    getLocationCount(expeditieId),
-    getNewestLocation(expeditieId),
-  ]);
-
-  return `v1-${locationCount}-${lastLocation}`;
-};
-
-export const getNodesWithPersons = (expeditieId: string) =>
+export const getExpeditieNodes = (expeditieId: string) =>
   getDb()
     .selectFrom("geo_node")
-    .where("expeditie_id", "=", expeditieId)
+    .leftJoin("geo_node_edge", "geo_node.id", "geo_node_edge.parent_id")
     .selectAll("geo_node")
     .select((eb) => [
       jsonArrayFrom(
@@ -42,50 +27,65 @@ export const getNodesWithPersons = (expeditieId: string) =>
           .selectFrom("geo_node_person")
           .leftJoin("person", "geo_node_person.person_id", "person.id")
           .selectAll("person")
-          .whereRef("geo_node_person.geo_node_id", "=", "geo_node.id")
+          .whereRef("geo_node_person.node_id", "=", "geo_node.id")
       ).as("persons"),
     ])
+    .select(({ fn, val }) =>
+      fn<number[]>("array_remove", [
+        fn.agg("array_agg", ["geo_node_edge.child_id"]),
+        val(null),
+      ]).as("child_ids")
+    )
+    .where("expeditie_id", "=", expeditieId)
+    .groupBy("geo_node.id")
+    .orderBy("geo_node.id")
     .execute();
 
 export const getNodeLocations = (
-  node: Awaited<ReturnType<typeof getNodesWithPersons>>[number]
+  node: Awaited<ReturnType<typeof getExpeditieNodes>>[number]
 ) =>
   getDb()
     .selectFrom("geo_location")
     .select(["id", "latitude", "longitude"])
-    .where("expeditie_id", "=", node.expeditie_id)
-    .where(
-      "person_id",
-      "in",
-      node.persons.map((p) => p.id)
-    )
-    .where("time_stamp", ">=", node.time_from)
-    .where("time_stamp", "<", node.time_till)
+    .where("node_id", "=", node.id)
     .orderBy("time_stamp asc")
     .execute();
 
+export const getAllNodes = () =>
+  getDb()
+    .selectFrom("geo_node")
+    .innerJoin("expeditie", "geo_node.expeditie_id", "expeditie.id")
+    .leftJoin("geo_node_edge", "geo_node.id", "geo_node_edge.parent_id")
+    .selectAll("geo_node")
+    .select("expeditie.name as expeditie_name")
+    .select(({ fn, val }) =>
+      fn<number[]>("array_remove", [
+        fn.agg("array_agg", ["geo_node_edge.child_id"]),
+        val(null),
+      ]).as("child_ids")
+    )
+    .groupBy("expeditie.id")
+    .groupBy("geo_node.id")
+    .orderBy("expeditie.start_date")
+    .orderBy("geo_node.id")
+    .execute();
+
+// FIXME: Get closest location instead
 export const getFirstNodeLocationAfter = (
-  node: Awaited<ReturnType<typeof getNodesWithPersons>>[number],
+  node: Awaited<ReturnType<typeof getExpeditieNodes>>[number],
   afterStamp: number
 ) =>
   getDb()
     .selectFrom("geo_location")
     .select(["id", "latitude", "longitude"])
-    .where("expeditie_id", "=", node.expeditie_id)
-    .where(
-      "person_id",
-      "in",
-      node.persons.map((p) => p.id)
-    )
-    .where("time_stamp", ">=", node.time_from)
-    .where("time_stamp", "<", node.time_till)
+    .where("node_id", "=", node.id)
     .where("time_stamp", ">=", afterStamp)
     .orderBy("time_stamp asc")
     .limit(1)
     .executeTakeFirst();
 
 export const insertLocationsFromGpx = async (
-  location: { expeditie_id: string; person_id: string; time_zone: string },
+  location: { node_id: number; time_zone: string },
   gpxData: Buffer | string
 ) => {
   const batch = randomUUID();

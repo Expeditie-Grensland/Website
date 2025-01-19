@@ -1,33 +1,37 @@
 import { Insertable, Updateable } from "kysely";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { getDb } from "./schema/database.js";
 import { Story, StoryMedia } from "./schema/types.js";
-import { jsonArrayFrom } from "kysely/helpers/postgres";
-import { getFirstNodeLocationAfter, getNodesWithPersons } from "./geo.js";
 
-export const getStoryCount = (expeditieId: string) =>
+export const getExpeditieStories = (expeditieId: string) =>
   getDb()
     .selectFrom("story")
-    .where("expeditie_id", "=", expeditieId)
-    .select(({ fn }) => [fn.countAll<bigint>().as("count")])
-    .executeTakeFirst()
-    .then((result) => result?.count || 0n);
-
-export const getNewestStoryId = (expeditieId: string) =>
-  getDb()
-    .selectFrom("story")
-    .where("expeditie_id", "=", expeditieId)
-    .orderBy("id desc")
-    .select("id")
-    .limit(1)
-    .executeTakeFirst()
-    .then((result) => result?.id || -1);
-
-export const getStories = (expeditieId: string) =>
-  getDb()
-    .selectFrom("story")
+    .innerJoin("geo_node", "geo_node.id", "story.node_id")
     .where("expeditie_id", "=", expeditieId)
     .selectAll("story")
     .select((eb) => [
+      eb
+        .selectFrom("geo_location")
+        .select("longitude")
+        .whereRef("story.node_id", "=", "geo_location.node_id")
+        .orderBy(({ eb, fn, ref }) =>
+          fn("abs", [
+            eb("story.time_stamp" as "id", "-", ref("geo_location.time_stamp")),
+          ])
+        )
+        .limit(1)
+        .as("longitude"),
+      eb
+        .selectFrom("geo_location")
+        .select("latitude")
+        .whereRef("story.node_id", "=", "geo_location.node_id")
+        .orderBy(({ eb, fn, ref }) =>
+          fn("abs", [
+            eb("story.time_stamp" as "id", "-", ref("geo_location.time_stamp")),
+          ])
+        )
+        .limit(1)
+        .as("latitude"),
       jsonArrayFrom(
         eb
           .selectFrom("story_media")
@@ -35,7 +39,7 @@ export const getStories = (expeditieId: string) =>
           .whereRef("story_media.story_id", "=", "story.id")
       ).as("media"),
     ])
-    .orderBy("time_stamp asc")
+    .orderBy("story.time_stamp")
     .execute();
 
 export const getAllStories = () =>
@@ -57,7 +61,8 @@ export const getAllStoryMedia = () =>
   getDb()
     .selectFrom("story_media")
     .innerJoin("story", "story_media.story_id", "story.id")
-    .innerJoin("expeditie", "story.expeditie_id", "expeditie.id")
+    .innerJoin("geo_node", "geo_node.id", "story.node_id")
+    .innerJoin("expeditie", "geo_node.expeditie_id", "expeditie.id")
     .selectAll("story_media")
     .select("expeditie.name as expeditie_name")
     .execute();
@@ -144,45 +149,3 @@ export const deleteStory = (id: number) =>
     .where("id", "=", id)
     .returningAll()
     .executeTakeFirstOrThrow();
-
-export const getNodesAndStoriesForClient = async (expeditieId: string) => {
-  const [stories, nodes] = await Promise.all([
-    getStories(expeditieId),
-    getNodesWithPersons(expeditieId),
-  ]);
-
-  return {
-    nodes: nodes.map((node, index) => {
-      return {
-        id: node.id,
-        nodeNum: index,
-        timeFrom: node.time_from,
-        timeTill: node.time_till,
-        persons: node.persons.map((p) => p.id),
-      };
-    }),
-    stories: await Promise.all(
-      stories.map(async (story) => {
-        const nodeIdx = nodes.findIndex(
-          (node) =>
-            story.time_stamp >= node.time_from &&
-            story.time_stamp < node.time_till &&
-            node.persons.some((p) => p.id == story.person_id)
-        );
-
-        const storyLocation = await getFirstNodeLocationAfter(
-          nodes[nodeIdx],
-          story.time_stamp
-        );
-
-        return {
-          id: story.id,
-          nodeNum: nodeIdx,
-          timeStamp: story.time_stamp,
-          latitude: storyLocation?.latitude || 0,
-          longitude: storyLocation?.longitude || 0,
-        };
-      })
-    ),
-  };
-};

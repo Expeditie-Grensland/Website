@@ -1,9 +1,9 @@
 import { Feature, LineString, Point } from "geojson";
 import { LngLatBounds, LngLatLike, Map } from "mapbox-gl";
-import { Story } from "../expeditie-map";
 import { StoryHandler } from "../story/StoryHandler";
 import { nodeColors } from "./colors";
 import { setRouteBounds, zoomToRoute } from "./view";
+import { MapStory } from "../../server/common-types/expeditie-map";
 
 export const addRouteLayer = async (map: Map, route: Promise<ArrayBuffer>) => {
   const view = new DataView(await route);
@@ -86,7 +86,7 @@ export const resetStoryPointHover = (map: Map) => {
 
 export const addStoryLayer = (
   map: Map,
-  stories: Story[],
+  stories: MapStory[],
   storyHandler: StoryHandler
 ) => {
   map.addSource("story-points", {
@@ -98,10 +98,10 @@ export const addStoryLayer = (
           type: "Feature",
           geometry: {
             type: "Point",
-            coordinates: [story.longitude, story.latitude],
+            coordinates: [story.lng, story.lat],
           },
           properties: {
-            nodeNum: story.nodeNum,
+            nodeId: story.nodeNum,
             color: nodeColors[story.nodeNum % nodeColors.length],
             storyId: story.id,
           },

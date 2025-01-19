@@ -1,13 +1,13 @@
 import { Map } from 'mapbox-gl';
-import { GeoNode, Story } from '../../expeditie-map';
 import { nodeColors } from '../../expeditie-map/colors';
 import { resetStoryPointHover, setStoryPointHover } from '../../expeditie-map/data-layers';
 import { createSvgElement, setElementAttributes } from '../../helpers/elements';
 import { StoryHandler } from "../StoryHandler";
+import { MapNode, MapStory } from '../../../server/common-types/expeditie-map';
 
 export type Vertex = {
-    node: GeoNode;
-    stories: Story[];
+    node: MapNode;
+    stories: MapStory[];
     children?: Vertex[];
   };
 
@@ -23,7 +23,7 @@ export class Graph {
         this.storyHandler = storyHandler;
     }
 
-    private static calculateY(story: Story) {
+    private static calculateY(story: MapStory) {
         const { top, bottom } = document.querySelector(`#story-${story.id} h1`)!.getBoundingClientRect();
         return (top + bottom) / 2.0;
     }
@@ -71,8 +71,8 @@ export class Graph {
             if (nextLevel.length === 0)
                 break;
 
-            // nodes are sorted in the order in which they start.
-            nextLevel.sort((a, b) => a.node.timeFrom - b.node.timeFrom);
+            // nodes are sorted in the order of their id.
+            nextLevel.sort((a, b) => a.node.id - b.node.id);
 
             // deduplicate
             const uniqueNextLevel: Vertex[] = [];
@@ -160,7 +160,7 @@ export class Graph {
         return svg;
     }
 
-    private generateCircle(x: number, y: number, color: string, story: Story) {
+    private generateCircle(x: number, y: number, color: string, story: MapStory) {
         const circle = createSvgElement('circle', {
             class: "graph-circle",
             id: `circle-${story.id}`,
@@ -180,7 +180,7 @@ export class Graph {
         // zoom map when clicking on circle
         circle.addEventListener("click", () => {
             this.map.flyTo({
-                center: [story.longitude, story.latitude],
+                center: [story.lng, story.lat],
                 zoom: 13,
             });
             this.storyHandler.scrollToStory(`${story.id}`);

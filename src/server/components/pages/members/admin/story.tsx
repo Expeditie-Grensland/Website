@@ -1,26 +1,25 @@
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { getAllExpedities } from "../../../../db/expeditie.js";
-import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
+import { getAllNodes } from "../../../../db/geo.js";
+import { authenticatePerson } from "../../../../db/person.js";
 import { getAllStories } from "../../../../db/story.js";
 import { AdminPage } from "../../../admin/admin-page.js";
-import { FormInputArray } from "../../../admin/form-inputs.js";
 import {
+  FormInputArray,
   HiddenInput,
   LocalTimeInput,
+  NodeInput,
   TextAreaInput,
   TextInput,
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
-import { ExpeditieInput, PersonInput } from "../../../admin/form-inputs.js";
 
 const StoryAdminPage: FunctionComponent<{
   stories: Awaited<ReturnType<typeof getAllStories>>;
-  expedities: Awaited<ReturnType<typeof getAllExpedities>>;
-  persons: Awaited<ReturnType<typeof getAllPersons>>;
+  nodes: Awaited<ReturnType<typeof getAllNodes>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
-}> = ({ stories, expedities, persons, user, messages }) => (
+}> = ({ stories, nodes, user, messages }) => (
   <AdminPage
     title="Verhalen Admin"
     fluid
@@ -30,27 +29,13 @@ const StoryAdminPage: FunctionComponent<{
     items={stories}
     columns={[
       {
-        label: "Expeditie",
-        style: { minWidth: "12.5rem" },
+        label: "Node",
+        style: { minWidth: "17.5rem" },
         render: (story, attrs) => (
-          <ExpeditieInput
-            expedities={expedities}
-            value={story?.expeditie_id}
-            name="expeditie_id"
-            allowEmpty
-            {...attrs}
-          />
-        ),
-      },
-
-      {
-        label: "Persoon",
-        style: { minWidth: "12.5rem" },
-        render: (story, attrs) => (
-          <PersonInput
-            persons={persons}
-            value={story?.person_id}
-            name="person_id"
+          <NodeInput
+            nodes={nodes}
+            value={story?.node_id?.toString()}
+            name="node_id"
             {...attrs}
           />
         ),

@@ -3,15 +3,11 @@ import { renderExpeditieMapPage } from "../components/pages/public/expeditie-map
 import { renderExpeditiePage } from "../components/pages/public/expeditie.js";
 import { getFullExpeditie } from "../db/expeditie.js";
 import {
-  getLocationCount,
-  getNewestLocation,
   getNodeLocations,
-  getNodesWithPersons,
+  getExpeditieNodes,
+  getRouteVersion,
 } from "../db/geo.js";
-import {
-  getNodesAndStoriesForClient,
-  getStories
-} from "../db/story.js";
+import { getExpeditieStories } from "../db/story.js";
 import { promiseAllProps } from "../helpers/async.js";
 
 const HEADER_REV = "x-revision-id";
@@ -45,11 +41,8 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
       renderExpeditieMapPage(
         await promiseAllProps({
           expeditie: reply.locals.expeditie!,
-          stories: getStories(reply.locals.expeditie!.id),
-          nodes: getNodesWithPersons(reply.locals.expeditie!.id),
-          nodesAndStories: getNodesAndStoriesForClient(
-            reply.locals.expeditie!.id
-          ),
+          stories: getExpeditieStories(reply.locals.expeditie!.id),
+          nodes: getExpeditieNodes(reply.locals.expeditie!.id),
         })
       )
     )
@@ -58,12 +51,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
   app.get("/kaart/binary", async (request, reply) => {
     const expeditie = reply.locals.expeditie!;
 
-    const [locationCount, lastLocation] = await Promise.all([
-      getLocationCount(expeditie.id),
-      getNewestLocation(expeditie.id),
-    ]);
-
-    const newHeader = `v1-${locationCount}-${lastLocation}`;
+    const newHeader = await getRouteVersion(expeditie.id);
 
     if (request.headers[HEADER_REV] === newHeader)
       return reply.code(304).send();
@@ -73,7 +61,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
       [HEADER_REV]: newHeader,
     });
 
-    const nodes = await getNodesWithPersons(expeditie.id);
+    const nodes = await getExpeditieNodes(expeditie.id);
 
     let buf = Buffer.allocUnsafe(4);
 
