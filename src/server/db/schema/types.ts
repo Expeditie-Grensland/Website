@@ -68,6 +68,7 @@ export interface GeoLocation {
 }
 
 export interface GeoNode {
+  color: string;
   description: string | null;
   expeditie_id: string;
   id: Generated<number>;

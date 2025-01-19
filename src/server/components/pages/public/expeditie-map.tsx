@@ -97,10 +97,10 @@ const ExpeditieMapPage: FunctionComponent<{
         <ClientVariable
           name="nodes"
           value={nodes.map(
-            (node, idx): MapNode => ({
+            (node): MapNode => ({
               id: node.id,
               childIds: node.child_ids,
-              nodeNum: idx,
+              color: node.color,
             })
           )}
         />
@@ -113,7 +113,6 @@ const ExpeditieMapPage: FunctionComponent<{
               timeStamp: story.time_stamp,
               lng: story.longitude || 0,
               lat: story.latitude || 0,
-              nodeNum: nodes.findIndex((node) => node.id == story.node_id)
             })
           )}
         />

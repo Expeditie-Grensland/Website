@@ -1,11 +1,14 @@
 import { Feature, LineString, Point } from "geojson";
 import { LngLatBounds, LngLatLike, Map } from "mapbox-gl";
+import { MapNode, MapStory } from "../../server/common-types/expeditie-map";
 import { StoryHandler } from "../story/StoryHandler";
-import { nodeColors } from "./colors";
 import { setRouteBounds, zoomToRoute } from "./view";
-import { MapStory } from "../../server/common-types/expeditie-map";
 
-export const addRouteLayer = async (map: Map, route: Promise<ArrayBuffer>) => {
+export const addRouteLayer = async (
+  map: Map,
+  nodes: MapNode[],
+  route: Promise<ArrayBuffer>
+) => {
   const view = new DataView(await route);
 
   const features: Feature<LineString>[] = [];
@@ -17,14 +20,16 @@ export const addRouteLayer = async (map: Map, route: Promise<ArrayBuffer>) => {
   ];
 
   const nodeCount = view.getInt32(0);
-  let offset = 4;
+  let offset = 8;
 
-  for (let nodeNum = 0; nodeNum < nodeCount; nodeNum++) {
+  for (let i = 0; i < nodeCount; i++) {
+    const nodeId = view.getInt32(offset);
+
     const feature: Feature<LineString> = {
       type: "Feature",
       properties: {
-        nodeNum,
-        color: nodeColors[nodeNum % nodeColors.length],
+        nodeId,
+        color: nodes.find((n) => n.id == nodeId)?.color || "#000",
       },
       geometry: {
         type: "LineString",
@@ -32,8 +37,8 @@ export const addRouteLayer = async (map: Map, route: Promise<ArrayBuffer>) => {
       },
     };
 
-    const locCount = view.getInt32(offset);
-    offset += 4;
+    const locCount = view.getInt32(offset + 4);
+    offset += 8;
 
     for (let i = 0; i < locCount; ++i) {
       const lng = view.getFloat64(offset);
@@ -62,6 +67,7 @@ export const addRouteLayer = async (map: Map, route: Promise<ArrayBuffer>) => {
       features,
       bbox,
     },
+    promoteId: "nodeId",
   });
 
   map.addLayer({
@@ -86,6 +92,7 @@ export const resetStoryPointHover = (map: Map) => {
 
 export const addStoryLayer = (
   map: Map,
+  nodes: MapNode[],
   stories: MapStory[],
   storyHandler: StoryHandler
 ) => {
@@ -101,9 +108,9 @@ export const addStoryLayer = (
             coordinates: [story.lng, story.lat],
           },
           properties: {
-            nodeId: story.nodeNum,
-            color: nodeColors[story.nodeNum % nodeColors.length],
             storyId: story.id,
+            nodeId: story.nodeId,
+            color: nodes.find((n) => n.id == story.nodeId)?.color || "#000",
           },
         };
       }),

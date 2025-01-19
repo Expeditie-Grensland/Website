@@ -14,7 +14,7 @@ export const getRouteVersion = (expeditieId: string) =>
     ])
     .where("geo_node.expeditie_id", "=", expeditieId)
     .executeTakeFirst()
-    .then((val) => (val ? `v2c${val.count}m${val.max}` : "v2none"));
+    .then((val) => (val ? `v3c${val.count}m${val.max}` : "v2none"));
 
 export const getExpeditieNodes = (expeditieId: string) =>
   getDb()

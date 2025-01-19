@@ -1,5 +1,4 @@
 import { Map } from 'mapbox-gl';
-import { nodeColors } from '../../expeditie-map/colors';
 import { resetStoryPointHover, setStoryPointHover } from '../../expeditie-map/data-layers';
 import { createSvgElement, setElementAttributes } from '../../helpers/elements';
 import { StoryHandler } from "../StoryHandler";
@@ -107,7 +106,7 @@ export class Graph {
                 const y1 = Graph.calculateY(stories[0]);
                 const y2 = Graph.calculateY(stories[stories.length - 1]);
 
-                svg.appendChild(this.generateLine(x, y1, x, y2, nodeColors[node.nodeNum], 'none'));
+                svg.appendChild(this.generateLine(x, y1, x, y2, node.color, 'none'));
             }
 
             // draw corners
@@ -128,7 +127,7 @@ export class Graph {
                     const x2 = Graph.calculateX(childLayer.indexOf(child), childLayer.length, svgWidth);
                     const y2 = Graph.calculateY(child.stories.sort((a, b) => a.timeStamp - b.timeStamp)[0]);
 
-                    const color = children.length > 1 ? nodeColors[child.node.nodeNum] : nodeColors[parent.node.nodeNum];
+                    const color = children.length > 1 ? child.node.color : parent.node.color;
 
                     svg.appendChild(this.generateLine(x1, y1, x2, y2, color, children.length > 1 ? 'begin' : 'end'));
                 }
@@ -138,13 +137,11 @@ export class Graph {
             for (const vertex of layer) {
                 const stories = vertex.stories;
 
-                for (const story of stories) {
-                    const node = vertex.node;
-                    
+                for (const story of stories) {                    
                     const x = Graph.calculateX(layer.indexOf(vertex), layer.length, svgWidth);
                     const y = Graph.calculateY(story);
 
-                    svg.appendChild(this.generateCircle(x, y, nodeColors[node.nodeNum], story));
+                    svg.appendChild(this.generateCircle(x, y, vertex.node.color, story));
                 }
             }
         }

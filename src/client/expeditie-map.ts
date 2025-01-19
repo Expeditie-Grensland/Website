@@ -22,6 +22,6 @@ const storyHandler = new StoryHandler(map);
 map.on("load", async () => {
   storyHandler.renderStory(nodes, stories);
 
-  await addRouteLayer(map, routeData);
-  addStoryLayer(map, stories, storyHandler);
+  await addRouteLayer(map, nodes, routeData);
+  addStoryLayer(map, nodes, stories, storyHandler);
 });
