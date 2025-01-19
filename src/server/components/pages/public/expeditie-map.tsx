@@ -83,7 +83,7 @@ const ExpeditieMapPage: FunctionComponent<{
           rel="preload"
           href={`/${expeditie.id}/kaart/binary`}
           as="fetch"
-          crossOrigin="use-credentials"
+          crossOrigin="anonymous"
         />
       </>
     }

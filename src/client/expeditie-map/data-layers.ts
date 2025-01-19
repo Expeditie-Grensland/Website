@@ -12,18 +12,14 @@ export const addRouteLayer = async (
   const view = new DataView(await route);
 
   const features: Feature<LineString>[] = [];
-  const bbox: [number, number, number, number] = [
-    Number.POSITIVE_INFINITY,
-    Number.POSITIVE_INFINITY,
-    Number.NEGATIVE_INFINITY,
-    Number.NEGATIVE_INFINITY,
-  ];
+  const bounds = new LngLatBounds();
 
-  const nodeCount = view.getInt32(0);
+  const nodeCount = view.getUint32(0);
+
   let offset = 8;
 
   for (let i = 0; i < nodeCount; i++) {
-    const nodeId = view.getInt32(offset);
+    const nodeId = view.getUint32(offset);
 
     const feature: Feature<LineString> = {
       type: "Feature",
@@ -37,7 +33,7 @@ export const addRouteLayer = async (
       },
     };
 
-    const locCount = view.getInt32(offset + 4);
+    const locCount = view.getUint32(offset + 4);
     offset += 8;
 
     for (let i = 0; i < locCount; ++i) {
@@ -46,18 +42,14 @@ export const addRouteLayer = async (
 
       offset += 16;
 
+      bounds.extend([lng, lat]);
       feature.geometry.coordinates.push([lng, lat]);
-
-      if (lng < bbox[0]) bbox[0] = lng;
-      if (lat < bbox[1]) bbox[1] = lat;
-      if (lng > bbox[2]) bbox[2] = lng;
-      if (lat > bbox[3]) bbox[3] = lat;
     }
 
     features.push(feature);
   }
 
-  setRouteBounds(new LngLatBounds(bbox));
+  setRouteBounds(bounds);
   zoomToRoute(map);
 
   map.addSource("exp-route", {
@@ -65,7 +57,6 @@ export const addRouteLayer = async (
     data: {
       type: "FeatureCollection",
       features,
-      bbox,
     },
     promoteId: "nodeId",
   });

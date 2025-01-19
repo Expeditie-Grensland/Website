@@ -63,8 +63,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
 
     const nodes = await getExpeditieNodes(expeditie.id);
 
-    let buf = Buffer.allocUnsafe(8);
-
+    let buf = Buffer.alloc(8);
     buf.writeUInt32BE(nodes.length, 0);
 
     reply.raw.write(buf);
@@ -78,8 +77,8 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
       buf.writeUInt32BE(nodeLocs.length, 4);
 
       nodeLocs.forEach((loc, i) => {
-        buf.writeDoubleBE(loc.longitude, i * 16 + 4);
-        buf.writeDoubleBE(loc.latitude, i * 16 + 12);
+        buf.writeDoubleBE(loc.longitude, i * 16 + 8);
+        buf.writeDoubleBE(loc.latitude, i * 16 + 16);
       });
 
       reply.raw.write(buf);
