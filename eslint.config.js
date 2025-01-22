@@ -26,6 +26,10 @@ export default tsPlugin.config(
     rules: {
       "no-constant-condition": ["error", { checkLoops: false }],
       "@typescript-eslint/consistent-type-definitions": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", ignoreRestSiblings: true },
+      ],
     },
   },
   {
