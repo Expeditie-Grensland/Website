@@ -1,6 +1,10 @@
 import { IControl, Map } from "mapbox-gl";
 import { zoomToRoute } from "./view";
 
+/**
+ * Generic map control that has an icon and title and performs some action to
+ * the map on click
+ */
 abstract class MapControl implements IControl {
   container?: HTMLElement;
 
@@ -33,6 +37,9 @@ abstract class MapControl implements IControl {
   abstract onClick: (map: Map) => void;
 }
 
+/**
+ * Control that toggles the satellite layer of the map
+ */
 export class SatelliteControl extends MapControl {
   title = "Satelliet";
   iconClass = "mapicon-satellite";
@@ -48,6 +55,9 @@ export class SatelliteControl extends MapControl {
   };
 }
 
+/**
+ * Control that fits and centres the route into the visible area of the map
+ */
 export class CenterRouteControl extends MapControl {
   title = "Centreer route";
   iconClass = "mapicon-center-route";

@@ -1,15 +1,23 @@
 import { Feature, LineString, Point } from "geojson";
 import { LngLatBounds, LngLatLike, Map } from "mapbox-gl";
 import { MapNode, MapStory } from "../../server/common-types/expeditie-map";
-import { StoryHandler } from "../story/StoryHandler";
 import { setRouteBounds, zoomToRoute } from "./view";
+import {
+  resetStoryGraphHover,
+  scrollToStory,
+  setStoryGraphHover,
+} from "./story-graph";
 
+/**
+ * Converts route location data to GeoJSON and adds it as a source to the map,
+ * then adds a styling layer for the data
+ */
 export const addRouteLayer = async (
   map: Map,
   nodes: MapNode[],
-  route: Promise<ArrayBuffer>
+  route: ArrayBuffer
 ) => {
-  const view = new DataView(await route);
+  const view = new DataView(route);
 
   const features: Feature<LineString>[] = [];
   const bounds = new LngLatBounds();
@@ -66,26 +74,34 @@ export const addRouteLayer = async (
     type: "line",
     source: "exp-route",
     paint: {
-      "line-opacity": 1,
       "line-width": 3,
       "line-color": ["get", "color"],
     },
   });
 };
 
+/**
+ * Sets the hover state for a story point on the map
+ */
 export const setStoryPointHover = (map: Map, id: number) => {
   map.setFeatureState({ source: "story-points", id }, { hover: true });
 };
 
+/**
+ * Resets the hover state for all story points on the map
+ */
 export const resetStoryPointHover = (map: Map) => {
   map.removeFeatureState({ source: "story-points" });
 };
 
+/**
+ * Converts the stories to GeoJSON points and adds them as a source to the map,
+ * then adds styling layers and interaction handlers
+ */
 export const addStoryLayer = (
   map: Map,
   nodes: MapNode[],
-  stories: MapStory[],
-  storyHandler: StoryHandler
+  stories: MapStory[]
 ) => {
   map.addSource("story-points", {
     type: "geojson",
@@ -140,34 +156,30 @@ export const addStoryLayer = (
     },
   });
 
-  // Center the map on the coordinates of any clicked circle from the 'circle' layer.
   map.on("click", "story-points", (e) => {
     const feature = e.features![0] as Feature<Point>;
+
+    scrollToStory(feature.id as number);
 
     map.flyTo({
       center: feature.geometry.coordinates as LngLatLike,
       zoom: 13,
     });
-
-    storyHandler?.scrollToStory(feature.id as string);
   });
 
-  // Change the cursor to a pointer when it enters a feature in the 'circle' layer.
   map.on("mouseenter", "story-points", (event) => {
     map.getCanvas().style.cursor = "pointer";
 
-    const id = event.features![0]?.id as number;
-    if (!id) return;
+    const id = event.features![0]!.id as number;
 
     setStoryPointHover(map, id);
-    storyHandler?.setHoveringStory(id);
+    setStoryGraphHover(id);
   });
 
-  // Change it back to a pointer when it leaves.
   map.on("mouseleave", "story-points", () => {
     map.getCanvas().style.cursor = "";
 
     resetStoryPointHover(map);
-    storyHandler?.resetHoveringStory();
+    resetStoryGraphHover();
   });
 };

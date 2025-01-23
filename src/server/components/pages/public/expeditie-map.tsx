@@ -101,6 +101,8 @@ const ExpeditieMapPage: FunctionComponent<{
               id: node.id,
               childIds: node.child_ids,
               color: node.color,
+              posPart: node.position_part,
+              posTotal: node.position_total,
             })
           )}
         />

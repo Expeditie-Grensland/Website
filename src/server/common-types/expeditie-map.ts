@@ -2,6 +2,8 @@ export type MapNode = {
   id: number;
   childIds: number[];
   color: string;
+  posPart: number;
+  posTotal: number;
 };
 
 export type MapStory = {

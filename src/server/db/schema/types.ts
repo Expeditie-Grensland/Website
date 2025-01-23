@@ -72,6 +72,8 @@ export interface GeoNode {
   description: string | null;
   expeditie_id: string;
   id: Generated<number>;
+  position_part: Generated<number>;
+  position_total: Generated<number>;
 }
 
 export interface GeoNodeEdge {
