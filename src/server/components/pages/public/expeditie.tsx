@@ -27,12 +27,7 @@ const ExpeditiePage: FunctionComponent<{
         <link rel="stylesheet" href="/static/styles/public.css" />
       </>
     }
-    afterBody={
-      <>
-        <script src="/static/scripts/public.js" />
-        <script src="/static/scripts/expeditie.js" />
-      </>
-    }
+    afterBody={<script src="/static/scripts/expeditie.js" />}
   >
     <div class="container">
       <NavigationBar type="public" backTo="home" user={user} />

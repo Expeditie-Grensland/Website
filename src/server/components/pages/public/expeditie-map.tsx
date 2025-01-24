@@ -2,7 +2,7 @@ import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { MapNode, MapStory } from "../../../common-types/expeditie-map.js";
 import { getFullExpeditie } from "../../../db/expeditie.js";
-import { getExpeditieNodes } from "../../../db/geo.js";
+import { getExpeditieNodes, getRouteVersion } from "../../../db/geo.js";
 import { getExpeditieStories } from "../../../db/story.js";
 import { getFileType, getFileUrl } from "../../../files/files.js";
 import { getMapboxConfig } from "../../../helpers/config.js";
@@ -67,7 +67,8 @@ const ExpeditieMapPage: FunctionComponent<{
   expeditie: NonNullable<Awaited<ReturnType<typeof getFullExpeditie>>>;
   stories: Awaited<ReturnType<typeof getExpeditieStories>>;
   nodes: Awaited<ReturnType<typeof getExpeditieNodes>>;
-}> = ({ expeditie, stories, nodes }) => (
+  routeVersion: Awaited<ReturnType<typeof getRouteVersion>>;
+}> = ({ expeditie, stories, nodes, routeVersion }) => (
   <Page
     title={`Expeditie ${expeditie.name} Kaart`}
     head={
@@ -81,7 +82,12 @@ const ExpeditieMapPage: FunctionComponent<{
         <link rel="stylesheet" href="/static/styles/expeditie-map.css" />
         <link
           rel="preload"
-          href={`/${expeditie.id}/kaart/binary`}
+          href="/static/scripts/expeditie-map.js"
+          as="script"
+        />
+        <link
+          rel="preload"
+          href={`/${expeditie.id}/kaart/route-data?v=${routeVersion}`}
           as="fetch"
           crossOrigin="anonymous"
         />
@@ -91,7 +97,7 @@ const ExpeditieMapPage: FunctionComponent<{
       <>
         <ClientVariable
           name="routeLink"
-          value={`/${expeditie.id}/kaart/binary`}
+          value={`/${expeditie.id}/kaart/route-data?v=${routeVersion}`}
         />
         <ClientVariable name="mbToken" value={getMapboxConfig().token} />
         <ClientVariable

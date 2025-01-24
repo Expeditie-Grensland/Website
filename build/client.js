@@ -10,12 +10,9 @@ if (!opts.includes(dir))
 const isProd = dir === "dist";
 
 const files = {
-  all: "src/client/all.ts",
-  public: "src/client/public.ts",
   members: "src/client/members.ts",
   expeditie: "src/client/expeditie.ts",
   "expeditie-map": "src/client/expeditie-map.ts",
-  worker: "src/client/worker/index.ts",
 };
 
 const options = {

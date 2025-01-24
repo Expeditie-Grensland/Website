@@ -57,7 +57,6 @@ const setupStaticRoutes = async (app: FastifyInstance) => {
       { path: "/favicon.ico", file: "favicons/favicon.ico" },
       { path: "/browserconfig.xml", file: "favicons/favicon.ico" },
       { path: "/manifest.webmanifest", file: "favicons/manifest.webmanifest" },
-      { path: "/worker.js", file: "scripts/worker.js" },
     ];
 
     for (const { path, file } of staticFiles)

@@ -15,7 +15,6 @@ const ErrorPage: FunctionComponent<{
   <Page
     title="Expeditie Grensland"
     head={<link rel="stylesheet" href="/static/styles/public.css" />}
-    afterBody={<script src="/static/scripts/public.js" />}
   >
     <div class="container">
       <NavigationBar

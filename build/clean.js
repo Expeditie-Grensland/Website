@@ -9,13 +9,13 @@ if (!opts.includes(dir))
 switch (dir) {
   case "dev":
     await rm("dev/", { recursive: true, force: true });
-    console.info("Deleted dev/");
+    console.info("\n  Deleted dev/\n");
     break;
 
   case "dist":
     await rm("dist/", { recursive: true, force: true });
-    console.info("Deleted dist/");
+    console.info("\n  Deleted dist/");
     await rm("meta/", { recursive: true, force: true });
-    console.info("Deleted meta/");
+    console.info("  Deleted meta/\n");
     break;
 }

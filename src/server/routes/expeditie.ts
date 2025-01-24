@@ -10,8 +10,6 @@ import {
 import { getExpeditieStories } from "../db/story.js";
 import { promiseAllProps } from "../helpers/async.js";
 
-const HEADER_REV = "x-revision-id";
-
 const expeditieRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
     const { expeditieId } = request.params as { expeditieId: string };
@@ -43,25 +41,19 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
           expeditie: reply.locals.expeditie!,
           stories: getExpeditieStories(reply.locals.expeditie!.id),
           nodes: getExpeditieNodes(reply.locals.expeditie!.id),
+          routeVersion: getRouteVersion(reply.locals.expeditie!.id),
         })
       )
     )
   );
 
-  app.get("/kaart/binary", async (request, reply) => {
-    const expeditie = reply.locals.expeditie!;
-
-    const newHeader = await getRouteVersion(expeditie.id);
-
-    if (request.headers[HEADER_REV] === newHeader)
-      return reply.code(304).send();
-
+  app.get("/kaart/route-data", async (request, reply) => {
     reply.raw.writeHead(200, {
       "Content-Type": "application/octet-stream",
-      [HEADER_REV]: newHeader,
+      "Cache-Control": "public, max-age=2592000, immutable",
     });
 
-    const nodes = await getExpeditieNodes(expeditie.id);
+    const nodes = await getExpeditieNodes(reply.locals.expeditie!.id);
 
     let buf = Buffer.alloc(8);
     buf.writeUInt32BE(nodes.length, 0);

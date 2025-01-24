@@ -35,6 +35,7 @@ const filesToCompress = await globby([
   "static/**/*.{js,css,svg,html,xml,webmanifest}",
 ]);
 
+console.info();
 for (const file of filesToCompress) {
   const size = (await stat(file)).size;
 
@@ -43,7 +44,8 @@ for (const file of filesToCompress) {
     const outStream = createWriteStream(`${file}.${extension}`);
     await pipeline(inStream, createTransform(size), outStream);
   }
-  console.log(
-    `${file}{=> .${transformers.map(({ extension }) => extension).join(", .")}}`
+  console.info(
+    `  ${file}{=> .${transformers.map(({ extension }) => extension).join(", .")}}`
   );
 }
+console.info();

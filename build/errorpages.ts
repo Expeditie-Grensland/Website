@@ -14,4 +14,4 @@ await Promise.all(
   )
 );
 
-console.log(`Generated ${Object.keys(httpErrors).length} error pages`);
+console.info(`\n  Generated ${Object.keys(httpErrors).length} error pages\n`);

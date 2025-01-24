@@ -18,21 +18,21 @@ const getNewName = (file) => {
 };
 
 const filesToRev = await globby([
-  "static/scripts/**/*",
-  "!static/scripts/worker.js",
-  "static/images/**/*",
-  "static/styles/**/*",
-  "!**/esbuild-meta.json",
+  "static/**/*",
+  "!static/errorpages",
+  "!static/favicons/**/*",
 ]);
 
 const renames = filesToRev.map((file) => [file, getNewName(file)]);
 
+console.info();
 for (const [oldName, newName] of renames) {
-  console.log(
-    `${dirname(oldName)}/{${basename(oldName)} => ${basename(newName)}}`
+  console.info(
+    `  ${dirname(oldName)}/{${basename(oldName)} => ${basename(newName)}}`
   );
   rename(oldName, newName);
 }
+console.info();
 
 const filesToRewrite = await globby([
   "static/errorpages/*.html",

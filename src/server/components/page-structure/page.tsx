@@ -57,8 +57,6 @@ export const Page: FunctionComponent<{
 
     <body>{children}</body>
 
-    <script src="/static/scripts/all.js" />
-
     {afterBody}
   </html>
 );

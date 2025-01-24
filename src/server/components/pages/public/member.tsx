@@ -12,7 +12,6 @@ const MemberPage: FunctionComponent<{
   <Page
     title={`Expeditie Lid ${person.first_name} ${person.last_name}`}
     head={<link rel="stylesheet" href="/static/styles/public.css" />}
-    afterBody={<script src="/static/scripts/public.js" />}
   >
     <div class="container">
       <NavigationBar type="public" backTo="home" user={user} />
