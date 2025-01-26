@@ -3,9 +3,10 @@ import { createReadStream, createWriteStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { chdir } from "node:process";
 import { pipeline } from "node:stream/promises";
-import { createBrotliCompress, createGzip, constants } from "node:zlib";
+import { constants, createBrotliCompress, createGzip } from "node:zlib";
+import { endBuildScript, startBuildScript } from "./common/build-script";
 
-chdir("dist");
+startBuildScript();
 
 const transformers = [
   {
@@ -19,7 +20,7 @@ const transformers = [
   },
   {
     extension: "br",
-    createTransform: (size) =>
+    createTransform: (size: number) =>
       createBrotliCompress({
         params: {
           [constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT,
@@ -29,13 +30,12 @@ const transformers = [
         },
       }),
   },
-];
+] as const;
 
-const filesToCompress = await globby([
-  "static/**/*.{js,css,svg,html,xml,webmanifest}",
-]);
+chdir("dist/static");
 
-console.info();
+const filesToCompress = await globby("**/*.{js,css,svg,html,xml,webmanifest}");
+
 for (const file of filesToCompress) {
   const size = (await stat(file)).size;
 
@@ -44,8 +44,10 @@ for (const file of filesToCompress) {
     const outStream = createWriteStream(`${file}.${extension}`);
     await pipeline(inStream, createTransform(size), outStream);
   }
+
   console.info(
-    `  ${file}{=> .${transformers.map(({ extension }) => extension).join(", .")}}`
+    `${file}{=> .${transformers.map((tf) => tf.extension).join(", .")}}`
   );
 }
-console.info();
+
+endBuildScript();

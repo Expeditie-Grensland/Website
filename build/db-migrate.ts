@@ -2,9 +2,9 @@ import { MigrationResultSet } from "kysely";
 import fs from "node:fs/promises";
 import { getDb } from "../src/server/db/schema/database";
 import { getMigrator } from "../src/server/db/schema/migrator";
+import { getArgvOption } from "./common/options";
 
-const opts = ["create", "list", "latest", "up", "down"] as const;
-const choice = process.argv[2] as (typeof opts)[number];
+const choice = getArgvOption("create", "list", "latest", "up", "down");
 
 const createMigration = async () => {
   const rawName = process.argv[3];
@@ -70,11 +70,6 @@ switch (choice) {
   case "down":
     await printResults(getMigrator().migrateDown());
     break;
-
-  default:
-    throw new Error(
-      `Invalid choice ${choice} (choose from: ${opts.join(", ")}})`
-    );
 }
 
 await getDb().destroy();

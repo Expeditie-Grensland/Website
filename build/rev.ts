@@ -2,12 +2,15 @@ import { globby } from "globby";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { rename } from "node:fs/promises";
-import { chdir } from "node:process";
 import { basename, dirname } from "node:path";
+import { chdir } from "node:process";
+import { endBuildScript, startBuildScript } from "./common/build-script";
 
-chdir("dist");
+startBuildScript();
 
-const getNewName = (file) => {
+chdir("dist/static");
+
+const getNewName = (file: string) => {
   const fileContents = readFileSync(file);
   const hash = createHash("md5")
     .update(fileContents)
@@ -17,26 +20,22 @@ const getNewName = (file) => {
   return file.slice(0, extI + 1) + hash + file.slice(extI);
 };
 
-const filesToRev = await globby([
-  "static/**/*",
-  "!static/errorpages",
-  "!static/favicons/**/*",
-]);
+const filesToRev = await globby(["**/*", "!errorpages/", "!favicons/"]);
 
 const renames = filesToRev.map((file) => [file, getNewName(file)]);
 
-console.info();
 for (const [oldName, newName] of renames) {
   console.info(
-    `  ${dirname(oldName)}/{${basename(oldName)} => ${basename(newName)}}`
+    `${dirname(oldName)}/{${basename(oldName)} => ${basename(newName)}}`
   );
   rename(oldName, newName);
 }
-console.info();
 
 const filesToRewrite = await globby([
-  "static/errorpages/*.html",
-  "server/components/**/*.js",
+  "../server/components/**/*.js",
+  "errorpages/*.html",
+  "styles/*.css",
+  "scripts/*.css",
 ]);
 
 for (const file of filesToRewrite) {
@@ -47,3 +46,5 @@ for (const file of filesToRewrite) {
 
   writeFileSync(file, contents, "utf-8");
 }
+
+endBuildScript();
