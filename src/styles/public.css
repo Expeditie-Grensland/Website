@@ -79,7 +79,7 @@ a.titleimg:hover .titleimg-bg {
   flex: 0 0 100%;
 }
 
-.video-player {
+.movie-player {
   width: 100%;
   aspect-ratio: 16 / 9;
   box-shadow: var(--big-shadow);

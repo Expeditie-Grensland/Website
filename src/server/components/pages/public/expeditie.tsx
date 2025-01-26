@@ -89,14 +89,17 @@ const ExpeditiePage: FunctionComponent<{
             (!expeditie.movie_restricted || user) &&
             getFileType(expeditie.movie_file) == "film-dash" && (
               <video
-                id="video"
-                class="video-player"
+                class="movie-player"
                 controls
                 poster={getFileUrl(expeditie.movie_file, "poster.jpg")}
                 preload="none"
-                data-manifest-url={getFileUrl(expeditie.movie_file, "hls.m3u8")}
+                data-hls={getFileUrl(expeditie.movie_file, "hls.m3u8")}
                 onPlay={`this.onplay=null;window.umami?.track("film-start",{film:"${expeditie.id}"})`}
               >
+                <source
+                  src={getFileUrl(expeditie.movie_file, "hls.m3u8")}
+                  type="application/vnd.apple.mpegurl"
+                />
                 <source
                   src={getFileUrl(expeditie.movie_file, "720p30.mp4")}
                   type="video/mp4"
