@@ -30,7 +30,7 @@ import {
   getAllExpeditiesWithPeopleIds,
   updateExpeditie,
 } from "../db/expeditie.js";
-import { getAllNodes, insertLocationsFromGpx } from "../db/geo.js";
+import { addLocations, getAllNodes } from "../db/geo.js";
 import {
   addPerson,
   deletePerson,
@@ -45,6 +45,7 @@ import {
   updateQuote,
 } from "../db/quote.js";
 import {
+  addStories,
   addStory,
   deleteStory,
   getAllStories,
@@ -54,6 +55,7 @@ import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
 import { deleteS3Prefix, getS3Files } from "../files/s3.js";
 import { getUsesForFiles } from "../files/uses.js";
 import { promiseAllProps } from "../helpers/async.js";
+import { parseGpx } from "../helpers/gpx.js";
 import { afkoSchema } from "../validation-schemas/admin/afko.js";
 import { pointSchema } from "../validation-schemas/admin/earned-point.js";
 import { expeditieSchema } from "../validation-schemas/admin/expeditie.js";
@@ -341,14 +343,24 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       ),
 
     addPath: "/upload",
-    onAdd: async ({ file: files, ...location }) => {
-      let count = 0n;
+    onAdd: async ({
+      file: files,
+      node_id,
+      time_zone,
+      enable_locations,
+      enable_stories,
+    }) => {
+      let locCount = 0n;
+      let storyCount = 0n;
 
       for (const file of files) {
-        count += await insertLocationsFromGpx(location, file);
+        const { locations, stories } = parseGpx(file, node_id, time_zone);
+
+        if (enable_locations) locCount += await addLocations(locations);
+        if (enable_stories) storyCount += await addStories(stories);
       }
 
-      return `${count} locaties zijn geüpload`;
+      return `${locCount} locaties en ${storyCount} verhalen zijn geüpload`;
     },
   });
 

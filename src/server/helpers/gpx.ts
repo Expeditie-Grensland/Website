@@ -1,40 +1,58 @@
+import { randomUUID } from "crypto";
 import { XMLParser } from "fast-xml-parser";
-import { z } from "zod";
+import { Insertable } from "kysely";
+import { GeoLocation, Story } from "../db/schema/types.js";
+import { gpxXmlFileSchema } from "../validation-schemas/admin/gpx.js";
 
-const gpxSchema = z.object({
-  gpx: z.object({
-    trk: z.array(
-      z.object({
-        trkseg: z.array(
-          z.object({
-            trkpt: z.array(
-              z.object({
-                time: z.string().datetime(),
-                __lat: z.number(),
-                __lon: z.number(),
-                ele: z.number().optional(),
-              })
-            ),
-          })
-        ),
-      })
-    ),
-  }),
-});
+type ParsedGPX = {
+  locations: Insertable<GeoLocation>[];
+  stories: Insertable<Story>[];
+};
 
-export const parseGpx = (gpxData: Buffer | string) =>
-  gpxSchema
-    .parse(
-      new XMLParser({
-        ignoreDeclaration: true,
-        ignoreAttributes: false,
-        attributeNamePrefix: "__",
-        trimValues: true,
-        parseAttributeValue: true,
-        parseTagValue: true,
-        isArray: (_name, jpath) =>
-          ["gpx.trk", "gpx.trk.trkseg", "gpx.trk.trkseg.trkpt"].includes(jpath),
-      }).parse(gpxData)
-    )
-    .gpx.trk.flatMap((trk) => trk.trkseg)
-    .flatMap((seg) => seg.trkpt);
+export const parseGpx = (
+  rawData: Buffer | string,
+  nodeId: number,
+  timeZone: string
+): ParsedGPX => {
+  const parsedXml = new XMLParser({
+    ignoreDeclaration: true,
+    ignoreAttributes: false,
+    attributeNamePrefix: "_",
+    trimValues: true,
+    parseAttributeValue: true,
+    parseTagValue: true,
+    isArray: (_name, jpath) =>
+      jpath == "gpx.trk" ||
+      jpath == "gpx.trk.trkseg" ||
+      jpath == "gpx.trk.trkseg.trkpt" ||
+      jpath == "gpx.wpt",
+  }).parse(rawData);
+
+  const { gpx } = gpxXmlFileSchema.parse(parsedXml);
+  const batch = randomUUID();
+
+  return {
+    locations: gpx.trk
+      .flatMap(({ trkseg }) => trkseg)
+      .flatMap(({ trkpt }) => trkpt)
+      .map(({ time, _lat, _lon, ele }) => ({
+        batch,
+        node_id: nodeId,
+        time_stamp: Math.round(Date.parse(time) / 1000),
+        time_zone: timeZone,
+        latitude: _lat,
+        longitude: _lon,
+        altitude: ele,
+      })),
+
+    stories: gpx.wpt
+      .filter(({ name }) => !name.startsWith("Stop for ~"))
+      .map(({ time, name, desc }) => ({
+        node_id: nodeId,
+        time_stamp: Math.round(Date.parse(time) / 1000),
+        time_zone: timeZone,
+        title: name,
+        text: desc,
+      })),
+  };
+};

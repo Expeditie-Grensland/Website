@@ -4,6 +4,7 @@ import { getAllNodes } from "../../../../db/geo.js";
 import { authenticatePerson } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
+  CheckInput,
   FileInput,
   NodeInput,
   TimezoneInput,
@@ -39,6 +40,20 @@ const GpxUploadAdminPage: FunctionComponent<{
         label: "Tijdzone",
         render: (_, attrs) => (
           <TimezoneInput name="time_zone" required {...attrs} />
+        ),
+      },
+
+      {
+        label: "Upload locaties",
+        render: (_, attrs) => (
+          <CheckInput name="enable_locations" value={true} {...attrs} />
+        ),
+      },
+
+      {
+        label: "Upload verhalen",
+        render: (_, attrs) => (
+          <CheckInput name="enable_stories" value={true} {...attrs} />
         ),
       },
     ]}

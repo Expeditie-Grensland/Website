@@ -1,8 +1,8 @@
-import { randomUUID } from "crypto";
+import { Insertable } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { asyncMapInChunks } from "../helpers/chunk.js";
-import { parseGpx } from "../helpers/gpx.js";
 import { getDb } from "./schema/database.js";
+import { GeoLocation } from "./schema/types.js";
 
 export const getRouteVersion = (expeditieId: string) =>
   getDb()
@@ -70,42 +70,16 @@ export const getAllNodes = () =>
     .orderBy("geo_node.id")
     .execute();
 
-// FIXME: Get closest location instead
-export const getFirstNodeLocationAfter = (
-  node: Awaited<ReturnType<typeof getExpeditieNodes>>[number],
-  afterStamp: number
-) =>
-  getDb()
-    .selectFrom("geo_location")
-    .select(["id", "latitude", "longitude"])
-    .where("node_id", "=", node.id)
-    .where("time_stamp", ">=", afterStamp)
-    .orderBy("time_stamp asc")
-    .limit(1)
-    .executeTakeFirst();
-
-export const insertLocationsFromGpx = async (
-  location: { node_id: number; time_zone: string },
-  gpxData: Buffer | string
-) => {
-  const batch = randomUUID();
-
-  const gpsLocations = parseGpx(gpxData).map(({ time, __lat, __lon, ele }) => ({
-    ...location,
-    time_stamp: Math.round(Date.parse(time) / 1000),
-    latitude: __lat,
-    longitude: __lon,
-    altitude: ele,
-    batch,
-  }));
-
-  const insertedCounts = await asyncMapInChunks(gpsLocations, 1000, (locs) =>
-    getDb()
-      .insertInto("geo_location")
-      .values(locs)
-      .executeTakeFirst()
-      .then((result) => result.numInsertedOrUpdatedRows || 0n)
+export const addLocations = async (locations: Insertable<GeoLocation>[]) =>
+  (
+    await asyncMapInChunks(locations, 1000, (locs) =>
+      getDb()
+        .insertInto("geo_location")
+        .values(locs)
+        .onConflict((oc) => oc.columns(["node_id", "time_stamp"]).doNothing())
+        .executeTakeFirst()
+    )
+  ).reduce(
+    (count, result) => count + (result.numInsertedOrUpdatedRows || 0n),
+    0n
   );
-
-  return insertedCounts.reduce((acc, val) => acc + val);
-};

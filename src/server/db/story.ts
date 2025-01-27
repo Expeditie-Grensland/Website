@@ -68,10 +68,13 @@ export const getAllStoryMedia = () =>
     .execute();
 
 type WithMedia = {
-  media: Insertable<Omit<StoryMedia, "story_id">>[];
+  media?: Insertable<Omit<StoryMedia, "story_id">>[];
 };
 
-export const addStory = ({ media, ...story }: Insertable<Story> & WithMedia) =>
+export const addStory = ({
+  media = [],
+  ...story
+}: Insertable<Story> & WithMedia) =>
   getDb()
     .transaction()
     .execute(async (trx) => {
@@ -91,9 +94,17 @@ export const addStory = ({ media, ...story }: Insertable<Story> & WithMedia) =>
       return result;
     });
 
+export const addStories = (stories: Insertable<Story>[]) =>
+  getDb()
+    .insertInto("story")
+    .values(stories)
+    .onConflict((oc) => oc.columns(["node_id", "time_stamp"]).doNothing())
+    .executeTakeFirst()
+    .then((result) => result.numInsertedOrUpdatedRows || 0n);
+
 export const updateStory = (
   id: number,
-  { media, ...story }: Updateable<Story> & WithMedia
+  { media = [], ...story }: Updateable<Story> & WithMedia
 ) =>
   getDb()
     .transaction()
