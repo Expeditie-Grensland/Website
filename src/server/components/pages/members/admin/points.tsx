@@ -9,7 +9,7 @@ import {
   LocalTimeInput,
   NumberInput,
   PersonInput,
-  SelectorInput,
+  PersonTeamInput,
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
 
@@ -59,13 +59,9 @@ const PointsAdminPage: FunctionComponent<{
         label: "Team",
         style: { minWidth: "10rem" },
         render: (point, attrs) => (
-          <SelectorInput
-            placeholder="Team"
+          <PersonTeamInput
             name="team"
-            options={[
-              { id: "blue", text: "Blauw" },
-              { id: "red", text: "Rood" },
-            ]}
+            teams={["blue", "red"]}
             value={point?.team}
             {...attrs}
           />
@@ -113,10 +109,14 @@ const PointsAdminPage: FunctionComponent<{
       {
         label: "Wijzigen",
         action: (point) => `/leden/admin/punten/update/${point.id}`,
+        confirmMessage: (point) =>
+          `Weet je zeker dat je ${point.amount} punten voor Team ${point.team == "blue" ? "Blauw" : "Rood"} wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
         action: (point) => `/leden/admin/punten/delete/${point.id}`,
+        confirmMessage: (point) =>
+          `Weet je zeker dat je ${point.amount} punten voor Team ${point.team == "blue" ? "Blauw" : "Rood"} wilt verwijderen?`,
         style: "danger",
       },
     ]}

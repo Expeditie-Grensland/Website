@@ -1,8 +1,13 @@
 import { ComponentChildren, FunctionComponent } from "preact";
 import { getAllExpedities } from "../../db/expeditie.js";
-import { getAllPersons } from "../../db/person.js";
-import { getISODate } from "../../helpers/time.js";
 import { getAllNodes } from "../../db/geo.js";
+import {
+  getAllPersons,
+  personTeamNames,
+  personTypeNames,
+} from "../../db/person.js";
+import { PersonTeam, PersonType } from "../../db/schema/types.js";
+import { getISODate } from "../../helpers/time.js";
 
 type BasicInput<Value> = {
   name: string;
@@ -145,6 +150,44 @@ export const PersonInput: FunctionComponent<
     options={persons.map((p) => ({
       id: p.id,
       text: `${p.first_name} ${p.last_name}`,
+    }))}
+    {...rest}
+  />
+);
+
+export const PersonTeamInput: FunctionComponent<
+  {
+    teams?: PersonTeam[];
+  } & BaseSelectorInput
+> = ({
+  teams = Object.keys(personTeamNames) as PersonTeam[],
+  placeholder = "Team",
+  ...rest
+}) => (
+  <SelectorInput
+    placeholder={placeholder}
+    options={teams.map((t) => ({
+      id: t,
+      text: personTeamNames[t],
+    }))}
+    {...rest}
+  />
+);
+
+export const PersonTypeInput: FunctionComponent<
+  {
+    types?: PersonType[];
+  } & BaseSelectorInput
+> = ({
+  types = Object.keys(personTypeNames) as PersonType[],
+  placeholder = "Type",
+  ...rest
+}) => (
+  <SelectorInput
+    placeholder={placeholder}
+    options={types.map((t) => ({
+      id: t,
+      text: personTypeNames[t],
     }))}
     {...rest}
   />

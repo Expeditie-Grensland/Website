@@ -114,7 +114,10 @@ const FilesAdminPage: FunctionComponent<{
           (file.uses ? (
             file.uses.map((use) => <p>{getUseTypeText(use.type, use.name)}</p>)
           ) : (
-            <form class="form-confirm" method="POST">
+            <form
+              method="POST"
+              data-confirm-msg={`Weet je zeker dat je het bestand "${file.file}" definitief wilt verwijderen?`}
+            >
               <button
                 class="button-danger"
                 type="submit"

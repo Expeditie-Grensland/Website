@@ -33,6 +33,7 @@ type AdminPageProps<Value> = {
   actions?: {
     label: string;
     action: (item: Value) => string;
+    confirmMessage: (item: Value) => string;
     style?: "main" | "danger";
   }[];
 };
@@ -104,14 +105,19 @@ export const AdminPage = <Value,>({
                   </td>
                 ))}
 
-                {actions && (
+                {actions && actions.length > 0 && (
                   <td>
-                    <form class="form-confirm" id={`form-${i}`} method="POST">
+                    <form
+                      id={`form-${i}`}
+                      method="POST"
+                      data-confirm-msg={actions[0].confirmMessage(item)}
+                    >
                       {actions.map((action) => (
                         <button
                           class={`${action.style == "danger" ? "button-danger" : "button-main"}`}
                           type="submit"
                           formAction={action.action(item)}
+                          data-confirm-msg={action.confirmMessage(item)}
                         >
                           {action.label}
                         </button>

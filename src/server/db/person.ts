@@ -2,7 +2,12 @@ import { pbkdf2, randomBytes } from "crypto";
 import { bcrypt, bcryptVerify } from "hash-wasm";
 import { getDb } from "./schema/database.js";
 import { Insertable, Updateable } from "kysely";
-import { Person, PersonAddress } from "./schema/types.js";
+import {
+  Person,
+  PersonAddress,
+  PersonTeam,
+  PersonType,
+} from "./schema/types.js";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 
 const hashPassword = async (password: string) =>
@@ -172,4 +177,17 @@ export const authenticatePerson = async (id: string, password: string) => {
 
   if (pbkdf2Check === false) return null;
   return (await checkPassword(password, user.password)) ? user : null;
+};
+
+export const personTeamNames: Record<PersonTeam, string> = {
+  blue: "Blauw",
+  red: "Rood",
+  green: "Groen",
+};
+
+export const personTypeNames: Record<PersonType, string> = {
+  admin: "Admin",
+  member: "Lid",
+  former: "Voormalig lid",
+  guest: "Gast",
 };

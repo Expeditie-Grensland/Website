@@ -119,10 +119,14 @@ const QuotesAdminPage: FunctionComponent<{
       {
         label: "Wijzigen",
         action: (quote) => `/leden/admin/citaten/update/${quote.id}`,
+        confirmMessage: (quote) =>
+          `Weet je zeker dat je het citaat "${quote.quote}" wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
         action: (quote) => `/leden/admin/citaten/delete/${quote.id}`,
+        confirmMessage: (quote) =>
+          `Weet je zeker dat je het citaat "${quote.quote}" wilt verwijderen?`,
         style: "danger",
       },
     ]}

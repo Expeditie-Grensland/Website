@@ -84,10 +84,14 @@ const AfkowoboAdminPage: FunctionComponent<{
       {
         label: "Wijzigen",
         action: (afko) => `/leden/admin/afkowobo/update/${afko.id}`,
+        confirmMessage: (afko) =>
+          `Weet je zeker dat je de afkorting "${afko.afko}" wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
         action: (afko) => `/leden/admin/afkowobo/delete/${afko.id}`,
+        confirmMessage: (afko) =>
+          `Weet je zeker dat je de afkorting "${afko.afko}" wilt verwijderen?`,
         style: "danger",
       },
     ]}

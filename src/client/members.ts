@@ -1,7 +1,10 @@
 document
-  .querySelectorAll(".form-confirm")
+  .querySelectorAll<HTMLFormElement>("form[data-confirm-msg]")
   .forEach((form) =>
-    form.addEventListener("submit", () => confirm("Weet je het zeker?"))
+    form.addEventListener("submit", (e) => {
+      const msg = e.submitter?.dataset.confirmMsg || form.dataset.confirmMsg;
+      if (!confirm(msg)) e.preventDefault();
+    })
   );
 
 const updateRemoveDisabled = (formArray: HTMLElement) => {

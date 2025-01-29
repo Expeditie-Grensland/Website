@@ -97,10 +97,14 @@ const DictionaryAdminPage: FunctionComponent<{
       {
         label: "Wijzigen",
         action: (word) => `/leden/admin/woordenboek/update/${word.id}`,
+        confirmMessage: (word) =>
+          `Weet je zeker dat je het woord "${word.word}" wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
         action: (word) => `/leden/admin/woordenboek/delete/${word.id}`,
+        confirmMessage: (word) =>
+          `Weet je zeker dat je het woord "${word.word}" wilt verwijderen?`,
         style: "danger",
       },
     ]}

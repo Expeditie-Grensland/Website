@@ -9,7 +9,8 @@ import {
   EmailInput,
   FormInputArray,
   HiddenInput,
-  SelectorInput,
+  PersonTeamInput,
+  PersonTypeInput,
   TextInput,
 } from "../../../admin/form-inputs.js";
 
@@ -17,14 +18,14 @@ const PersonsAdminPage: FunctionComponent<{
   persons: Awaited<ReturnType<typeof getAllPersonsWithAddresses>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
-}> = ({ persons, user, messages }) => (
+}> = ({ persons: p, user, messages }) => (
   <AdminPage
     title="Personen Admin"
     fluid
     user={user}
     messages={messages}
     newAction={{ action: "/leden/admin/personen/add" }}
-    items={persons}
+    items={p}
     columns={[
       {
         label: "Id",
@@ -85,31 +86,8 @@ const PersonsAdminPage: FunctionComponent<{
         style: { minWidth: "7.5rem" },
         render: (person, attrs) => (
           <>
-            <SelectorInput
-              name="type"
-              placeholder="Type"
-              options={[
-                { id: "admin", text: "Administrator" },
-                { id: "member", text: "Lid" },
-                { id: "former", text: "Voormalig lid" },
-                { id: "guest", text: "Gast" },
-              ]}
-              value={person?.type}
-              {...attrs}
-            />
-
-            <SelectorInput
-              name="team"
-              placeholder="Team"
-              options={[
-                { id: "blue", text: "Blauw" },
-                { id: "red", text: "Rood" },
-                { id: "green", text: "Groen" },
-              ]}
-              allowEmpty
-              value={person?.team}
-              {...attrs}
-            />
+            <PersonTypeInput name="type" value={person?.type} {...attrs} />
+            <PersonTeamInput name="team" value={person?.team} {...attrs} />
           </>
         ),
       },
@@ -179,12 +157,16 @@ const PersonsAdminPage: FunctionComponent<{
     actions={[
       {
         label: "Wijzigen",
-        action: (afko) => `/leden/admin/personen/update/${afko.id}`,
+        action: (person) => `/leden/admin/personen/update/${person.id}`,
+        confirmMessage: (person) =>
+          `Weet je zeker dat je ${person.first_name} ${person.last_name} wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
-        action: (afko) => `/leden/admin/personen/delete/${afko.id}`,
+        action: (person) => `/leden/admin/personen/delete/${person.id}`,
         style: "danger",
+        confirmMessage: (person) =>
+          `Weet je zeker dat je ${person.first_name} ${person.last_name} wilt verwijderen?`,
       },
     ]}
   />

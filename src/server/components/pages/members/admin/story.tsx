@@ -122,10 +122,14 @@ const StoryAdminPage: FunctionComponent<{
       {
         label: "Wijzigen",
         action: (story) => `/leden/admin/verhalen/update/${story.id}`,
+        confirmMessage: (story) =>
+          `Weet je zeker dat je het verhaal "${story.title}" wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
         action: (story) => `/leden/admin/verhalen/delete/${story.id}`,
+        confirmMessage: (story) =>
+          `Weet je zeker dat je het verhaal "${story.title}" wilt verwijderen?`,
         style: "danger",
       },
     ]}

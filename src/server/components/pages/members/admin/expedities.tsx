@@ -195,11 +195,15 @@ const ExpeditiesAdminPage: FunctionComponent<{
     actions={[
       {
         label: "Wijzigen",
-        action: (afko) => `/leden/admin/expedities/update/${afko.id}`,
+        action: (expeditie) => `/leden/admin/expedities/update/${expeditie.id}`,
+        confirmMessage: (expeditie) =>
+          `Weet je zeker dat je Expeditie ${expeditie.name} wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
-        action: (afko) => `/leden/admin/expedities/delete/${afko.id}`,
+        action: (expeditie) => `/leden/admin/expedities/delete/${expeditie.id}`,
+        confirmMessage: (expeditie) =>
+          `Weet je zeker dat je Expeditie ${expeditie.name} wilt verwijderen?`,
         style: "danger",
       },
     ]}
