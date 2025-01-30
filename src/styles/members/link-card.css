@@ -7,12 +7,12 @@
   gap: 0.75rem;
 }
 
-.link-card > h1 {
+.link-card-title {
   font-size: 1.2rem;
   margin-bottom: -0.5rem;
 }
 
-.link-card > p {
+.link-card-text {
   flex: 1 0 auto;
 }
 
@@ -20,4 +20,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.link-category {
+  font-size: 1.4rem;
+  margin-top: 2.5rem;
 }

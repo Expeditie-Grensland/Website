@@ -75,14 +75,12 @@ const configSchemas = z.object({
     .object({
       EG_UMAMI_SCRIPT_URL: z.string().startsWith("https://").optional(),
       EG_UMAMI_WEBSITE_ID: z.string().length(36).optional(),
-      EG_UMAMI_SHARE_URL: z.string().startsWith("https://").optional(),
     })
     .transform((env) =>
       env.EG_UMAMI_SCRIPT_URL && env.EG_UMAMI_WEBSITE_ID
         ? {
             scriptUrl: env.EG_UMAMI_SCRIPT_URL,
             websiteId: env.EG_UMAMI_WEBSITE_ID,
-            shareUrl: env.EG_UMAMI_SHARE_URL,
           }
         : null
     ),

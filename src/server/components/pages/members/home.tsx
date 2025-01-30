@@ -4,7 +4,6 @@ import { HTMLAttributeAnchorTarget } from "preact/compat";
 import packageJson from "../../../../../package.json" with { type: "json" };
 import { getMemberLinks } from "../../../db/member-link.js";
 import { authenticatePerson } from "../../../db/person.js";
-import { getUmamiConfig } from "../../../helpers/config.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
@@ -20,8 +19,8 @@ const LinkCard: FunctionComponent<{
 }> = ({ title, text, links }) =>
   links.filter((link) => link.when !== false).length > 0 && (
     <div class="link-card">
-      <h1>{title}</h1>
-      <p>{text}</p>
+      <h2 class="link-card-title">{title}</h2>
+      <p class="link-card-text">{text}</p>
       <div class="link-card-links">
         {links
           .filter((link) => link.when !== false)
@@ -171,20 +170,11 @@ const MembersHomePage: FunctionComponent<{
             },
           ]}
         />
+      </div>
 
-        <LinkCard
-          title="Statistieken"
-          text="Wie zijn onze fans?"
-          links={[
-            {
-              text: "Open",
-              url: getUmamiConfig()?.shareUrl as string,
-              when: !!getUmamiConfig()?.shareUrl,
-              target: "_blank",
-            },
-          ]}
-        />
+      <h1 class="link-category">Externe links</h1>
 
+      <div class="grid-3">
         {memberLinks.map((link) => (
           <LinkCard
             title={link.title}
