@@ -24,8 +24,12 @@ body {
 }
 
 @media (max-width: 1099px) {
+  body:has(#storyline) {
+    height: min-content;
+  }
+
   #map:has(+ #storyline) {
-    height: 75%;
+    height: 75vh;
   }
 
   #storyline {
