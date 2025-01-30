@@ -3,6 +3,8 @@ import { MapNode, MapStory } from "../../server/common-types/expeditie-map";
 import { createSvgElement } from "../helpers/elements";
 import { resetStoryPointHover, setStoryPointHover } from "./data-layers";
 
+export const mobileStoryMediaQuery = window.matchMedia("(max-width: 1099px)");
+
 /**
  * Initialises the story graph and keeps it updated
  */
@@ -154,7 +156,11 @@ const generateStoryCircle = (item: StoryItemXY, map: Map) => {
   });
 
   circle.addEventListener("click", () => {
-    scrollToStory(item.id);
+    if (mobileStoryMediaQuery.matches) {
+      document.getElementById("map")!.scrollIntoView();
+    } else {
+      scrollToStory(item.id);
+    }
 
     map.flyTo({
       center: [item.lng, item.lat],

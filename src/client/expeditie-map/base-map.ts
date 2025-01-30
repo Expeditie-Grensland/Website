@@ -1,5 +1,6 @@
 import { Map, NavigationControl, ScaleControl } from "mapbox-gl";
 import { SatelliteControl, CenterRouteControl } from "./controls";
+import { mobileStoryMediaQuery } from "./story-graph";
 
 /**
  * Initialises the base map with built-in styles, layers and controls
@@ -41,10 +42,9 @@ const updateMapPadding = (map: Map) => {
   map.setPadding({
     top: 40,
     bottom: 40,
-    left:
-      window.innerWidth < 1100
-        ? 40
-        : 24 + (document.getElementById("storyline")?.offsetWidth || 16),
+    left: mobileStoryMediaQuery.matches
+      ? 40
+      : 24 + (document.getElementById("storyline")?.offsetWidth || 16),
     right: 40,
   });
 };
