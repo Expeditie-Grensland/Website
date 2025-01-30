@@ -143,17 +143,17 @@ div a {
 
 .graph-circle {
   cursor: "pointer";
-  r: 8;
+  r: 8px;
   fill: #fff;
-  stroke-width: 5;
+  stroke-width: 5px;
 }
 
 .graph-circle:hover,
 .graph-circle.hover {
-  r: 12;
+  r: 12px;
 }
 
 .graph-line {
-  stroke-width: 5;
+  stroke-width: 5px;
   fill: none;
 }
