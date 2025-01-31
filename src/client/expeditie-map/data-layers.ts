@@ -1,6 +1,6 @@
 import { Feature, LineString, Point } from "geojson";
 import { LngLatBounds, LngLatLike, Map } from "mapbox-gl";
-import { MapNode, MapStory } from "../../server/common-types/expeditie-map";
+import { MapSegment, MapStory } from "../../server/common-types/expeditie-map";
 import { setRouteBounds, zoomToRoute } from "./view";
 import {
   resetStoryGraphHover,
@@ -14,7 +14,7 @@ import {
  */
 export const addRouteLayer = async (
   map: Map,
-  nodes: MapNode[],
+  segments: MapSegment[],
   route: ArrayBuffer
 ) => {
   const view = new DataView(route);
@@ -22,18 +22,18 @@ export const addRouteLayer = async (
   const features: Feature<LineString>[] = [];
   const bounds = new LngLatBounds();
 
-  const nodeCount = view.getUint32(0);
+  const segmentCount = view.getUint32(0);
 
   let offset = 8;
 
-  for (let i = 0; i < nodeCount; i++) {
-    const nodeId = view.getUint32(offset);
+  for (let i = 0; i < segmentCount; i++) {
+    const segmentId = view.getUint32(offset);
 
     const feature: Feature<LineString> = {
       type: "Feature",
       properties: {
-        nodeId,
-        color: nodes.find((n) => n.id == nodeId)?.color || "#000",
+        segmentId,
+        color: segments.find((n) => n.id == segmentId)?.color || "#000",
       },
       geometry: {
         type: "LineString",
@@ -66,7 +66,7 @@ export const addRouteLayer = async (
       type: "FeatureCollection",
       features,
     },
-    promoteId: "nodeId",
+    promoteId: "segmentId",
   });
 
   map.addLayer({
@@ -100,7 +100,7 @@ export const resetStoryPointHover = (map: Map) => {
  */
 export const addStoryLayer = (
   map: Map,
-  nodes: MapNode[],
+  segments: MapSegment[],
   stories: MapStory[]
 ) => {
   map.addSource("story-points", {
@@ -116,8 +116,8 @@ export const addStoryLayer = (
           },
           properties: {
             storyId: story.id,
-            nodeId: story.nodeId,
-            color: nodes.find((n) => n.id == story.nodeId)?.color || "#000",
+            segmentId: story.segmentId,
+            color: segments.find((n) => n.id == story.segmentId)?.color || "#000",
           },
         };
       }),

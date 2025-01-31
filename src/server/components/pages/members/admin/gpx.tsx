@@ -1,20 +1,20 @@
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { getAllNodes } from "../../../../db/geo.js";
+import { getAllSegments } from "../../../../db/geo.js";
 import { authenticatePerson } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   CheckInput,
   FileInput,
-  NodeInput,
+  SegmentInput,
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
 
 const GpxUploadAdminPage: FunctionComponent<{
-  nodes: Awaited<ReturnType<typeof getAllNodes>>;
+  segments: Awaited<ReturnType<typeof getAllSegments>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
-}> = ({ nodes, user, messages }) => (
+}> = ({ segments, user, messages }) => (
   <AdminPage
     title="GPX Upload"
     user={user}
@@ -30,9 +30,9 @@ const GpxUploadAdminPage: FunctionComponent<{
       },
 
       {
-        label: "Node",
+        label: "Segment",
         render: (_, attrs) => (
-          <NodeInput nodes={nodes} name="node_id" {...attrs} />
+          <SegmentInput segments={segments} name="segment_id" {...attrs} />
         ),
       },
 

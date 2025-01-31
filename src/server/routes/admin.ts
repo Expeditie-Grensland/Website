@@ -30,7 +30,7 @@ import {
   getAllExpeditiesWithPeopleIds,
   updateExpeditie,
 } from "../db/expeditie.js";
-import { addLocations, getAllNodes } from "../db/geo.js";
+import { addLocations, getAllSegments } from "../db/geo.js";
 import {
   addPerson,
   deletePerson,
@@ -336,7 +336,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     renderPage: async ({ user, messages }) =>
       renderGpxUploadAdminPage(
         await promiseAllProps({
-          nodes: getAllNodes(),
+          segments: getAllSegments(),
           user,
           messages,
         })
@@ -345,7 +345,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     addPath: "/upload",
     onAdd: async ({
       file: files,
-      node_id,
+      segment_id,
       time_zone,
       enable_locations,
       enable_stories,
@@ -354,7 +354,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       let storyCount = 0n;
 
       for (const file of files) {
-        const { locations, stories } = parseGpx(file, node_id, time_zone);
+        const { locations, stories } = parseGpx(file, segment_id, time_zone);
 
         if (enable_locations) locCount += await addLocations(locations);
         if (enable_stories) storyCount += await addStories(stories);
@@ -372,7 +372,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       renderStoryAdminPage(
         await promiseAllProps({
           stories: getAllStories(),
-          nodes: getAllNodes(),
+          segments: getAllSegments(),
           user,
           messages,
         })

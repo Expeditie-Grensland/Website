@@ -1,4 +1,4 @@
-export type MapNode = {
+export type MapSegment = {
   id: number;
   childIds: number[];
   color: string;
@@ -8,7 +8,7 @@ export type MapNode = {
 
 export type MapStory = {
   id: number;
-  nodeId: number;
+  segmentId: number;
   timeStamp: number;
   lng: number;
   lat: number;

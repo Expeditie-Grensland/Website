@@ -1,6 +1,6 @@
 import { ComponentChildren, FunctionComponent } from "preact";
 import { getAllExpedities } from "../../db/expeditie.js";
-import { getAllNodes } from "../../db/geo.js";
+import { getAllSegments } from "../../db/geo.js";
 import {
   getAllPersons,
   personTeamNames,
@@ -193,16 +193,16 @@ export const PersonTypeInput: FunctionComponent<
   />
 );
 
-export const NodeInput: FunctionComponent<
+export const SegmentInput: FunctionComponent<
   {
-    nodes: Awaited<ReturnType<typeof getAllNodes>>;
+    segments: Awaited<ReturnType<typeof getAllSegments>>;
   } & BaseSelectorInput
-> = ({ nodes, placeholder = "Nodes", ...rest }) => (
+> = ({ segments, placeholder = "Segmenten", ...rest }) => (
   <SelectorInput
     placeholder={placeholder}
-    options={nodes.map((n) => ({
-      id: `${n.id}`,
-      text: `${n.expeditie_name}${n.description ? `: ${n.description}` : ""} (${n.id})`,
+    options={segments.map((s) => ({
+      id: `${s.id}`,
+      text: `${s.expeditie_name}${s.description ? `: ${s.description}` : ""} (${s.id})`,
     }))}
     {...rest}
   />

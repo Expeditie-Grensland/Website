@@ -31,7 +31,7 @@ export const gpxXmlFileSchema = z.object({
 });
 
 export const gpxSchema = z.object({
-  node_id: z.coerce.number().int(),
+  segment_id: z.coerce.number().int(),
   time_zone: timeZoneSchema,
   enable_locations: checkboxSchema,
   enable_stories: checkboxSchema,

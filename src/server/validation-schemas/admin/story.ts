@@ -3,7 +3,7 @@ import { localTimeTransformer, timeZoneSchema } from "./common.js";
 
 export const storySchema = z
   .object({
-    node_id: z.coerce.number().int(),
+    segment_id: z.coerce.number().int(),
     time_local: z.string(),
     time_zone: timeZoneSchema,
     title: z.string(),

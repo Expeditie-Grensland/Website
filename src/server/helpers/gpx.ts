@@ -11,7 +11,7 @@ type ParsedGPX = {
 
 export const parseGpx = (
   rawData: Buffer | string,
-  nodeId: number,
+  segmentId: number,
   timeZone: string
 ): ParsedGPX => {
   const parsedXml = new XMLParser({
@@ -37,7 +37,7 @@ export const parseGpx = (
       .flatMap(({ trkpt }) => trkpt)
       .map(({ time, _lat, _lon, ele }) => ({
         batch,
-        node_id: nodeId,
+        segment_id: segmentId,
         time_stamp: Math.round(Date.parse(time) / 1000),
         time_zone: timeZone,
         latitude: _lat,
@@ -48,7 +48,7 @@ export const parseGpx = (
     stories: gpx.wpt
       .filter(({ name }) => !name.startsWith("Stop for ~"))
       .map(({ time, name, desc }) => ({
-        node_id: nodeId,
+        segment_id: segmentId,
         time_stamp: Math.round(Date.parse(time) / 1000),
         time_zone: timeZone,
         title: name,

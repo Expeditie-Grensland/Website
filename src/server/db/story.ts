@@ -6,14 +6,14 @@ import { Story, StoryMedia } from "./schema/types.js";
 export const getExpeditieStories = (expeditieId: string) =>
   getDb()
     .selectFrom("story")
-    .innerJoin("geo_node", "geo_node.id", "story.node_id")
+    .innerJoin("geo_segment", "geo_segment.id", "story.segment_id")
     .where("expeditie_id", "=", expeditieId)
     .selectAll("story")
     .select((eb) => [
       eb
         .selectFrom("geo_location")
         .select("longitude")
-        .whereRef("story.node_id", "=", "geo_location.node_id")
+        .whereRef("story.segment_id", "=", "geo_location.segment_id")
         .orderBy(({ eb, fn, ref }) =>
           fn("abs", [
             eb("story.time_stamp" as "id", "-", ref("geo_location.time_stamp")),
@@ -24,7 +24,7 @@ export const getExpeditieStories = (expeditieId: string) =>
       eb
         .selectFrom("geo_location")
         .select("latitude")
-        .whereRef("story.node_id", "=", "geo_location.node_id")
+        .whereRef("story.segment_id", "=", "geo_location.segment_id")
         .orderBy(({ eb, fn, ref }) =>
           fn("abs", [
             eb("story.time_stamp" as "id", "-", ref("geo_location.time_stamp")),
@@ -61,8 +61,8 @@ export const getAllStoryMedia = () =>
   getDb()
     .selectFrom("story_media")
     .innerJoin("story", "story_media.story_id", "story.id")
-    .innerJoin("geo_node", "geo_node.id", "story.node_id")
-    .innerJoin("expeditie", "geo_node.expeditie_id", "expeditie.id")
+    .innerJoin("geo_segment", "geo_segment.id", "story.segment_id")
+    .innerJoin("expeditie", "geo_segment.expeditie_id", "expeditie.id")
     .selectAll("story_media")
     .select("expeditie.name as expeditie_name")
     .execute();
@@ -98,7 +98,7 @@ export const addStories = (stories: Insertable<Story>[]) =>
   getDb()
     .insertInto("story")
     .values(stories)
-    .onConflict((oc) => oc.columns(["node_id", "time_stamp"]).doNothing())
+    .onConflict((oc) => oc.columns(["segment_id", "time_stamp"]).doNothing())
     .executeTakeFirst()
     .then((result) => result.numInsertedOrUpdatedRows || 0n);
 

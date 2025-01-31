@@ -1,12 +1,12 @@
 import mapboxgl from "mapbox-gl";
-import { MapNode, MapStory } from "../server/common-types/expeditie-map";
+import { MapSegment, MapStory } from "../server/common-types/expeditie-map";
 import { createBaseMap } from "./expeditie-map/base-map";
 import { addRouteLayer, addStoryLayer } from "./expeditie-map/data-layers";
 import { createStoryGraph } from "./expeditie-map/story-graph";
 
 declare const routeLink: string,
   mbToken: string,
-  nodes: MapNode[],
+  segments: MapSegment[],
   stories: MapStory[];
 
 const routeData = fetch(routeLink).then((response) => {
@@ -17,9 +17,9 @@ const routeData = fetch(routeLink).then((response) => {
 mapboxgl.accessToken = mbToken;
 
 const map = createBaseMap();
-createStoryGraph(nodes, stories, map);
+createStoryGraph(segments, stories, map);
 
 map.on("style.load", async () => {
-  await addRouteLayer(map, nodes, await routeData);
-  addStoryLayer(map, nodes, stories);
+  await addRouteLayer(map, segments, await routeData);
+  addStoryLayer(map, segments, stories);
 });

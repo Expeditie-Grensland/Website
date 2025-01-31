@@ -1,5 +1,5 @@
 import { Map } from "mapbox-gl";
-import { MapNode, MapStory } from "../../server/common-types/expeditie-map";
+import { MapSegment, MapStory } from "../../server/common-types/expeditie-map";
 import { createSvgElement } from "../helpers/elements";
 import { resetStoryPointHover, setStoryPointHover } from "./data-layers";
 
@@ -9,14 +9,14 @@ export const mobileStoryMediaQuery = window.matchMedia("(max-width: 1099px)");
  * Initialises the story graph and keeps it updated
  */
 export const createStoryGraph = (
-  nodes: MapNode[],
+  segments: MapSegment[],
   stories: MapStory[],
   map: Map
 ) => {
   const storylineEl = document.getElementById("storyline");
   if (!storylineEl) return;
 
-  const [items, width] = constructStory(nodes, stories);
+  const [items, width] = constructStory(segments, stories);
 
   drawGraph(items, width, map);
   new ResizeObserver(() => drawGraph(items, width, map)).observe(
@@ -39,32 +39,32 @@ type StoryItemXY = StoryItemX & {
  * stories they should connect to. Also returns the width of the graph
  */
 const constructStory = (
-  nodes: MapNode[],
+  segments: MapSegment[],
   stories: MapStory[]
 ): [StoryItemX[], number] => {
   const margin = 30;
   const distance = 50;
-  const maxPosTotal = nodes.reduce(
-    (max, node) => (node.posTotal > max ? node.posTotal : max),
+  const maxPosTotal = segments.reduce(
+    (max, segment) => (segment.posTotal > max ? segment.posTotal : max),
     0
   );
 
   return [
-    nodes
-      .flatMap((node) =>
+    segments
+      .flatMap((segment) =>
         stories
-          .filter((s) => s.nodeId == node.id)
+          .filter((s) => s.segmentId == segment.id)
           .map((story, idx, storyArr) => ({
             ...story,
-            color: node.color,
+            color: segment.color,
             childIds:
               idx == storyArr.length - 1
-                ? findFirstStoryOfNodes(nodes, stories, node.childIds)
+                ? findFirstStoryOfSegments(segments, stories, segment.childIds)
                 : [storyArr[idx + 1].id],
             x:
               margin +
-              ((maxPosTotal - node.posTotal) * distance) / 2 +
-              (node.posPart - 1) * distance,
+              ((maxPosTotal - segment.posTotal) * distance) / 2 +
+              (segment.posPart - 1) * distance,
           }))
       )
       .sort((a, b) => a.timeStamp - b.timeStamp),
@@ -74,22 +74,22 @@ const constructStory = (
 };
 
 /**
- * Finds the numbers of the first stories in the tree starting at the given nodes
+ * Finds the numbers of the first stories in the tree starting at the given segments
  */
-const findFirstStoryOfNodes = (
-  nodes: MapNode[],
+const findFirstStoryOfSegments = (
+  segments: MapSegment[],
   stories: MapStory[],
-  nodeIds: number[]
+  segmentIds: number[]
 ): number[] =>
   Array.from(
     new Set(
-      nodeIds.flatMap(
+      segmentIds.flatMap(
         (id) =>
-          stories.find((s) => s.nodeId == id)?.id ||
-          findFirstStoryOfNodes(
-            nodes,
+          stories.find((s) => s.segmentId == id)?.id ||
+          findFirstStoryOfSegments(
+            segments,
             stories,
-            nodes.find((n) => n.id == id)!.childIds
+            segments.find((n) => n.id == id)!.childIds
           )
       )
     )

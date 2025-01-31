@@ -3,9 +3,9 @@ import { renderExpeditieMapPage } from "../components/pages/public/expeditie-map
 import { renderExpeditiePage } from "../components/pages/public/expeditie.js";
 import { getFullExpeditie } from "../db/expeditie.js";
 import {
-  getNodeLocations,
-  getExpeditieNodes,
+  getExpeditieSegments,
   getRouteVersion,
+  getSegmentLocations,
 } from "../db/geo.js";
 import { getExpeditieStories } from "../db/story.js";
 import { promiseAllProps } from "../helpers/async.js";
@@ -40,7 +40,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
         await promiseAllProps({
           expeditie: reply.locals.expeditie!,
           stories: getExpeditieStories(reply.locals.expeditie!.id),
-          nodes: getExpeditieNodes(reply.locals.expeditie!.id),
+          segments: getExpeditieSegments(reply.locals.expeditie!.id),
           routeVersion: getRouteVersion(reply.locals.expeditie!.id),
         })
       )
@@ -53,22 +53,22 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
       "Cache-Control": "public, max-age=2592000, immutable",
     });
 
-    const nodes = await getExpeditieNodes(reply.locals.expeditie!.id);
+    const segments = await getExpeditieSegments(reply.locals.expeditie!.id);
 
     let buf = Buffer.alloc(8);
-    buf.writeUInt32BE(nodes.length, 0);
+    buf.writeUInt32BE(segments.length, 0);
 
     reply.raw.write(buf);
 
-    for (const node of nodes) {
-      const nodeLocs = await getNodeLocations(node);
+    for (const segment of segments) {
+      const locations = await getSegmentLocations(segment);
 
-      buf = Buffer.allocUnsafe(8 + 16 * nodeLocs.length);
+      buf = Buffer.allocUnsafe(8 + 16 * locations.length);
 
-      buf.writeUInt32BE(node.id, 0);
-      buf.writeUInt32BE(nodeLocs.length, 4);
+      buf.writeUInt32BE(segment.id, 0);
+      buf.writeUInt32BE(locations.length, 4);
 
-      nodeLocs.forEach((loc, i) => {
+      locations.forEach((loc, i) => {
         buf.writeDoubleBE(loc.longitude, i * 16 + 8);
         buf.writeDoubleBE(loc.latitude, i * 16 + 16);
       });

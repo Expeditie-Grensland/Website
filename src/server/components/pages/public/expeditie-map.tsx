@@ -1,8 +1,8 @@
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { MapNode, MapStory } from "../../../common-types/expeditie-map.js";
+import { MapSegment, MapStory } from "../../../common-types/expeditie-map.js";
 import { getFullExpeditie } from "../../../db/expeditie.js";
-import { getExpeditieNodes, getRouteVersion } from "../../../db/geo.js";
+import { getExpeditieSegments, getRouteVersion } from "../../../db/geo.js";
 import { getExpeditieStories } from "../../../db/story.js";
 import { getFileType, getFileUrl } from "../../../files/files.js";
 import { getMapboxConfig } from "../../../helpers/config.js";
@@ -11,18 +11,18 @@ import { ClientVariable } from "../../page-structure/client-variable.js";
 import { Page } from "../../page-structure/page.js";
 
 const peopleNames = (
-  node?: Awaited<ReturnType<typeof getExpeditieNodes>>[number]
+  segment?: Awaited<ReturnType<typeof getExpeditieSegments>>[number]
 ) =>
   new Intl.ListFormat("nl-NL", { style: "short", type: "conjunction" }).format(
-    node?.persons
+    segment?.persons
       ?.map((person) => person.first_name!)
       ?.toSorted((p1, p2) => p1?.localeCompare(p2)) || []
   );
 
 const Story: FunctionComponent<{
   story: Awaited<ReturnType<typeof getExpeditieStories>>[number];
-  node?: Awaited<ReturnType<typeof getExpeditieNodes>>[number];
-}> = ({ story, node }) => (
+  segment?: Awaited<ReturnType<typeof getExpeditieSegments>>[number];
+}> = ({ story, segment }) => (
   <div id={`story-${story.id}`} class="story">
     <div class="story-title">
       <div class="story-header">
@@ -34,7 +34,7 @@ const Story: FunctionComponent<{
           {formatTimeNicely(story.time_stamp, story.time_zone)}
         </p>
       </div>
-      <p class="story-people">{peopleNames(node)}</p>
+      <p class="story-people">{peopleNames(segment)}</p>
     </div>
 
     {story.text && <p>{story.text}</p>}
@@ -66,9 +66,9 @@ const Story: FunctionComponent<{
 const ExpeditieMapPage: FunctionComponent<{
   expeditie: NonNullable<Awaited<ReturnType<typeof getFullExpeditie>>>;
   stories: Awaited<ReturnType<typeof getExpeditieStories>>;
-  nodes: Awaited<ReturnType<typeof getExpeditieNodes>>;
+  segments: Awaited<ReturnType<typeof getExpeditieSegments>>;
   routeVersion: Awaited<ReturnType<typeof getRouteVersion>>;
-}> = ({ expeditie, stories, nodes, routeVersion }) => (
+}> = ({ expeditie, stories, segments, routeVersion }) => (
   <Page
     title={`Expeditie ${expeditie.name} Kaart`}
     head={
@@ -101,14 +101,14 @@ const ExpeditieMapPage: FunctionComponent<{
         />
         <ClientVariable name="mbToken" value={getMapboxConfig().token} />
         <ClientVariable
-          name="nodes"
-          value={nodes.map(
-            (node): MapNode => ({
-              id: node.id,
-              childIds: node.child_ids,
-              color: node.color,
-              posPart: node.position_part,
-              posTotal: node.position_total,
+          name="segments"
+          value={segments.map(
+            (segment): MapSegment => ({
+              id: segment.id,
+              childIds: segment.child_ids,
+              color: segment.color,
+              posPart: segment.position_part,
+              posTotal: segment.position_total,
             })
           )}
         />
@@ -117,7 +117,7 @@ const ExpeditieMapPage: FunctionComponent<{
           value={stories.map(
             (story): MapStory => ({
               id: story.id,
-              nodeId: story.node_id,
+              segmentId: story.segment_id,
               timeStamp: story.time_stamp,
               lng: story.longitude || 0,
               lat: story.latitude || 0,
@@ -143,7 +143,9 @@ const ExpeditieMapPage: FunctionComponent<{
             {stories.map((story) => (
               <Story
                 story={story}
-                node={nodes.find((node) => node.id == story.node_id)}
+                segment={segments.find(
+                  (segment) => segment.id == story.segment_id
+                )}
               />
             ))}
           </div>

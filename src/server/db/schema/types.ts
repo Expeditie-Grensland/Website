@@ -62,12 +62,12 @@ export interface GeoLocation {
   id: Generated<number>;
   latitude: number;
   longitude: number;
-  node_id: number;
+  segment_id: number;
   time_stamp: number;
   time_zone: string;
 }
 
-export interface GeoNode {
+export interface GeoSegment {
   color: string;
   description: string | null;
   expeditie_id: string;
@@ -76,14 +76,14 @@ export interface GeoNode {
   position_total: Generated<number>;
 }
 
-export interface GeoNodeEdge {
+export interface GeoSegmentLink {
   child_id: number;
   parent_id: number;
 }
 
-export interface GeoNodePerson {
-  node_id: number;
+export interface GeoSegmentPerson {
   person_id: string;
+  segment_id: number;
 }
 
 export interface MemberLink {
@@ -127,7 +127,7 @@ export interface Quote {
 
 export interface Story {
   id: Generated<number>;
-  node_id: number;
+  segment_id: number;
   text: string | null;
   time_stamp: number;
   time_zone: string;
@@ -156,9 +156,9 @@ export interface DB {
   expeditie_movie_editor: ExpeditieMovieEditor;
   expeditie_person: ExpeditiePerson;
   geo_location: GeoLocation;
-  geo_node: GeoNode;
-  geo_node_edge: GeoNodeEdge;
-  geo_node_person: GeoNodePerson;
+  geo_segment: GeoSegment;
+  geo_segment_link: GeoSegmentLink;
+  geo_segment_person: GeoSegmentPerson;
   member_link: MemberLink;
   person: Person;
   person_address: PersonAddress;

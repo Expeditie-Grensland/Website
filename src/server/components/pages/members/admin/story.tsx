@@ -1,6 +1,6 @@
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { getAllNodes } from "../../../../db/geo.js";
+import { getAllSegments } from "../../../../db/geo.js";
 import { authenticatePerson } from "../../../../db/person.js";
 import { getAllStories } from "../../../../db/story.js";
 import { AdminPage } from "../../../admin/admin-page.js";
@@ -8,7 +8,7 @@ import {
   FormInputArray,
   HiddenInput,
   LocalTimeInput,
-  NodeInput,
+  SegmentInput,
   TextAreaInput,
   TextInput,
   TimezoneInput,
@@ -16,10 +16,10 @@ import {
 
 const StoryAdminPage: FunctionComponent<{
   stories: Awaited<ReturnType<typeof getAllStories>>;
-  nodes: Awaited<ReturnType<typeof getAllNodes>>;
+  segments: Awaited<ReturnType<typeof getAllSegments>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
-}> = ({ stories, nodes, user, messages }) => (
+}> = ({ stories, segments, user, messages }) => (
   <AdminPage
     title="Verhalen Admin"
     fluid
@@ -29,13 +29,13 @@ const StoryAdminPage: FunctionComponent<{
     items={stories}
     columns={[
       {
-        label: "Node",
+        label: "Segment",
         style: { minWidth: "17.5rem" },
         render: (story, attrs) => (
-          <NodeInput
-            nodes={nodes}
-            value={story?.node_id?.toString()}
-            name="node_id"
+          <SegmentInput
+            segments={segments}
+            value={story?.segment_id?.toString()}
+            name="segment_id"
             {...attrs}
           />
         ),
