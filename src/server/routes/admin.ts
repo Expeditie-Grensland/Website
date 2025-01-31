@@ -159,10 +159,9 @@ const registerAdminRoute: RegisterAdminRoute = (
   if (schema && paramSchema && onUpdate) {
     app.post(
       `${prefix}${updatePath}`,
-      flashAndRedirect(prefix, ({ body, params }) => {
-        console.dir(body);
-        return onUpdate(paramSchema.parse(params), schema.parse(body));
-      })
+      flashAndRedirect(prefix, ({ body, params }) =>
+        onUpdate(paramSchema.parse(params), schema.parse(body))
+      )
     );
   }
 

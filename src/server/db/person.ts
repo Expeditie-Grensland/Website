@@ -87,8 +87,6 @@ export const updatePerson = (
   getDb()
     .transaction()
     .execute(async (trx) => {
-      console.dir({ ...person, addresses });
-
       const result = await trx
         .updateTable("person")
         .where("id", "=", id)
