@@ -1,12 +1,13 @@
-import { Feature, LineString, Point } from "geojson";
-import { LngLatBounds, LngLatLike, Map } from "mapbox-gl";
+import { Feature, Point } from "geojson";
+import { LngLatLike, Map } from "mapbox-gl";
 import { MapSegment, MapStory } from "../../server/common-types/expeditie-map";
-import { setRouteBounds, zoomToRoute } from "./view";
+import { ParsedRouteData } from "./data-parse";
 import {
   resetStoryGraphHover,
   scrollToStory,
   setStoryGraphHover,
 } from "./story-graph";
+import { setRouteBounds, zoomToRoute } from "./view";
 
 /**
  * Converts route location data to GeoJSON and adds it as a source to the map,
@@ -14,60 +15,14 @@ import {
  */
 export const addRouteLayer = async (
   map: Map,
-  segments: MapSegment[],
-  route: ArrayBuffer
+  { bounds, ...route }: ParsedRouteData
 ) => {
-  const view = new DataView(route);
-
-  const features: Feature<LineString>[] = [];
-  const bounds = new LngLatBounds();
-
-  const segmentCount = view.getUint32(0);
-
-  let offset = 8;
-
-  for (let i = 0; i < segmentCount; i++) {
-    const segmentId = view.getUint32(offset);
-
-    const feature: Feature<LineString> = {
-      type: "Feature",
-      properties: {
-        segmentId,
-        color: segments.find((s) => s.id == segmentId)?.color || "#000",
-        type: segments.find((s) => s.id == segmentId)?.type || "normal",
-      },
-      geometry: {
-        type: "LineString",
-        coordinates: [],
-      },
-    };
-
-    const locCount = view.getUint32(offset + 4);
-    offset += 8;
-
-    for (let i = 0; i < locCount; ++i) {
-      const lng = view.getFloat64(offset);
-      const lat = view.getFloat64(offset + 8);
-
-      offset += 16;
-
-      bounds.extend([lng, lat]);
-      feature.geometry.coordinates.push([lng, lat]);
-    }
-
-    features.push(feature);
-  }
-
   setRouteBounds(bounds);
   zoomToRoute(map);
 
   map.addSource("exp-route", {
     type: "geojson",
-    data: {
-      type: "FeatureCollection",
-      features,
-    },
-    promoteId: "segmentId",
+    data: route,
   });
 
   map.addLayer({
