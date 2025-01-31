@@ -87,7 +87,13 @@ const PersonsAdminPage: FunctionComponent<{
         render: (person, attrs) => (
           <>
             <PersonTypeInput name="type" value={person?.type} {...attrs} />
-            <PersonTeamInput name="team" value={person?.team} {...attrs} />
+
+            <PersonTeamInput
+              name="team"
+              value={person?.team}
+              allowEmpty
+              {...attrs}
+            />
           </>
         ),
       },
