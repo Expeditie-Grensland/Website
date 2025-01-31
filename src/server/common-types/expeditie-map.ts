@@ -1,6 +1,7 @@
 export type MapSegment = {
   id: number;
   childIds: number[];
+  type: "normal" | "flight";
   color: string;
   posPart: number;
   posTotal: number;

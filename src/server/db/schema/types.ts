@@ -9,6 +9,8 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
+export type GeoSegmentType = "flight" | "normal";
+
 export type PersonTeam = "blue" | "green" | "red";
 
 export type PersonType = "admin" | "former" | "guest" | "member";
@@ -74,6 +76,7 @@ export interface GeoSegment {
   id: Generated<number>;
   position_part: Generated<number>;
   position_total: Generated<number>;
+  type: Generated<GeoSegmentType>;
 }
 
 export interface GeoSegmentLink {

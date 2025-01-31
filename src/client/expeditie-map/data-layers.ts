@@ -33,7 +33,8 @@ export const addRouteLayer = async (
       type: "Feature",
       properties: {
         segmentId,
-        color: segments.find((n) => n.id == segmentId)?.color || "#000",
+        color: segments.find((s) => s.id == segmentId)?.color || "#000",
+        type: segments.find((s) => s.id == segmentId)?.type || "normal",
       },
       geometry: {
         type: "LineString",
@@ -76,6 +77,13 @@ export const addRouteLayer = async (
     paint: {
       "line-width": 3,
       "line-color": ["get", "color"],
+      "line-opacity": ["case", ["==", ["get", "type"], "flight"], 0.75, 1],
+      "line-dasharray": [
+        "case",
+        ["==", ["get", "type"], "flight"],
+        [2, 1],
+        [1],
+      ],
     },
   });
 };
@@ -117,7 +125,8 @@ export const addStoryLayer = (
           properties: {
             storyId: story.id,
             segmentId: story.segmentId,
-            color: segments.find((n) => n.id == story.segmentId)?.color || "#000",
+            color:
+              segments.find((n) => n.id == story.segmentId)?.color || "#000",
           },
         };
       }),

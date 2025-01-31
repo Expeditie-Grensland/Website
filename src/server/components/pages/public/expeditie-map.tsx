@@ -106,6 +106,7 @@ const ExpeditieMapPage: FunctionComponent<{
             (segment): MapSegment => ({
               id: segment.id,
               childIds: segment.child_ids,
+              type: segment.type,
               color: segment.color,
               posPart: segment.position_part,
               posTotal: segment.position_total,
