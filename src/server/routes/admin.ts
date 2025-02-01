@@ -355,8 +355,13 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       for (const file of files) {
         const { locations, stories } = parseGpx(file, segment_id, time_zone);
 
-        if (enable_locations) locCount += await addLocations(locations);
-        if (enable_stories) storyCount += await addStories(stories);
+        if (enable_locations && locations.length > 0) {
+          locCount += await addLocations(locations);
+        }
+
+        if (enable_stories && stories.length > 0) {
+          storyCount += await addStories(stories);
+        }
       }
 
       return `${locCount} locaties en ${storyCount} verhalen zijn geüpload`;
