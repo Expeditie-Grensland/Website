@@ -3,13 +3,21 @@ import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { getDb } from "./schema/database.js";
 import { Expeditie } from "./schema/types.js";
 
-export const getAllExpedities = ({ noDrafts = false } = {}) =>
+export const getAllExpedities = ({
+  withoutDrafts = false,
+  onlyOngoing = false,
+} = {}) =>
   getDb()
     .selectFrom("expeditie")
     .selectAll()
     .orderBy("start_date desc")
     .orderBy("end_date desc")
-    .$if(noDrafts, (qb) => qb.where("draft", "=", false))
+    .$if(withoutDrafts, (qb) => qb.where("draft", "=", false))
+    .$if(onlyOngoing, (qb) =>
+      qb
+        .whereRef("start_date", "<=", sql`current_date + 3`)
+        .whereRef("end_date", ">=", sql`current_date - 3`)
+    )
     .execute();
 
 export const getAllExpeditiesWithPeopleIds = () =>
@@ -44,6 +52,14 @@ export const getAllExpeditiesWithPeopleIds = () =>
         movie_editors: movie_editors.map(({ id }) => id),
       }))
     );
+
+export const getExpeditie = (id: string) =>
+  getDb()
+    .selectFrom("expeditie")
+    .where("id", "=", id)
+    .selectAll()
+    .limit(1)
+    .executeTakeFirst();
 
 export const getFullExpeditie = (id: string) =>
   getDb()

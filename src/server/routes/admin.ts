@@ -5,7 +5,7 @@ import {
   FastifyReply,
   FastifyRequest,
 } from "fastify";
-import { output, ZodError, ZodTypeAny } from "zod";
+import { z, ZodError, ZodTypeAny } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { renderAfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js";
 import { renderDictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
@@ -30,7 +30,7 @@ import {
   getAllExpeditiesWithPeopleIds,
   updateExpeditie,
 } from "../db/expeditie.js";
-import { addLocations, getAllSegments } from "../db/geo.js";
+import { addLocations, getExpeditieSegments } from "../db/geo.js";
 import {
   addPerson,
   deletePerson,
@@ -48,7 +48,7 @@ import {
   addStories,
   addStory,
   deleteStory,
-  getAllStories,
+  getExpeditieStories,
   updateStory,
 } from "../db/story.js";
 import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
@@ -59,7 +59,10 @@ import { parseGpx } from "../helpers/gpx.js";
 import { afkoSchema } from "../validation-schemas/admin/afko.js";
 import { pointSchema } from "../validation-schemas/admin/earned-point.js";
 import { expeditieSchema } from "../validation-schemas/admin/expeditie.js";
-import { gpxSchema } from "../validation-schemas/admin/gpx.js";
+import {
+  gpxPrefixParamsSchema,
+  gpxSchema,
+} from "../validation-schemas/admin/gpx.js";
 import {
   idParamsSchema,
   keyParamsSchema,
@@ -67,33 +70,39 @@ import {
 } from "../validation-schemas/admin/params.js";
 import { personSchema } from "../validation-schemas/admin/person.js";
 import { quoteSchema } from "../validation-schemas/admin/quote.js";
-import { storySchema } from "../validation-schemas/admin/story.js";
+import {
+  storyPrefixParamsSchema,
+  storySchema,
+} from "../validation-schemas/admin/story.js";
 import { wordSchema } from "../validation-schemas/admin/word.js";
 
-const flashAndRedirect =
-  <Req extends FastifyRequest, Rep extends FastifyReply>(
-    redirectTo: string,
-    func: (request: Req, reply: Rep) => Promise<string>
-  ) =>
-  async (request: Req, reply: Rep) => {
-    try {
-      request.flash("info", await func(request, reply));
-    } catch (e) {
-      let errorMsg = "Error!";
+const friendlyError = (err: unknown) => {
+  if (err instanceof ZodError) {
+    return fromZodError(err).message;
+  }
 
-      if (typeof e === "string") errorMsg = e;
-      else if (e instanceof ZodError) errorMsg = fromZodError(e).message;
-      else if (e instanceof Error) errorMsg = e.message;
+  if (err instanceof Error) {
+    return err.message;
+  }
 
-      request.flash("error", errorMsg);
-    }
-    reply.redirect(`/leden/admin${redirectTo}`);
-    return reply;
-  };
+  return `${err}`;
+};
+
+const executeAndFlash = async (
+  req: FastifyRequest,
+  func: () => string | Promise<string>
+) => {
+  try {
+    req.flash("info", await func());
+  } catch (err) {
+    req.flash("error", friendlyError(err));
+  }
+};
 
 type RegisterAdminRoute = <
   Schema extends ZodTypeAny,
   ParamSchema extends ZodTypeAny,
+  PrefixSchema extends ZodTypeAny,
 >(
   app: FastifyInstance,
   prefix: string,
@@ -101,32 +110,51 @@ type RegisterAdminRoute = <
   opts: {
     schema?: Schema;
     paramSchema?: ParamSchema;
+    prefixSchema?: PrefixSchema;
 
     renderPage: (opts: {
       user: NonNullable<FastifyReply["locals"]["user"]>;
       messages: Record<string, string[]>;
+      parsedPrefix: z.output<PrefixSchema>;
     }) => Promise<string>;
 
     addPath?: string;
-    onAdd?: (obj: output<Schema>) => Promise<string>;
+    onAdd?: (obj: z.output<Schema>) => Promise<string>;
 
     updatePath?: string;
     onUpdate?: (
-      params: output<ParamSchema>,
-      obj: output<Schema>
+      params: z.output<ParamSchema>,
+      obj: z.output<Schema>
     ) => Promise<string>;
 
     deletePath?: string;
-    onDelete?: (params: output<ParamSchema>) => Promise<string>;
+    onDelete?: (params: z.output<ParamSchema>) => Promise<string>;
   }
-) => void;
+) => Promise<void>;
 
-const registerAdminRoute: RegisterAdminRoute = (
+const returnToPage = (
+  prefix: string,
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  reply.redirect(
+    Object.getOwnPropertyNames(req.params).reduce(
+      (url, key) =>
+        url.replace(`:${key}`, (req.params as Record<string, string>)[key]),
+      `/leden/admin${prefix}`
+    )
+  );
+
+  return reply;
+};
+
+const registerAdminRoute: RegisterAdminRoute = async (
   app,
   prefix,
   {
     schema,
     paramSchema,
+    prefixSchema,
 
     renderPage,
 
@@ -139,41 +167,60 @@ const registerAdminRoute: RegisterAdminRoute = (
     deletePath = "/delete/:id",
     onDelete,
   }
-) => {
-  app.get(prefix, async (_req, reply) =>
-    reply.sendHtml(
-      await renderPage({
-        user: reply.locals.user!,
-        messages: reply.flash() as Record<string, string[]>,
-      })
-    )
+) =>
+  await app.register(
+    async (app) => {
+      if (prefixSchema) {
+        app.addHook("onRequest", async (req, reply) => {
+          const { success, data } = await prefixSchema.safeParseAsync(
+            req.params
+          );
+          if (!success) return reply.callNotFound();
+
+          reply.locals.parsedPrefix = data;
+        });
+      }
+
+      app.get("/", async (_req, reply) =>
+        reply.sendHtml(
+          await renderPage({
+            user: reply.locals.user!,
+            messages: reply.flash() as Record<string, string[]>,
+            parsedPrefix: reply.locals.parsedPrefix,
+          })
+        )
+      );
+
+      if (schema && onAdd) {
+        app.post(addPath, async (req, reply) => {
+          await executeAndFlash(req, () => onAdd(schema.parse(req.body)));
+
+          return returnToPage(prefix, req, reply);
+        });
+      }
+
+      if (schema && paramSchema && onUpdate) {
+        app.post(updatePath, async (req, reply) => {
+          await executeAndFlash(req, () =>
+            onUpdate(paramSchema.parse(req.params), schema.parse(req.body))
+          );
+
+          return returnToPage(prefix, req, reply);
+        });
+      }
+
+      if (paramSchema && onDelete) {
+        app.post(deletePath, async (req, reply) => {
+          await executeAndFlash(req, () =>
+            onDelete(paramSchema.parse(req.params))
+          );
+
+          return returnToPage(prefix, req, reply);
+        });
+      }
+    },
+    { prefix }
   );
-
-  if (schema && onAdd) {
-    app.post(
-      `${prefix}${addPath}`,
-      flashAndRedirect(prefix, ({ body }) => onAdd(schema.parse(body)))
-    );
-  }
-
-  if (schema && paramSchema && onUpdate) {
-    app.post(
-      `${prefix}${updatePath}`,
-      flashAndRedirect(prefix, ({ body, params }) =>
-        onUpdate(paramSchema.parse(params), schema.parse(body))
-      )
-    );
-  }
-
-  if (paramSchema && onDelete) {
-    app.post(
-      `${prefix}${deletePath}`,
-      flashAndRedirect(prefix, ({ params }) =>
-        onDelete(paramSchema.parse(params))
-      )
-    );
-  }
-};
 
 const adminRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -189,7 +236,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   });
 
-  registerAdminRoute(app, "/woordenboek", {
+  await registerAdminRoute(app, "/woordenboek", {
     schema: wordSchema,
     paramSchema: idParamsSchema,
 
@@ -210,7 +257,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       `Woord "${(await deleteWord(id)).word}" is verwijderd`,
   });
 
-  registerAdminRoute(app, "/citaten", {
+  await registerAdminRoute(app, "/citaten", {
     schema: quoteSchema,
     paramSchema: idParamsSchema,
 
@@ -231,7 +278,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       `Citaat "${(await deleteQuote(id)).quote}" is verwijderd`,
   });
 
-  registerAdminRoute(app, "/afkowobo", {
+  await registerAdminRoute(app, "/afkowobo", {
     schema: afkoSchema,
     paramSchema: idParamsSchema,
 
@@ -251,7 +298,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       `Afko "${(await deleteAfko(id)).afko}" is verwijderd`,
   });
 
-  registerAdminRoute(app, "/punten", {
+  await registerAdminRoute(app, "/punten", {
     schema: pointSchema,
     paramSchema: numIdParamsSchema,
 
@@ -276,7 +323,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       `${(await deleteEarnedPoint(id)).amount} punten zijn verwijderd`,
   });
 
-  registerAdminRoute(app, "/personen", {
+  await registerAdminRoute(app, "/personen", {
     schema: personSchema,
     paramSchema: idParamsSchema,
 
@@ -305,7 +352,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   });
 
-  registerAdminRoute(app, "/expedities", {
+  await registerAdminRoute(app, "/expedities", {
     schema: expeditieSchema,
     paramSchema: idParamsSchema,
 
@@ -329,15 +376,43 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       `Expeditie ${(await deleteExpeditie(id)).name} is verwijderd`,
   });
 
-  registerAdminRoute(app, "/gpx", {
-    schema: gpxSchema,
+  await registerAdminRoute(app, "/expedities/:expeditie/verhalen", {
+    schema: storySchema,
+    paramSchema: numIdParamsSchema,
+    prefixSchema: storyPrefixParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderGpxUploadAdminPage(
+    renderPage: async ({ user, messages, parsedPrefix }) =>
+      renderStoryAdminPage(
         await promiseAllProps({
-          segments: getAllSegments(),
+          stories: getExpeditieStories(parsedPrefix.expeditie.id),
+          segments: getExpeditieSegments(parsedPrefix.expeditie.id),
           user,
           messages,
+          expeditie: parsedPrefix.expeditie,
+        })
+      ),
+
+    onAdd: async (story) =>
+      `Verhaal "${(await addStory(story)).title}" is toegevoegd`,
+
+    onUpdate: async ({ id }, story) =>
+      `Verhaal "${(await updateStory(id, story)).title}" is gewijzigd`,
+
+    onDelete: async ({ id }) =>
+      `Verhaal "${(await deleteStory(id)).title}" is verwijderd`,
+  });
+
+  await registerAdminRoute(app, "/expedities/:expeditie/gpx", {
+    schema: gpxSchema,
+    prefixSchema: gpxPrefixParamsSchema,
+
+    renderPage: async ({ user, messages, parsedPrefix }) =>
+      renderGpxUploadAdminPage(
+        await promiseAllProps({
+          segments: getExpeditieSegments(parsedPrefix.expeditie.id),
+          user,
+          messages,
+          expeditie: parsedPrefix.expeditie,
         })
       ),
 
@@ -368,31 +443,7 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   });
 
-  registerAdminRoute(app, "/verhalen", {
-    schema: storySchema,
-    paramSchema: numIdParamsSchema,
-
-    renderPage: async ({ user, messages }) =>
-      renderStoryAdminPage(
-        await promiseAllProps({
-          stories: getAllStories(),
-          segments: getAllSegments(),
-          user,
-          messages,
-        })
-      ),
-
-    onAdd: async (story) =>
-      `Verhaal "${(await addStory(story)).title}" is toegevoegd`,
-
-    onUpdate: async ({ id }, story) =>
-      `Verhaal "${(await updateStory(id, story)).title}" is gewijzigd`,
-
-    onDelete: async ({ id }) =>
-      `Verhaal "${(await deleteStory(id)).title}" is verwijderd`,
-  });
-
-  registerAdminRoute(app, "/bestanden", {
+  await registerAdminRoute(app, "/bestanden", {
     paramSchema: keyParamsSchema,
 
     renderPage: async ({ user, messages }) =>

@@ -1,9 +1,12 @@
+import { Selectable } from "kysely";
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { HTMLAttributeAnchorTarget } from "preact/compat";
 import packageJson from "../../../../../package.json" with { type: "json" };
 import { getMemberLinks } from "../../../db/member-link.js";
 import { authenticatePerson } from "../../../db/person.js";
+import { Expeditie } from "../../../db/schema/types.js";
+import { formatDateRange } from "../../../helpers/time.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
@@ -35,8 +38,9 @@ const LinkCard: FunctionComponent<{
 
 const MembersHomePage: FunctionComponent<{
   memberLinks: Awaited<ReturnType<typeof getMemberLinks>>;
+  currentExpedities: Selectable<Expeditie>[];
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
-}> = ({ memberLinks, user }) => (
+}> = ({ memberLinks, currentExpedities, user }) => (
   <Page
     title="Expeditie - Leden"
     head={<link rel="stylesheet" href="/static/styles/members.css" />}
@@ -136,30 +140,6 @@ const MembersHomePage: FunctionComponent<{
         />
 
         <LinkCard
-          title="GPX Upload"
-          text="Omdat we nog steeds geen app hebben"
-          links={[
-            {
-              text: "Admin",
-              url: "/leden/admin/gpx",
-              when: user.type == "admin",
-            },
-          ]}
-        />
-
-        <LinkCard
-          title="Verhaalelementen"
-          text="Extra informatie op de kaart"
-          links={[
-            {
-              text: "Admin",
-              url: "/leden/admin/verhalen",
-              when: user.type == "admin",
-            },
-          ]}
-        />
-
-        <LinkCard
           title="Bestanden"
           text="De Small Data"
           links={[
@@ -171,6 +151,31 @@ const MembersHomePage: FunctionComponent<{
           ]}
         />
       </div>
+
+      {user.type == "admin" && currentExpedities.length > 0 && (
+        <>
+          <h1 class="link-category">Lopende expedities</h1>
+
+          <div class="grid-3">
+            {currentExpedities.map((exp) => (
+              <LinkCard
+                title={exp.name}
+                text={formatDateRange(exp.start_date, exp.end_date)}
+                links={[
+                  {
+                    text: "GPX Upload",
+                    url: `/leden/admin/expedities/${exp.id}/gpx`,
+                  },
+                  {
+                    text: "Verhalen",
+                    url: `/leden/admin/expedities/${exp.id}/verhalen`,
+                  },
+                ]}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       <h1 class="link-category">Externe links</h1>
 

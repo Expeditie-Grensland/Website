@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { localTimeTransformer, timeZoneSchema } from "./common.js";
+import {
+  expeditieIdCheckSchema,
+  localTimeTransformer,
+  timeZoneSchema,
+} from "./common.js";
 
 export const storySchema = z
   .object({
@@ -37,3 +41,7 @@ export const storySchema = z
       description: media_descriptions[i],
     })),
   }));
+
+export const storyPrefixParamsSchema = z.object({
+  expeditie: expeditieIdCheckSchema,
+});

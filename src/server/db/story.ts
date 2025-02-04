@@ -42,21 +42,6 @@ export const getExpeditieStories = (expeditieId: string) =>
     .orderBy("story.time_stamp")
     .execute();
 
-export const getAllStories = () =>
-  getDb()
-    .selectFrom("story")
-    .selectAll("story")
-    .select((eb) => [
-      jsonArrayFrom(
-        eb
-          .selectFrom("story_media")
-          .selectAll("story_media")
-          .whereRef("story_media.story_id", "=", "story.id")
-      ).as("media"),
-    ])
-    .orderBy("time_stamp desc")
-    .execute();
-
 export const getAllStoryMedia = () =>
   getDb()
     .selectFrom("story_media")

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getExpeditie } from "../../db/expeditie.js";
 import { isValidTimeZone, parseISODateTimeStamp } from "../../helpers/time.js";
 
 export const timeZoneSchema = z
@@ -28,3 +29,8 @@ export const dateSchema = z
   .string()
   .date()
   .transform((string) => new Date(string));
+
+export const expeditieIdCheckSchema = z
+  .string()
+  .transform(getExpeditie)
+  .refine((exp) => exp != undefined);

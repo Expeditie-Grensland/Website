@@ -7,7 +7,7 @@ const homeRoutes: FastifyPluginAsync = async (app) => {
     reply.sendHtml(
       renderHomePage({
         expedities: await getAllExpedities({
-          noDrafts: !request.query.concepten,
+          withoutDrafts: !request.query.concepten,
         }),
         user: reply.locals.user,
       })

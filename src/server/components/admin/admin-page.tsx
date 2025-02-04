@@ -7,6 +7,7 @@ import { Page } from "../page-structure/page.js";
 type AdminPageProps<Value> = {
   title: string;
   fluid?: boolean;
+  backTo?: "home" | "members" | { text: string; href: string };
 
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
@@ -23,6 +24,7 @@ type AdminPageProps<Value> = {
   columns: {
     label: string;
     style?: JSX.CSSProperties;
+    onlyIn?: "new" | "existing";
 
     render: (
       item: Value | undefined,
@@ -41,6 +43,7 @@ type AdminPageProps<Value> = {
 export const AdminPage = <Value,>({
   title,
   fluid,
+  backTo = "members",
   user,
   messages,
   newAction,
@@ -55,7 +58,7 @@ export const AdminPage = <Value,>({
     afterBody={<script src="/static/scripts/members.js" />}
   >
     <div class={fluid ? "container-fluid" : "container"}>
-      <NavigationBar type="members" backTo="members" user={user} />
+      <NavigationBar type="members" backTo={backTo} user={user} />
 
       <h1 class="page-title">{title}</h1>
 
@@ -69,12 +72,15 @@ export const AdminPage = <Value,>({
           method="POST"
           encType={multipart ? "multipart/form-data" : undefined}
         >
-          {columns.map((column) => (
-            <div class="inputs-with-label">
-              <label>{column.label}</label>
-              {column.render(undefined, {})}
-            </div>
-          ))}
+          {columns.map(
+            (column) =>
+              column.onlyIn != "existing" && (
+                <div class="inputs-with-label">
+                  <label>{column.label}</label>
+                  {column.render(undefined, {})}
+                </div>
+              )
+          )}
 
           <button class="button-main" type="submit">
             {newAction.label || "Toevoegen"}
@@ -97,13 +103,16 @@ export const AdminPage = <Value,>({
           <tbody>
             {items.map((item, i) => (
               <tr>
-                {columns.map((column) => (
-                  <td>
-                    <div class="table-inputs">
-                      {column.render(item, { form: `form-${i}` })}
-                    </div>
-                  </td>
-                ))}
+                {columns.map(
+                  (column) =>
+                    column.onlyIn != "new" && (
+                      <td>
+                        <div class="table-inputs">
+                          {column.render(item, { form: `form-${i}` })}
+                        </div>
+                      </td>
+                    )
+                )}
 
                 {actions && actions.length > 0 && (
                   <td>

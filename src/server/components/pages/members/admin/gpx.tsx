@@ -1,7 +1,9 @@
+import { Selectable } from "kysely";
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { getAllSegments } from "../../../../db/geo.js";
+import { getExpeditieSegments } from "../../../../db/geo.js";
 import { authenticatePerson } from "../../../../db/person.js";
+import { Expeditie } from "../../../../db/schema/types.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   CheckInput,
@@ -11,15 +13,20 @@ import {
 } from "../../../admin/form-inputs.js";
 
 const GpxUploadAdminPage: FunctionComponent<{
-  segments: Awaited<ReturnType<typeof getAllSegments>>;
+  segments: Awaited<ReturnType<typeof getExpeditieSegments>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
-}> = ({ segments, user, messages }) => (
+  expeditie: Selectable<Expeditie>;
+}> = ({ segments, user, messages, expeditie }) => (
   <AdminPage
-    title="GPX Upload"
+    title={`GPX Upload (Expeditie ${expeditie.name})`}
+    backTo={{ text: "Expeditie Admin", href: "/leden/admin/expedities" }}
     user={user}
     messages={messages}
-    newAction={{ action: "/leden/admin/gpx/upload", label: "Uploaden" }}
+    newAction={{
+      action: `/leden/admin/expedities/${expeditie.id}/gpx/upload`,
+      label: "Uploaden",
+    }}
     multipart
     columns={[
       {

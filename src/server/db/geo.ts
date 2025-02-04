@@ -32,6 +32,7 @@ export const getExpeditieSegments = (expeditieId: string) =>
           .leftJoin("person", "geo_segment_person.person_id", "person.id")
           .selectAll("person")
           .whereRef("geo_segment_person.segment_id", "=", "geo_segment.id")
+          .orderBy("person.sorting_name")
       ).as("persons"),
     ])
     .select(({ fn, val }) =>
@@ -53,29 +54,6 @@ export const getSegmentLocations = (
     .select(["id", "latitude", "longitude"])
     .where("segment_id", "=", segment.id)
     .orderBy("time_stamp asc")
-    .execute();
-
-export const getAllSegments = () =>
-  getDb()
-    .selectFrom("geo_segment")
-    .innerJoin("expeditie", "geo_segment.expeditie_id", "expeditie.id")
-    .leftJoin(
-      "geo_segment_link",
-      "geo_segment.id",
-      "geo_segment_link.parent_id"
-    )
-    .selectAll("geo_segment")
-    .select("expeditie.name as expeditie_name")
-    .select(({ fn, val }) =>
-      fn<number[]>("array_remove", [
-        fn.agg("array_agg", ["geo_segment_link.child_id"]),
-        val(null),
-      ]).as("child_ids")
-    )
-    .groupBy("expeditie.id")
-    .groupBy("geo_segment.id")
-    .orderBy("expeditie.start_date")
-    .orderBy("geo_segment.id")
     .execute();
 
 export const addLocations = async (locations: Insertable<GeoLocation>[]) =>

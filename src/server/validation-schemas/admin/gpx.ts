@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { checkboxSchema, timeZoneSchema } from "./common.js";
+import {
+  checkboxSchema,
+  expeditieIdCheckSchema,
+  timeZoneSchema,
+} from "./common.js";
 
 const gpxWayPointSchema = z.object({
   time: z.string().datetime(),
@@ -39,4 +43,8 @@ export const gpxSchema = z.object({
     (f) => (Array.isArray(f) ? f : [f]),
     z.array(z.instanceof(Buffer))
   ),
+});
+
+export const gpxPrefixParamsSchema = z.object({
+  expeditie: expeditieIdCheckSchema,
 });

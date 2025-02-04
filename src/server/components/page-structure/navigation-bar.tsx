@@ -3,15 +3,15 @@ import { authenticatePerson } from "../../db/person.js";
 
 export const NavigationBar: FunctionComponent<{
   type: "public" | "members" | "no-user";
-  backTo?: "home" | "members";
+  backTo?: "home" | "members" | { text: string; href: string };
   user?: Awaited<ReturnType<typeof authenticatePerson>> | null;
 }> = ({ type, backTo, user }) => (
   <nav class="navbar">
     <div class="navbar-left">
-      {backTo && (
-        <a href={backTo == "home" ? "/" : "/leden"}>
-          &larr;&nbsp;{backTo == "home" ? "Home" : "Leden"}
-        </a>
+      {backTo == "home" && <a href="/">←&nbsp;Home</a>}
+      {backTo == "members" && <a href="/leden">←&nbsp;Leden</a>}
+      {typeof backTo == "object" && (
+        <a href={backTo.href}>←&nbsp;{backTo.text}</a>
       )}
     </div>
 

@@ -13,6 +13,7 @@ import { authenticatePerson } from "../db/person.js";
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
 import adminRoutes from "./admin.js";
+import { getAllExpedities } from "../db/expeditie.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -70,6 +71,9 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
     reply.sendHtml(
       renderMembersHomePage({
         memberLinks: await getMemberLinks(),
+        currentExpedities: await getAllExpedities({
+          onlyOngoing: true,
+        }),
         user: reply.locals.user!,
       })
     )

@@ -1,8 +1,10 @@
+import { Selectable } from "kysely";
 import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { getAllSegments } from "../../../../db/geo.js";
+import { getExpeditieSegments } from "../../../../db/geo.js";
 import { authenticatePerson } from "../../../../db/person.js";
-import { getAllStories } from "../../../../db/story.js";
+import { Expeditie } from "../../../../db/schema/types.js";
+import { getExpeditieStories } from "../../../../db/story.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   FormInputArray,
@@ -15,17 +17,21 @@ import {
 } from "../../../admin/form-inputs.js";
 
 const StoryAdminPage: FunctionComponent<{
-  stories: Awaited<ReturnType<typeof getAllStories>>;
-  segments: Awaited<ReturnType<typeof getAllSegments>>;
+  stories: Awaited<ReturnType<typeof getExpeditieStories>>;
+  segments: Awaited<ReturnType<typeof getExpeditieSegments>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
-}> = ({ stories, segments, user, messages }) => (
+  expeditie: Selectable<Expeditie>;
+}> = ({ stories, segments, user, messages, expeditie }) => (
   <AdminPage
-    title="Verhalen Admin"
+    title={`Verhalen Admin (Expeditie ${expeditie.name})`}
     fluid
+    backTo={{ text: "Expeditie Admin", href: "/leden/admin/expedities" }}
     user={user}
     messages={messages}
-    newAction={{ action: "/leden/admin/verhalen/add" }}
+    newAction={{
+      action: `/leden/admin/expedities/${expeditie.id}/verhalen/add`,
+    }}
     items={stories}
     columns={[
       {
@@ -121,13 +127,15 @@ const StoryAdminPage: FunctionComponent<{
     actions={[
       {
         label: "Wijzigen",
-        action: (story) => `/leden/admin/verhalen/update/${story.id}`,
+        action: (story) =>
+          `/leden/admin/expedities/${expeditie.id}/verhalen/update/${story.id}`,
         confirmMessage: (story) =>
           `Weet je zeker dat je het verhaal "${story.title}" wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
-        action: (story) => `/leden/admin/verhalen/delete/${story.id}`,
+        action: (story) =>
+          `/leden/admin/expedities/${expeditie.id}/verhalen/delete/${story.id}`,
         confirmMessage: (story) =>
           `Weet je zeker dat je het verhaal "${story.title}" wilt verwijderen?`,
         style: "danger",

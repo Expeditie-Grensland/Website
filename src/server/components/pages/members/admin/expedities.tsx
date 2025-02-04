@@ -191,6 +191,26 @@ const ExpeditiesAdminPage: FunctionComponent<{
           </FormInputArray>
         ),
       },
+
+      {
+        label: "Links",
+        style: { minWidth: "10rem" },
+        onlyIn: "existing",
+        render: (expeditie) => (
+          <>
+            <div>
+              <a href={`/leden/admin/expedities/${expeditie!.id}/gpx`}>
+                GPX Upload
+              </a>
+            </div>
+            <div>
+              <a href={`/leden/admin/expedities/${expeditie!.id}/verhalen`}>
+                Verhalen
+              </a>
+            </div>
+          </>
+        ),
+      },
     ]}
     actions={[
       {

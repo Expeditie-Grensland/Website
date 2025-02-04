@@ -10,6 +10,7 @@ declare module "fastify" {
       user?: Awaited<ReturnType<typeof authenticatePerson>>;
       person?: Awaited<ReturnType<typeof getPerson>>;
       expeditie?: Awaited<ReturnType<typeof getFullExpeditie>>;
+      parsedPrefix?: unknown;
     };
   }
 }
