@@ -174,7 +174,7 @@ export const deleteSegment = (id: number) =>
     .returningAll()
     .executeTakeFirstOrThrow();
 
-export const geoSegmentTypeNames = {
+export const geoSegmentTypeTexts = {
   normal: "Normaal",
   flight: "Vlucht",
 

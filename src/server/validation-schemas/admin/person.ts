@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { idSchema } from "./common.js";
+import { personTeamTexts, personTypeTexts } from "../../db/person.js";
+import { allValues } from "../../db/enums.js";
 
 export const personSchema = z.object({
   id: idSchema,
@@ -9,10 +11,10 @@ export const personSchema = z.object({
   sorting_name: z.string(),
   initials: z.string(),
 
-  type: z.enum(["admin", "member", "guest", "former"]),
+  type: z.enum(personTypeTexts[allValues]),
   team: z
-    .enum(["blue", "red", "green", "-"])
-    .transform((value) => (value == "-" ? null : value)),
+    .enum([...personTeamTexts[allValues]])
+    .or(z.literal("").transform(() => null)),
 
   email: z.string().optional(),
 

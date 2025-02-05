@@ -1,9 +1,9 @@
 import { Selectable } from "kysely";
+import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
-import { ComponentProps, FC } from "preact/compat";
 import {
+  geoSegmentTypeTexts,
   getExpeditieSegments,
-  geoSegmentTypeNames,
 } from "../../../../db/geo.js";
 import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
 import { Expeditie } from "../../../../db/schema/types.js";
@@ -17,7 +17,7 @@ import {
   TextInput,
 } from "../../../admin/form-inputs.js";
 
-const ExpeditieSegmentsAdminPage: FC<{
+const ExpeditieSegmentsAdminPage: FunctionComponent<{
   segments: Awaited<ReturnType<typeof getExpeditieSegments>>;
   expeditie: Selectable<Expeditie>;
   persons: Awaited<ReturnType<typeof getAllPersons>>;
@@ -64,7 +64,7 @@ const ExpeditieSegmentsAdminPage: FC<{
             <EnumSelectorInput
               name="type"
               placeholder="Type"
-              textMap={geoSegmentTypeNames}
+              textMap={geoSegmentTypeTexts}
               value={segment?.type}
               {...attrs}
             />

@@ -1,14 +1,15 @@
 import { pbkdf2, randomBytes } from "crypto";
 import { bcrypt, bcryptVerify } from "hash-wasm";
-import { getDb } from "./schema/database.js";
 import { Insertable, Updateable } from "kysely";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { allValues, EnumTextMap } from "./enums.js";
+import { getDb } from "./schema/database.js";
 import {
   Person,
   PersonAddress,
   PersonTeam,
   PersonType,
 } from "./schema/types.js";
-import { jsonArrayFrom } from "kysely/helpers/postgres";
 
 const hashPassword = async (password: string) =>
   await bcrypt({
@@ -177,15 +178,17 @@ export const authenticatePerson = async (id: string, password: string) => {
   return (await checkPassword(password, user.password)) ? user : null;
 };
 
-export const personTeamNames: Record<PersonTeam, string> = {
+export const personTeamTexts = {
   blue: "Blauw",
   red: "Rood",
   green: "Groen",
-};
+  [allValues]: ["blue", "red", "green"],
+} as const satisfies EnumTextMap<PersonTeam>;
 
-export const personTypeNames: Record<PersonType, string> = {
+export const personTypeTexts = {
   admin: "Admin",
   member: "Lid",
   former: "Voormalig lid",
   guest: "Gast",
-};
+  [allValues]: ["admin", "member", "former", "guest"],
+} as const satisfies EnumTextMap<PersonType>;

@@ -3,14 +3,15 @@ import { render } from "preact-render-to-string";
 import {
   authenticatePerson,
   getAllPersonsWithAddresses,
+  personTeamTexts,
+  personTypeTexts,
 } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   EmailInput,
+  EnumSelectorInput,
   FormInputArray,
   HiddenInput,
-  PersonTeamInput,
-  PersonTypeInput,
   TextInput,
 } from "../../../admin/form-inputs.js";
 
@@ -86,10 +87,18 @@ const PersonsAdminPage: FunctionComponent<{
         style: { minWidth: "7.5rem" },
         render: (person, attrs) => (
           <>
-            <PersonTypeInput name="type" value={person?.type} {...attrs} />
+            <EnumSelectorInput
+              name="type"
+              placeholder="Type"
+              textMap={personTypeTexts}
+              value={person?.type}
+              {...attrs}
+            />
 
-            <PersonTeamInput
+            <EnumSelectorInput
               name="team"
+              placeholder="Team"
+              textMap={personTeamTexts}
               value={person?.team}
               allowEmpty
               {...attrs}

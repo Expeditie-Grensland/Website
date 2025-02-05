@@ -2,14 +2,18 @@ import { ComponentProps, FunctionComponent } from "preact";
 import { render } from "preact-render-to-string";
 import { getAllEarnedPoints } from "../../../../db/earned-point.js";
 import { getAllExpedities } from "../../../../db/expeditie.js";
-import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
+import {
+  authenticatePerson,
+  getAllPersons,
+  personTeamTexts,
+} from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
+  EnumSelectorInput,
   ExpeditieInput,
   LocalTimeInput,
   NumberInput,
   PersonInput,
-  PersonTeamInput,
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
 
@@ -59,10 +63,13 @@ const PointsAdminPage: FunctionComponent<{
         label: "Team",
         style: { minWidth: "10rem" },
         render: (point, attrs) => (
-          <PersonTeamInput
+          <EnumSelectorInput
             name="team"
-            teams={["blue", "red"]}
+            placeholder="Team"
+            textMap={personTeamTexts}
+            keys={["blue", "red"]}
             value={point?.team}
+            allowEmpty
             {...attrs}
           />
         ),

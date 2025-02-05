@@ -1,14 +1,9 @@
 import { ComponentChildren, FunctionComponent } from "preact";
+import { allValues, EnumTextMap } from "../../db/enums.js";
 import { getAllExpedities } from "../../db/expeditie.js";
 import { getExpeditieSegments } from "../../db/geo.js";
-import {
-  getAllPersons,
-  personTeamNames,
-  personTypeNames,
-} from "../../db/person.js";
-import { PersonTeam, PersonType } from "../../db/schema/types.js";
+import { getAllPersons } from "../../db/person.js";
 import { getISODate } from "../../helpers/time.js";
-import { allValues, EnumTextMap } from "../../db/enums.js";
 
 type BasicInput<Value> = {
   name: string;
@@ -173,44 +168,6 @@ export const EnumSelectorInput = <Value extends string>({
     options={keys.map((key) => ({
       id: key,
       text: textMap[key],
-    }))}
-    {...rest}
-  />
-);
-
-export const PersonTeamInput: FunctionComponent<
-  {
-    teams?: PersonTeam[];
-  } & BaseSelectorInput
-> = ({
-  teams = Object.keys(personTeamNames) as PersonTeam[],
-  placeholder = "Team",
-  ...rest
-}) => (
-  <SelectorInput
-    placeholder={placeholder}
-    options={teams.map((t) => ({
-      id: t,
-      text: personTeamNames[t],
-    }))}
-    {...rest}
-  />
-);
-
-export const PersonTypeInput: FunctionComponent<
-  {
-    types?: PersonType[];
-  } & BaseSelectorInput
-> = ({
-  types = Object.keys(personTypeNames) as PersonType[],
-  placeholder = "Type",
-  ...rest
-}) => (
-  <SelectorInput
-    placeholder={placeholder}
-    options={types.map((t) => ({
-      id: t,
-      text: personTypeNames[t],
     }))}
     {...rest}
   />

@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { expeditieIdCheckSchema } from "./common.js";
-import { geoSegmentTypeNames } from "../../db/geo.js";
+import { geoSegmentTypeTexts } from "../../db/geo.js";
 import { allValues } from "../../db/enums.js";
 
 export const segmentSchema = z
   .object({
     description: z.string().nonempty(),
-    type: z.enum(geoSegmentTypeNames[allValues]),
+    type: z.enum(geoSegmentTypeTexts[allValues]),
     color: z
       .string()
       .regex(/^#[0-9a-z]{6}$/, "Kleur moet geldig formaat hebben"),
