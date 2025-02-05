@@ -17,8 +17,8 @@ export const getRouteVersion = (expeditieId: string) =>
     .executeTakeFirst()
     .then((val) => (val ? `v3c${val.count}m${val.max}` : "v2none"));
 
-export const getExpeditieSegments = (expeditieId: string) =>
-  getDb()
+export const getExpeditieSegments = async (expeditieId: string) => {
+  const segments = await getDb()
     .selectFrom("geo_segment")
     .leftJoin(
       "geo_segment_link",
@@ -46,6 +46,34 @@ export const getExpeditieSegments = (expeditieId: string) =>
     .groupBy("geo_segment.id")
     .orderBy("geo_segment.id")
     .execute();
+
+  const unsortedSegments = new Set(segments.map((s) => s.id));
+  const sortedSegments: typeof segments = [];
+
+  let edges = segments.flatMap((parent) =>
+    parent.child_ids.map((child) => [parent.id, child] as [number, number])
+  );
+
+  while (unsortedSegments.size > 0) {
+    const withParents = new Set(edges.map(([_, child]) => child));
+    const withoutParents = unsortedSegments.difference(withParents);
+
+    if (withoutParents.size == 0) {
+      unsortedSegments.forEach((id) => withoutParents.add(id));
+    }
+
+    withoutParents.forEach((id) => unsortedSegments.delete(id));
+    edges = edges.filter(([parent]) => !withoutParents.has(parent));
+
+    sortedSegments.push(
+      ...[...withoutParents]
+        .map((id) => segments.find((s) => s.id == id)!)
+        .sort((a, b) => a.position_part - b.position_part)
+    );
+  }
+
+  return sortedSegments;
+};
 
 export const getSegmentLocations = (
   segment: Awaited<ReturnType<typeof getExpeditieSegments>>[number]
