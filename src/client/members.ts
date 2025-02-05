@@ -61,3 +61,24 @@ const onAdd = (event: Event) => {
 document
   .querySelectorAll(".form-array-add")
   .forEach((el) => el.addEventListener("click", onAdd));
+
+const onColorChange = function (this: HTMLInputElement) {
+  this.parentElement
+    ?.querySelectorAll<HTMLInputElement>("input")
+    .forEach((el) => {
+      if (el == this) return;
+
+      if (el.type == "color" && !this.value.match(/^#[0-9a-f]{6}$/)) {
+        el.value = "#000000";
+      } else {
+        el.value = this.value;
+      }
+    });
+};
+
+document
+  .querySelectorAll<HTMLInputElement>(".input-color > input")
+  .forEach((el) => {
+    el.addEventListener("change", onColorChange);
+    el.addEventListener("input", onColorChange);
+  });

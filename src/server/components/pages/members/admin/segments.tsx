@@ -124,7 +124,7 @@ const ExpeditieSegmentsAdminPage: FunctionComponent<{
 
       {
         label: "Kinderen",
-        style: { minWidth: "7.5rem" },
+        style: { minWidth: "17.5rem" },
         render: (segment, attrs) => (
           <FormInputArray minSize={0} values={segment?.child_ids} {...attrs}>
             {(id, attrs) => (

@@ -74,6 +74,19 @@
   appearance: none;
 }
 
+.input-color {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input-color > .input[type="color"] {
+  flex: 0 0 2.5rem;
+}
+
+.input-color > .input[type="text"] {
+  flex: 1;
+}
+
 .input[type="color"] {
   height: 2.5rem;
   padding: 0;

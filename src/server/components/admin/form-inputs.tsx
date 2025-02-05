@@ -49,8 +49,20 @@ export const FileInput: FunctionComponent<
 > = ({ ...rest }) => <input type="file" class="input" {...rest} />;
 
 export const ColorInput: FunctionComponent<BasicInput<string>> = ({
+  name,
   ...rest
-}) => <input type="color" class="input" pattern="#[0-9a-z]{6}" {...rest} />;
+}) => (
+  <div class="input-color">
+    <input type="color" class="input" {...rest} />
+    <input
+      name={name}
+      type="text"
+      class="input"
+      pattern="#[0-9a-z]{6}"
+      {...rest}
+    />
+  </div>
+);
 
 export const HiddenInput: FunctionComponent<BasicInput<string | number>> = ({
   ...rest
