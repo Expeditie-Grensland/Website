@@ -14,6 +14,7 @@ import {
   FormInputArray,
   NumberInput,
   PersonInput,
+  SegmentInput,
   TextInput,
 } from "../../../admin/form-inputs.js";
 
@@ -127,10 +128,11 @@ const ExpeditieSegmentsAdminPage: FunctionComponent<{
         render: (segment, attrs) => (
           <FormInputArray minSize={0} values={segment?.child_ids} {...attrs}>
             {(id, attrs) => (
-              <NumberInput
+              <SegmentInput
+                segments={segments.filter((s) => s.id != segment?.id)}
                 name="child_ids[]"
-                placeholder="Id"
-                value={id}
+                placeholder="Kind-segment"
+                value={id?.toString()}
                 {...attrs}
               />
             )}
