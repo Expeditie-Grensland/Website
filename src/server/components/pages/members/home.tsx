@@ -167,6 +167,10 @@ const MembersHomePage: FunctionComponent<{
                     url: `/leden/admin/expedities/${exp.id}/gpx`,
                   },
                   {
+                    text: "Segmenten",
+                    url: `/leden/admin/expedities/${exp.id}/segmenten`,
+                  },
+                  {
                     text: "Verhalen",
                     url: `/leden/admin/expedities/${exp.id}/verhalen`,
                   },

@@ -15,6 +15,7 @@ import { renderGpxUploadAdminPage } from "../components/pages/members/admin/gpx.
 import { renderPersonsAdminPage } from "../components/pages/members/admin/person.js";
 import { renderPointsAdminPage } from "../components/pages/members/admin/points.js";
 import { renderQuotesAdminPage } from "../components/pages/members/admin/quotes.js";
+import { renderExpeditieSegmentsAdminPage } from "../components/pages/members/admin/segments.js";
 import { renderStoryAdminPage } from "../components/pages/members/admin/story.js";
 import { addAfko, deleteAfko, getAllAfkos, updateAfko } from "../db/afko.js";
 import {
@@ -30,7 +31,13 @@ import {
   getAllExpeditiesWithPeopleIds,
   updateExpeditie,
 } from "../db/expeditie.js";
-import { addLocations, getExpeditieSegments } from "../db/geo.js";
+import {
+  addLocations,
+  addSegment,
+  deleteSegment,
+  getExpeditieSegments,
+  updateSegment,
+} from "../db/geo.js";
 import {
   addPerson,
   deletePerson,
@@ -70,6 +77,10 @@ import {
 } from "../validation-schemas/admin/params.js";
 import { personSchema } from "../validation-schemas/admin/person.js";
 import { quoteSchema } from "../validation-schemas/admin/quote.js";
+import {
+  segmentPrefixParamsSchema,
+  segmentSchema,
+} from "../validation-schemas/admin/segment.js";
 import {
   storyPrefixParamsSchema,
   storySchema,
@@ -119,16 +130,29 @@ type RegisterAdminRoute = <
     }) => Promise<string>;
 
     addPath?: string;
-    onAdd?: (obj: z.output<Schema>) => Promise<string>;
+    onAdd?: (
+      obj: z.output<Schema>,
+      extras: {
+        parsedPrefix: z.output<PrefixSchema>;
+      }
+    ) => Promise<string>;
 
     updatePath?: string;
     onUpdate?: (
       params: z.output<ParamSchema>,
-      obj: z.output<Schema>
+      obj: z.output<Schema>,
+      extras: {
+        parsedPrefix: z.output<PrefixSchema>;
+      }
     ) => Promise<string>;
 
     deletePath?: string;
-    onDelete?: (params: z.output<ParamSchema>) => Promise<string>;
+    onDelete?: (
+      params: z.output<ParamSchema>,
+      extras: {
+        parsedPrefix: z.output<PrefixSchema>;
+      }
+    ) => Promise<string>;
   }
 ) => Promise<void>;
 
@@ -193,7 +217,11 @@ const registerAdminRoute: RegisterAdminRoute = async (
 
       if (schema && onAdd) {
         app.post(addPath, async (req, reply) => {
-          await executeAndFlash(req, () => onAdd(schema.parse(req.body)));
+          await executeAndFlash(req, () =>
+            onAdd(schema.parse(req.body), {
+              parsedPrefix: reply.locals.parsedPrefix,
+            })
+          );
 
           return returnToPage(prefix, req, reply);
         });
@@ -202,7 +230,9 @@ const registerAdminRoute: RegisterAdminRoute = async (
       if (schema && paramSchema && onUpdate) {
         app.post(updatePath, async (req, reply) => {
           await executeAndFlash(req, () =>
-            onUpdate(paramSchema.parse(req.params), schema.parse(req.body))
+            onUpdate(paramSchema.parse(req.params), schema.parse(req.body), {
+              parsedPrefix: reply.locals.parsedPrefix,
+            })
           );
 
           return returnToPage(prefix, req, reply);
@@ -212,7 +242,9 @@ const registerAdminRoute: RegisterAdminRoute = async (
       if (paramSchema && onDelete) {
         app.post(deletePath, async (req, reply) => {
           await executeAndFlash(req, () =>
-            onDelete(paramSchema.parse(req.params))
+            onDelete(paramSchema.parse(req.params), {
+              parsedPrefix: reply.locals.parsedPrefix,
+            })
           );
 
           return returnToPage(prefix, req, reply);
@@ -400,6 +432,47 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
     onDelete: async ({ id }) =>
       `Verhaal "${(await deleteStory(id)).title}" is verwijderd`,
+  });
+
+  await registerAdminRoute(app, "/expedities/:expeditie/segmenten", {
+    schema: segmentSchema,
+    paramSchema: numIdParamsSchema,
+    prefixSchema: segmentPrefixParamsSchema,
+
+    renderPage: async ({ user, messages, parsedPrefix }) =>
+      renderExpeditieSegmentsAdminPage(
+        await promiseAllProps({
+          expeditie: parsedPrefix.expeditie,
+          segments: getExpeditieSegments(parsedPrefix.expeditie.id),
+          persons: getAllPersons(),
+          user,
+          messages,
+        })
+      ),
+
+    onAdd: async (segment, { parsedPrefix }) => {
+      const s = await addSegment({
+        ...segment,
+        expeditie_id: parsedPrefix.expeditie.id,
+      });
+
+      return `Segment "${s.description}" (#${s.id}) is toegevoegd`;
+    },
+
+    onUpdate: async ({ id }, segment, { parsedPrefix }) => {
+      const s = await updateSegment(id, {
+        ...segment,
+        expeditie_id: parsedPrefix.expeditie.id,
+      });
+
+      return `Segment "${s.description}" (#${s.id}) is gewijzigd`;
+    },
+
+    onDelete: async ({ id }) => {
+      const s = await deleteSegment(id);
+
+      return `Segment "${s.description}" (#${s.id}) is verwijderd`;
+    },
   });
 
   await registerAdminRoute(app, "/expedities/:expeditie/gpx", {

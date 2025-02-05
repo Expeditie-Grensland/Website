@@ -204,6 +204,11 @@ const ExpeditiesAdminPage: FunctionComponent<{
               </a>
             </div>
             <div>
+              <a href={`/leden/admin/expedities/${expeditie!.id}/segmenten`}>
+                Segmenten
+              </a>
+            </div>
+            <div>
               <a href={`/leden/admin/expedities/${expeditie!.id}/verhalen`}>
                 Verhalen
               </a>

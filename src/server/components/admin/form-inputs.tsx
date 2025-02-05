@@ -8,6 +8,7 @@ import {
 } from "../../db/person.js";
 import { PersonTeam, PersonType } from "../../db/schema/types.js";
 import { getISODate } from "../../helpers/time.js";
+import { allValues, EnumTextMap } from "../../db/enums.js";
 
 type BasicInput<Value> = {
   name: string;
@@ -51,6 +52,10 @@ export const FileInput: FunctionComponent<
     multiple?: boolean;
   }
 > = ({ ...rest }) => <input type="file" class="input" {...rest} />;
+
+export const ColorInput: FunctionComponent<BasicInput<string>> = ({
+  ...rest
+}) => <input type="color" class="input" pattern="#[0-9a-z]{6}" {...rest} />;
 
 export const HiddenInput: FunctionComponent<BasicInput<string | number>> = ({
   ...rest
@@ -150,6 +155,24 @@ export const PersonInput: FunctionComponent<
     options={persons.map((p) => ({
       id: p.id,
       text: `${p.first_name} ${p.last_name}`,
+    }))}
+    {...rest}
+  />
+);
+
+export const EnumSelectorInput = <Value extends string>({
+  textMap,
+  keys = textMap[allValues],
+  ...rest
+}: {
+  placeholder: string;
+  textMap: EnumTextMap<Value>;
+  keys?: Value[];
+} & BaseSelectorInput) => (
+  <SelectorInput
+    options={keys.map((key) => ({
+      id: key,
+      text: textMap[key],
     }))}
     {...rest}
   />
