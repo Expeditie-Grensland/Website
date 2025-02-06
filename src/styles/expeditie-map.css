@@ -82,7 +82,7 @@ div a {
 
 #storyline-graph .graph-circle {
   cursor: pointer;
-  transition: r 0.1s ease;
+  transition: r 0.2s ease;
 }
 
 #stories {
