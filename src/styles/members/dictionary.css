@@ -44,6 +44,6 @@
   text-wrap: nowrap;
 }
 
-.dict-term:has(+.dict-small) {
+.dict-term:has(+ .dict-small) {
   margin-right: 0.5rem;
 }

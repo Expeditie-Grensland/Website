@@ -129,8 +129,12 @@ const MembersHomePage: FunctionComponent<{
 
         <LinkCard
           title="Personen"
-          text="Alle leden en niet-leden"
+          text="Leden der Expeditie"
           links={[
+            {
+              text: "Adressen",
+              url: "/leden/adressenlijst",
+            },
             {
               text: "Admin",
               url: "/leden/admin/personen",

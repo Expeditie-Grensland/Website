@@ -9,11 +9,15 @@ import { renderQuotesPage } from "../components/pages/members/quotes.js";
 import { getAllAfkos } from "../db/afko.js";
 import { getFullEarnedPoints } from "../db/earned-point.js";
 import { getMemberLinks } from "../db/member-link.js";
-import { authenticatePerson } from "../db/person.js";
+import {
+  authenticatePerson,
+  getAllPersonsWithAddresses,
+} from "../db/person.js";
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
 import adminRoutes from "./admin.js";
 import { getAllExpedities } from "../db/expeditie.js";
+import { renderAddresslistPage } from "../components/pages/members/addresslist.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -118,6 +122,15 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
     reply.sendHtml(
       renderPointsPage({
         points: await getFullEarnedPoints(),
+        user: reply.locals.user!,
+      })
+    )
+  );
+
+  app.get("/adressenlijst", async (request, reply) =>
+    reply.sendHtml(
+      renderAddresslistPage({
+        persons: await getAllPersonsWithAddresses(),
         user: reply.locals.user!,
       })
     )
