@@ -97,6 +97,14 @@ export interface MemberLink {
   url: string;
 }
 
+export interface MemberWriting {
+  description: Generated<string>;
+  id: string;
+  index: number;
+  text: string;
+  title: string;
+}
+
 export interface Person {
   email: string | null;
   first_name: string;
@@ -163,6 +171,7 @@ export interface DB {
   geo_segment_link: GeoSegmentLink;
   geo_segment_person: GeoSegmentPerson;
   member_link: MemberLink;
+  member_writing: MemberWriting;
   person: Person;
   person_address: PersonAddress;
   quote: Quote;

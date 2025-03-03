@@ -4,6 +4,7 @@ import { render } from "preact-render-to-string";
 import { HTMLAttributeAnchorTarget } from "preact/compat";
 import packageJson from "../../../../../package.json" with { type: "json" };
 import { getMemberLinks } from "../../../db/member-link.js";
+import { getMemberWritingsList } from "../../../db/member-writings.js";
 import { authenticatePerson } from "../../../db/person.js";
 import { Expeditie } from "../../../db/schema/types.js";
 import { formatDateRange } from "../../../helpers/time.js";
@@ -38,9 +39,10 @@ const LinkCard: FunctionComponent<{
 
 const MembersHomePage: FunctionComponent<{
   memberLinks: Awaited<ReturnType<typeof getMemberLinks>>;
+  memberWritings: Awaited<ReturnType<typeof getMemberWritingsList>>;
   currentExpedities: Selectable<Expeditie>[];
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
-}> = ({ memberLinks, currentExpedities, user }) => (
+}> = ({ memberLinks, memberWritings, currentExpedities, user }) => (
   <Page
     title="Expeditie - Leden"
     head={<link rel="stylesheet" href="/static/styles/members.css" />}
@@ -185,23 +187,48 @@ const MembersHomePage: FunctionComponent<{
         </>
       )}
 
-      <h1 class="link-category">Externe links</h1>
+      {memberWritings.length > 0 && (
+        <>
+          <h1 class="link-category">Geschriften</h1>
 
-      <div class="grid-3">
-        {memberLinks.map((link) => (
-          <LinkCard
-            title={link.title}
-            text={link.description}
-            links={[
-              {
-                text: "Open",
-                url: link.url,
-                target: "_blank",
-              },
-            ]}
-          />
-        ))}
-      </div>
+          <div class="grid-3">
+            {memberWritings.map((writing) => (
+              <LinkCard
+                title={writing.title}
+                text={writing.description}
+                links={[
+                  {
+                    text: "Open",
+                    url: `/leden/geschriften/${writing.id}`,
+                  },
+                ]}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {memberLinks.length > 0 && (
+        <>
+          <h1 class="link-category">Externe links</h1>
+
+          <div class="grid-3">
+            {memberLinks.map((link) => (
+              <LinkCard
+                title={link.title}
+                text={link.description}
+                links={[
+                  {
+                    text: "Open",
+                    url: link.url,
+                    target: "_blank",
+                  },
+                ]}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       {user.type == "admin" && (
         <div class="version-text">Versie: {packageJson.version}</div>

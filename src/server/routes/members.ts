@@ -1,14 +1,20 @@
 import { FastifyPluginAsync } from "fastify";
-import { marked } from "marked";
+import { renderAddresslistPage } from "../components/pages/members/addresslist.js";
 import { renderAfkowobopage } from "../components/pages/members/afkowobo.js";
 import { renderDictionaryPage } from "../components/pages/members/dictionary.js";
 import { renderMembersHomePage } from "../components/pages/members/home.js";
 import { renderLoginPage } from "../components/pages/members/login.js";
 import { renderPointsPage } from "../components/pages/members/points.js";
 import { renderQuotesPage } from "../components/pages/members/quotes.js";
+import { renderWritingPage } from "../components/pages/members/writing.js";
 import { getAllAfkos } from "../db/afko.js";
 import { getFullEarnedPoints } from "../db/earned-point.js";
+import { getAllExpedities } from "../db/expeditie.js";
 import { getMemberLinks } from "../db/member-link.js";
+import {
+  getFullMemberWriting,
+  getMemberWritingsList,
+} from "../db/member-writings.js";
 import {
   authenticatePerson,
   getAllPersonsWithAddresses,
@@ -16,8 +22,6 @@ import {
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
 import adminRoutes from "./admin.js";
-import { getAllExpedities } from "../db/expeditie.js";
-import { renderAddresslistPage } from "../components/pages/members/addresslist.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -75,6 +79,7 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
     reply.sendHtml(
       renderMembersHomePage({
         memberLinks: await getMemberLinks(),
+        memberWritings: await getMemberWritingsList(),
         currentExpedities: await getAllExpedities({
           onlyOngoing: true,
         }),
@@ -82,14 +87,6 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
       })
     )
   );
-
-  marked.use({
-    renderer: {
-      paragraph({ tokens }) {
-        return this.parser.parseInline(tokens);
-      },
-    },
-  });
 
   app.get("/woordenboek", async (request, reply) =>
     reply.sendHtml(
@@ -135,6 +132,19 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
       })
     )
   );
+
+  app.get("/geschriften/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const writing = await getFullMemberWriting(id);
+    if (!writing) return reply.callNotFound();
+
+    return reply.sendHtml(
+      renderWritingPage({
+        writing,
+        user: reply.locals.user!,
+      })
+    );
+  });
 };
 
 export default memberRoutes;

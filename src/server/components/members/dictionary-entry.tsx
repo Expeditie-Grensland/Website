@@ -26,15 +26,23 @@ export const DictionaryEntry: FunctionComponent<{
             {descriptions.map((description) => (
               <li
                 dangerouslySetInnerHTML={{
-                  __html: marked(description) as string,
+                  __html: marked.parseInline(description, {
+                    async: false,
+                    gfm: true,
+                    breaks: true,
+                  }),
                 }}
               />
             ))}
           </ol>
         ) : (
-          <span
+          <p
             dangerouslySetInnerHTML={{
-              __html: marked(descriptions) as string,
+              __html: marked.parseInline(descriptions, {
+                async: false,
+                gfm: true,
+                breaks: true,
+              }),
             }}
           />
         )}
