@@ -1,6 +1,5 @@
-import { globby } from "globby";
 import { createReadStream, createWriteStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { glob, stat } from "node:fs/promises";
 import { chdir } from "node:process";
 import { pipeline } from "node:stream/promises";
 import { constants, createBrotliCompress, createGzip } from "node:zlib";
@@ -34,9 +33,16 @@ const transformers = [
 
 chdir("dist/static");
 
-const filesToCompress = await globby("**/*.{js,css,svg,html,xml,webmanifest}");
+const filesToCompress = glob([
+  "**/*.js",
+  "**/*.css",
+  "**/*.svg",
+  "**/*.html",
+  "**/*.xml",
+  "**/*.webmanifest",
+]);
 
-for (const file of filesToCompress) {
+for await (const file of filesToCompress) {
   const size = (await stat(file)).size;
 
   for (const { extension, createTransform } of transformers) {

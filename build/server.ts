@@ -1,18 +1,20 @@
 import { build, BuildOptions, context } from "esbuild";
-import { globby } from "globby";
+import { glob } from "node:fs/promises";
 import { getArgvOption } from "./common/options";
 
 const dir = getArgvOption("dev", "dist");
 
 const isProd = dir === "dist";
 
-const files = await globby([
-  "src/server/**/*.{ts,tsx}",
-  "!src/server/**/*.d.ts",
-]);
+const entryPoints = (await Array.fromAsync(
+  glob(["src/server/**/*.ts", "src/server/**/*.tsx"], {
+    // @ts-expect-error glob accepts string excludes
+    exclude: ["**/*.d.ts"],
+  })
+)) as string[];
 
 const options: BuildOptions = {
-  entryPoints: files,
+  entryPoints,
   outdir: `${dir}/server/`,
   platform: "node",
   target: "node22",

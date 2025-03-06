@@ -1,5 +1,4 @@
-import { stat } from "fs/promises";
-import { globby } from "globby";
+import { glob, stat } from "fs/promises";
 import { chdir } from "process";
 import { mdHeading, mdTable } from "./common/markdown";
 
@@ -8,7 +7,12 @@ chdir("dist/static");
 console.info(mdHeading(2, "Static file sizes"));
 
 const staticFiles = (
-  await globby(["**/*.*", "!errorpages/**/*.*", "!favicons/**/*.*"])
+  (await Array.fromAsync(
+    glob("**/*.*", {
+      // @ts-expect-error glob accepts string excludes
+      exclude: ["errorpages/**", "favicons/**"],
+    })
+  )) as string[]
 ).toSorted();
 
 const items: { file: string; size: number; gz?: number; br?: number }[] = [];
