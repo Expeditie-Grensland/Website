@@ -156,6 +156,30 @@ const MembersHomePage: FunctionComponent<{
             },
           ]}
         />
+
+        <LinkCard
+          title="Links"
+          text="Op deze pagina"
+          links={[
+            {
+              text: "Admin",
+              url: "/leden/admin/links",
+              when: user.type == "admin",
+            },
+          ]}
+        />
+
+        <LinkCard
+          title="Geschriften"
+          text="Op deze pagina"
+          links={[
+            {
+              text: "Admin",
+              url: "/leden/admin/geschriften",
+              when: user.type == "admin",
+            },
+          ]}
+        />
       </div>
 
       {user.type == "admin" && currentExpedities.length > 0 && (

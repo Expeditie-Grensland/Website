@@ -12,11 +12,13 @@ import { renderDictionaryAdminPage } from "../components/pages/members/admin/dic
 import { renderExpeditiesAdminPage } from "../components/pages/members/admin/expedities.js";
 import { renderFilesAdminPage } from "../components/pages/members/admin/files.js";
 import { renderGpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
+import { renderLinksAdminPage } from "../components/pages/members/admin/links.js";
 import { renderPersonsAdminPage } from "../components/pages/members/admin/person.js";
 import { renderPointsAdminPage } from "../components/pages/members/admin/points.js";
 import { renderQuotesAdminPage } from "../components/pages/members/admin/quotes.js";
 import { renderExpeditieSegmentsAdminPage } from "../components/pages/members/admin/segments.js";
 import { renderStoryAdminPage } from "../components/pages/members/admin/story.js";
+import { renderWritingsAdminPage } from "../components/pages/members/admin/writings.js";
 import { addAfko, deleteAfko, getAllAfkos, updateAfko } from "../db/afko.js";
 import {
   addEarnedPoint,
@@ -38,6 +40,18 @@ import {
   getExpeditieSegments,
   updateSegment,
 } from "../db/geo.js";
+import {
+  addMemberLink,
+  deleteMemberLink,
+  getMemberLinks,
+  updateMemberLink,
+} from "../db/member-link.js";
+import {
+  addMemberWriting,
+  deleteMemberWriting,
+  getMemberWritingsList,
+  updateMemberWriting,
+} from "../db/member-writings.js";
 import {
   addPerson,
   deletePerson,
@@ -70,6 +84,7 @@ import {
   gpxPrefixParamsSchema,
   gpxSchema,
 } from "../validation-schemas/admin/gpx.js";
+import { linkSchema } from "../validation-schemas/admin/link.js";
 import {
   idParamsSchema,
   keyParamsSchema,
@@ -86,6 +101,7 @@ import {
   storySchema,
 } from "../validation-schemas/admin/story.js";
 import { wordSchema } from "../validation-schemas/admin/word.js";
+import { writingSchema } from "../validation-schemas/admin/writing.js";
 
 const friendlyError = (err: unknown) => {
   if (err instanceof ZodError) {
@@ -529,6 +545,64 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     deletePath: "/delete/:key",
     onDelete: async ({ key }) =>
       `Bestand "${await deleteS3Prefix(key)}" is verwijderd`,
+  });
+
+  await registerAdminRoute(app, "/links", {
+    schema: linkSchema,
+    paramSchema: numIdParamsSchema,
+
+    renderPage: async ({ user, messages }) =>
+      renderLinksAdminPage(
+        await promiseAllProps({
+          links: getMemberLinks(),
+          user,
+          messages,
+        })
+      ),
+
+    onAdd: async (link) => {
+      const { title } = await addMemberLink(link);
+      return `"${title} is toegevoegd`;
+    },
+
+    onUpdate: async ({ id }, link) => {
+      const { title } = await updateMemberLink(id, link);
+      return `"${title}" is gewijzigd`;
+    },
+
+    onDelete: async ({ id }) => {
+      const { title } = await deleteMemberLink(id);
+      return `"${title}" is verwijderd`;
+    },
+  });
+
+  await registerAdminRoute(app, "/geschriften", {
+    schema: writingSchema,
+    paramSchema: idParamsSchema,
+
+    renderPage: async ({ user, messages }) =>
+      renderWritingsAdminPage(
+        await promiseAllProps({
+          writings: getMemberWritingsList(),
+          user,
+          messages,
+        })
+      ),
+
+    onAdd: async (writing) => {
+      const { title } = await addMemberWriting(writing);
+      return `"${title} is toegevoegd`;
+    },
+
+    onUpdate: async ({ id }, writing) => {
+      const { title } = await updateMemberWriting(id, writing);
+      return `"${title}" is gewijzigd`;
+    },
+
+    onDelete: async ({ id }) => {
+      const { title } = await deleteMemberWriting(id);
+      return `"${title}" is verwijderd`;
+    },
   });
 };
 
