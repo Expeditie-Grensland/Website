@@ -1,5 +1,4 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { authenticatePerson } from "../../../../db/person.js";
 import { getFileUrl } from "../../../../files/files.js";
 import { getUsesForFiles } from "../../../../files/uses.js";
@@ -65,7 +64,7 @@ const getUseTypeText = (use: string, detail: string) => {
   }
 };
 
-const FilesAdminPage: FunctionComponent<{
+export const FilesAdminPage: FunctionComponent<{
   filesWithUses: Awaited<ReturnType<typeof getUsesForFiles>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
@@ -131,7 +130,3 @@ const FilesAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderFilesAdminPage = (
-  props: ComponentProps<typeof FilesAdminPage>
-) => render(<FilesAdminPage {...props} />);

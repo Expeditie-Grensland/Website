@@ -3,9 +3,10 @@ import fastifyFormbody from "@fastify/formbody";
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyStatic from "@fastify/static";
 import fastify, { FastifyInstance } from "fastify";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import qs from "qs";
-import { renderErrorPage } from "../components/pages/public/error.js";
+import { ErrorPage } from "../components/pages/public/error.js";
 import { getPerson } from "../db/person.js";
 import { getMigrator } from "../db/schema/migrator.js";
 import routes from "../routes/index.js";
@@ -16,7 +17,7 @@ import {
   getServerConfig,
 } from "./config.js";
 import { getHttpError } from "./http-errors.js";
-import { readFile } from "node:fs/promises";
+import { replyComponent, replyHtml } from "./render.js";
 
 export const migrateDatabase = async () => {
   const { results, error } = await getMigrator().migrateToLatest();
@@ -65,26 +66,22 @@ const setupStaticRoutes = async (app: FastifyInstance) => {
 };
 
 const setupErrors = (app: FastifyInstance) => {
-  app.setErrorHandler(async (error, request, reply) => {
+  app.setErrorHandler((error, request, reply) => {
     reply.log.error(error);
 
-    reply.code(error.statusCode || 500).sendHtml(
-      renderErrorPage({
-        code: error.statusCode || 500,
-        description: getHttpError(error.statusCode),
-        details: error.message,
-      })
-    );
+    reply.code(error.statusCode || 500).sendComponent(ErrorPage, {
+      code: error.statusCode || 500,
+      description: getHttpError(error.statusCode),
+      details: error.message,
+    });
   });
 
-  app.setNotFoundHandler(async (request, reply) =>
-    reply.code(404).sendHtml(
-      renderErrorPage({
-        code: 404,
-        description: getHttpError(404),
-        user: reply.locals.user,
-      })
-    )
+  app.setNotFoundHandler((request, reply) =>
+    reply.code(404).sendComponent(ErrorPage, {
+      code: 404,
+      description: getHttpError(404),
+      user: reply.locals.user,
+    })
   );
 };
 
@@ -117,10 +114,8 @@ export const setupFastify = async () => {
       : null,
   });
 
-  app.decorateReply("sendHtml", function (html: string) {
-    this.header("Content-Type", "text/html; charset=utf-8");
-    this.send(`<!DOCTYPE html>${html}`);
-  });
+  app.decorateReply("sendHtml", replyHtml);
+  app.decorateReply("sendComponent", replyComponent);
 
   await setupStaticRoutes(app);
 

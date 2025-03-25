@@ -1,10 +1,9 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
+import { PasswordInput, TextInput } from "../../admin/form-inputs.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
-import { PasswordInput, TextInput } from "../../admin/form-inputs.js";
 
-const LoginPage: FunctionComponent<{
+export const LoginPage: FunctionComponent<{
   messages: string[];
 }> = ({ messages }) => (
   <Page
@@ -40,6 +39,3 @@ const LoginPage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderLoginPage = (props: ComponentProps<typeof LoginPage>) =>
-  render(<LoginPage {...props} />);

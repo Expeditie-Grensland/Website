@@ -1,11 +1,10 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { authenticatePerson } from "../../../db/person.js";
 import { TitleImage } from "../../media/title-image.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
-const ErrorPage: FunctionComponent<{
+export const ErrorPage: FunctionComponent<{
   code: number | string;
   description: string;
   details?: string;
@@ -34,6 +33,3 @@ const ErrorPage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderErrorPage = (props: ComponentProps<typeof ErrorPage>) =>
-  render(<ErrorPage {...props} />);

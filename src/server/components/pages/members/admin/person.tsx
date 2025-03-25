@@ -1,5 +1,4 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import {
   authenticatePerson,
   getAllPersonsWithAddresses,
@@ -15,7 +14,7 @@ import {
   TextInput,
 } from "../../../admin/form-inputs.js";
 
-const PersonsAdminPage: FunctionComponent<{
+export const PersonsAdminPage: FunctionComponent<{
   persons: Awaited<ReturnType<typeof getAllPersonsWithAddresses>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
@@ -186,7 +185,3 @@ const PersonsAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderPersonsAdminPage = (
-  props: ComponentProps<typeof PersonsAdminPage>
-) => render(<PersonsAdminPage {...props} />);

@@ -7,18 +7,18 @@ import {
 } from "fastify";
 import { z, ZodError, ZodTypeAny } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { renderAfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js";
-import { renderDictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
-import { renderExpeditiesAdminPage } from "../components/pages/members/admin/expedities.js";
-import { renderFilesAdminPage } from "../components/pages/members/admin/files.js";
-import { renderGpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
-import { renderLinksAdminPage } from "../components/pages/members/admin/links.js";
-import { renderPersonsAdminPage } from "../components/pages/members/admin/person.js";
-import { renderPointsAdminPage } from "../components/pages/members/admin/points.js";
-import { renderQuotesAdminPage } from "../components/pages/members/admin/quotes.js";
-import { renderExpeditieSegmentsAdminPage } from "../components/pages/members/admin/segments.js";
-import { renderStoryAdminPage } from "../components/pages/members/admin/story.js";
-import { renderWritingsAdminPage } from "../components/pages/members/admin/writings.js";
+import { AfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js";
+import { DictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
+import { ExpeditiesAdminPage } from "../components/pages/members/admin/expedities.js";
+import { FilesAdminPage } from "../components/pages/members/admin/files.js";
+import { GpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
+import { LinksAdminPage } from "../components/pages/members/admin/links.js";
+import { PersonsAdminPage } from "../components/pages/members/admin/person.js";
+import { PointsAdminPage } from "../components/pages/members/admin/points.js";
+import { QuotesAdminPage } from "../components/pages/members/admin/quotes.js";
+import { ExpeditieSegmentsAdminPage } from "../components/pages/members/admin/segments.js";
+import { StoryAdminPage } from "../components/pages/members/admin/story.js";
+import { WritingsAdminPage } from "../components/pages/members/admin/writings.js";
 import { addAfko, deleteAfko, getAllAfkos, updateAfko } from "../db/afko.js";
 import {
   addEarnedPoint,
@@ -75,8 +75,8 @@ import {
 import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
 import { deleteS3Prefix, getS3Files } from "../files/s3.js";
 import { getUsesForFiles } from "../files/uses.js";
-import { promiseAllProps } from "../helpers/async.js";
 import { parseGpx } from "../helpers/gpx.js";
+import { renderComponent } from "../helpers/render.js";
 import { afkoSchema } from "../validation-schemas/admin/afko.js";
 import { pointSchema } from "../validation-schemas/admin/earned-point.js";
 import { expeditieSchema } from "../validation-schemas/admin/expeditie.js";
@@ -288,9 +288,9 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: wordSchema,
     paramSchema: idParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderDictionaryAdminPage({
-        words: await getAllWords(),
+    renderPage: ({ user, messages }) =>
+      renderComponent(DictionaryAdminPage, {
+        words: getAllWords(),
         user,
         messages,
       }),
@@ -309,9 +309,9 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: quoteSchema,
     paramSchema: idParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderQuotesAdminPage({
-        quotes: await getAllQuotes(),
+    renderPage: ({ user, messages }) =>
+      renderComponent(QuotesAdminPage, {
+        quotes: getAllQuotes(),
         user,
         messages,
       }),
@@ -330,9 +330,9 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: afkoSchema,
     paramSchema: idParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderAfkowoboAdminPage({
-        afkos: await getAllAfkos(),
+    renderPage: ({ user, messages }) =>
+      renderComponent(AfkowoboAdminPage, {
+        afkos: getAllAfkos(),
         user,
         messages,
       }),
@@ -350,16 +350,14 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: pointSchema,
     paramSchema: numIdParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderPointsAdminPage(
-        await promiseAllProps({
-          points: getAllEarnedPoints(),
-          expedities: getAllExpedities(),
-          persons: getAllPersons(true),
-          user,
-          messages,
-        })
-      ),
+    renderPage: ({ user, messages }) =>
+      renderComponent(PointsAdminPage, {
+        points: getAllEarnedPoints(),
+        expedities: getAllExpedities(),
+        persons: getAllPersons(true),
+        user,
+        messages,
+      }),
 
     onAdd: async (point) =>
       `${(await addEarnedPoint(point)).amount} punten zijn toegevoegd`,
@@ -375,14 +373,12 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: personSchema,
     paramSchema: idParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderPersonsAdminPage(
-        await promiseAllProps({
-          persons: getAllPersonsWithAddresses(),
-          user,
-          messages,
-        })
-      ),
+    renderPage: ({ user, messages }) =>
+      renderComponent(PersonsAdminPage, {
+        persons: getAllPersonsWithAddresses(),
+        user,
+        messages,
+      }),
 
     onAdd: async (person) => {
       const { first_name, last_name } = await addPerson(person);
@@ -404,15 +400,13 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: expeditieSchema,
     paramSchema: idParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderExpeditiesAdminPage(
-        await promiseAllProps({
-          expedities: getAllExpeditiesWithPeopleIds(),
-          persons: getAllPersons(),
-          user,
-          messages,
-        })
-      ),
+    renderPage: ({ user, messages }) =>
+      renderComponent(ExpeditiesAdminPage, {
+        expedities: getAllExpeditiesWithPeopleIds(),
+        persons: getAllPersons(),
+        user,
+        messages,
+      }),
 
     onAdd: async (exp) =>
       `Expeditie ${(await addExpeditie(exp)).name} is toegevoegd`,
@@ -429,16 +423,14 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     paramSchema: numIdParamsSchema,
     prefixSchema: storyPrefixParamsSchema,
 
-    renderPage: async ({ user, messages, parsedPrefix }) =>
-      renderStoryAdminPage(
-        await promiseAllProps({
-          stories: getExpeditieStories(parsedPrefix.expeditie.id),
-          segments: getExpeditieSegments(parsedPrefix.expeditie.id),
-          user,
-          messages,
-          expeditie: parsedPrefix.expeditie,
-        })
-      ),
+    renderPage: ({ user, messages, parsedPrefix }) =>
+      renderComponent(StoryAdminPage, {
+        stories: getExpeditieStories(parsedPrefix.expeditie.id),
+        segments: getExpeditieSegments(parsedPrefix.expeditie.id),
+        user,
+        messages,
+        expeditie: parsedPrefix.expeditie,
+      }),
 
     onAdd: async (story) =>
       `Verhaal "${(await addStory(story)).title}" is toegevoegd`,
@@ -455,16 +447,14 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     paramSchema: numIdParamsSchema,
     prefixSchema: segmentPrefixParamsSchema,
 
-    renderPage: async ({ user, messages, parsedPrefix }) =>
-      renderExpeditieSegmentsAdminPage(
-        await promiseAllProps({
-          expeditie: parsedPrefix.expeditie,
-          segments: getExpeditieSegments(parsedPrefix.expeditie.id),
-          persons: getAllPersons(),
-          user,
-          messages,
-        })
-      ),
+    renderPage: ({ user, messages, parsedPrefix }) =>
+      renderComponent(ExpeditieSegmentsAdminPage, {
+        expeditie: parsedPrefix.expeditie,
+        segments: getExpeditieSegments(parsedPrefix.expeditie.id),
+        persons: getAllPersons(),
+        user,
+        messages,
+      }),
 
     onAdd: async (segment, { parsedPrefix }) => {
       const s = await addSegment({
@@ -495,15 +485,13 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: gpxSchema,
     prefixSchema: gpxPrefixParamsSchema,
 
-    renderPage: async ({ user, messages, parsedPrefix }) =>
-      renderGpxUploadAdminPage(
-        await promiseAllProps({
-          segments: getExpeditieSegments(parsedPrefix.expeditie.id),
-          user,
-          messages,
-          expeditie: parsedPrefix.expeditie,
-        })
-      ),
+    renderPage: ({ user, messages, parsedPrefix }) =>
+      renderComponent(GpxUploadAdminPage, {
+        segments: getExpeditieSegments(parsedPrefix.expeditie.id),
+        user,
+        messages,
+        expeditie: parsedPrefix.expeditie,
+      }),
 
     addPath: "/upload",
     onAdd: async ({
@@ -536,8 +524,8 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     paramSchema: keyParamsSchema,
 
     renderPage: async ({ user, messages }) =>
-      renderFilesAdminPage({
-        filesWithUses: await getUsesForFiles(await getS3Files()),
+      await renderComponent(FilesAdminPage, {
+        filesWithUses: getUsesForFiles(await getS3Files()),
         user,
         messages,
       }),
@@ -551,14 +539,12 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: linkSchema,
     paramSchema: numIdParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderLinksAdminPage(
-        await promiseAllProps({
-          links: getMemberLinks(),
-          user,
-          messages,
-        })
-      ),
+    renderPage: ({ user, messages }) =>
+      renderComponent(LinksAdminPage, {
+        links: getMemberLinks(),
+        user,
+        messages,
+      }),
 
     onAdd: async (link) => {
       const { title } = await addMemberLink(link);
@@ -580,14 +566,12 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     schema: writingSchema,
     paramSchema: idParamsSchema,
 
-    renderPage: async ({ user, messages }) =>
-      renderWritingsAdminPage(
-        await promiseAllProps({
-          writings: getMemberWritingsList(),
-          user,
-          messages,
-        })
-      ),
+    renderPage: ({ user, messages }) =>
+      renderComponent(WritingsAdminPage, {
+        writings: getMemberWritingsList(),
+        user,
+        messages,
+      }),
 
     onAdd: async (writing) => {
       const { title } = await addMemberWriting(writing);

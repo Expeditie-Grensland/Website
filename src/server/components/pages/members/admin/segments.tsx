@@ -1,6 +1,5 @@
 import { Selectable } from "kysely";
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import {
   geoSegmentTypeTexts,
   getExpeditieSegments,
@@ -18,7 +17,7 @@ import {
   TextInput,
 } from "../../../admin/form-inputs.js";
 
-const ExpeditieSegmentsAdminPage: FunctionComponent<{
+export const ExpeditieSegmentsAdminPage: FunctionComponent<{
   segments: Awaited<ReturnType<typeof getExpeditieSegments>>;
   expeditie: Selectable<Expeditie>;
   persons: Awaited<ReturnType<typeof getAllPersons>>;
@@ -159,7 +158,3 @@ const ExpeditieSegmentsAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderExpeditieSegmentsAdminPage = (
-  props: ComponentProps<typeof ExpeditieSegmentsAdminPage>
-) => render(<ExpeditieSegmentsAdminPage {...props} />);

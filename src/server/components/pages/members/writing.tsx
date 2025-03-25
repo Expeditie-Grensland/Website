@@ -1,12 +1,11 @@
 import { marked } from "marked";
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getFullMemberWriting } from "../../../db/member-writings.js";
 import { authenticatePerson } from "../../../db/person.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
-const WritingPage: FunctionComponent<{
+export const WritingPage: FunctionComponent<{
   writing: NonNullable<Awaited<ReturnType<typeof getFullMemberWriting>>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
 }> = ({ writing, user }) => (
@@ -33,6 +32,3 @@ const WritingPage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderWritingPage = (props: ComponentProps<typeof WritingPage>) =>
-  render(<WritingPage {...props} />);

@@ -1,6 +1,5 @@
 import { Selectable } from "kysely";
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getExpeditieSegments } from "../../../../db/geo.js";
 import { authenticatePerson } from "../../../../db/person.js";
 import { Expeditie } from "../../../../db/schema/types.js";
@@ -16,7 +15,7 @@ import {
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
 
-const StoryAdminPage: FunctionComponent<{
+export const StoryAdminPage: FunctionComponent<{
   stories: Awaited<ReturnType<typeof getExpeditieStories>>;
   segments: Awaited<ReturnType<typeof getExpeditieSegments>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
@@ -143,7 +142,3 @@ const StoryAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderStoryAdminPage = (
-  props: ComponentProps<typeof StoryAdminPage>
-) => render(<StoryAdminPage {...props} />);

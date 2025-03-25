@@ -1,12 +1,11 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { authenticatePerson } from "../../../db/person.js";
 import { getAllQuotes } from "../../../db/quote.js";
 import { DictionaryEntry } from "../../members/dictionary-entry.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
-const QuotesPage: FunctionComponent<{
+export const QuotesPage: FunctionComponent<{
   quotes: Awaited<ReturnType<typeof getAllQuotes>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
 }> = ({ quotes, user }) => (
@@ -32,6 +31,3 @@ const QuotesPage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderQuotesPage = (props: ComponentProps<typeof QuotesPage>) =>
-  render(<QuotesPage {...props} />);

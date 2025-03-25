@@ -1,10 +1,13 @@
 /* eslint-disable no-var */
+import "preact";
 import { getFullExpeditie } from "./db/expeditie.js";
-import { getPerson, authenticatePerson } from "./db/person.js";
+import { authenticatePerson, getPerson } from "./db/person.js";
+import { replyComponent, replyHtml } from "./helpers/render.js";
 
 declare module "fastify" {
   export interface FastifyReply {
-    sendHtml: (html: string) => void;
+    sendHtml: typeof replyHtml;
+    sendComponent: typeof replyComponent;
 
     locals: {
       user?: Awaited<ReturnType<typeof authenticatePerson>>;

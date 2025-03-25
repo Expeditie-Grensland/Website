@@ -1,12 +1,11 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getAllExpedities } from "../../../db/expeditie.js";
 import { authenticatePerson } from "../../../db/person.js";
 import { TitleImage } from "../../media/title-image.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
-const HomePage: FunctionComponent<{
+export const HomePage: FunctionComponent<{
   expedities: Awaited<ReturnType<typeof getAllExpedities>>;
   user?: Awaited<ReturnType<typeof authenticatePerson>>;
 }> = ({ expedities, user }) => (
@@ -41,6 +40,3 @@ const HomePage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderHomePage = (props: ComponentProps<typeof HomePage>) =>
-  render(<HomePage {...props} />);

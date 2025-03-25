@@ -1,12 +1,11 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { authenticatePerson } from "../../../db/person.js";
 import { getAllWords } from "../../../db/word.js";
 import { DictionaryEntry } from "../../members/dictionary-entry.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
-const DictionaryPage: FunctionComponent<{
+export const DictionaryPage: FunctionComponent<{
   words: Awaited<ReturnType<typeof getAllWords>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
 }> = ({ words, user }) => (
@@ -32,7 +31,3 @@ const DictionaryPage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderDictionaryPage = (
-  props: ComponentProps<typeof DictionaryPage>
-) => render(<DictionaryPage {...props} />);

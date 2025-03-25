@@ -1,12 +1,12 @@
 import { FastifyPluginAsync } from "fastify";
-import { renderAddresslistPage } from "../components/pages/members/addresslist.js";
-import { renderAfkowobopage } from "../components/pages/members/afkowobo.js";
-import { renderDictionaryPage } from "../components/pages/members/dictionary.js";
-import { renderMembersHomePage } from "../components/pages/members/home.js";
-import { renderLoginPage } from "../components/pages/members/login.js";
-import { renderPointsPage } from "../components/pages/members/points.js";
-import { renderQuotesPage } from "../components/pages/members/quotes.js";
-import { renderWritingPage } from "../components/pages/members/writing.js";
+import { AddresslistPage } from "../components/pages/members/addresslist.js";
+import { AfkowoboPage } from "../components/pages/members/afkowobo.js";
+import { DictionaryPage } from "../components/pages/members/dictionary.js";
+import { MembersHomePage } from "../components/pages/members/home.js";
+import { LoginPage } from "../components/pages/members/login.js";
+import { PointsPage } from "../components/pages/members/points.js";
+import { QuotesPage } from "../components/pages/members/quotes.js";
+import { WritingPage } from "../components/pages/members/writing.js";
 import { getAllAfkos } from "../db/afko.js";
 import { getFullEarnedPoints } from "../db/earned-point.js";
 import { getAllExpedities } from "../db/expeditie.js";
@@ -46,105 +46,98 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
       return reply.redirect("/leden");
     }
 
-    return reply.sendHtml(
-      renderLoginPage({ messages: reply.flash("error") as string[] })
-    );
+    return reply.sendComponent(LoginPage, {
+      messages: reply.flash("error") as string[],
+    });
   });
 
-  app.post("/login", async (request, reply) => {
-    try {
-      const body = request.body as { username: string; password: string }; // FIXME
-      const user = await authenticatePerson(body.username, body.password);
-      if (!user) throw new Error("Gebruikersnaam of wachtwoord is incorrect");
+  app.post<{ Body: { username: string; password: string } }>( // FIXME: validation
+    "/login",
+    async (request, reply) => {
+      try {
+        const user = await authenticatePerson(
+          request.body.username,
+          request.body.password
+        );
+        if (!user) throw new Error("Gebruikersnaam of wachtwoord is incorrect");
 
-      request.session.set("userId", user.id);
-    } catch (err) {
-      let errorMsg = "Error!";
+        request.session.set("userId", user.id);
+      } catch (err) {
+        let errorMsg = "Error!";
 
-      if (typeof err === "string") errorMsg = err;
-      else if (err instanceof Error) errorMsg = err.message;
+        if (typeof err === "string") errorMsg = err;
+        else if (err instanceof Error) errorMsg = err.message;
 
-      request.flash("error", errorMsg);
+        request.flash("error", errorMsg);
+      }
+
+      return reply.redirect("/leden/login");
     }
-
-    return reply.redirect("/leden/login");
-  });
+  );
 
   app.get("/loguit", async (request, reply) => {
     request.session.set("userId", undefined);
     reply.redirect("/");
   });
 
-  app.get("/", async (request, reply) =>
-    reply.sendHtml(
-      renderMembersHomePage({
-        memberLinks: await getMemberLinks(),
-        memberWritings: await getMemberWritingsList(),
-        currentExpedities: await getAllExpedities({
-          onlyOngoing: true,
-        }),
-        user: reply.locals.user!,
-      })
-    )
+  app.get("/", (request, reply) =>
+    reply.sendComponent(MembersHomePage, {
+      memberLinks: getMemberLinks(),
+      memberWritings: getMemberWritingsList(),
+      currentExpedities: getAllExpedities({
+        onlyOngoing: true,
+      }),
+      user: reply.locals.user!,
+    })
   );
 
-  app.get("/woordenboek", async (request, reply) =>
-    reply.sendHtml(
-      renderDictionaryPage({
-        words: await getAllWords(),
-        user: reply.locals.user!,
-      })
-    )
+  app.get("/woordenboek", (request, reply) =>
+    reply.sendComponent(DictionaryPage, {
+      words: getAllWords(),
+      user: reply.locals.user!,
+    })
   );
 
-  app.get("/citaten", async (request, reply) =>
-    reply.sendHtml(
-      renderQuotesPage({
-        quotes: await getAllQuotes(),
-        user: reply.locals.user!,
-      })
-    )
+  app.get("/citaten", (request, reply) =>
+    reply.sendComponent(QuotesPage, {
+      quotes: getAllQuotes(),
+      user: reply.locals.user!,
+    })
   );
 
-  app.get("/afkowobo", async (request, reply) =>
-    reply.sendHtml(
-      renderAfkowobopage({
-        afkos: await getAllAfkos(),
-        user: reply.locals.user!,
-      })
-    )
+  app.get("/afkowobo", (request, reply) =>
+    reply.sendComponent(AfkowoboPage, {
+      afkos: getAllAfkos(),
+      user: reply.locals.user!,
+    })
   );
 
-  app.get("/punten", async (request, reply) =>
-    reply.sendHtml(
-      renderPointsPage({
-        points: await getFullEarnedPoints(),
-        user: reply.locals.user!,
-      })
-    )
+  app.get("/punten", (request, reply) =>
+    reply.sendComponent(PointsPage, {
+      points: getFullEarnedPoints(),
+      user: reply.locals.user!,
+    })
   );
 
-  app.get("/adressenlijst", async (request, reply) =>
-    reply.sendHtml(
-      renderAddresslistPage({
-        persons: await getAllPersonsWithAddresses(),
-        user: reply.locals.user!,
-      })
-    )
+  app.get("/adressenlijst", (request, reply) =>
+    reply.sendComponent(AddresslistPage, {
+      persons: getAllPersonsWithAddresses(),
+      user: reply.locals.user!,
+    })
   );
 
-  app.get("/geschriften/:id", async (request, reply) => {
-    const { id } = request.params as { id: string };
-    const writing = await getFullMemberWriting(id);
-    if (!writing) return reply.callNotFound();
+  app.get<{ Params: { id: string } }>(
+    "/geschriften/:id",
+    async (request, reply) => {
+      const writing = await getFullMemberWriting(request.params.id);
+      if (!writing) return reply.callNotFound();
 
-    return reply.sendHtml(
-      renderWritingPage({
+      return reply.sendComponent(WritingPage, {
         writing,
         user: reply.locals.user!,
-      })
-    );
-  });
+      });
+    }
+  );
 };
 
 export default memberRoutes;

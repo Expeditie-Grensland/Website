@@ -1,6 +1,5 @@
 import { Selectable } from "kysely";
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { HTMLAttributeAnchorTarget } from "preact/compat";
 import packageJson from "../../../../../package.json" with { type: "json" };
 import { getMemberLinks } from "../../../db/member-link.js";
@@ -37,7 +36,7 @@ const LinkCard: FunctionComponent<{
     </div>
   );
 
-const MembersHomePage: FunctionComponent<{
+export const MembersHomePage: FunctionComponent<{
   memberLinks: Awaited<ReturnType<typeof getMemberLinks>>;
   memberWritings: Awaited<ReturnType<typeof getMemberWritingsList>>;
   currentExpedities: Selectable<Expeditie>[];
@@ -260,7 +259,3 @@ const MembersHomePage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderMembersHomePage = (
-  props: ComponentProps<typeof MembersHomePage>
-) => render(<MembersHomePage {...props} />);

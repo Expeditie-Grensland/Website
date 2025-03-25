@@ -1,14 +1,13 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getFullExpeditie } from "../../../db/expeditie.js";
 import { authenticatePerson } from "../../../db/person.js";
 import { getFileType, getFileUrl } from "../../../files/files.js";
+import { formatDateRange } from "../../../helpers/time.js";
 import { TitleImage } from "../../media/title-image.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
-import { formatDateRange } from "../../../helpers/time.js";
 
-const ExpeditiePage: FunctionComponent<{
+export const ExpeditiePage: FunctionComponent<{
   expeditie: NonNullable<Awaited<ReturnType<typeof getFullExpeditie>>>;
   user?: Awaited<ReturnType<typeof authenticatePerson>>;
 }> = ({ expeditie, user }) => (
@@ -112,7 +111,3 @@ const ExpeditiePage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderExpeditiePage = (
-  props: ComponentProps<typeof ExpeditiePage>
-) => render(<ExpeditiePage {...props} />);

@@ -1,5 +1,4 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { MapSegment, MapStory } from "../../../common-types/expeditie-map.js";
 import { getFullExpeditie } from "../../../db/expeditie.js";
 import { getExpeditieSegments, getRouteVersion } from "../../../db/geo.js";
@@ -63,7 +62,7 @@ const Story: FunctionComponent<{
   </div>
 );
 
-const ExpeditieMapPage: FunctionComponent<{
+export const ExpeditieMapPage: FunctionComponent<{
   expeditie: NonNullable<Awaited<ReturnType<typeof getFullExpeditie>>>;
   stories: Awaited<ReturnType<typeof getExpeditieStories>>;
   segments: Awaited<ReturnType<typeof getExpeditieSegments>>;
@@ -155,7 +154,3 @@ const ExpeditieMapPage: FunctionComponent<{
     )}
   </Page>
 );
-
-export const renderExpeditieMapPage = (
-  props: ComponentProps<typeof ExpeditieMapPage>
-) => render(<ExpeditieMapPage {...props} />);

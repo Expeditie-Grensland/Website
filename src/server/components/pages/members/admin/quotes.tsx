@@ -1,5 +1,4 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { authenticatePerson } from "../../../../db/person.js";
 import { getAllQuotes } from "../../../../db/quote.js";
 import { AdminPage } from "../../../admin/admin-page.js";
@@ -10,7 +9,7 @@ import {
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
 
-const QuotesAdminPage: FunctionComponent<{
+export const QuotesAdminPage: FunctionComponent<{
   quotes: Awaited<ReturnType<typeof getAllQuotes>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
@@ -132,7 +131,3 @@ const QuotesAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderQuotesAdminPage = (
-  props: ComponentProps<typeof QuotesAdminPage>
-) => render(<QuotesAdminPage {...props} />);

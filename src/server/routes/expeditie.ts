@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
-import { renderExpeditieMapPage } from "../components/pages/public/expeditie-map.js";
-import { renderExpeditiePage } from "../components/pages/public/expeditie.js";
+import { ExpeditieMapPage } from "../components/pages/public/expeditie-map.js";
+import { ExpeditiePage } from "../components/pages/public/expeditie.js";
 import { getFullExpeditie } from "../db/expeditie.js";
 import {
   getExpeditieSegments,
@@ -8,7 +8,6 @@ import {
   getSegmentLocations,
 } from "../db/geo.js";
 import { getExpeditieStories } from "../db/story.js";
-import { promiseAllProps } from "../helpers/async.js";
 
 const expeditieRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -25,26 +24,20 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
       return reply.callNotFound();
   });
 
-  app.get("/", async (request, reply) =>
-    reply.sendHtml(
-      renderExpeditiePage({
-        expeditie: reply.locals.expeditie!,
-        user: reply.locals.user,
-      })
-    )
+  app.get("/", (request, reply) =>
+    reply.sendComponent(ExpeditiePage, {
+      expeditie: reply.locals.expeditie!,
+      user: reply.locals.user,
+    })
   );
 
-  app.get("/kaart", async (request, reply) =>
-    reply.sendHtml(
-      renderExpeditieMapPage(
-        await promiseAllProps({
-          expeditie: reply.locals.expeditie!,
-          stories: getExpeditieStories(reply.locals.expeditie!.id),
-          segments: getExpeditieSegments(reply.locals.expeditie!.id),
-          routeVersion: getRouteVersion(reply.locals.expeditie!.id),
-        })
-      )
-    )
+  app.get("/kaart", (request, reply) =>
+    reply.sendComponent(ExpeditieMapPage, {
+      expeditie: reply.locals.expeditie!,
+      stories: getExpeditieStories(reply.locals.expeditie!.id),
+      segments: getExpeditieSegments(reply.locals.expeditie!.id),
+      routeVersion: getRouteVersion(reply.locals.expeditie!.id),
+    })
   );
 
   app.get("/kaart/route-data", async (request, reply) => {

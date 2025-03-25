@@ -1,6 +1,5 @@
 import { Selectable } from "kysely";
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getExpeditieSegments } from "../../../../db/geo.js";
 import { authenticatePerson } from "../../../../db/person.js";
 import { Expeditie } from "../../../../db/schema/types.js";
@@ -12,7 +11,7 @@ import {
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
 
-const GpxUploadAdminPage: FunctionComponent<{
+export const GpxUploadAdminPage: FunctionComponent<{
   segments: Awaited<ReturnType<typeof getExpeditieSegments>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
@@ -66,7 +65,3 @@ const GpxUploadAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderGpxUploadAdminPage = (
-  props: ComponentProps<typeof GpxUploadAdminPage>
-) => render(<GpxUploadAdminPage {...props} />);

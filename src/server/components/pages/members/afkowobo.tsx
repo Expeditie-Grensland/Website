@@ -1,12 +1,11 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getAllAfkos } from "../../../db/afko.js";
 import { authenticatePerson } from "../../../db/person.js";
 import { DictionaryEntry } from "../../members/dictionary-entry.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
-const AfkowoboPage: FunctionComponent<{
+export const AfkowoboPage: FunctionComponent<{
   afkos: Awaited<ReturnType<typeof getAllAfkos>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
 }> = ({ afkos, user }) => (
@@ -33,7 +32,3 @@ const AfkowoboPage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderAfkowobopage = (
-  props: ComponentProps<typeof AfkowoboPage>
-) => render(<AfkowoboPage {...props} />);

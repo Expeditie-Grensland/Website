@@ -1,17 +1,16 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getAllExpeditiesWithPeopleIds } from "../../../../db/expeditie.js";
 import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
-import { FormInputArray } from "../../../admin/form-inputs.js";
 import {
   CheckInput,
   DateInput,
+  FormInputArray,
+  PersonInput,
   TextInput,
 } from "../../../admin/form-inputs.js";
-import { PersonInput } from "../../../admin/form-inputs.js";
 
-const ExpeditiesAdminPage: FunctionComponent<{
+export const ExpeditiesAdminPage: FunctionComponent<{
   expedities: Awaited<ReturnType<typeof getAllExpeditiesWithPeopleIds>>;
   persons: Awaited<ReturnType<typeof getAllPersons>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
@@ -234,7 +233,3 @@ const ExpeditiesAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderExpeditiesAdminPage = (
-  props: ComponentProps<typeof ExpeditiesAdminPage>
-) => render(<ExpeditiesAdminPage {...props} />);

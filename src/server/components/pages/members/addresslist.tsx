@@ -1,5 +1,4 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import {
   authenticatePerson,
   getAllPersonsWithAddresses,
@@ -7,7 +6,7 @@ import {
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
-const AddresslistPage: FunctionComponent<{
+export const AddresslistPage: FunctionComponent<{
   persons: Awaited<ReturnType<typeof getAllPersonsWithAddresses>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
 }> = ({ persons, user }) => (
@@ -46,7 +45,3 @@ const AddresslistPage: FunctionComponent<{
     </div>
   </Page>
 );
-
-export const renderAddresslistPage = (
-  props: ComponentProps<typeof AddresslistPage>
-) => render(<AddresslistPage {...props} />);

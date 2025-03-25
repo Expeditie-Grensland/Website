@@ -1,12 +1,14 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getAllAfkos } from "../../../../db/afko.js";
 import { authenticatePerson } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
-import { FormInputArray } from "../../../admin/form-inputs.js";
-import { TextAreaInput, TextInput } from "../../../admin/form-inputs.js";
+import {
+  FormInputArray,
+  TextAreaInput,
+  TextInput,
+} from "../../../admin/form-inputs.js";
 
-const AfkowoboAdminPage: FunctionComponent<{
+export const AfkowoboAdminPage: FunctionComponent<{
   afkos: Awaited<ReturnType<typeof getAllAfkos>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
@@ -97,7 +99,3 @@ const AfkowoboAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderAfkowoboAdminPage = (
-  props: ComponentProps<typeof AfkowoboAdminPage>
-) => render(<AfkowoboAdminPage {...props} />);

@@ -1,5 +1,4 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getAllEarnedPoints } from "../../../../db/earned-point.js";
 import { getAllExpedities } from "../../../../db/expeditie.js";
 import {
@@ -17,7 +16,7 @@ import {
   TimezoneInput,
 } from "../../../admin/form-inputs.js";
 
-const PointsAdminPage: FunctionComponent<{
+export const PointsAdminPage: FunctionComponent<{
   points: Awaited<ReturnType<typeof getAllEarnedPoints>>;
   expedities: Awaited<ReturnType<typeof getAllExpedities>>;
   persons: Awaited<ReturnType<typeof getAllPersons>>;
@@ -129,7 +128,3 @@ const PointsAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderPointsAdminPage = (
-  props: ComponentProps<typeof PointsAdminPage>
-) => render(<PointsAdminPage {...props} />);

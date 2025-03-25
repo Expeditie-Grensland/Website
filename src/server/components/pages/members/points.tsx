@@ -1,12 +1,11 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getFullEarnedPoints } from "../../../db/earned-point.js";
 import { authenticatePerson } from "../../../db/person.js";
 import { formatTimeDayMonth, formatTimeFull } from "../../../helpers/time.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
-const PointsPage: FunctionComponent<{
+export const PointsPage: FunctionComponent<{
   points: Awaited<ReturnType<typeof getFullEarnedPoints>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
 }> = ({ points, user }) => {
@@ -80,6 +79,3 @@ const PointsPage: FunctionComponent<{
     </Page>
   );
 };
-
-export const renderPointsPage = (props: ComponentProps<typeof PointsPage>) =>
-  render(<PointsPage {...props} />);

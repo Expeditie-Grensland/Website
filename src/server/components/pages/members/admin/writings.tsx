@@ -1,5 +1,4 @@
-import { ComponentProps, FunctionComponent } from "preact";
-import { render } from "preact-render-to-string";
+import { FunctionComponent } from "preact";
 import { getMemberWritingsList } from "../../../../db/member-writings.js";
 import { authenticatePerson } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
@@ -9,7 +8,7 @@ import {
   TextInput,
 } from "../../../admin/form-inputs.js";
 
-const WritingsAdminPage: FunctionComponent<{
+export const WritingsAdminPage: FunctionComponent<{
   writings: Awaited<ReturnType<typeof getMemberWritingsList>>;
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
   messages: Record<string, string[]>;
@@ -99,7 +98,3 @@ const WritingsAdminPage: FunctionComponent<{
     ]}
   />
 );
-
-export const renderWritingsAdminPage = (
-  props: ComponentProps<typeof WritingsAdminPage>
-) => render(<WritingsAdminPage {...props} />);

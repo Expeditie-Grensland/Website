@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from "fastify";
-import { renderMemberPage } from "../components/pages/public/member.js";
+import { MemberPage } from "../components/pages/public/member.js";
 import { getPerson } from "../db/person.js";
 
 const personRoutes: FastifyPluginAsync = async (app) => {
@@ -12,13 +12,11 @@ const personRoutes: FastifyPluginAsync = async (app) => {
     reply.locals.person = person;
   });
 
-  app.get("/", async (request, reply) =>
-    reply.sendHtml(
-      renderMemberPage({
-        person: reply.locals.person!,
-        user: reply.locals.user,
-      })
-    )
+  app.get("/", (request, reply) =>
+    reply.sendComponent(MemberPage, {
+      person: reply.locals.person!,
+      user: reply.locals.user,
+    })
   );
 };
 
