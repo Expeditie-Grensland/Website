@@ -42,6 +42,7 @@ const setupSession = async (app: FastifyInstance) => {
       path: "/",
       secure: true,
       httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60,
     },
   });
   await app.register(fastifyFlash);
