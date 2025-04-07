@@ -6,12 +6,11 @@ const dir = getArgvOption("dev", "dist");
 
 const isProd = dir === "dist";
 
-const entryPoints = (await Array.fromAsync(
+const entryPoints = await Array.fromAsync(
   glob(["src/server/**/*.ts", "src/server/**/*.tsx"], {
-    // @ts-expect-error glob accepts string excludes
     exclude: ["**/*.d.ts"],
   })
-)) as string[];
+);
 
 const options: BuildOptions = {
   entryPoints,

@@ -7,12 +7,9 @@ chdir("dist/static");
 console.info(mdHeading(2, "Static file sizes"));
 
 const staticFiles = (
-  (await Array.fromAsync(
-    glob("**/*.*", {
-      // @ts-expect-error glob accepts string excludes
-      exclude: ["errorpages/**", "favicons/**"],
-    })
-  )) as string[]
+  await Array.fromAsync(
+    glob("**/*.*", { exclude: ["errorpages/**", "favicons/**"] })
+  )
 ).toSorted();
 
 const items: { file: string; size: number; gz?: number; br?: number }[] = [];

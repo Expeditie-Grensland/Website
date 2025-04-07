@@ -19,10 +19,9 @@ const getNewName = (file: string) => {
   return file.slice(0, extI + 1) + hash + file.slice(extI);
 };
 
-const filesToRev = (await Array.fromAsync(
-  // @ts-expect-error glob accepts string excludes
+const filesToRev = await Array.fromAsync(
   glob("**/*.*", { exclude: ["errorpages/**", "favicons/**"] })
-)) as string[];
+);
 
 const renames = filesToRev.map((file) => [file, getNewName(file)]);
 
