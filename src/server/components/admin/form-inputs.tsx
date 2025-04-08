@@ -4,6 +4,7 @@ import { getAllExpedities } from "../../db/expeditie.js";
 import { getExpeditieSegments } from "../../db/geo.js";
 import { getAllPersons } from "../../db/person.js";
 import { getISODate } from "../../helpers/time.js";
+import { DateTime } from "luxon";
 
 type BasicInput<Value> = {
   name: string;
@@ -87,7 +88,7 @@ export const DateInput: FunctionComponent<BasicInput<Date>> = ({
     pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
     class="input"
     placeholder={placeholder}
-    value={value?.toISOString().slice(0, 10)}
+    value={(value && DateTime.fromJSDate(value).toISODate()) || undefined}
     {...rest}
   />
 );
