@@ -32,13 +32,13 @@ jobs:
         run: pnpm install
 
       - name: Run checks
-        run: npm run --silent check
+        run: node --run check
 
       - name: Run build
-        run: npm run --silent build
+        run: node --run build
 
       - name: Check statistics
-        run: npm run --silent stats >> $GITHUB_STEP_SUMMARY
+        run: node --run stats >> $GITHUB_STEP_SUMMARY
 
       - name: Upload build metadata
         uses: actions/upload-artifact@v4
