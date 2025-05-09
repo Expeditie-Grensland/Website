@@ -53,6 +53,10 @@ export const formatDateRange = (startDate: Date, endDate: Date) => {
   const yearSame = startDate.getFullYear() == endDate.getFullYear();
   const monthSame = yearSame && startDate.getMonth() == endDate.getMonth();
 
+  if (monthSame && startDate.getDate() == endDate.getDate()) {
+    return endDate.toLocaleString("nl-NL", endDateFormat);
+  }
+
   const startDateFormat: Intl.DateTimeFormatOptions = {
     year: yearSame ? undefined : "numeric",
     month: monthSame ? undefined : "long",
