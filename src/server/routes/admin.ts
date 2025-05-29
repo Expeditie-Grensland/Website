@@ -531,8 +531,10 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       }),
 
     deletePath: "/delete/:key",
-    onDelete: async ({ key }) =>
-      `Bestand "${await deleteS3Prefix(key)}" is verwijderd`,
+    onDelete: async ({ key }) => {
+      await deleteS3Prefix(key);
+      return `Bestand "${key}" is verwijderd`;
+    },
   });
 
   await registerAdminRoute(app, "/links", {

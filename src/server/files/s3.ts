@@ -23,6 +23,8 @@ const client = new S3Client({
     accessKeyId: getS3Config().accessKeyId,
     secretAccessKey: getS3Config().accessSecret,
   },
+  requestChecksumCalculation: "WHEN_REQUIRED",
+  responseChecksumValidation: "WHEN_REQUIRED",
 });
 
 export const getS3Files = async () => {
