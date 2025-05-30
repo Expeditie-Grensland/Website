@@ -3,7 +3,7 @@ import { getDb } from "./schema/database.js";
 import { Word } from "./schema/types.js";
 
 export const getAllWords = () =>
-  getDb().selectFrom("word").selectAll().orderBy("word asc").execute();
+  getDb().selectFrom("word").selectAll().orderBy("word", "asc").execute();
 
 export const addWord = (word: Insertable<Word>) =>
   getDb()

@@ -3,7 +3,11 @@ import { getDb } from "./schema/database.js";
 import { Quote } from "./schema/types.js";
 
 export const getAllQuotes = () =>
-  getDb().selectFrom("quote").selectAll().orderBy("time_stamp asc").execute();
+  getDb()
+    .selectFrom("quote")
+    .selectAll()
+    .orderBy("time_stamp", "asc")
+    .execute();
 
 export const addQuote = (quote: Insertable<Quote>) =>
   getDb()

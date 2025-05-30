@@ -10,8 +10,8 @@ export const getAllExpedities = ({
   getDb()
     .selectFrom("expeditie")
     .selectAll()
-    .orderBy("start_date desc")
-    .orderBy("end_date desc")
+    .orderBy("start_date", "desc")
+    .orderBy("end_date", "desc")
     .$if(withoutDrafts, (qb) => qb.where("draft", "=", false))
     .$if(onlyOngoing, (qb) =>
       qb
@@ -42,8 +42,8 @@ export const getAllExpeditiesWithPeopleIds = () =>
           .orderBy("person.id")
       ).as("movie_editors"),
     ])
-    .orderBy("start_date desc")
-    .orderBy("end_date desc")
+    .orderBy("start_date", "desc")
+    .orderBy("end_date", "desc")
     .execute()
     .then((expedities) =>
       expedities.map(({ persons, movie_editors, ...rest }) => ({

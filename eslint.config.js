@@ -21,6 +21,9 @@ export default tsPlugin.config(
       parser: tsPlugin.parser,
       parserOptions: {
         project: true,
+        projectService: {
+          allowDefaultProject: ["eslint.config.js"],
+        },
       },
     },
     rules: {
@@ -30,6 +33,7 @@ export default tsPlugin.config(
         "error",
         { argsIgnorePattern: "^_", ignoreRestSiblings: true },
       ],
+      "@typescript-eslint/no-deprecated": "warn",
     },
   },
   {

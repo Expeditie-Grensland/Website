@@ -48,8 +48,8 @@ export const getAllPersonsWithAddresses = (membersOnly = false) =>
           .selectFrom("person_address")
           .selectAll("person_address")
           .whereRef("person_address.person_id", "=", "person.id")
-          .orderBy("name asc")
-          .orderBy("id asc")
+          .orderBy("name", "asc")
+          .orderBy("id", "asc")
       ).as("addresses"),
     ])
     .execute();

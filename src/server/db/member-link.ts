@@ -3,7 +3,11 @@ import { getDb } from "./schema/database.js";
 import { MemberLink } from "./schema/types.js";
 
 export const getMemberLinks = () =>
-  getDb().selectFrom("member_link").selectAll().orderBy("index asc").execute();
+  getDb()
+    .selectFrom("member_link")
+    .selectAll()
+    .orderBy("index", "asc")
+    .execute();
 
 export const addMemberLink = (memberLink: Insertable<MemberLink>) =>
   getDb()

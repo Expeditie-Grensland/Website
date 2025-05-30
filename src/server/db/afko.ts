@@ -3,7 +3,7 @@ import { getDb } from "./schema/database.js";
 import { Afko } from "./schema/types.js";
 
 export const getAllAfkos = () =>
-  getDb().selectFrom("afko").selectAll().orderBy("afko asc").execute();
+  getDb().selectFrom("afko").selectAll().orderBy("afko", "asc").execute();
 
 export const addAfko = (afko: Insertable<Afko>) =>
   getDb()

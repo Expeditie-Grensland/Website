@@ -82,7 +82,7 @@ export const getSegmentLocations = (
     .selectFrom("geo_location")
     .select(["id", "latitude", "longitude"])
     .where("segment_id", "=", segment.id)
-    .orderBy("time_stamp asc")
+    .orderBy("time_stamp", "asc")
     .execute();
 
 export const addLocations = async (locations: Insertable<GeoLocation>[]) =>

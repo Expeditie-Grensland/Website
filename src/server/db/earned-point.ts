@@ -6,7 +6,7 @@ export const getAllEarnedPoints = () =>
   getDb()
     .selectFrom("earned_point")
     .selectAll()
-    .orderBy("time_stamp desc")
+    .orderBy("time_stamp", "desc")
     .execute();
 
 export const getFullEarnedPoints = () =>
@@ -20,7 +20,7 @@ export const getFullEarnedPoints = () =>
       "person.first_name as person_first_name",
       "person.last_name as person_last_name",
     ])
-    .orderBy("time_stamp desc")
+    .orderBy("time_stamp", "desc")
     .execute();
 
 export const addEarnedPoint = (earnedPoint: Insertable<EarnedPoint>) =>

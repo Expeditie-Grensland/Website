@@ -6,7 +6,7 @@ export const getMemberWritingsList = () =>
   getDb()
     .selectFrom("member_writing")
     .selectAll()
-    .orderBy("index asc")
+    .orderBy("index", "asc")
     .execute();
 
 export const getFullMemberWriting = (id: string) =>
