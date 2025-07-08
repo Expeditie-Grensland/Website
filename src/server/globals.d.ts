@@ -1,4 +1,3 @@
-/* eslint-disable no-var */
 import "preact";
 import { getFullExpeditie } from "./db/expeditie.js";
 import { authenticatePerson, getPerson } from "./db/person.js";
