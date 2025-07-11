@@ -9,6 +9,7 @@
 
 @import "./members/dictionary.css";
 @import "./members/link-card.css";
+@import "./members/packlist.css";
 @import "./members/points.css";
 
 a {

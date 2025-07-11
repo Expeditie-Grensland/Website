@@ -105,6 +105,21 @@ export interface MemberWriting {
   title: string;
 }
 
+export interface Packlist {
+  default: Generated<boolean>;
+  id: string;
+  name: string;
+  position: number;
+}
+
+export interface PacklistItem {
+  description: string | null;
+  id: Generated<number>;
+  name: string;
+  packlist_id: string;
+  position: number;
+}
+
 export interface Person {
   email: string | null;
   first_name: string;
@@ -172,6 +187,8 @@ export interface DB {
   geo_segment_person: GeoSegmentPerson;
   member_link: MemberLink;
   member_writing: MemberWriting;
+  packlist: Packlist;
+  packlist_item: PacklistItem;
   person: Person;
   person_address: PersonAddress;
   quote: Quote;

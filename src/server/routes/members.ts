@@ -22,6 +22,9 @@ import {
 import { getAllQuotes } from "../db/quote.js";
 import { getAllWords } from "../db/word.js";
 import adminRoutes from "./admin.js";
+import { PacklistChoicePage } from "../components/pages/members/packlist-choice.js";
+import { getAllPacklists, getPacklistsWithItems } from "../db/packlist.js";
+import { PacklistPage } from "../components/pages/members/packlist.js";
 
 const memberRoutes: FastifyPluginAsync = async (app) => {
   app.addHook("onRequest", async (request, reply) => {
@@ -124,6 +127,27 @@ const memberRoutes: FastifyPluginAsync = async (app) => {
       persons: getAllPersonsWithAddresses(),
       user: reply.locals.user!,
     })
+  );
+
+  app.get<{ Querystring: { gen?: "y" } & Record<string, "on"> }>(
+    "/paklijst",
+    async (request, reply) => {
+      if (request.query.gen == "y") {
+        const lists = Object.keys(request.query).filter(
+          (key) => request.query[key] == "on"
+        );
+
+        return await reply.sendComponent(PacklistPage, {
+          listsWithItems: getPacklistsWithItems(lists),
+          user: reply.locals.user!,
+        });
+      }
+
+      return await reply.sendComponent(PacklistChoicePage, {
+        lists: getAllPacklists(),
+        user: reply.locals.user!,
+      });
+    }
   );
 
   app.get<{ Params: { id: string } }>(

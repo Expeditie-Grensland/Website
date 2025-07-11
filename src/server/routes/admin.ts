@@ -102,6 +102,23 @@ import {
 } from "../validation-schemas/admin/story.js";
 import { wordSchema } from "../validation-schemas/admin/word.js";
 import { writingSchema } from "../validation-schemas/admin/writing.js";
+import { PacklistsAdminPage } from "../components/pages/members/admin/packlists.js";
+import {
+  addPacklist,
+  addPacklistItem,
+  deletePacklist,
+  deletePacklistItem,
+  getAllPacklists,
+  getPacklistItems,
+  updatePacklist,
+  updatePacklistItem,
+} from "../db/packlist.js";
+import {
+  packlistItemSchema,
+  packlistPrefixParamsSchema,
+  packlistSchema,
+} from "../validation-schemas/admin/packlist.js";
+import { PacklistItemsAdminPage } from "../components/pages/members/admin/packlist-items.js";
 
 const friendlyError = (err: unknown) => {
   if (err instanceof ZodError) {
@@ -518,6 +535,50 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
 
       return `${locCount} locaties en ${storyCount} verhalen zijn geüpload`;
     },
+  });
+
+  await registerAdminRoute(app, "/paklijst", {
+    schema: packlistSchema,
+    paramSchema: idParamsSchema,
+
+    renderPage: ({ user, messages }) =>
+      renderComponent(PacklistsAdminPage, {
+        packlists: getAllPacklists(),
+        user,
+        messages,
+      }),
+
+    onAdd: async (list) =>
+      `Paklijst "${(await addPacklist(list)).name}" is toegevoegd`,
+
+    onUpdate: async ({ id }, list) =>
+      `Paklijst "${(await updatePacklist(id, list)).name}" is gewijzigd`,
+
+    onDelete: async ({ id }) =>
+      `Paklijst "${(await deletePacklist(id)).name}" is verwijderd`,
+  });
+
+  await registerAdminRoute(app, "/paklijst/:packlist/items", {
+    schema: packlistItemSchema,
+    paramSchema: numIdParamsSchema,
+    prefixSchema: packlistPrefixParamsSchema,
+
+    renderPage: ({ user, messages, parsedPrefix }) =>
+      renderComponent(PacklistItemsAdminPage, {
+        packlist: parsedPrefix.packlist,
+        items: getPacklistItems(parsedPrefix.packlist.id),
+        user,
+        messages,
+      }),
+
+    onAdd: async (item, { parsedPrefix }) =>
+      `Item "${(await addPacklistItem(parsedPrefix.packlist.id, item)).name}" is toegevoegd`,
+
+    onUpdate: async ({ id }, item, { parsedPrefix }) =>
+      `Item "${(await updatePacklistItem(parsedPrefix.packlist.id, id, item)).name}" is gewijzigd`,
+
+    onDelete: async ({ id }, { parsedPrefix }) =>
+      `Item "${(await deletePacklistItem(parsedPrefix.packlist.id, id)).name}" is verwijderd`,
   });
 
   await registerAdminRoute(app, "/bestanden", {

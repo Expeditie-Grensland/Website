@@ -1,0 +1,22 @@
+.packlist-heading {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.packlist-item,
+.packlist-choice {
+  display: flex;
+  max-width: max-content;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.packlist-desc {
+  color: var(--text-mutest-color);
+}
+
+.packlist-item input,
+.packlist-choice input {
+  display: block;
+}

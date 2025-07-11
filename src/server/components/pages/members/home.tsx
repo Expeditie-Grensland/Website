@@ -145,6 +145,22 @@ export const MembersHomePage: FunctionComponent<{
         />
 
         <LinkCard
+          title="Paklijst"
+          text="Wat nemen we mee?"
+          links={[
+            {
+              text: "Open",
+              url: "/leden/paklijst",
+            },
+            {
+              text: "Admin",
+              url: "/leden/admin/paklijst",
+              when: user.type == "admin",
+            },
+          ]}
+        />
+
+        <LinkCard
           title="Bestanden"
           text="De Small Data"
           links={[
