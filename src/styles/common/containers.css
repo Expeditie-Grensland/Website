@@ -40,6 +40,13 @@
   }
 }
 
+@media print {
+  .container,
+  .container-fluid {
+    max-width: none;
+  }
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -78,5 +85,11 @@
 @media (min-width: 992px) {
   .grid-3 {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media print {
+  .navbar {
+    display: none;
   }
 }
