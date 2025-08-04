@@ -36,7 +36,7 @@ const filesToRewrite = glob([
   "../server/components/**/*.js",
   "errorpages/*.html",
   "styles/*.css",
-  "scripts/*.css",
+  "scripts/*.js",
 ]);
 
 for await (const file of filesToRewrite) {
