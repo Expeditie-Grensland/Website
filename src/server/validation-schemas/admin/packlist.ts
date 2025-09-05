@@ -18,7 +18,7 @@ export const packlistItemSchema = z.object({
 export const packlistIdCheckSchema = z
   .string()
   .transform(getPacklist)
-  .refine((exp) => exp != undefined);
+  .nonoptional();
 
 export const packlistPrefixParamsSchema = z.object({
   packlist: packlistIdCheckSchema,

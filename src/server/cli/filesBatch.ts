@@ -1,8 +1,8 @@
 import input from "@inquirer/input";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "path";
-import { ZodError, z } from "zod";
-import { fromZodError } from "zod-validation-error";
+import { z } from "zod";
+import { fromZodError, isZodErrorLike } from "zod-validation-error";
 import { convertAndUploadFile } from "../files/convert.js";
 import { allConverters } from "../files/types/index.js";
 
@@ -28,7 +28,7 @@ const manifest = await input({
     } catch (e) {
       if (e instanceof SyntaxError)
         return "Bestand bevat geen geldige JSON-syntax";
-      if (e instanceof ZodError)
+      if (isZodErrorLike(e))
         return `Bestand bevat geen geldige indeling: '${fromZodError(e, {
           prefix: null,
         })}'`;

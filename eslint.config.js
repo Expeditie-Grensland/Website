@@ -2,10 +2,11 @@
 
 import jsPlugin from "@eslint/js";
 import tsPlugin from "typescript-eslint";
-import importPlugin from "eslint-plugin-import-x";
+import { defineConfig } from "eslint/config";
+import { importX } from "eslint-plugin-import-x";
 import globals from "globals";
 
-export default tsPlugin.config(
+export default defineConfig(
   {
     ignores: ["dev/**/*", "dist/**/*"],
   },
@@ -15,7 +16,8 @@ export default tsPlugin.config(
   {
     plugins: {
       "@typescript-eslint": tsPlugin.plugin,
-      import: importPlugin,
+      // @ts-expect-error Unexpected type
+      import: importX,
     },
     languageOptions: {
       parser: tsPlugin.parser,

@@ -62,7 +62,6 @@ const configSchemas = z.object({
   crypto: z
     .object({
       EG_SECRET_KEY: z
-        .string()
         .base64()
         .transform((s) => Buffer.from(s, "base64"))
         .refine((buf) => buf.length == sodium.crypto_secretbox_KEYBYTES, {
@@ -101,7 +100,7 @@ const parsedConfigs: {
 const getConfig = <Name extends ConfigName>(name: Name) => {
   if (parsedConfigs[name] !== undefined) return parsedConfigs[name];
 
-  type Schema = z.ZodSchema<z.output<typeof configSchemas>[Name]>;
+  type Schema = z.ZodType<z.output<typeof configSchemas>[Name]>;
   const schema = configSchemas.shape[name] as unknown as Schema;
 
   const { success, error, data } = schema.safeParse(process.env);

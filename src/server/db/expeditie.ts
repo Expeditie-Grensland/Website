@@ -88,7 +88,7 @@ export const getFullExpeditie = (id: string) =>
     .executeTakeFirst();
 
 type ExpeditieExternals = {
-  persons: [string, ...string[]];
+  persons: string[];
   movie_editors: string[];
 };
 

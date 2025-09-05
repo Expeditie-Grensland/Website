@@ -6,13 +6,13 @@ import {
 } from "./common.js";
 
 const gpxWayPointSchema = z.object({
-  time: z.string().datetime(),
+  time: z.iso.datetime(),
   name: z.string(),
   desc: z.string().optional(),
 });
 
 const gpxTrackPointSchema = z.object({
-  time: z.string().datetime(),
+  time: z.iso.datetime(),
   _lat: z.number(),
   _lon: z.number(),
   ele: z.number().optional(),

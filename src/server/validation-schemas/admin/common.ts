@@ -25,12 +25,9 @@ export const localTimeTransformer = <
   time_stamp: parseISODateTimeStamp(time_local, rest.time_zone),
 });
 
-export const dateSchema = z
-  .string()
-  .date()
-  .transform((string) => new Date(string));
+export const dateSchema = z.iso.date().transform((string) => new Date(string));
 
 export const expeditieIdCheckSchema = z
   .string()
   .transform(getExpeditie)
-  .refine((exp) => exp != undefined);
+  .nonoptional();

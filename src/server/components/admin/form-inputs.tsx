@@ -105,7 +105,7 @@ export const LocalTimeInput: FunctionComponent<
     step={1}
     class="input"
     placeholder={placeholder}
-    value={value && getISODate(value.stamp, value.zone)}
+    value={(value && getISODate(value.stamp, value.zone)) ?? undefined}
     {...rest}
   />
 );

@@ -5,14 +5,16 @@ import {
   FastifyReply,
   FastifyRequest,
 } from "fastify";
-import { z, ZodError, ZodTypeAny } from "zod";
-import { fromZodError } from "zod-validation-error";
+import { z } from "zod";
+import { fromZodError, isZodErrorLike } from "zod-validation-error";
 import { AfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js";
 import { DictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
 import { ExpeditiesAdminPage } from "../components/pages/members/admin/expedities.js";
 import { FilesAdminPage } from "../components/pages/members/admin/files.js";
 import { GpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
 import { LinksAdminPage } from "../components/pages/members/admin/links.js";
+import { PacklistItemsAdminPage } from "../components/pages/members/admin/packlist-items.js";
+import { PacklistsAdminPage } from "../components/pages/members/admin/packlists.js";
 import { PersonsAdminPage } from "../components/pages/members/admin/person.js";
 import { PointsAdminPage } from "../components/pages/members/admin/points.js";
 import { QuotesAdminPage } from "../components/pages/members/admin/quotes.js";
@@ -53,6 +55,16 @@ import {
   updateMemberWriting,
 } from "../db/member-writings.js";
 import {
+  addPacklist,
+  addPacklistItem,
+  deletePacklist,
+  deletePacklistItem,
+  getAllPacklists,
+  getPacklistItems,
+  updatePacklist,
+  updatePacklistItem,
+} from "../db/packlist.js";
+import {
   addPerson,
   deletePerson,
   getAllPersons,
@@ -86,6 +98,11 @@ import {
 } from "../validation-schemas/admin/gpx.js";
 import { linkSchema } from "../validation-schemas/admin/link.js";
 import {
+  packlistItemSchema,
+  packlistPrefixParamsSchema,
+  packlistSchema,
+} from "../validation-schemas/admin/packlist.js";
+import {
   idParamsSchema,
   keyParamsSchema,
   numIdParamsSchema,
@@ -102,26 +119,9 @@ import {
 } from "../validation-schemas/admin/story.js";
 import { wordSchema } from "../validation-schemas/admin/word.js";
 import { writingSchema } from "../validation-schemas/admin/writing.js";
-import { PacklistsAdminPage } from "../components/pages/members/admin/packlists.js";
-import {
-  addPacklist,
-  addPacklistItem,
-  deletePacklist,
-  deletePacklistItem,
-  getAllPacklists,
-  getPacklistItems,
-  updatePacklist,
-  updatePacklistItem,
-} from "../db/packlist.js";
-import {
-  packlistItemSchema,
-  packlistPrefixParamsSchema,
-  packlistSchema,
-} from "../validation-schemas/admin/packlist.js";
-import { PacklistItemsAdminPage } from "../components/pages/members/admin/packlist-items.js";
 
 const friendlyError = (err: unknown) => {
-  if (err instanceof ZodError) {
+  if (isZodErrorLike(err)) {
     return fromZodError(err).message;
   }
 
@@ -144,9 +144,9 @@ const executeAndFlash = async (
 };
 
 type RegisterAdminRoute = <
-  Schema extends ZodTypeAny,
-  ParamSchema extends ZodTypeAny,
-  PrefixSchema extends ZodTypeAny,
+  Schema extends z.ZodType,
+  ParamSchema extends z.ZodType,
+  PrefixSchema extends z.ZodType,
 >(
   app: FastifyInstance,
   prefix: string,
@@ -243,7 +243,8 @@ const registerAdminRoute: RegisterAdminRoute = async (
           await renderPage({
             user: reply.locals.user!,
             messages: reply.flash() as Record<string, string[]>,
-            parsedPrefix: reply.locals.parsedPrefix,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            parsedPrefix: reply.locals.parsedPrefix as any,
           })
         )
       );
@@ -252,7 +253,8 @@ const registerAdminRoute: RegisterAdminRoute = async (
         app.post(addPath, async (req, reply) => {
           await executeAndFlash(req, () =>
             onAdd(schema.parse(req.body), {
-              parsedPrefix: reply.locals.parsedPrefix,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              parsedPrefix: reply.locals.parsedPrefix as any,
             })
           );
 
@@ -264,7 +266,8 @@ const registerAdminRoute: RegisterAdminRoute = async (
         app.post(updatePath, async (req, reply) => {
           await executeAndFlash(req, () =>
             onUpdate(paramSchema.parse(req.params), schema.parse(req.body), {
-              parsedPrefix: reply.locals.parsedPrefix,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              parsedPrefix: reply.locals.parsedPrefix as any,
             })
           );
 
@@ -276,7 +279,8 @@ const registerAdminRoute: RegisterAdminRoute = async (
         app.post(deletePath, async (req, reply) => {
           await executeAndFlash(req, () =>
             onDelete(paramSchema.parse(req.params), {
-              parsedPrefix: reply.locals.parsedPrefix,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              parsedPrefix: reply.locals.parsedPrefix as any,
             })
           );
 
