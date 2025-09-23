@@ -106,13 +106,15 @@ export const setupFastify = async () => {
             level: "info",
           },
     trustProxy: getNodeEnv() === "production",
-    querystringParser,
     https: getDevSslConfig()
       ? {
           key: await readFile(getDevSslConfig()!.key),
           cert: await readFile(getDevSslConfig()!.cert),
         }
       : null,
+    routerOptions: {
+      querystringParser,
+    },
   });
 
   app.decorateReply("sendHtml", replyHtml);

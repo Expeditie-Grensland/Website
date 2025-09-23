@@ -1,6 +1,5 @@
 import { Selectable } from "kysely";
-import { FunctionComponent } from "preact";
-import { HTMLAttributeAnchorTarget } from "preact/compat";
+import { FunctionComponent, HTMLAttributeAnchorTarget } from "preact";
 import packageJson from "../../../../../package.json" with { type: "json" };
 import { getMemberLinks } from "../../../db/member-link.js";
 import { getMemberWritingsList } from "../../../db/member-writings.js";

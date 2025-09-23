@@ -1,5 +1,4 @@
-import { ComponentChildren } from "preact";
-import { JSX } from "preact/jsx-runtime";
+import { ComponentChildren, CSSProperties } from "preact";
 import { authenticatePerson } from "../../db/person.js";
 import { NavigationBar } from "../page-structure/navigation-bar.js";
 import { Page } from "../page-structure/page.js";
@@ -23,7 +22,7 @@ type AdminPageProps<Value> = {
 
   columns: {
     label: string;
-    style?: JSX.CSSProperties;
+    style?: CSSProperties;
     onlyIn?: "new" | "existing";
 
     render: (
@@ -62,8 +61,12 @@ export const AdminPage = <Value,>({
 
       <h1 class="page-title">{title}</h1>
 
-      {messages["error"]?.map((msg) => <div class="message-error">{msg}</div>)}
-      {messages["info"]?.map((msg) => <div class="message-info">{msg}</div>)}
+      {messages["error"]?.map((msg) => (
+        <div class="message-error">{msg}</div>
+      ))}
+      {messages["info"]?.map((msg) => (
+        <div class="message-info">{msg}</div>
+      ))}
 
       {newAction && (
         <form
