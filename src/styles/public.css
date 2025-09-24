@@ -17,7 +17,7 @@ a.titleimg:hover {
 
 a,
 a * {
-  transition: color 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 a.titleimg:hover .titleimg-bg {
