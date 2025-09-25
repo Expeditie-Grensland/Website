@@ -13,7 +13,7 @@ const copyStatic = async () => {
 };
 
 await copyStatic();
-if (dir == "dev") {
+if (dir === "dev") {
   watch("src/static", { recursive: true }, () => copyStatic());
 }
 

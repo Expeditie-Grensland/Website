@@ -1,7 +1,8 @@
 @import "https://fonts.googleapis.com/css?family=Open+Sans&display=swap";
 
 :root {
-  --sans-serif-fonts: "Open Sans", -apple-system, BlinkMacSystemFont,
+  --sans-serif-fonts:
+    "Open Sans", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
@@ -18,7 +19,7 @@ body {
   width: 100%;
   margin: 0;
 
-  font: 400 1rem/1.5 var(--sans-serif-fonts);
+  font: 400 1rem / 1.5 var(--sans-serif-fonts);
 
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: #0000;
@@ -105,7 +106,9 @@ table {
 
 @media (prefers-reduced-motion: reduce) {
   * {
+    /** biome-ignore lint/complexity/noImportantStyles: resetting all */
     scroll-behavior: auto !important;
+    /** biome-ignore lint/complexity/noImportantStyles: resetting all */
     transition: none !important;
   }
 }

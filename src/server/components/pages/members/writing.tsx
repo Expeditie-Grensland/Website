@@ -1,7 +1,7 @@
 import { marked } from "marked";
-import { FunctionComponent } from "preact";
-import { getFullMemberWriting } from "../../../db/member-writings.js";
-import { authenticatePerson } from "../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getFullMemberWriting } from "../../../db/member-writings.js";
+import type { authenticatePerson } from "../../../db/person.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
 
@@ -21,6 +21,7 @@ export const WritingPage: FunctionComponent<{
 
       <div
         class="writing"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: rendering markdown
         dangerouslySetInnerHTML={{
           __html: marked.parse(writing.text, {
             async: false,

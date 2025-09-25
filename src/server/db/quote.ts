@@ -1,6 +1,6 @@
-import { Insertable, Updateable } from "kysely";
+import type { Insertable, Updateable } from "kysely";
 import { getDb } from "./schema/database.js";
-import { Quote } from "./schema/types.js";
+import type { Quote } from "./schema/types.js";
 
 export const getAllQuotes = () =>
   getDb()

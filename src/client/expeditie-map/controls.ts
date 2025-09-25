@@ -1,4 +1,4 @@
-import { IControl, Map } from "mapbox-gl";
+import type { IControl, Map as Mapbox } from "mapbox-gl";
 import { zoomToRoute } from "./view";
 
 /**
@@ -11,7 +11,7 @@ abstract class MapControl implements IControl {
   abstract title: string;
   abstract iconClass: string;
 
-  onAdd = (map: Map) => {
+  onAdd = (map: Mapbox) => {
     this.container = document.createElement("div");
     this.container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
 
@@ -34,7 +34,7 @@ abstract class MapControl implements IControl {
     this.container?.remove();
   };
 
-  abstract onClick: (map: Map) => void;
+  abstract onClick: (map: Mapbox) => void;
 }
 
 /**
@@ -44,11 +44,11 @@ export class SatelliteControl extends MapControl {
   title = "Satelliet";
   iconClass = "mapicon-satellite";
 
-  onClick = (map: Map) => {
+  onClick = (map: Mapbox) => {
     map.setLayoutProperty(
       "satellite",
       "visibility",
-      map.getLayoutProperty("satellite", "visibility") == "visible"
+      map.getLayoutProperty("satellite", "visibility") === "visible"
         ? "none"
         : "visible"
     );
@@ -62,7 +62,7 @@ export class CenterRouteControl extends MapControl {
   title = "Centreer route";
   iconClass = "mapicon-center-route";
 
-  onClick = (map: Map) => {
+  onClick = (map: Mapbox) => {
     zoomToRoute(map);
   };
 }

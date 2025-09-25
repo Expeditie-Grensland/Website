@@ -1,5 +1,5 @@
-import { FunctionComponent } from "preact";
-import {
+import type { FunctionComponent } from "preact";
+import type {
   authenticatePerson,
   getAllPersonsWithAddresses,
 } from "../../../db/person.js";

@@ -1,4 +1,4 @@
-import { MapSegment } from "../../server/common-types/expeditie-map";
+import type { MapSegment } from "../../server/common-types/expeditie-map";
 
 /**
  * Removes unused segments from an array based on a list of used segment ids,
@@ -13,16 +13,17 @@ export const removeUselessSegments = (
     .filter((id) => !usefulSegmentIds.includes(id));
 
   return uselessIds.reduce((usefulSegments, ulId) => {
-    const ulChildIds = usefulSegments.find((s) => s.id == ulId)?.childIds || [];
+    const ulChildIds =
+      usefulSegments.find((s) => s.id === ulId)?.childIds || [];
 
     return usefulSegments
-      .filter((s) => s.id != ulId)
+      .filter((s) => s.id !== ulId)
       .map((s) =>
         s.childIds.includes(ulId)
           ? {
               ...s,
               childIds: s.childIds.flatMap((id) =>
-                id == ulId ? ulChildIds : id
+                id === ulId ? ulChildIds : id
               ),
             }
           : s
@@ -38,7 +39,7 @@ export const getSegmentCombos = (segments: MapSegment[]) => {
 
   for (const parent of segments) {
     for (const childId of parent.childIds) {
-      const child = segments.find((s) => s.id == childId);
+      const child = segments.find((s) => s.id === childId);
       if (!child) throw new Error("Kind niet gevonden");
 
       combos.push([parent, child]);

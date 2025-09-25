@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { getMemberLinks } from "../../../../db/member-link.js";
-import { authenticatePerson } from "../../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getMemberLinks } from "../../../../db/member-link.js";
+import type { authenticatePerson } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import { NumberInput, TextInput } from "../../../admin/form-inputs.js";
 

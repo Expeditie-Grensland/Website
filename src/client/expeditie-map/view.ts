@@ -1,4 +1,4 @@
-import { LngLatBounds, Map } from "mapbox-gl";
+import { LngLatBounds, type Map as Mapbox } from "mapbox-gl";
 
 let routeBounds: LngLatBounds = new LngLatBounds([
   7.048, 53.0545, 7.048, 53.0545,
@@ -14,6 +14,6 @@ export const setRouteBounds = (bounds: LngLatBounds) => {
 /**
  * Zooms the map to the stored bounds of the route
  */
-export const zoomToRoute = (map: Map) => {
+export const zoomToRoute = (map: Mapbox) => {
   map.fitBounds(routeBounds);
 };

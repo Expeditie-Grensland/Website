@@ -20,10 +20,6 @@ a * {
   transition: all 0.2s ease-in-out;
 }
 
-a.titleimg:hover .titleimg-bg {
-  filter: brightness(0.85);
-}
-
 .titleimg-bg {
   position: absolute;
   width: 100%;
@@ -32,6 +28,10 @@ a.titleimg:hover .titleimg-bg {
   object-fit: cover;
   object-position: center;
   user-select: none;
+}
+
+a.titleimg:hover .titleimg-bg {
+  filter: brightness(0.85);
 }
 
 .titleimg-text {

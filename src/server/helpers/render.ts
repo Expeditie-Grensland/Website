@@ -1,9 +1,9 @@
-import { ComponentProps, FunctionComponent, h } from "preact";
+import type { FastifyReply } from "fastify";
+import { type ComponentProps, type FunctionComponent, h } from "preact";
 import { render } from "preact-render-to-string";
 import { promiseAllProps } from "./async.js";
-import { FastifyReply } from "fastify";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: necessary generic
 export const renderComponent = async <T extends FunctionComponent<any>>(
   component: T,
   props: {
@@ -22,7 +22,7 @@ export const replyHtml = function (this: FastifyReply, html: string) {
   this.send(html);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: necessary generic
 export const replyComponent = async function <T extends FunctionComponent<any>>(
   this: FastifyReply,
   component: T,

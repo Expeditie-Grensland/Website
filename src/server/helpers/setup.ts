@@ -1,10 +1,10 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import fastifyFlash from "@fastify/flash";
 import fastifyFormbody from "@fastify/formbody";
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyStatic from "@fastify/static";
-import fastify, { FastifyInstance } from "fastify";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import fastify, { type FastifyInstance } from "fastify";
 import qs from "qs";
 import { ErrorPage } from "../components/pages/public/error.js";
 import { getPerson } from "../db/person.js";
@@ -67,7 +67,7 @@ const setupStaticRoutes = async (app: FastifyInstance) => {
 };
 
 const setupErrors = (app: FastifyInstance) => {
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error, _req, reply) => {
     reply.log.error(error);
 
     reply.code(error.statusCode || 500).sendComponent(ErrorPage, {
@@ -77,7 +77,7 @@ const setupErrors = (app: FastifyInstance) => {
     });
   });
 
-  app.setNotFoundHandler((request, reply) =>
+  app.setNotFoundHandler((_req, reply) =>
     reply.code(404).sendComponent(ErrorPage, {
       code: 404,
       description: getHttpError(404),
@@ -128,11 +128,11 @@ export const setupFastify = async () => {
 
   setupErrors(app);
 
-  app.addHook("onRequest", async (request, reply) => {
+  app.addHook("onRequest", async (req, reply) => {
     reply.locals = {
       ...reply.locals,
       user:
-        (request.session.userId && (await getPerson(request.session.userId))) ||
+        (req.session.userId && (await getPerson(req.session.userId))) ||
         undefined,
     };
   });

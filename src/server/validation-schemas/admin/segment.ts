@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { expeditieIdCheckSchema } from "./common.js";
-import { geoSegmentTypeTexts } from "../../db/geo.js";
 import { allValues } from "../../db/enums.js";
+import { geoSegmentTypeTexts } from "../../db/geo.js";
+import { expeditieIdCheckSchema } from "./common.js";
 
 export const segmentSchema = z
   .object({

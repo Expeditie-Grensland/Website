@@ -1,7 +1,9 @@
+import { access, constants, stat } from "node:fs/promises";
 import input from "@inquirer/input";
 import select from "@inquirer/select";
-import { access, constants, stat } from "node:fs/promises";
+import { getAllExpedities } from "../db/expeditie.js";
 import {
+  type ConvertOutput,
   convertFile,
   determinePrefix,
   getConvertOutput,
@@ -10,7 +12,6 @@ import {
 } from "../files/convert.js";
 import { convertFilm } from "../files/types/film.js";
 import { allConverters } from "../files/types/index.js";
-import { getAllExpedities } from "../db/expeditie.js";
 
 const type: "film" | "afbeelding" | "video" | "audio" = await select({
   message: "Type bestand",
@@ -51,7 +52,7 @@ const choicesByType = {
   ],
 } as const;
 
-if (type == "afbeelding" || type == "video" || type == "audio")
+if (type === "afbeelding" || type === "video" || type === "audio")
   itemType = await select({
     message: `Doel van de ${type}`,
     choices: choicesByType[type],
@@ -59,7 +60,7 @@ if (type == "afbeelding" || type == "video" || type == "audio")
 
 let expeditie: string | undefined;
 
-if (type == "film" || itemType == "achtergrond" || itemType == "verhaal")
+if (type === "film" || itemType === "achtergrond" || itemType === "verhaal")
   expeditie = await select({
     message: "Expeditie",
     loop: false,
@@ -70,17 +71,17 @@ if (type == "film" || itemType == "achtergrond" || itemType == "verhaal")
   });
 
 const answersToName = (description: string) => {
-  if (type == "film") return expeditie as string;
-  if (itemType == "achtergrond") return `${expeditie}-achtergrond`;
-  if (itemType == "verhaal") return `${expeditie}-verhaal-${description}`;
-  if (itemType == "woord") return `woord-${description}`;
-  if (itemType == "citaat") return `citaat-${description}`;
+  if (type === "film") return expeditie as string;
+  if (itemType === "achtergrond") return `${expeditie}-achtergrond`;
+  if (itemType === "verhaal") return `${expeditie}-verhaal-${description}`;
+  if (itemType === "woord") return `woord-${description}`;
+  if (itemType === "citaat") return `citaat-${description}`;
   return description as string;
 };
 
 const name = answersToName(
-  (type == "afbeelding" || type == "video" || type == "audio") &&
-    itemType != "achtergrond"
+  (type === "afbeelding" || type === "video" || type === "audio") &&
+    itemType !== "achtergrond"
     ? await input({
         message: "Bestandsnaam (beknopte beschrijving)",
         transformer: answersToName,
@@ -123,7 +124,7 @@ const sourceFile = removeQuotes(
 );
 
 const converter =
-  type == "film"
+  type === "film"
     ? convertFilm(
         !noConversion
           ? {
@@ -165,7 +166,7 @@ const immediateUpload = await select({
   ],
 });
 
-let convOutput;
+let convOutput: ConvertOutput;
 if (!noConversion) {
   convOutput = await convertFile(sourceFile, converter);
   console.info(`Successvol geconverteerd naar '${convOutput.dir}'`);
@@ -173,7 +174,7 @@ if (!noConversion) {
   convOutput = await getConvertOutput(sourceFile);
 }
 
-let prefix, uploadConfirm;
+let prefix: string, uploadConfirm: boolean | "recompute";
 
 do {
   prefix = await determinePrefix(name, convOutput, converter.extension);
@@ -188,7 +189,7 @@ do {
         { name: "Prefix herberekenen", value: "recompute" },
       ],
     }));
-} while (uploadConfirm == "recompute");
+} while (uploadConfirm === "recompute");
 
 if (uploadConfirm) {
   const fileCount = convOutput.files.length.toString();

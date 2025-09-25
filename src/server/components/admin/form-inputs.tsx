@@ -1,10 +1,10 @@
-import { ComponentChildren, FunctionComponent } from "preact";
-import { allValues, EnumTextMap } from "../../db/enums.js";
-import { getAllExpedities } from "../../db/expeditie.js";
-import { getExpeditieSegments } from "../../db/geo.js";
-import { getAllPersons } from "../../db/person.js";
-import { getISODate } from "../../helpers/time.js";
 import { DateTime } from "luxon";
+import type { ComponentChildren, FunctionComponent } from "preact";
+import { allValues, type EnumTextMap } from "../../db/enums.js";
+import type { getAllExpedities } from "../../db/expeditie.js";
+import type { getExpeditieSegments } from "../../db/geo.js";
+import type { getAllPersons } from "../../db/person.js";
+import { getISODate } from "../../helpers/time.js";
 
 type BasicInput<Value> = {
   name: string;
@@ -195,7 +195,7 @@ export const SegmentInput: FunctionComponent<
     placeholder={placeholder}
     options={segments.map((s) => ({
       id: `${s.id}`,
-      text: `${s.description || (s.type == "flight" && "Vlucht") || "Segment"} (#${s.id}, ${s.persons.length} pers.)`,
+      text: `${s.description || (s.type === "flight" && "Vlucht") || "Segment"} (#${s.id}, ${s.persons.length} pers.)`,
     }))}
     {...rest}
   />
@@ -244,6 +244,7 @@ export const FormInputArray = <Value,>({
       <div class="form-array-row">
         <div class="form-array-item">{children(value, attrs)}</div>
         <button
+          type="button"
           class="form-array-remove button-gray"
           disabled={values.length <= minSize}
         >
@@ -257,6 +258,7 @@ export const FormInputArray = <Value,>({
         {children(undefined, { disabled: true, ...attrs })}
       </div>
       <button
+        type="button"
         class="form-array-remove button-gray"
         disabled={values.length <= minSize}
       >
@@ -264,6 +266,8 @@ export const FormInputArray = <Value,>({
       </button>
     </div>
 
-    <button class="form-array-add button-gray">+</button>
+    <button type="button" class="form-array-add button-gray">
+      +
+    </button>
   </div>
 );

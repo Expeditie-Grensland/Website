@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely, sql } from "kysely";
+import { type Kysely, sql } from "kysely";
 
 export const up = async (db: Kysely<any>) => {
   await sql`ALTER TYPE "person_team" RENAME TO "_person_team"`.execute(db);

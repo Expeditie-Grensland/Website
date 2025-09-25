@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { idSchema } from "./common.js";
-import { personTeamTexts, personTypeTexts } from "../../db/person.js";
 import { allValues } from "../../db/enums.js";
+import { personTeamTexts, personTypeTexts } from "../../db/person.js";
+import { idSchema } from "./common.js";
 
 export const personSchema = z.object({
   id: idSchema,
@@ -40,10 +40,10 @@ export const personSchema = z.object({
     })
     .refine(
       (obj) =>
-        obj.id.length == obj.name.length &&
-        obj.id.length == obj.line_1.length &&
-        obj.id.length == obj.line_2.length &&
-        obj.id.length == obj.country.length
+        obj.id.length === obj.name.length &&
+        obj.id.length === obj.line_1.length &&
+        obj.id.length === obj.line_2.length &&
+        obj.id.length === obj.country.length
     )
     .transform((obj) =>
       obj.id.map((id, idx) => ({

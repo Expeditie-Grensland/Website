@@ -1,5 +1,5 @@
-import { ComponentChildren, CSSProperties } from "preact";
-import { authenticatePerson } from "../../db/person.js";
+import type { ComponentChildren, CSSProperties } from "preact";
+import type { authenticatePerson } from "../../db/person.js";
 import { NavigationBar } from "../page-structure/navigation-bar.js";
 import { Page } from "../page-structure/page.js";
 
@@ -61,10 +61,10 @@ export const AdminPage = <Value,>({
 
       <h1 class="page-title">{title}</h1>
 
-      {messages["error"]?.map((msg) => (
+      {messages.error?.map((msg) => (
         <div class="message-error">{msg}</div>
       ))}
-      {messages["info"]?.map((msg) => (
+      {messages.info?.map((msg) => (
         <div class="message-info">{msg}</div>
       ))}
 
@@ -77,9 +77,9 @@ export const AdminPage = <Value,>({
         >
           {columns.map(
             (column) =>
-              column.onlyIn != "existing" && (
+              column.onlyIn !== "existing" && (
                 <div class="inputs-with-label">
-                  <label>{column.label}</label>
+                  <span class="label">{column.label}</span>
                   {column.render(undefined, {})}
                 </div>
               )
@@ -108,7 +108,7 @@ export const AdminPage = <Value,>({
               <tr>
                 {columns.map(
                   (column) =>
-                    column.onlyIn != "new" && (
+                    column.onlyIn !== "new" && (
                       <td>
                         <div class="table-inputs">
                           {column.render(item, { form: `form-${i}` })}
@@ -126,7 +126,7 @@ export const AdminPage = <Value,>({
                     >
                       {actions.map((action) => (
                         <button
-                          class={`${action.style == "danger" ? "button-danger" : "button-main"}`}
+                          class={`${action.style === "danger" ? "button-danger" : "button-main"}`}
                           type="submit"
                           formAction={action.action(item)}
                           data-confirm-msg={action.confirmMessage(item)}

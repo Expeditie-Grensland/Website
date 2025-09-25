@@ -1,5 +1,5 @@
-import { build, BuildOptions, context } from "esbuild";
 import { glob } from "node:fs/promises";
+import { type BuildOptions, build, context } from "esbuild";
 import { getArgvOption } from "./common/options";
 
 const dir = getArgvOption("dev", "dist");

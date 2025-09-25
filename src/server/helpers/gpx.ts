@@ -1,7 +1,7 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { XMLParser } from "fast-xml-parser";
-import { Insertable } from "kysely";
-import { GeoLocation, Story } from "../db/schema/types.js";
+import type { Insertable } from "kysely";
+import type { GeoLocation, Story } from "../db/schema/types.js";
 import { gpxXmlFileSchema } from "../validation-schemas/admin/gpx.js";
 
 type ParsedGPX = {
@@ -22,10 +22,10 @@ export const parseGpx = (
     parseAttributeValue: true,
     parseTagValue: true,
     isArray: (_name, jpath) =>
-      jpath == "gpx.trk" ||
-      jpath == "gpx.trk.trkseg" ||
-      jpath == "gpx.trk.trkseg.trkpt" ||
-      jpath == "gpx.wpt",
+      jpath === "gpx.trk" ||
+      jpath === "gpx.trk.trkseg" ||
+      jpath === "gpx.trk.trkseg.trkpt" ||
+      jpath === "gpx.wpt",
   }).parse(rawData);
 
   const { gpx } = gpxXmlFileSchema.parse(parsedXml);

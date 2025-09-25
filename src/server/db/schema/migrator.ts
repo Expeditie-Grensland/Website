@@ -1,6 +1,6 @@
-import { FileMigrationProvider, Migrator } from "kysely";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { FileMigrationProvider, Migrator } from "kysely";
 import { getDb } from "./database.js";
 
 let migrator: Migrator;

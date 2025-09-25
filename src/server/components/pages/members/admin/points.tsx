@@ -1,9 +1,9 @@
-import { FunctionComponent } from "preact";
-import { getAllEarnedPoints } from "../../../../db/earned-point.js";
-import { getAllExpedities } from "../../../../db/expeditie.js";
+import type { FunctionComponent } from "preact";
+import type { getAllEarnedPoints } from "../../../../db/earned-point.js";
+import type { getAllExpedities } from "../../../../db/expeditie.js";
 import {
-  authenticatePerson,
-  getAllPersons,
+  type authenticatePerson,
+  type getAllPersons,
   personTeamTexts,
 } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
@@ -116,13 +116,13 @@ export const PointsAdminPage: FunctionComponent<{
         label: "Wijzigen",
         action: (point) => `/leden/admin/punten/update/${point.id}`,
         confirmMessage: (point) =>
-          `Weet je zeker dat je ${point.amount} punten voor Team ${point.team == "blue" ? "Blauw" : "Rood"} wilt wijzigen?`,
+          `Weet je zeker dat je ${point.amount} punten voor Team ${point.team === "blue" ? "Blauw" : "Rood"} wilt wijzigen?`,
       },
       {
         label: "Verwijderen",
         action: (point) => `/leden/admin/punten/delete/${point.id}`,
         confirmMessage: (point) =>
-          `Weet je zeker dat je ${point.amount} punten voor Team ${point.team == "blue" ? "Blauw" : "Rood"} wilt verwijderen?`,
+          `Weet je zeker dat je ${point.amount} punten voor Team ${point.team === "blue" ? "Blauw" : "Rood"} wilt verwijderen?`,
         style: "danger",
       },
     ]}

@@ -1,6 +1,9 @@
-import { FunctionComponent } from "preact";
-import { getAllExpeditiesWithPeopleIds } from "../../../../db/expeditie.js";
-import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getAllExpeditiesWithPeopleIds } from "../../../../db/expeditie.js";
+import type {
+  authenticatePerson,
+  getAllPersons,
+} from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   CheckInput,

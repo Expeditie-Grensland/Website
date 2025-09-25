@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { authenticatePerson } from "../../../db/person.js";
-import { getAllWords } from "../../../db/word.js";
+import type { FunctionComponent } from "preact";
+import type { authenticatePerson } from "../../../db/person.js";
+import type { getAllWords } from "../../../db/word.js";
 import { DictionaryEntry } from "../../members/dictionary-entry.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";

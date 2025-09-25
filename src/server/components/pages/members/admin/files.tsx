@@ -1,7 +1,7 @@
-import { FunctionComponent } from "preact";
-import { authenticatePerson } from "../../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { authenticatePerson } from "../../../../db/person.js";
 import { getFileUrl } from "../../../../files/files.js";
-import { getUsesForFiles } from "../../../../files/uses.js";
+import type { getUsesForFiles } from "../../../../files/uses.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 
 const getFileTypeText = (type: string) => {

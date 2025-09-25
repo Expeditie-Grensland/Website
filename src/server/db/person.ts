@@ -1,10 +1,10 @@
-import { pbkdf2, randomBytes } from "crypto";
+import { pbkdf2, randomBytes } from "node:crypto";
 import { bcrypt, bcryptVerify } from "hash-wasm";
-import { Insertable, Updateable } from "kysely";
+import type { Insertable, Updateable } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
-import { allValues, EnumTextMap } from "./enums.js";
+import { allValues, type EnumTextMap } from "./enums.js";
 import { getDb } from "./schema/database.js";
-import {
+import type {
   Person,
   PersonAddress,
   PersonTeam,
@@ -120,7 +120,7 @@ export const updatePerson = (
           .executeTakeFirstOrThrow();
       }
 
-      const addAddresses = addresses.filter((a) => a.id == undefined);
+      const addAddresses = addresses.filter((a) => a.id === undefined);
 
       if (addAddresses.length > 0) {
         await trx
@@ -148,7 +148,7 @@ const checkPbkdf2Password = (password: string, hash: string) =>
     if (!params) return resolve(null);
 
     const digest = params.digest.toLowerCase();
-    const iterations = parseInt(params.iterations);
+    const iterations = parseInt(params.iterations, 10);
     const salt = Buffer.from(params.salt, "base64");
     const key = Buffer.from(params.key, "base64");
 

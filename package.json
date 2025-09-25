@@ -46,7 +46,7 @@
     "zod-validation-error": "^4.0.2"
   },
   "devDependencies": {
-    "@eslint/js": "^9.36.0",
+    "@biomejs/biome": "^2.2.4",
     "@types/geojson": "^7946.0.16",
     "@types/luxon": "^3.7.1",
     "@types/node": "^24.5.2",
@@ -55,18 +55,14 @@
     "@types/sodium-native": "^2.3.9",
     "concurrently": "^9.2.1",
     "esbuild": "^0.25.10",
-    "eslint": "^9.36.0",
-    "eslint-plugin-import-x": "^4.16.1",
     "geojson": "^0.5.0",
-    "globals": "^16.4.0",
     "hls.js": "1.6.13",
     "kysely-codegen": "^0.19.0",
     "mapbox-gl": "^3.15.0",
     "nodemon": "^3.1.10",
     "pino-pretty": "^13.1.1",
     "tsx": "^4.20.5",
-    "typescript": "^5.9.2",
-    "typescript-eslint": "^8.44.1"
+    "typescript": "^5.9.2"
   },
   "files": [
     "pnpm-lock.yaml",
@@ -79,7 +75,7 @@
   "scripts": {
     "start": "node dist/server/server.js",
     "start-cli": "node dist/server/cli/main.js",
-    "build": "concurrently -c auto -m 1 --pad-prefix 'node:build:*(!run)'",
+    "build": "concurrently -c auto -m 1 --pad-prefix 'node:build:*'",
     "build:clean": "tsx build/clean.ts dist",
     "build:copy": "tsx build/copy.ts dist",
     "build:errorpages": "tsx build/errorpages.ts",
@@ -104,9 +100,12 @@
     "db:generate": "kysely-codegen --url 'env(EG_DB_URL)' --out-file src/server/db/schema/types.ts",
     "clean": "concurrently -c auto -m 1 --pad-prefix 'node:*:clean'",
     "check": "concurrently -c auto -m 1 --pad-prefix 'node:check:*'",
+    "check-ci": "concurrently -c auto -m 1 --pad-prefix 'node:check-ci:*' 'node:check:*(!code)'",
+    "check-ci:code": "biome ci --reporter=github",
+    "check:code": "biome check --colors force",
     "check:types:server": "tsc --noEmit --project src/server/tsconfig.json",
     "check:types:client": "tsc --noEmit --project src/client/tsconfig.json",
-    "check:lint": "eslint .",
+    "fix:code": "biome check --write",
     "stats": "tsx --no-warnings=ExperimentalWarning build/stats.ts",
     "util:generate-dev-ssl": "openssl req -x509 -newkey rsa:4096 -keyout dev-ssl.key -out dev-ssl.crt -sha256 -days 3650 -nodes -subj '/C=NL/ST=./L=./O=Expeditie Grensland/OU=./CN=dev.expeditiegrensland.nl' -addext 'subjectAltName=DNS:dev.expeditiegrensland.nl'",
     "util:generate-secret": "tsx build/util-generate-secret.ts"

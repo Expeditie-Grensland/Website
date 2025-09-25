@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { getFullExpeditie } from "../../../db/expeditie.js";
-import { authenticatePerson } from "../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getFullExpeditie } from "../../../db/expeditie.js";
+import type { authenticatePerson } from "../../../db/person.js";
 import { getFileType, getFileUrl } from "../../../files/files.js";
 import { formatDateRange } from "../../../helpers/time.js";
 import { TitleImage } from "../../media/title-image.js";
@@ -86,7 +86,7 @@ export const ExpeditiePage: FunctionComponent<{
         <div>
           {expeditie.movie_file &&
             (!expeditie.movie_restricted || user) &&
-            getFileType(expeditie.movie_file) == "film-dash" && (
+            getFileType(expeditie.movie_file) === "film-dash" && (
               <video
                 class="movie-player"
                 controls

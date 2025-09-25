@@ -1,4 +1,4 @@
-import { FunctionComponent } from "preact";
+import type { FunctionComponent } from "preact";
 import { PasswordInput, TextInput } from "../../admin/form-inputs.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
@@ -22,7 +22,9 @@ export const LoginPage: FunctionComponent<{
       >
         <h1 class="page-title">Inloggen</h1>
 
-        {messages?.map((message) => <div class="error-text">{message}</div>)}
+        {messages?.map((message) => (
+          <div class="error-text">{message}</div>
+        ))}
 
         <TextInput
           name="username"

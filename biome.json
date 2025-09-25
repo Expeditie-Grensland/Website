@@ -1,0 +1,60 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "includes": [
+      "src/**",
+      "build/**",
+      "*.json",
+      "!src/server/db/schema/types.ts"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space"
+  },
+  "linter": {
+    "domains": {
+      "project": "recommended"
+    },
+    "rules": {
+      "a11y": {
+        "noLabelWithoutControl": {
+          "level": "on",
+          "options": {
+            "inputComponents": ["CheckInput"]
+          }
+        },
+        "useMediaCaption": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "trailingCommas": "es5"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["src/server/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useImportExtensions": "error"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/server/db/schema/migrations/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
+}

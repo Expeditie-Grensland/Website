@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely } from "kysely";
+import type { Kysely } from "kysely";
 import { down as prevDown, up as prevUp } from "./20240602-192149-email.js";
 
 export const up = async (db: Kysely<any>) => {

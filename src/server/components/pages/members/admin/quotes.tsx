@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { authenticatePerson } from "../../../../db/person.js";
-import { getAllQuotes } from "../../../../db/quote.js";
+import type { FunctionComponent } from "preact";
+import type { authenticatePerson } from "../../../../db/person.js";
+import type { getAllQuotes } from "../../../../db/quote.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   LocalTimeInput,

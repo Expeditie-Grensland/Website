@@ -1,9 +1,9 @@
-import { Selectable } from "kysely";
-import { FunctionComponent } from "preact";
-import { getExpeditieSegments } from "../../../../db/geo.js";
-import { authenticatePerson } from "../../../../db/person.js";
-import { Expeditie } from "../../../../db/schema/types.js";
-import { getExpeditieStories } from "../../../../db/story.js";
+import type { Selectable } from "kysely";
+import type { FunctionComponent } from "preact";
+import type { getExpeditieSegments } from "../../../../db/geo.js";
+import type { authenticatePerson } from "../../../../db/person.js";
+import type { Expeditie } from "../../../../db/schema/types.js";
+import type { getExpeditieStories } from "../../../../db/story.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   FormInputArray,

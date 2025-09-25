@@ -13,7 +13,7 @@ export const setupHls = () => {
     hls.loadSource(video.dataset.hls!);
     hls.attachMedia(video);
 
-    hls.on(Hls.Events.ERROR, function (event, data) {
+    hls.on(Hls.Events.ERROR, (_event, data) => {
       if (data.fatal) {
         hls.destroy();
       }

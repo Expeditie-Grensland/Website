@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { getAllAfkos } from "../../../db/afko.js";
-import { authenticatePerson } from "../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getAllAfkos } from "../../../db/afko.js";
+import type { authenticatePerson } from "../../../db/person.js";
 import { DictionaryEntry } from "../../members/dictionary-entry.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";

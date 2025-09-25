@@ -1,5 +1,5 @@
 import { marked } from "marked";
-import { FunctionComponent } from "preact";
+import type { FunctionComponent } from "preact";
 import { MediaPlayer } from "../media/media-player.js";
 
 export const DictionaryEntry: FunctionComponent<{
@@ -21,10 +21,11 @@ export const DictionaryEntry: FunctionComponent<{
         )}
 
         <div class="dict-term"></div>
-        {descriptions instanceof Array ? (
+        {Array.isArray(descriptions) ? (
           <ol>
             {descriptions.map((description) => (
               <li
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: rendering markdown
                 dangerouslySetInnerHTML={{
                   __html: marked.parseInline(description, {
                     async: false,
@@ -37,6 +38,7 @@ export const DictionaryEntry: FunctionComponent<{
           </ol>
         ) : (
           <p
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: rendering markdown
             dangerouslySetInnerHTML={{
               __html: marked.parseInline(descriptions, {
                 async: false,

@@ -64,7 +64,7 @@ const configSchemas = z.object({
       EG_SECRET_KEY: z
         .base64()
         .transform((s) => Buffer.from(s, "base64"))
-        .refine((buf) => buf.length == sodium.crypto_secretbox_KEYBYTES, {
+        .refine((buf) => buf.length === sodium.crypto_secretbox_KEYBYTES, {
           message: `key must be ${sodium.crypto_secretbox_KEYBYTES} bytes`,
         }),
     })

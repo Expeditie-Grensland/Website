@@ -1,11 +1,11 @@
 import fastifyMultipart from "@fastify/multipart";
-import {
+import type {
   FastifyInstance,
   FastifyPluginAsync,
   FastifyReply,
   FastifyRequest,
 } from "fastify";
-import { z } from "zod";
+import type { z } from "zod";
 import { fromZodError, isZodErrorLike } from "zod-validation-error";
 import { AfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js";
 import { DictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
@@ -243,8 +243,9 @@ const registerAdminRoute: RegisterAdminRoute = async (
           await renderPage({
             user: reply.locals.user!,
             messages: reply.flash() as Record<string, string[]>,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            parsedPrefix: reply.locals.parsedPrefix as any,
+            parsedPrefix: reply.locals.parsedPrefix as z.output<
+              NonNullable<typeof prefixSchema>
+            >,
           })
         )
       );
@@ -253,8 +254,9 @@ const registerAdminRoute: RegisterAdminRoute = async (
         app.post(addPath, async (req, reply) => {
           await executeAndFlash(req, () =>
             onAdd(schema.parse(req.body), {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              parsedPrefix: reply.locals.parsedPrefix as any,
+              parsedPrefix: reply.locals.parsedPrefix as z.output<
+                NonNullable<typeof prefixSchema>
+              >,
             })
           );
 
@@ -266,8 +268,9 @@ const registerAdminRoute: RegisterAdminRoute = async (
         app.post(updatePath, async (req, reply) => {
           await executeAndFlash(req, () =>
             onUpdate(paramSchema.parse(req.params), schema.parse(req.body), {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              parsedPrefix: reply.locals.parsedPrefix as any,
+              parsedPrefix: reply.locals.parsedPrefix as z.output<
+                NonNullable<typeof prefixSchema>
+              >,
             })
           );
 
@@ -279,8 +282,9 @@ const registerAdminRoute: RegisterAdminRoute = async (
         app.post(deletePath, async (req, reply) => {
           await executeAndFlash(req, () =>
             onDelete(paramSchema.parse(req.params), {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              parsedPrefix: reply.locals.parsedPrefix as any,
+              parsedPrefix: reply.locals.parsedPrefix as z.output<
+                NonNullable<typeof prefixSchema>
+              >,
             })
           );
 
@@ -292,8 +296,8 @@ const registerAdminRoute: RegisterAdminRoute = async (
   );
 
 const adminRoutes: FastifyPluginAsync = async (app) => {
-  app.addHook("onRequest", async (request, reply) => {
-    if (reply.locals.user?.type != "admin") reply.redirect("/leden");
+  app.addHook("onRequest", async (_req, reply) => {
+    if (reply.locals.user?.type !== "admin") reply.redirect("/leden");
   });
 
   await app.register(fastifyMultipart, {

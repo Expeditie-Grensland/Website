@@ -1,11 +1,11 @@
 document
   .querySelectorAll<HTMLFormElement>("form[data-confirm-msg]")
-  .forEach((form) =>
+  .forEach((form) => {
     form.addEventListener("submit", (e) => {
       const msg = e.submitter?.dataset.confirmMsg || form.dataset.confirmMsg;
       if (!confirm(msg)) e.preventDefault();
-    })
-  );
+    });
+  });
 
 const updateRemoveDisabled = (formArray: HTMLElement) => {
   const buttons = formArray.querySelectorAll(
@@ -13,7 +13,7 @@ const updateRemoveDisabled = (formArray: HTMLElement) => {
   );
 
   buttons.forEach((button) => {
-    if (buttons.length <= (parseInt(formArray.dataset.minSize!) || 0)) {
+    if (buttons.length <= (parseInt(formArray.dataset.minSize!, 10) || 0)) {
       button.setAttribute("disabled", "");
     } else {
       button.removeAttribute("disabled");
@@ -31,9 +31,9 @@ const onRemove = (event: Event) => {
   updateRemoveDisabled(formArray);
 };
 
-document
-  .querySelectorAll(".form-array-remove")
-  .forEach((el) => el.addEventListener("click", onRemove));
+document.querySelectorAll(".form-array-remove").forEach((el) => {
+  el.addEventListener("click", onRemove);
+});
 
 const onAdd = (event: Event) => {
   event.preventDefault();
@@ -45,9 +45,9 @@ const onAdd = (event: Event) => {
   newRow.removeAttribute("hidden");
   newRow.className = "form-array-row";
 
-  newRow
-    .querySelectorAll(".form-array-item > *")
-    .forEach((child) => child.removeAttribute("disabled"));
+  newRow.querySelectorAll(".form-array-item > *").forEach((child) => {
+    child.removeAttribute("disabled");
+  });
 
   newRow
     .querySelector(".form-array-remove")!
@@ -58,17 +58,17 @@ const onAdd = (event: Event) => {
   updateRemoveDisabled(formArray);
 };
 
-document
-  .querySelectorAll(".form-array-add")
-  .forEach((el) => el.addEventListener("click", onAdd));
+document.querySelectorAll(".form-array-add").forEach((el) => {
+  el.addEventListener("click", onAdd);
+});
 
 const onColorChange = function (this: HTMLInputElement) {
   this.parentElement
     ?.querySelectorAll<HTMLInputElement>("input")
     .forEach((el) => {
-      if (el == this) return;
+      if (el === this) return;
 
-      if (el.type == "color" && !this.value.match(/^#[0-9a-f]{6}$/)) {
+      if (el.type === "color" && !this.value.match(/^#[0-9a-f]{6}$/)) {
         el.value = "#000000";
       } else {
         el.value = this.value;

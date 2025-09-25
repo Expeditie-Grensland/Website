@@ -1,4 +1,4 @@
-import { FunctionComponent } from "preact";
+import type { FunctionComponent } from "preact";
 import { getFileType, getFileUrl } from "../../files/files.js";
 
 export const MediaPlayer: FunctionComponent<{ file: string }> = ({ file }) => {
@@ -23,7 +23,13 @@ export const MediaPlayer: FunctionComponent<{ file: string }> = ({ file }) => {
       );
 
     case "afbeelding":
-      return <img class="media-player" src={getFileUrl(file, "normaal.jpg")} />;
+      return (
+        <img
+          class="media-player"
+          src={getFileUrl(file, "normaal.jpg")}
+          alt=""
+        />
+      );
 
     default:
       return <div class="media-player">Niet ondersteund bestandstype</div>;

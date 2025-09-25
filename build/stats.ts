@@ -1,5 +1,5 @@
-import { glob, stat } from "fs/promises";
-import { chdir } from "process";
+import { glob, stat } from "node:fs/promises";
+import { chdir } from "node:process";
 import { mdHeading, mdTable } from "./common/markdown";
 
 chdir("dist/static");

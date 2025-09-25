@@ -1,5 +1,5 @@
-import { FunctionComponent } from "preact";
-import { authenticatePerson, getPerson } from "../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { authenticatePerson, getPerson } from "../../../db/person.js";
 import { TitleImage } from "../../media/title-image.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";

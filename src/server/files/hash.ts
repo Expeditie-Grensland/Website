@@ -1,4 +1,4 @@
-import { Hash, createHash } from "node:crypto";
+import { createHash, type Hash } from "node:crypto";
 import { join } from "node:path";
 import { readFileByChunk } from "./chunks.js";
 

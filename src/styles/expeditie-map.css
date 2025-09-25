@@ -39,11 +39,6 @@ body {
   }
 }
 
-.mapboxgl-ctrl-bottom-right div,
-div a {
-  user-select: none !important;
-}
-
 @media (min-width: 1100px) {
   #map:has(+ #storyline) .mapboxgl-ctrl-bottom-left {
     left: 40%;
@@ -51,11 +46,11 @@ div a {
 }
 
 .mapicon-satellite {
-  background: center/80% url("/static/icons/satellite.svg");
+  background: center / 80% url("/static/icons/satellite.svg");
 }
 
 .mapicon-center-route {
-  background: center/65% url("/static/icons/maximize.svg");
+  background: center / 65% url("/static/icons/maximize.svg");
 }
 
 .storyline-header {
@@ -78,11 +73,6 @@ div a {
 
 #storyline-graph {
   flex: 1 0 auto;
-}
-
-#storyline-graph .graph-circle {
-  cursor: pointer;
-  transition: r 0.2s ease;
 }
 
 #stories {
@@ -146,7 +136,8 @@ div a {
 }
 
 .graph-circle {
-  cursor: "pointer";
+  cursor: pointer;
+  transition: r 0.2s ease;
   r: 8px;
   fill: #fff;
   stroke-width: 5px;

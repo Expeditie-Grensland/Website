@@ -1,11 +1,14 @@
-import { Selectable } from "kysely";
-import { FunctionComponent } from "preact";
+import type { Selectable } from "kysely";
+import type { FunctionComponent } from "preact";
 import {
   geoSegmentTypeTexts,
-  getExpeditieSegments,
+  type getExpeditieSegments,
 } from "../../../../db/geo.js";
-import { authenticatePerson, getAllPersons } from "../../../../db/person.js";
-import { Expeditie } from "../../../../db/schema/types.js";
+import type {
+  authenticatePerson,
+  getAllPersons,
+} from "../../../../db/person.js";
+import type { Expeditie } from "../../../../db/schema/types.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   ColorInput,
@@ -128,7 +131,7 @@ export const ExpeditieSegmentsAdminPage: FunctionComponent<{
           <FormInputArray minSize={0} values={segment?.child_ids} {...attrs}>
             {(id, attrs) => (
               <SegmentInput
-                segments={segments.filter((s) => s.id != segment?.id)}
+                segments={segments.filter((s) => s.id !== segment?.id)}
                 name="child_ids[]"
                 placeholder="Kind-segment"
                 value={id?.toString()}

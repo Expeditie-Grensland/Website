@@ -1,5 +1,5 @@
-import { analyzeMetafile, build, BuildOptions, context } from "esbuild";
 import { mkdir, writeFile } from "node:fs/promises";
+import { analyzeMetafile, type BuildOptions, build, context } from "esbuild";
 import { getArgvOption } from "./common/options";
 
 const dir = getArgvOption("dev", "dist");

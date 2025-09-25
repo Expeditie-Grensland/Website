@@ -1,7 +1,7 @@
-import { Insertable, Updateable } from "kysely";
-import { getDb } from "./schema/database.js";
-import { Packlist, PacklistItem } from "./schema/types.js";
+import type { Insertable, Updateable } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { getDb } from "./schema/database.js";
+import type { Packlist, PacklistItem } from "./schema/types.js";
 
 export const getAllPacklists = () =>
   getDb().selectFrom("packlist").selectAll().orderBy("position").execute();

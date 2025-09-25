@@ -11,7 +11,7 @@ export const idSchema = z.string().regex(/^[a-z0-9-]+/, {
 });
 
 export const checkboxSchema = z.preprocess(
-  (value) => value == "on",
+  (value) => value === "on",
   z.boolean()
 );
 

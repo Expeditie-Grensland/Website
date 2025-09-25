@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { getAllExpedities } from "../../../db/expeditie.js";
-import { authenticatePerson } from "../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getAllExpedities } from "../../../db/expeditie.js";
+import type { authenticatePerson } from "../../../db/person.js";
 import { TitleImage } from "../../media/title-image.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";

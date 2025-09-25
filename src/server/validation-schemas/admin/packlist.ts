@@ -1,6 +1,6 @@
-import z from "zod";
-import { checkboxSchema, idSchema } from "./common.js";
+import { z } from "zod";
 import { getPacklist } from "../../db/packlist.js";
+import { checkboxSchema, idSchema } from "./common.js";
 
 export const packlistSchema = z.object({
   id: idSchema,

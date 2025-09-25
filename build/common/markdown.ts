@@ -1,4 +1,4 @@
-import { EOL } from "os";
+import { EOL } from "node:os";
 
 export const mdHeading = (level: number, text: string) =>
   `${"#".repeat(level)} ${text}${EOL}`;
@@ -8,7 +8,7 @@ const mdTableRow = (
   columns: { align: "l" | "r"; width: number }[]
 ) => {
   const paddedCells = cells.map((cell, i) =>
-    columns[i].align == "l"
+    columns[i].align === "l"
       ? cell.padEnd(columns[i].width)
       : cell.padStart(columns[i].width)
   );
@@ -33,7 +33,7 @@ export const mdTable = (
 
   const headerRow = columns.map((col) => col.label);
   const alignRow = columns.map((col) =>
-    col.align == "l"
+    col.align === "l"
       ? `:${"-".repeat(col.width - 1)}`
       : `${"-".repeat(col.width - 1)}:`
   );

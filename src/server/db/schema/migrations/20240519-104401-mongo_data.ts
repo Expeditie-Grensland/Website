@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely } from "kysely";
+import type { Kysely } from "kysely";
 
 export const up = async (db: Kysely<any>) => {
   if (!process.env.EG_MONGO_URL) return;
@@ -29,7 +28,7 @@ export const up = async (db: Kysely<any>) => {
         ldap_id: person.ldapId,
         type: person.isAdmin ? "admin" : person.type,
         team:
-          person.team === "Rood" ? "r" : person.team == "Blauw" ? "b" : null,
+          person.team === "Rood" ? "r" : person.team === "Blauw" ? "b" : null,
       })
       .execute();
   }
@@ -142,7 +141,7 @@ export const up = async (db: Kysely<any>) => {
       .values({
         expeditie_id: expeditieIds.get(node.expeditieId.toHexString()),
         time_from: node.timeFrom,
-        time_till: node.timeTill == Infinity ? 2147483647 : node.timeTill,
+        time_till: node.timeTill === Infinity ? 2147483647 : node.timeTill,
       })
       .returning("id")
       .executeTakeFirstOrThrow();
@@ -189,7 +188,7 @@ export const up = async (db: Kysely<any>) => {
     insertedCount += locationBatch.length;
     locationBatch.length = 0;
 
-    if (insertedCount % 25000 == 0 || insertedCount == locationCount)
+    if (insertedCount % 25000 === 0 || insertedCount === locationCount)
       console.info(`${insertedCount}/${locationCount} locations migrated`);
   }
 

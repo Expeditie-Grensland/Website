@@ -15,7 +15,7 @@
   gap: 0.5rem;
 }
 
-.inputs-with-label > label {
+.inputs-with-label > .label {
   font-size: 0.9rem;
 }
 
@@ -40,12 +40,12 @@
   align-self: start;
 }
 
-.admin-new-form + .admin-items-table {
-  margin-top: 4rem;
-}
-
 .admin-items-table {
   width: 100%;
+}
+
+.admin-new-form + .admin-items-table {
+  margin-top: 4rem;
 }
 
 .admin-items-table th,
@@ -80,19 +80,6 @@ textarea.input {
   resize: none;
 }
 
-.input-color {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.input-color > .input[type="color"] {
-  flex: 0 0 2.5rem;
-}
-
-.input-color > .input[type="text"] {
-  flex: 1;
-}
-
 .input[type="color"] {
   height: 2.5rem;
   padding: 0;
@@ -107,6 +94,19 @@ textarea.input {
 .input[type="color"]::-moz-color-swatch {
   border: none;
   padding: 0;
+}
+
+.input-color {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input-color > .input[type="color"] {
+  flex: 0 0 2.5rem;
+}
+
+.input-color > .input[type="text"] {
+  flex: 1;
 }
 
 .input[type="file"] {
@@ -131,7 +131,8 @@ textarea.input {
 
 select.input {
   padding: 0.375rem 2.25rem 0.375rem 0.75rem;
-  background: no-repeat padding-box right 0.75rem center / auto 1rem
+  background:
+    no-repeat padding-box right 0.75rem center / auto 1rem
     url("/static/icons/angle-down.svg") var(--bg-color);
 }
 

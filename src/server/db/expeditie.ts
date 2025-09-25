@@ -1,7 +1,7 @@
-import { Insertable, sql, Updateable } from "kysely";
+import { type Insertable, sql, type Updateable } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { getDb } from "./schema/database.js";
-import { Expeditie } from "./schema/types.js";
+import type { Expeditie } from "./schema/types.js";
 
 export const getAllExpedities = ({
   withoutDrafts = false,

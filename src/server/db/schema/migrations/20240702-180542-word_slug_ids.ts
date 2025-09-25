@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely, sql } from "kysely";
+import { type Kysely, sql } from "kysely";
 
 const generateId = (word: string): string =>
   word

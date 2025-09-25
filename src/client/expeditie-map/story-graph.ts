@@ -1,5 +1,8 @@
-import { Map } from "mapbox-gl";
-import { MapSegment, MapStory } from "../../server/common-types/expeditie-map";
+import type { Map as Mapbox } from "mapbox-gl";
+import type {
+  MapSegment,
+  MapStory,
+} from "../../server/common-types/expeditie-map";
 import { createSvgElement } from "../helpers/elements";
 import { resetStoryPointHover, setStoryPointHover } from "./data-layers";
 
@@ -11,7 +14,7 @@ export const mobileStoryMediaQuery = window.matchMedia("(max-width: 1099px)");
 export const createStoryGraph = (
   segments: MapSegment[],
   stories: MapStory[],
-  map: Map
+  map: Mapbox
 ) => {
   const storylineEl = document.getElementById("storyline");
   if (!storylineEl) return;
@@ -53,12 +56,12 @@ const constructStory = (
     segments
       .flatMap((segment) =>
         stories
-          .filter((s) => s.segmentId == segment.id)
+          .filter((s) => s.segmentId === segment.id)
           .map((story, idx, storyArr) => ({
             ...story,
             color: segment.color,
             childIds:
-              idx == storyArr.length - 1
+              idx === storyArr.length - 1
                 ? findFirstStoryOfSegments(segments, stories, segment.childIds)
                 : [storyArr[idx + 1].id],
             x:
@@ -85,11 +88,11 @@ const findFirstStoryOfSegments = (
     new Set(
       segmentIds.flatMap(
         (id) =>
-          stories.find((s) => s.segmentId == id)?.id ||
+          stories.find((s) => s.segmentId === id)?.id ||
           findFirstStoryOfSegments(
             segments,
             stories,
-            segments.find((n) => n.id == id)!.childIds
+            segments.find((n) => n.id === id)!.childIds
           )
       )
     )
@@ -98,7 +101,7 @@ const findFirstStoryOfSegments = (
 /**
  * Generates the SVG elements for the graph and puts them in the DOM
  */
-const drawGraph = (items: StoryItemX[], width: number, map: Map) => {
+const drawGraph = (items: StoryItemX[], width: number, map: Mapbox) => {
   const storiesEl = document.getElementById("stories")!;
 
   const { height, top } = storiesEl.getBoundingClientRect();
@@ -118,7 +121,7 @@ const drawGraph = (items: StoryItemX[], width: number, map: Map) => {
 
   for (const item of itemsXY) {
     for (const childId of item.childIds) {
-      const child = itemsXY.find((si) => si.id == childId)!;
+      const child = itemsXY.find((si) => si.id === childId)!;
       svg.appendChild(
         generateStoryLine(
           item,
@@ -138,7 +141,7 @@ const drawGraph = (items: StoryItemX[], width: number, map: Map) => {
  * Generates the SVG circle for a single story in the graph, and adds event
  * listeners for interaction between it and the map
  */
-const generateStoryCircle = (item: StoryItemXY, map: Map) => {
+const generateStoryCircle = (item: StoryItemXY, map: Mapbox) => {
   const circle = createSvgElement("circle", {
     class: "graph-circle",
     id: `circle-${item.id}`,
@@ -181,7 +184,7 @@ const generateStoryLine = (
 ) => {
   let pathProps = `M ${parent.x} ${parent.y} `;
 
-  switch (parent.x == child.x ? "none" : curve) {
+  switch (parent.x === child.x ? "none" : curve) {
     case "begin":
       pathProps +=
         child.x > parent.x
@@ -225,7 +228,7 @@ export const setStoryGraphHover = (id: number) => {
  * Resets the hovering state of all story circles in the graph
  */
 export const resetStoryGraphHover = () => {
-  document
-    .querySelectorAll(".graph-circle.hover")
-    .forEach((el) => el.classList.remove("hover"));
+  document.querySelectorAll(".graph-circle.hover").forEach((el) => {
+    el.classList.remove("hover");
+  });
 };

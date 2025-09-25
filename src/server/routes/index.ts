@@ -1,4 +1,4 @@
-import { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginAsync } from "fastify";
 import expeditieRoutes from "./expeditie.js";
 import homeRoutes from "./home.js";
 import memberRoutes from "./members.js";

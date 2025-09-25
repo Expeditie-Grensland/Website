@@ -1,7 +1,7 @@
-import { Insertable, Updateable } from "kysely";
+import type { Insertable, Updateable } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { getDb } from "./schema/database.js";
-import { Story, StoryMedia } from "./schema/types.js";
+import type { Story, StoryMedia } from "./schema/types.js";
 
 export const getExpeditieStories = (expeditieId: string) =>
   getDb()

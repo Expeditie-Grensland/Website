@@ -7,8 +7,8 @@ const flattenArgList = (argList: ArgList): string[] =>
     Array.isArray(arg)
       ? flattenArgList(arg)
       : arg === undefined || arg === false
-      ? []
-      : arg
+        ? []
+        : arg
   );
 
 export const runProcess = async (

@@ -1,7 +1,10 @@
-import { Feature, Point } from "geojson";
-import { LngLatLike, Map } from "mapbox-gl";
-import { MapSegment, MapStory } from "../../server/common-types/expeditie-map";
-import { ParsedRouteData } from "./data-parse";
+import type { Feature, Point } from "geojson";
+import type { LngLatLike, Map as Mapbox } from "mapbox-gl";
+import type {
+  MapSegment,
+  MapStory,
+} from "../../server/common-types/expeditie-map";
+import type { ParsedRouteData } from "./data-parse";
 import {
   resetStoryGraphHover,
   scrollToStory,
@@ -14,7 +17,7 @@ import { setRouteBounds, zoomToRoute } from "./view";
  * then adds a styling layer for the data
  */
 export const addRouteLayer = async (
-  map: Map,
+  map: Mapbox,
   { bounds, ...route }: ParsedRouteData
 ) => {
   setRouteBounds(bounds);
@@ -46,14 +49,14 @@ export const addRouteLayer = async (
 /**
  * Sets the hover state for a story point on the map
  */
-export const setStoryPointHover = (map: Map, id: number) => {
+export const setStoryPointHover = (map: Mapbox, id: number) => {
   map.setFeatureState({ source: "story-points", id }, { hover: true });
 };
 
 /**
  * Resets the hover state for all story points on the map
  */
-export const resetStoryPointHover = (map: Map) => {
+export const resetStoryPointHover = (map: Mapbox) => {
   map.removeFeatureState({ source: "story-points" });
 };
 
@@ -62,7 +65,7 @@ export const resetStoryPointHover = (map: Map) => {
  * then adds styling layers and interaction handlers
  */
 export const addStoryLayer = (
-  map: Map,
+  map: Mapbox,
   segments: MapSegment[],
   stories: MapStory[]
 ) => {
@@ -81,7 +84,7 @@ export const addStoryLayer = (
             storyId: story.id,
             segmentId: story.segmentId,
             color:
-              segments.find((n) => n.id == story.segmentId)?.color || "#000",
+              segments.find((n) => n.id === story.segmentId)?.color || "#000",
           },
         };
       }),

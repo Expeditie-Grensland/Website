@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { getPacklist, getPacklistItems } from "../../../../db/packlist.js";
-import { authenticatePerson } from "../../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getPacklist, getPacklistItems } from "../../../../db/packlist.js";
+import type { authenticatePerson } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import { NumberInput, TextInput } from "../../../admin/form-inputs.js";
 

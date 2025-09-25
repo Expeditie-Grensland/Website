@@ -1,4 +1,4 @@
-import { FunctionComponent } from "preact";
+import type { FunctionComponent } from "preact";
 import { getFileUrl } from "../../files/files.js";
 
 export const TitleImage: FunctionComponent<{
@@ -11,7 +11,7 @@ export const TitleImage: FunctionComponent<{
 }> = ({ size, file, colour, title, subtitle, link }) => {
   const picture = file && (
     <picture>
-      {size == "large" && (
+      {size === "large" && (
         <>
           <source
             srcset={getFileUrl(file, "klein.webp")}
@@ -31,11 +31,12 @@ export const TitleImage: FunctionComponent<{
             class="titleimg-bg"
             src={getFileUrl(file, "normaal.jpg")}
             draggable={false}
+            alt=""
           />
         </>
       )}
 
-      {size == "small" && (
+      {size === "small" && (
         <>
           <source srcset={getFileUrl(file, "klein.webp")} type="image/webp" />
 
@@ -43,6 +44,7 @@ export const TitleImage: FunctionComponent<{
             class="titleimg-bg"
             src={getFileUrl(file, "klein.jpg")}
             draggable={false}
+            alt=""
           />
         </>
       )}
@@ -57,7 +59,7 @@ export const TitleImage: FunctionComponent<{
   );
 
   const props = {
-    class: `titleimg ${size == "large" ? "titleimg-large" : "titleimg-small"}`,
+    class: `titleimg ${size === "large" ? "titleimg-large" : "titleimg-small"}`,
     style: { backgroundColor: colour },
   };
 

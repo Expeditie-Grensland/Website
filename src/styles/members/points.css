@@ -17,7 +17,8 @@
   margin-bottom: 0.5rem;
 }
 
-.points-b, .points-r {
+.points-b,
+.points-r {
   flex: 1 0 auto;
   width: 1fr;
 }

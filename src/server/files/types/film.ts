@@ -1,7 +1,7 @@
 import { platform } from "node:os";
 import { resolve } from "node:path";
 import { runProcess } from "../../helpers/process.js";
-import { Converter } from "../convert.js";
+import type { Converter } from "../convert.js";
 
 export type FilmOptions = {
   resolution: 2160 | 1440 | 1080 | 720;
@@ -52,7 +52,7 @@ const convert = async (
         ]
           .filter(
             ({ height, fps, allFps }) =>
-              height <= inHeight && (fps == inFps || allFps)
+              height <= inHeight && (fps === inFps || allFps)
           )
           .map(({ width, height, fps, bitrate }, i) => [
             ["-map", "0:v:0"],

@@ -50,10 +50,10 @@ export const formatDateRange = (startDate: Date, endDate: Date) => {
     day: "numeric",
   };
 
-  const yearSame = startDate.getFullYear() == endDate.getFullYear();
-  const monthSame = yearSame && startDate.getMonth() == endDate.getMonth();
+  const yearSame = startDate.getFullYear() === endDate.getFullYear();
+  const monthSame = yearSame && startDate.getMonth() === endDate.getMonth();
 
-  if (monthSame && startDate.getDate() == endDate.getDate()) {
+  if (monthSame && startDate.getDate() === endDate.getDate()) {
     return endDate.toLocaleString("nl-NL", endDateFormat);
   }
 

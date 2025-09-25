@@ -1,16 +1,16 @@
+import { type FileHandle, open } from "node:fs/promises";
 import {
+  type CompletedPart,
   CompleteMultipartUploadCommand,
-  CompletedPart,
   CreateMultipartUploadCommand,
   DeleteObjectCommand,
   ListObjectsV2Command,
-  ListObjectsV2CommandOutput,
+  type ListObjectsV2CommandOutput,
   PutObjectCommand,
   S3Client,
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
 import mime from "mime";
-import { FileHandle, open } from "node:fs/promises";
 import { getS3Config } from "../helpers/config.js";
 import { readFileHandleByChunk } from "./chunks.js";
 
@@ -36,14 +36,13 @@ export const getS3Files = async () => {
   );
 
   return (
-    response.CommonPrefixes?.reduce(
-      (dirs, cp) =>
-        cp.Prefix && cp.Prefix.endsWith("/") && cp.Prefix.indexOf(".") > -1
-          ? [...dirs, cp.Prefix.slice(0, -1)]
-          : dirs,
-      [] as string[]
-    ) || []
-  ).sort();
+    response.CommonPrefixes?.filter(
+      (cp): cp is { Prefix: string } =>
+        !!cp.Prefix && cp.Prefix.endsWith("/") && cp.Prefix.includes(".")
+    )
+      .map((cp) => cp.Prefix.slice(0, -1))
+      .sort() || []
+  );
 };
 
 const uploadS3FileSingle = async (
@@ -123,8 +122,7 @@ export const deleteS3Prefix = async (prefix: string) => {
       new ListObjectsV2Command({
         Bucket: getS3Config().bucket,
         Prefix: prefix,
-        ContinuationToken:
-          (listResponse && listResponse.NextContinuationToken) || undefined,
+        ContinuationToken: listResponse?.NextContinuationToken,
         MaxKeys: 100,
       })
     );

@@ -1,4 +1,4 @@
-import { ComponentChildren, FunctionComponent } from "preact";
+import type { ComponentChildren, FunctionComponent } from "preact";
 import { getUmamiConfig } from "../../helpers/config.js";
 
 export const Page: FunctionComponent<{

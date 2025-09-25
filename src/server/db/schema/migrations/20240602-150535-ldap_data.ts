@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely, sql } from "kysely";
+import { type Kysely, sql } from "kysely";
 
 export const up = async (db: Kysely<any>) => {
   await db.schema.alterTable("person").addColumn("email", "text").execute();
@@ -49,10 +48,10 @@ export const up = async (db: Kysely<any>) => {
       const email = user.mailForwardingAddress
         ? user.mailForwardingAddress[0]
         : user.mail
-        ? user.mail[0]
-        : null;
+          ? user.mail[0]
+          : null;
 
-      const password = (user.userPassword && user.userPassword[0]) || null;
+      const password = user.userPassword?.[0] || null;
 
       return await db
         .updateTable("person")

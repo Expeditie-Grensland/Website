@@ -1,12 +1,12 @@
-import { Map, NavigationControl, ScaleControl } from "mapbox-gl";
-import { SatelliteControl, CenterRouteControl } from "./controls";
+import { Map as Mapbox, NavigationControl, ScaleControl } from "mapbox-gl";
+import { CenterRouteControl, SatelliteControl } from "./controls";
 import { mobileStoryMediaQuery } from "./story-graph";
 
 /**
  * Initialises the base map with built-in styles, layers and controls
  */
 export const createBaseMap = () => {
-  const map = new Map({
+  const map = new Mapbox({
     container: "map",
     projection: "globe",
     style: "mapbox://styles/mapbox/outdoors-v12",
@@ -38,7 +38,7 @@ export const createBaseMap = () => {
 /**
  * Updates the padding on the map based on the stories size
  */
-const updateMapPadding = (map: Map) => {
+const updateMapPadding = (map: Mapbox) => {
   map.setPadding({
     top: 40,
     bottom: 40,
@@ -52,7 +52,7 @@ const updateMapPadding = (map: Map) => {
 /**
  * Keeps the padding of the map updated based on the stories size
  */
-const observeMapPadding = (map: Map) => {
+const observeMapPadding = (map: Mapbox) => {
   updateMapPadding(map);
 
   const storyline = document.getElementById("storyline");
@@ -65,7 +65,7 @@ const observeMapPadding = (map: Map) => {
 /**
  * Adds a 3D buildings layer to the map, appearing smoothly from zoom-level 15
  */
-const addBuildingsLayer = (map: Map) => {
+const addBuildingsLayer = (map: Mapbox) => {
   map.addLayer(
     {
       id: "add-3d-buildings",
@@ -109,7 +109,7 @@ const addBuildingsLayer = (map: Map) => {
 /**
  * Adds 3D terrain, foggy atmosphere and a hillshading layer to the map
  */
-const addTerrainLayer = (map: Map) => {
+const addTerrainLayer = (map: Mapbox) => {
   map.addSource("mapbox-dem", {
     type: "raster-dem",
     url: "mapbox://mapbox.mapbox-terrain-dem-v1",
@@ -140,7 +140,7 @@ const addTerrainLayer = (map: Map) => {
 /**
  * Adds a satellite layer to the map, hidden by default
  */
-const addSatelliteLayer = (map: Map) => {
+const addSatelliteLayer = (map: Mapbox) => {
   map.addSource("mapbox-satellite", {
     type: "raster",
     url: "mapbox://mapbox.satellite",

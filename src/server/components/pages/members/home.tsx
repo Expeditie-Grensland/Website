@@ -1,10 +1,10 @@
-import { Selectable } from "kysely";
-import { FunctionComponent, HTMLAttributeAnchorTarget } from "preact";
+import type { Selectable } from "kysely";
+import type { FunctionComponent, HTMLAttributeAnchorTarget } from "preact";
 import packageJson from "../../../../../package.json" with { type: "json" };
-import { getMemberLinks } from "../../../db/member-link.js";
-import { getMemberWritingsList } from "../../../db/member-writings.js";
-import { authenticatePerson } from "../../../db/person.js";
-import { Expeditie } from "../../../db/schema/types.js";
+import type { getMemberLinks } from "../../../db/member-link.js";
+import type { getMemberWritingsList } from "../../../db/member-writings.js";
+import type { authenticatePerson } from "../../../db/person.js";
+import type { Expeditie } from "../../../db/schema/types.js";
 import { formatDateRange } from "../../../helpers/time.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
@@ -58,7 +58,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Inclusief concepten",
               url: "/?concepten=1",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -71,7 +71,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/woordenboek",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -84,7 +84,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/citaten",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -97,7 +97,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/afkowobo",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -110,7 +110,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/punten",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -122,7 +122,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/expedities",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -138,7 +138,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/personen",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -154,7 +154,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/paklijst",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -166,7 +166,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/bestanden",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -178,7 +178,7 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/links",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
@@ -190,13 +190,13 @@ export const MembersHomePage: FunctionComponent<{
             {
               text: "Admin",
               url: "/leden/admin/geschriften",
-              when: user.type == "admin",
+              when: user.type === "admin",
             },
           ]}
         />
       </div>
 
-      {user.type == "admin" && currentExpedities.length > 0 && (
+      {user.type === "admin" && currentExpedities.length > 0 && (
         <>
           <h1 class="link-category">Lopende expedities</h1>
 
@@ -268,7 +268,7 @@ export const MembersHomePage: FunctionComponent<{
         </>
       )}
 
-      {user.type == "admin" && (
+      {user.type === "admin" && (
         <div class="version-text">Versie: {packageJson.version}</div>
       )}
     </div>

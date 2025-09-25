@@ -1,5 +1,5 @@
-import { MigrationResultSet } from "kysely";
 import fs from "node:fs/promises";
+import type { MigrationResultSet } from "kysely";
 import { getDb } from "../src/server/db/schema/database";
 import { getMigrator } from "../src/server/db/schema/migrator";
 import { getArgvOption } from "./common/options";
@@ -23,8 +23,7 @@ const createMigration = async () => {
 
   await fs.writeFile(
     `src/server/db/schema/migrations/${name}.ts`,
-    `/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely } from "kysely";
+    `import { Kysely } from "kysely";
 
 export const up = async (db: Kysely<any>) => {
 };
@@ -40,7 +39,7 @@ export const down = async (db: Kysely<any>) => {
 const printResults = async (resultSet: Promise<MigrationResultSet>) => {
   const { results, error } = await resultSet;
 
-  if (results && results.length) {
+  if (results?.length) {
     console.info("Applied migrations:");
     console.table(results, ["migrationName", "status", "direction"]);
   } else {

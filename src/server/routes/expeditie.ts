@@ -1,6 +1,6 @@
-import { FastifyPluginAsync } from "fastify";
-import { ExpeditieMapPage } from "../components/pages/public/expeditie-map.js";
+import type { FastifyPluginAsync } from "fastify";
 import { ExpeditiePage } from "../components/pages/public/expeditie.js";
+import { ExpeditieMapPage } from "../components/pages/public/expeditie-map.js";
 import { getFullExpeditie } from "../db/expeditie.js";
 import {
   getExpeditieSegments,
@@ -10,8 +10,8 @@ import {
 import { getExpeditieStories } from "../db/story.js";
 
 const expeditieRoutes: FastifyPluginAsync = async (app) => {
-  app.addHook("onRequest", async (request, reply) => {
-    const { expeditieId } = request.params as { expeditieId: string };
+  app.addHook("onRequest", async (req, reply) => {
+    const { expeditieId } = req.params as { expeditieId: string };
     const expeditie = await getFullExpeditie(expeditieId);
 
     if (!expeditie) return reply.callNotFound();
@@ -19,19 +19,19 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
 
     if (
       !expeditie.show_map &&
-      request.routeOptions.url?.startsWith("/:expeditieId/kaart")
+      req.routeOptions.url?.startsWith("/:expeditieId/kaart")
     )
       return reply.callNotFound();
   });
 
-  app.get("/", (request, reply) =>
+  app.get("/", (_req, reply) =>
     reply.sendComponent(ExpeditiePage, {
       expeditie: reply.locals.expeditie!,
       user: reply.locals.user,
     })
   );
 
-  app.get("/kaart", (request, reply) =>
+  app.get("/kaart", (_req, reply) =>
     reply.sendComponent(ExpeditieMapPage, {
       expeditie: reply.locals.expeditie!,
       stories: getExpeditieStories(reply.locals.expeditie!.id),
@@ -40,7 +40,7 @@ const expeditieRoutes: FastifyPluginAsync = async (app) => {
     })
   );
 
-  app.get("/kaart/route-data", async (request, reply) => {
+  app.get("/kaart/route-data", async (_req, reply) => {
     reply.raw.writeHead(200, {
       "Content-Type": "application/octet-stream",
       "Cache-Control": "public, max-age=2592000, immutable",

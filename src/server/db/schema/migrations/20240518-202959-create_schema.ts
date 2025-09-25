@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely, sql } from "kysely";
+import { type Kysely, sql } from "kysely";
 
 export const up = async (db: Kysely<any>) => {
   await db.schema
@@ -178,7 +177,10 @@ export const up = async (db: Kysely<any>) => {
         .onUpdate("cascade")
         .onDelete("cascade")
     )
-    .addPrimaryKeyConstraint("geo_node_person_pkey", ["geo_node_id", "person_id"])
+    .addPrimaryKeyConstraint("geo_node_person_pkey", [
+      "geo_node_id",
+      "person_id",
+    ])
     .execute();
 
   await db.schema

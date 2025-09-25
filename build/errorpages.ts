@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { ErrorPage } from "../src/server/components/pages/public/error.js";
 import { httpErrors } from "../src/server/helpers/http-errors.js";
 import { renderComponent } from "../src/server/helpers/render.js";

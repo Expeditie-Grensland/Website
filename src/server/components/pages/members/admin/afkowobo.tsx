@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { getAllAfkos } from "../../../../db/afko.js";
-import { authenticatePerson } from "../../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getAllAfkos } from "../../../../db/afko.js";
+import type { authenticatePerson } from "../../../../db/person.js";
 import { AdminPage } from "../../../admin/admin-page.js";
 import {
   FormInputArray,

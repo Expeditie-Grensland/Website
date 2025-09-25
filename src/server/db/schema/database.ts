@@ -1,7 +1,7 @@
 import { Kysely, PostgresDialect } from "kysely";
 import pg from "pg";
 import { getDbConfig, getNodeEnv } from "../../helpers/config.js";
-import { DB } from "./types.js";
+import type { DB } from "./types.js";
 
 pg.types.setTypeParser(pg.types.builtins.INT8, BigInt);
 

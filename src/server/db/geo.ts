@@ -1,9 +1,13 @@
-import { Insertable } from "kysely";
+import type { Insertable } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { asyncMapInChunks } from "../helpers/chunk.js";
-import { allValues, EnumTextMap } from "./enums.js";
+import { allValues, type EnumTextMap } from "./enums.js";
 import { getDb } from "./schema/database.js";
-import { GeoLocation, GeoSegment, GeoSegmentType } from "./schema/types.js";
+import type {
+  GeoLocation,
+  GeoSegment,
+  GeoSegmentType,
+} from "./schema/types.js";
 
 export const getRouteVersion = (expeditieId: string) =>
   getDb()
@@ -58,16 +62,20 @@ export const getExpeditieSegments = async (expeditieId: string) => {
     const withParents = new Set(edges.map(([_, child]) => child));
     const withoutParents = unsortedSegments.difference(withParents);
 
-    if (withoutParents.size == 0) {
-      unsortedSegments.forEach((id) => withoutParents.add(id));
+    if (withoutParents.size === 0) {
+      unsortedSegments.forEach((id) => {
+        withoutParents.add(id);
+      });
     }
 
-    withoutParents.forEach((id) => unsortedSegments.delete(id));
+    withoutParents.forEach((id) => {
+      unsortedSegments.delete(id);
+    });
     edges = edges.filter(([parent]) => !withoutParents.has(parent));
 
     sortedSegments.push(
       ...[...withoutParents]
-        .map((id) => segments.find((s) => s.id == id)!)
+        .map((id) => segments.find((s) => s.id === id)!)
         .sort((a, b) => a.position_part - b.position_part)
     );
   }

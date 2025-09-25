@@ -1,7 +1,7 @@
 import { platform } from "node:os";
 import { join } from "node:path";
 import { runProcess } from "../../helpers/process.js";
-import { Converter } from "../convert.js";
+import type { Converter } from "../convert.js";
 
 const convert = async (inputFile: string, outputDir: string) =>
   await runProcess("ffmpeg", [

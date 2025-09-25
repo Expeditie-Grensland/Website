@@ -26,7 +26,7 @@ export const storySchema = z
   .refine(
     ({ media_ids, media_files, media_descriptions }) =>
       media_ids.length === media_files.length &&
-      media_files.length == media_descriptions.length,
+      media_files.length === media_descriptions.length,
     {
       message: "Media aantallen zijn niet gelijk",
       path: ["media_files"],

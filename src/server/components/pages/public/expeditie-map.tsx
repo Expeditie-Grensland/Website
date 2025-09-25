@@ -1,8 +1,11 @@
-import { FunctionComponent } from "preact";
-import { MapSegment, MapStory } from "../../../common-types/expeditie-map.js";
-import { getFullExpeditie } from "../../../db/expeditie.js";
-import { getExpeditieSegments, getRouteVersion } from "../../../db/geo.js";
-import { getExpeditieStories } from "../../../db/story.js";
+import type { FunctionComponent } from "preact";
+import type {
+  MapSegment,
+  MapStory,
+} from "../../../common-types/expeditie-map.js";
+import type { getFullExpeditie } from "../../../db/expeditie.js";
+import type { getExpeditieSegments, getRouteVersion } from "../../../db/geo.js";
+import type { getExpeditieStories } from "../../../db/story.js";
 import { getFileType, getFileUrl } from "../../../files/files.js";
 import { getMapboxConfig } from "../../../helpers/config.js";
 import { formatTimeFull, formatTimeNicely } from "../../../helpers/time.js";
@@ -40,7 +43,7 @@ const Story: FunctionComponent<{
 
     {story.media.map((medium) => (
       <div class="story-media">
-        {getFileType(medium.file) == "video" && (
+        {getFileType(medium.file) === "video" && (
           <video
             controls
             preload="none"
@@ -52,8 +55,11 @@ const Story: FunctionComponent<{
             />
           </video>
         )}
-        {getFileType(medium.file) == "afbeelding" && (
-          <img src={getFileUrl(medium.file, "normaal.jpg")} />
+        {getFileType(medium.file) === "afbeelding" && (
+          <img
+            src={getFileUrl(medium.file, "normaal.jpg")}
+            alt="Foto van de Expeditie"
+          />
         )}
 
         {medium.description && <p>{medium.description}</p>}
@@ -144,7 +150,7 @@ export const ExpeditieMapPage: FunctionComponent<{
               <Story
                 story={story}
                 segment={segments.find(
-                  (segment) => segment.id == story.segment_id
+                  (segment) => segment.id === story.segment_id
                 )}
               />
             ))}

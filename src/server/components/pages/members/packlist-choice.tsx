@@ -1,9 +1,9 @@
-import { FunctionComponent } from "preact";
-import { getAllPacklists } from "../../../db/packlist.js";
-import { authenticatePerson } from "../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getAllPacklists } from "../../../db/packlist.js";
+import type { authenticatePerson } from "../../../db/person.js";
+import { CheckInput } from "../../admin/form-inputs.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
-import { CheckInput } from "../../admin/form-inputs.js";
 
 export const PacklistChoicePage: FunctionComponent<{
   lists: Awaited<ReturnType<typeof getAllPacklists>>;

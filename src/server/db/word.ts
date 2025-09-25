@@ -1,6 +1,6 @@
-import { Insertable, Updateable } from "kysely";
+import type { Insertable, Updateable } from "kysely";
 import { getDb } from "./schema/database.js";
-import { Word } from "./schema/types.js";
+import type { Word } from "./schema/types.js";
 
 export const getAllWords = () =>
   getDb().selectFrom("word").selectAll().orderBy("word", "asc").execute();

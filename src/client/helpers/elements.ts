@@ -2,9 +2,9 @@ export const setElementAttributes = (
   el: Element,
   attrs: Record<string, string | number>
 ) =>
-  Object.entries(attrs).forEach(([key, value]) =>
-    el.setAttribute(key, value as string)
-  );
+  Object.entries(attrs).forEach(([key, value]) => {
+    el.setAttribute(key, value as string);
+  });
 
 export const createSvgElement = (
   type: keyof SVGElementTagNameMap,

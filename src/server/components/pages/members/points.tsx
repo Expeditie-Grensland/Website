@@ -1,6 +1,6 @@
-import { FunctionComponent } from "preact";
-import { getFullEarnedPoints } from "../../../db/earned-point.js";
-import { authenticatePerson } from "../../../db/person.js";
+import type { FunctionComponent } from "preact";
+import type { getFullEarnedPoints } from "../../../db/earned-point.js";
+import type { authenticatePerson } from "../../../db/person.js";
 import { formatTimeDayMonth, formatTimeFull } from "../../../helpers/time.js";
 import { NavigationBar } from "../../page-structure/navigation-bar.js";
 import { Page } from "../../page-structure/page.js";
@@ -10,19 +10,22 @@ export const PointsPage: FunctionComponent<{
   user: NonNullable<Awaited<ReturnType<typeof authenticatePerson>>>;
 }> = ({ points, user }) => {
   const teamScores = points.reduce(
-    (acc, cur) =>
-      Object.assign(acc, { [cur.team]: acc[cur.team] + cur.amount }),
+    (acc, cur) => {
+      acc[cur.team] += cur.amount;
+      return acc;
+    },
     { blue: 0, red: 0, green: 0 }
   );
 
   const pointsByExpeditie = points.reduce(
-    (acc, cur) =>
-      acc.length == 0 || acc.at(-1)!.name != cur.expeditie_name
-        ? [...acc, { name: cur.expeditie_name, points: [cur] }]
-        : [
-            ...acc.slice(0, -1),
-            { name: cur.expeditie_name, points: [...acc.at(-1)!.points, cur] },
-          ],
+    (acc, cur) => {
+      if (acc.length === 0 || acc.at(-1)?.name !== cur.expeditie_name) {
+        acc.push({ name: cur.expeditie_name, points: [cur] });
+      } else {
+        acc.at(-1)?.points.push(cur);
+      }
+      return acc;
+    },
     [] as { name: string | null; points: typeof points }[]
   );
 
@@ -59,7 +62,7 @@ export const PointsPage: FunctionComponent<{
 
             {points.map((point) => (
               <div
-                class={`point-row ${point.team == "blue" ? "point-row-b" : "point-row-r"}`}
+                class={`point-row ${point.team === "blue" ? "point-row-b" : "point-row-r"}`}
               >
                 <div class="point-amount">+{point.amount}</div>
                 <div class="point-person">

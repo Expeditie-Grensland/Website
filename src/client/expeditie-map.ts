@@ -1,9 +1,12 @@
 import mapboxgl from "mapbox-gl";
-import { MapSegment, MapStory } from "../server/common-types/expeditie-map";
+import type {
+  MapSegment,
+  MapStory,
+} from "../server/common-types/expeditie-map";
 import { createBaseMap } from "./expeditie-map/base-map";
 import { addRouteLayer, addStoryLayer } from "./expeditie-map/data-layers";
-import { createStoryGraph } from "./expeditie-map/story-graph";
 import { fetchRouteData } from "./expeditie-map/data-parse";
+import { createStoryGraph } from "./expeditie-map/story-graph";
 
 declare const routeLink: string,
   mbToken: string,

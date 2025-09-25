@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely } from "kysely";
+import type { Kysely } from "kysely";
 
 const colors = [
   "#2962ff",
@@ -25,7 +24,7 @@ export const up = async (db: Kysely<any>) => {
 
   const nodeGroups = Object.values(
     Object.groupBy(nodes, (node) => node.expeditie_id)
-  ).filter((group) => group != undefined);
+  ).filter((group) => group !== undefined);
 
   for (const group of nodeGroups) {
     await Promise.all(

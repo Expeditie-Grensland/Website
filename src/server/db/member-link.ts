@@ -1,6 +1,6 @@
-import { Insertable, Updateable } from "kysely";
+import type { Insertable, Updateable } from "kysely";
 import { getDb } from "./schema/database.js";
-import { MemberLink } from "./schema/types.js";
+import type { MemberLink } from "./schema/types.js";
 
 export const getMemberLinks = () =>
   getDb()
