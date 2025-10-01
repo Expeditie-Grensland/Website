@@ -20,7 +20,7 @@ abstract class MapControl implements IControl {
     button.addEventListener("click", () => this.onClick(map));
 
     const icon = window.document.createElement("span");
-    icon.className = `mapboxgl-ctrl-icon ${this.iconClass}`;
+    icon.className = `mapboxgl-ctrl-icon mapicon ${this.iconClass}`;
     icon.title = this.title;
     icon.ariaHidden = "true";
     button.appendChild(icon);

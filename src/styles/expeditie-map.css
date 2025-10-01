@@ -45,12 +45,20 @@ body {
   }
 }
 
+.mapicon {
+  display: block;
+
+  background-color: #333;
+  mask-position: 50%;
+  mask-repeat: no-repeat;
+}
+
 .mapicon-satellite {
-  background: center / 80% url("/static/icons/satellite.svg");
+  mask-image: url("/static/icons/satellite.svg");
 }
 
 .mapicon-center-route {
-  background: center / 65% url("/static/icons/maximize.svg");
+  mask-image: url("/static/icons/zoom-scan.svg");
 }
 
 .storyline-header {

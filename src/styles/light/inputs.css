@@ -132,8 +132,8 @@ textarea.input {
 select.input {
   padding: 0.375rem 2.25rem 0.375rem 0.75rem;
   background:
-    no-repeat padding-box right 0.75rem center / auto 1rem
-    url("/static/icons/angle-down.svg") var(--bg-color);
+    no-repeat padding-box right 0.75rem center / auto 1.25rem
+    url("/static/icons/caret-down.svg") var(--bg-color);
 }
 
 .input::placeholder,
