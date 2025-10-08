@@ -1,32 +1,76 @@
 import { join } from "node:path";
-import { runProcess } from "../../helpers/process.js";
+import sharp, { type Sharp } from "sharp";
 import type { Converter } from "../convert.js";
 
-const convert = async (inputFile: string, outputDir: string) =>
-  await runProcess("magick", [
-    inputFile,
-    ["-colorspace", "sRGB"],
-    ["-sampling-factor", "4:2:0"],
-    ["-strip"],
-    ["-quality", "100"],
-    ["-write", join(outputDir, "origineel.jpg")],
-    ["-quality", "80"],
-    ...[
-      { name: "normaal", size: "1500>" },
-      { name: "klein", size: "500>" },
-      { name: "miniscuul", size: "30" },
-    ].flatMap(({ name, size }) => [
-      "(",
-      "+clone",
-      ["-thumbnail", size],
-      ["-write", join(outputDir, `${name}.webp`)],
-      ["-write", join(outputDir, `${name}.jpg`)],
-      "+delete",
-      ")",
-    ]),
-    ["-write", join(outputDir, "volledig.webp")],
-    join(outputDir, "volledig.jpg"),
-  ]);
+const variants = [
+  {
+    name: "origineel.jpg",
+    func: (image: Sharp) =>
+      image.jpeg({ quality: 100, chromaSubsampling: "4:4:4" }),
+  },
+
+  {
+    name: "volledig.webp",
+    func: (image: Sharp) => image.webp(),
+  },
+
+  {
+    name: "volledig.jpg",
+    func: (image: Sharp) => image.jpeg({ mozjpeg: true }),
+  },
+
+  {
+    name: "normaal.webp",
+    func: (image: Sharp) =>
+      image.resize({ width: 1500, withoutEnlargement: true }).webp(),
+  },
+
+  {
+    name: "normaal.jpg",
+    func: (image: Sharp) =>
+      image
+        .resize({ width: 1500, withoutEnlargement: true })
+        .jpeg({ mozjpeg: true }),
+  },
+
+  {
+    name: "klein.webp",
+    func: (image: Sharp) =>
+      image.resize({ width: 500, withoutEnlargement: true }).webp(),
+  },
+
+  {
+    name: "klein.jpg",
+    func: (image: Sharp) =>
+      image
+        .resize({ width: 500, withoutEnlargement: true })
+        .jpeg({ mozjpeg: true }),
+  },
+
+  {
+    name: "miniscuul.webp",
+    func: (image: Sharp) =>
+      image.resize({ width: 30, withoutEnlargement: true }).webp(),
+  },
+
+  {
+    name: "miniscuul.jpg",
+    func: (image: Sharp) =>
+      image
+        .resize({ width: 30, withoutEnlargement: true })
+        .jpeg({ mozjpeg: true }),
+  },
+];
+
+const convert = async (inputFile: string, outputDir: string) => {
+  const image = sharp(inputFile).rotate().toColorspace("sRGB");
+
+  await Promise.all(
+    variants.map(({ name, func }) =>
+      func(image.clone()).toFile(join(outputDir, name))
+    )
+  );
+};
 
 export const convertAfbeelding: Converter = {
   extension: "afbeelding",
