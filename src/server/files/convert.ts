@@ -4,9 +4,9 @@ import { join } from "node:path";
 import { getFilesInDirHash } from "./hash.js";
 import { uploadS3File } from "./s3.js";
 
-export type Converter = {
+export type Converter<Input extends string | Buffer> = {
   extension: string;
-  convert: (inputFile: string, outputDir: string) => Promise<void>;
+  convert: (input: Input, outputDir: string) => Promise<void>;
 };
 
 export type ConvertOutput = {
@@ -22,14 +22,14 @@ export const getConvertOutput = async (dir: string) => ({
     .toSorted(),
 });
 
-export const convertFile = async (
-  inputFile: string,
-  converter: Converter
+export const convertFile = async <Input extends string | Buffer>(
+  input: Input,
+  converter: Converter<Input>
 ): Promise<ConvertOutput> => {
   let dir: string | undefined;
   try {
     dir = await mkdtemp(join(tmpdir(), "expeditiegrensland-"));
-    await converter.convert(inputFile, dir);
+    await converter.convert(input, dir);
     return getConvertOutput(dir);
   } catch (e) {
     if (dir) tryToDelete(dir);
@@ -64,12 +64,12 @@ export const uploadFiles = async (
   }
 };
 
-export const convertAndUploadFile = async (
+export const convertAndUploadFile = async <Input extends string | Buffer>(
   name: string,
-  inputFile: string,
-  converter: Converter
+  input: Input,
+  converter: Converter<Input>
 ) => {
-  const convOutput = await convertFile(inputFile, converter);
+  const convOutput = await convertFile(input, converter);
   const prefix = await determinePrefix(name, convOutput, converter.extension);
   await uploadFiles(prefix, convOutput);
   await tryToDelete(convOutput.dir);

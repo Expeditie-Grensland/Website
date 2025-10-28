@@ -11,6 +11,7 @@ import { AfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js
 import { DictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
 import { ExpeditiesAdminPage } from "../components/pages/members/admin/expedities.js";
 import { FilesAdminPage } from "../components/pages/members/admin/files.js";
+import { FilesImageAdminPage } from "../components/pages/members/admin/files-image.js";
 import { GpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
 import { LinksAdminPage } from "../components/pages/members/admin/links.js";
 import { PacklistItemsAdminPage } from "../components/pages/members/admin/packlist-items.js";
@@ -85,13 +86,16 @@ import {
   updateStory,
 } from "../db/story.js";
 import { addWord, deleteWord, getAllWords, updateWord } from "../db/word.js";
+import { convertAndUploadFile } from "../files/convert.js";
 import { deleteS3Prefix, getS3Files } from "../files/s3.js";
+import { convertAfbeelding } from "../files/types/afbeelding.js";
 import { getUsesForFiles } from "../files/uses.js";
 import { parseGpx } from "../helpers/gpx.js";
 import { renderComponent } from "../helpers/render.js";
 import { afkoSchema } from "../validation-schemas/admin/afko.js";
 import { pointSchema } from "../validation-schemas/admin/earned-point.js";
 import { expeditieSchema } from "../validation-schemas/admin/expeditie.js";
+import { fileImageSchema } from "../validation-schemas/admin/files-image.js";
 import {
   gpxPrefixParamsSchema,
   gpxSchema,
@@ -603,6 +607,28 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
     onDelete: async ({ key }) => {
       await deleteS3Prefix(key);
       return `Bestand "${key}" is verwijderd`;
+    },
+  });
+
+  await registerAdminRoute(app, "/bestanden/afbeelding", {
+    schema: fileImageSchema,
+    paramSchema: keyParamsSchema,
+
+    renderPage: async ({ user, messages }) =>
+      await renderComponent(FilesImageAdminPage, {
+        user,
+        messages,
+      }),
+
+    addPath: "/upload",
+    onAdd: async (item) => {
+      const prefix = await convertAndUploadFile(
+        item.name,
+        item.file,
+        convertAfbeelding
+      );
+
+      return `Bestand "${prefix}" is geüpload`;
     },
   });
 

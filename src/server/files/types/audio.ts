@@ -23,7 +23,7 @@ const convert = async (inputFile: string, outputDir: string) =>
     ],
   ]);
 
-export const convertAudio: Converter = {
+export const convertAudio: Converter<string> = {
   extension: "audio",
   convert,
 };

@@ -62,8 +62,8 @@ const variants = [
   },
 ];
 
-const convert = async (inputFile: string, outputDir: string) => {
-  const image = sharp(inputFile).rotate().toColorspace("sRGB");
+const convert = async (input: string | Buffer, outputDir: string) => {
+  const image = sharp(input).rotate().toColorspace("sRGB");
 
   await Promise.all(
     variants.map(({ name, func }) =>
@@ -72,7 +72,7 @@ const convert = async (inputFile: string, outputDir: string) => {
   );
 };
 
-export const convertAfbeelding: Converter = {
+export const convertAfbeelding: Converter<string | Buffer> = {
   extension: "afbeelding",
   convert,
 };

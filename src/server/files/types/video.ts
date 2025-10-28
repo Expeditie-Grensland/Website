@@ -41,7 +41,7 @@ const convert = async (inputFile: string, outputDir: string) =>
     ],
   ]);
 
-export const convertVideo: Converter = {
+export const convertVideo: Converter<string> = {
   extension: "video",
   convert,
 };
