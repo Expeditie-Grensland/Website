@@ -2,9 +2,11 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
     "includes": [
-      "src/**",
       "build/**",
-      "*.json",
+      "src/**",
+      ".github/**",
+      ".vscode/**",
+      "*",
       "!src/server/db/schema/types.ts"
     ]
   },
