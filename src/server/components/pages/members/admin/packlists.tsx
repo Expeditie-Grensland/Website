@@ -70,7 +70,7 @@ export const PacklistsAdminPage: FunctionComponent<{
         render: (packlist) => (
           <>
             <div>
-              <a href={`/leden/admin/paklijst/${packlist!.id}/items`}>
+              <a href={`/leden/admin/paklijst/${packlist.id}/items`}>
                 Bewerken
               </a>
             </div>

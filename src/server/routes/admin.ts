@@ -11,7 +11,6 @@ import { AfkowoboAdminPage } from "../components/pages/members/admin/afkowobo.js
 import { DictionaryAdminPage } from "../components/pages/members/admin/dictionary.js";
 import { ExpeditiesAdminPage } from "../components/pages/members/admin/expedities.js";
 import { FilesAdminPage } from "../components/pages/members/admin/files.js";
-import { FilesImageAdminPage } from "../components/pages/members/admin/files-image.js";
 import { GpxUploadAdminPage } from "../components/pages/members/admin/gpx.js";
 import { LinksAdminPage } from "../components/pages/members/admin/links.js";
 import { PacklistItemsAdminPage } from "../components/pages/members/admin/packlist-items.js";
@@ -95,7 +94,7 @@ import { renderComponent } from "../helpers/render.js";
 import { afkoSchema } from "../validation-schemas/admin/afko.js";
 import { pointSchema } from "../validation-schemas/admin/earned-point.js";
 import { expeditieSchema } from "../validation-schemas/admin/expeditie.js";
-import { fileImageSchema } from "../validation-schemas/admin/files-image.js";
+import { fileSchema } from "../validation-schemas/admin/files.js";
 import {
   gpxPrefixParamsSchema,
   gpxSchema,
@@ -594,28 +593,12 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
   });
 
   await registerAdminRoute(app, "/bestanden", {
+    schema: fileSchema,
     paramSchema: keyParamsSchema,
 
     renderPage: async ({ user, messages }) =>
       await renderComponent(FilesAdminPage, {
         filesWithUses: getUsesForFiles(await getS3Files()),
-        user,
-        messages,
-      }),
-
-    deletePath: "/delete/:key",
-    onDelete: async ({ key }) => {
-      await deleteS3Prefix(key);
-      return `Bestand "${key}" is verwijderd`;
-    },
-  });
-
-  await registerAdminRoute(app, "/bestanden/afbeelding", {
-    schema: fileImageSchema,
-    paramSchema: keyParamsSchema,
-
-    renderPage: async ({ user, messages }) =>
-      await renderComponent(FilesImageAdminPage, {
         user,
         messages,
       }),
@@ -629,6 +612,12 @@ const adminRoutes: FastifyPluginAsync = async (app) => {
       );
 
       return `Bestand "${prefix}" is geüpload`;
+    },
+
+    deletePath: "/delete/:key",
+    onDelete: async ({ key }) => {
+      await deleteS3Prefix(key);
+      return `Bestand "${key}" is verwijderd`;
     },
   });
 

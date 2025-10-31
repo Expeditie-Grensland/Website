@@ -3,6 +3,29 @@ import type { authenticatePerson } from "../../db/person.js";
 import { NavigationBar } from "../page-structure/navigation-bar.js";
 import { Page } from "../page-structure/page.js";
 
+type ColumnRender<Value> = (
+  item: Value,
+  inputAttributes: { form?: string }
+) => ComponentChildren;
+
+type Column<Value> = {
+  label: string;
+  style?: CSSProperties;
+} & (
+  | {
+      onlyIn?: never;
+      render: ColumnRender<Value | undefined>;
+    }
+  | {
+      onlyIn: "new";
+      render: ColumnRender<undefined>;
+    }
+  | {
+      onlyIn: "existing";
+      render: ColumnRender<Value>;
+    }
+);
+
 type AdminPageProps<Value> = {
   title: string;
   fluid?: boolean;
@@ -20,16 +43,7 @@ type AdminPageProps<Value> = {
 
   items?: Value[];
 
-  columns: {
-    label: string;
-    style?: CSSProperties;
-    onlyIn?: "new" | "existing";
-
-    render: (
-      item: Value | undefined,
-      inputAttributes: { form?: string }
-    ) => ComponentChildren;
-  }[];
+  columns: Column<Value>[];
 
   actions?: {
     label: string;
@@ -95,9 +109,12 @@ export const AdminPage = <Value,>({
         <table class="admin-items-table">
           <thead>
             <tr>
-              {columns.map((column) => (
-                <th style={column.style}>{column.label}</th>
-              ))}
+              {columns.map(
+                (column) =>
+                  column.onlyIn !== "new" && (
+                    <th style={column.style}>{column.label}</th>
+                  )
+              )}
 
               {actions && <th />}
             </tr>

@@ -168,11 +168,6 @@ export const MembersHomePage: FunctionComponent<{
               url: "/leden/admin/bestanden",
               when: user.type === "admin",
             },
-            {
-              text: "Upload afbeelding",
-              url: "/leden/admin/bestanden/afbeelding",
-              when: user.type === "admin",
-            },
           ]}
         />
 

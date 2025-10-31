@@ -3,6 +3,7 @@ import type { authenticatePerson } from "../../../../db/person.js";
 import { getFileUrl } from "../../../../files/files.js";
 import type { getUsesForFiles } from "../../../../files/uses.js";
 import { AdminPage } from "../../../admin/admin-page.js";
+import { FileInput, TextInput } from "../../../admin/form-inputs.js";
 
 const getFileTypeText = (type: string) => {
   switch (type) {
@@ -73,44 +74,77 @@ export const FilesAdminPage: FunctionComponent<{
     title="Bestanden Admin"
     user={user}
     messages={messages}
+    newAction={{
+      action: `/leden/admin/bestanden/upload`,
+      label: "Uploaden",
+    }}
+    multipart
     items={filesWithUses}
     columns={[
       {
+        label: "Naam (zie bestaande bestanden)",
+        onlyIn: "new",
+        render: (_, attrs) => (
+          <>
+            <TextInput name="name" required {...attrs} />
+            <p>
+              Bijvoorbeeld: "expeditie-achtergrond",
+              "expeditie-verhaal-gebeurtenis"
+            </p>
+          </>
+        ),
+      },
+
+      {
+        label: "Afbeeldingsbestand",
+        onlyIn: "new",
+        render: (_, attrs) => (
+          <FileInput name="file" accept="image/*" required {...attrs} />
+        ),
+      },
+
+      {
         label: "Sleutel (prefix)",
+        onlyIn: "existing",
         style: { minWidth: "25rem" },
-        render: (file) => file?.file,
+        render: (file) => file.file,
       },
 
       {
         label: "Type",
+        onlyIn: "existing",
         style: { minWidth: "15rem" },
-        render: (file) => file && getFileTypeText(file.type),
+        render: (file) => getFileTypeText(file.type),
       },
 
       {
         label: "Preview",
+        onlyIn: "existing",
         style: { minWidth: "10rem", maxWidth: "10rem" },
-        render: (file) =>
-          file && (
-            <a class="file-preview" href={getFileMainUrl(file.file, file.type)}>
-              {getFileImagePreviewUrl(file.file, file.type) ? (
-                <img
-                  src={getFileImagePreviewUrl(file.file, file.type)}
-                  alt="Preview"
-                />
-              ) : (
-                "Link"
-              )}
-            </a>
-          ),
+        render: (file) => (
+          <a
+            class="file-preview"
+            href={getFileMainUrl(file.file, file.type)}
+            target="_blank"
+          >
+            {getFileImagePreviewUrl(file.file, file.type) ? (
+              <img
+                src={getFileImagePreviewUrl(file.file, file.type)}
+                alt="Preview"
+              />
+            ) : (
+              "Link"
+            )}
+          </a>
+        ),
       },
 
       {
         label: "In gebruik als",
+        onlyIn: "existing",
         style: { minWidth: "20rem" },
         render: (file) =>
-          file &&
-          (file.uses ? (
+          file.uses ? (
             file.uses.map((use) => <p>{getUseTypeText(use.type, use.name)}</p>)
           ) : (
             <form
@@ -125,7 +159,7 @@ export const FilesAdminPage: FunctionComponent<{
                 Verwijderen
               </button>
             </form>
-          )),
+          ),
       },
     ]}
   />

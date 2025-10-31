@@ -42,7 +42,7 @@ export const ExpeditieSegmentsAdminPage: FunctionComponent<{
         label: "Id",
         style: { width: "3rem" },
         onlyIn: "existing",
-        render: (segment) => <div>{segment!.id}</div>,
+        render: (segment) => <div>{segment.id}</div>,
       },
 
       {
