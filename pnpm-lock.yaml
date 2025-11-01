@@ -114,9 +114,6 @@ importers:
       esbuild:
         specifier: ^0.25.11
         version: 0.25.11
-      geojson:
-        specifier: ^0.5.0
-        version: 0.5.0
       hls.js:
         specifier: 1.6.13
         version: 1.6.13
@@ -1376,10 +1373,6 @@ packages:
 
   geojson-vt@4.0.2:
     resolution: {integrity: sha512-AV9ROqlNqoZEIJGfm1ncNjEXfkz2hdFlZf0qkVfmkwdKa8vj7H16YUOT81rJw1rdFhyEDlN2Tds91p/glzbl5A==}
-
-  geojson@0.5.0:
-    resolution: {integrity: sha512-/Bx5lEn+qRF4TfQ5aLu6NH+UKtvIv7Lhc487y/c8BdludrCTpiWf9wyI0RTyqg49MFefIAvFDuEi5Dfd/zgNxQ==}
-    engines: {node: '>= 0.10'}
 
   get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
@@ -3685,8 +3678,6 @@ snapshots:
   function-bind@1.1.2: {}
 
   geojson-vt@4.0.2: {}
-
-  geojson@0.5.0: {}
 
   get-caller-file@2.0.5: {}
 
