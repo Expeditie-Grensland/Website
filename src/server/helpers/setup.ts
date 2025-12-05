@@ -4,7 +4,7 @@ import fastifyFlash from "@fastify/flash";
 import fastifyFormbody from "@fastify/formbody";
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyStatic from "@fastify/static";
-import fastify, { type FastifyInstance } from "fastify";
+import fastify, { type FastifyError, type FastifyInstance } from "fastify";
 import qs from "qs";
 import { ErrorPage } from "../components/pages/public/error.js";
 import { getPerson } from "../db/person.js";
@@ -67,7 +67,7 @@ const setupStaticRoutes = async (app: FastifyInstance) => {
 };
 
 const setupErrors = (app: FastifyInstance) => {
-  app.setErrorHandler((error, _req, reply) => {
+  app.setErrorHandler((error: FastifyError, _req, reply) => {
     reply.log.error(error);
 
     reply.code(error.statusCode || 500).sendComponent(ErrorPage, {
