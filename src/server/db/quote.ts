@@ -6,7 +6,7 @@ export const getAllQuotes = () =>
   getDb()
     .selectFrom("quote")
     .selectAll()
-    .orderBy("time_stamp", "asc")
+    .orderBy("time_stamp", "desc")
     .execute();
 
 export const addQuote = (quote: Insertable<Quote>) =>
