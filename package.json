@@ -38,11 +38,11 @@
     "pg": "^8.16.3",
     "pino": "^10.1.0",
     "preact": "^10.28.1",
-    "preact-render-to-string": "^6.6.4",
-    "qs": "^6.14.0",
+    "preact-render-to-string": "^6.6.5",
+    "qs": "^6.14.1",
     "sharp": "^0.34.5",
     "sodium-native": "^5.0.10",
-    "zod": "^4.2.1",
+    "zod": "^4.3.4",
     "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
