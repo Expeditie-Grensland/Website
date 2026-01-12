@@ -1,0 +1,6 @@
+@import "shaka-player/dist/controls.css";
+
+.video-box > video {
+  width: 100%;
+  height: 100%;
+}

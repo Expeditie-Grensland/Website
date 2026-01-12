@@ -24,9 +24,10 @@ export const ExpeditiePage: FunctionComponent<{
           />
         )}
         <link rel="stylesheet" href="/static/styles/public.css" />
+        <link rel="stylesheet" href="/static/styles/video-player.css" />
       </>
     }
-    afterBody={<script src="/static/scripts/expeditie.js" />}
+    afterBody={<script src="/static/scripts/video-player.js" />}
   >
     <div class="container">
       <NavigationBar type="public" backTo="home" user={user} />
@@ -87,24 +88,28 @@ export const ExpeditiePage: FunctionComponent<{
           {expeditie.movie_file &&
             (!expeditie.movie_restricted || user) &&
             getFileType(expeditie.movie_file) === "film-dash" && (
-              <video
-                class="movie-player"
-                controls
-                poster={getFileUrl(expeditie.movie_file, "poster.jpg")}
-                preload="none"
-                data-hls={getFileUrl(expeditie.movie_file, "hls.m3u8")}
-                onPlay={`this.onplay=null;window.umami?.track("film-start",{film:"${expeditie.id}"})`}
-              >
-                <source
-                  src={getFileUrl(expeditie.movie_file, "hls.m3u8")}
-                  type="application/vnd.apple.mpegurl"
-                />
-                <source
-                  src={getFileUrl(expeditie.movie_file, "720p30.mp4")}
-                  type="video/mp4"
-                />
-                <p>Sorry, deze video wordt niet door je browser ondersteund.</p>
-              </video>
+              <div class="movie-player video-box">
+                <video
+                  poster={getFileUrl(expeditie.movie_file, "poster.jpg")}
+                  onPlay={`this.onplay=null;window.umami?.track("film-start",{film:"${expeditie.id}"})`}
+                >
+                  <source
+                    src={getFileUrl(expeditie.movie_file, "dash.mpd")}
+                    type="application/dash+xml"
+                  />
+                  <source
+                    src={getFileUrl(expeditie.movie_file, "hls.m3u8")}
+                    type="application/vnd.apple.mpegurl"
+                  />
+                  <source
+                    src={getFileUrl(expeditie.movie_file, "720p30.mp4")}
+                    type="video/mp4"
+                  />
+                  <p>
+                    Sorry, deze video wordt niet door je browser ondersteund.
+                  </p>
+                </video>
+              </div>
             )}
         </div>
       </div>

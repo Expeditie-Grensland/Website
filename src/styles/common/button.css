@@ -10,7 +10,7 @@ button:not(:disabled) {
   cursor: pointer;
 }
 
-[class*="button-"] {
+[class^="button-"] {
   display: inline-block;
   text-align: center;
 
@@ -29,20 +29,20 @@ button:not(:disabled) {
   border-color: var(--x-border-color);
 }
 
-[class*="button-"]:hover,
-[class*="button-"]:focus {
+[class^="button-"]:hover,
+[class^="button-"]:focus {
   color: var(--x-text-color-hover);
   background: var(--x-bg-color-hover);
   border-color: var(--x-border-color-hover);
 }
 
-[class*="button-"]:active {
+[class^="button-"]:active {
   color: var(--x-text-color-active);
   background: var(--x-bg-color-active);
   border-color: var(--x-border-color-active);
 }
 
-[class*="button-"]:disabled {
+[class^="button-"]:disabled {
   color: var(--x-text-color);
   background: var(--x-bg-color);
   border-color: var(--x-border-color);
@@ -50,6 +50,6 @@ button:not(:disabled) {
   pointer-events: none;
 }
 
-[class*="button-"]:focus-visible {
+[class^="button-"]:focus-visible {
   box-shadow: 0 0 0 0.25rem var(--border-light-color);
 }

@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { glob, mkdir, writeFile } from "node:fs/promises";
 import { analyzeMetafile, type BuildOptions, build, context } from "esbuild";
 import { getArgvOption } from "./common/options";
 
@@ -6,14 +6,24 @@ const dir = getArgvOption("dev", "dist");
 
 const isProd = dir === "dist";
 
-const entryPoints: BuildOptions["entryPoints"] = [
-  { in: "src/client/members.ts", out: "scripts/members" },
-  { in: "src/client/expeditie.ts", out: "scripts/expeditie" },
-  { in: "src/client/expeditie-map.ts", out: "scripts/expeditie-map" },
+const scriptEntries = await Array.fromAsync(
+  glob("*.ts", { cwd: "src/client" })
+);
 
-  { in: "src/styles/public.css", out: "styles/public" },
-  { in: "src/styles/members.css", out: "styles/members" },
-  { in: "src/styles/expeditie-map.css", out: "styles/expeditie-map" },
+const styleEntries = await Array.fromAsync(
+  glob("*.css", { cwd: "src/styles" })
+);
+
+const entryPoints: BuildOptions["entryPoints"] = [
+  ...scriptEntries.map((entry) => ({
+    in: `src/client/${entry}`,
+    out: `scripts/${entry.replace(/\.ts$/, "")}`,
+  })),
+
+  ...styleEntries.map((entry) => ({
+    in: `src/styles/${entry}`,
+    out: `styles/${entry.replace(/\.css$/, "")}`,
+  })),
 ];
 
 const options: BuildOptions = {
