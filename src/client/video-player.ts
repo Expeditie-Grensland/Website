@@ -1,4 +1,5 @@
 import shaka from "shaka-player/dist/shaka-player.ui";
+import nlLang from "shaka-player/ui/locales/nl.json";
 
 document.addEventListener("DOMContentLoaded", () => {
   shaka.polyfill.installAll();
@@ -31,6 +32,17 @@ document.addEventListener("DOMContentLoaded", () => {
         castReceiverAppId: "07AEE832",
         castAndroidReceiverCompatible: true,
         customContextMenu: true,
+        controlPanelElements: [
+          "play_pause",
+          "time_and_duration",
+          "spacer",
+          "overflow_menu",
+          "cast",
+          "airplay",
+          "remote",
+          "fullscreen",
+        ],
+        overflowMenuButtons: ["quality", "picture_in_picture", "playback_rate"],
         contextMenuElements: ["save_video_frame", "statistics"],
       });
 
@@ -38,11 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const controls = ui.getControls();
       const player = controls?.getPlayer();
+      const localization = controls?.getLocalization();
 
-      if (!player || !controls) {
+      if (!player || !controls || !localization) {
         console.error("Shaka niet juist geïnitialiseerd");
         return;
       }
+
+      localization.insert("nl", new Map(Object.entries(nlLang)));
+      localization.changeLocale(["nl"]);
 
       player.addEventListener("error", (e) => {
         console.error("Shaka error", e);

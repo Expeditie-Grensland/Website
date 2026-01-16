@@ -5,6 +5,7 @@
     "module": "ES2020",
     "moduleResolution": "Node",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
   }
 }
