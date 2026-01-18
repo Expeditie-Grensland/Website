@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       ui.configure({
-        castReceiverAppId: "07AEE832",
+        castReceiverAppId: "3A8E0BA6",
         castAndroidReceiverCompatible: true,
         customContextMenu: true,
         controlPanelElements: [
