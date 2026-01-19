@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from "fastify";
+import { CastReceiverPage } from "../components/pages/public/cast-receiver.js";
 import { HomePage } from "../components/pages/public/home.js";
 import { getAllExpedities } from "../db/expeditie.js";
 
@@ -10,6 +11,10 @@ const homeRoutes: FastifyPluginAsync = async (app) => {
       }),
       user: reply.locals.user,
     })
+  );
+
+  app.get("/cast-ontvanger", (_req, reply) =>
+    reply.sendComponent(CastReceiverPage, {})
   );
 };
 
