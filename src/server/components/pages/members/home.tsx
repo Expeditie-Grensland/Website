@@ -1,5 +1,6 @@
 import type { Selectable } from "kysely";
 import type { FunctionComponent, HTMLAttributeAnchorTarget } from "preact";
+// biome-ignore lint/correctness/useImportExtensions: import as json
 import packageJson from "../../../../../package.json" with { type: "json" };
 import type { getMemberLinks } from "../../../db/member-link.js";
 import type { getMemberWritingsList } from "../../../db/member-writings.js";

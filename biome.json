@@ -15,7 +15,8 @@
   },
   "linter": {
     "domains": {
-      "project": "recommended"
+      "project": "recommended",
+      "react": "recommended"
     },
     "rules": {
       "a11y": {
@@ -29,6 +30,9 @@
       },
       "style": {
         "noNonNullAssertion": "off"
+      },
+      "correctness": {
+        "useJsxKeyInIterable": "off"
       }
     }
   },
@@ -43,7 +47,12 @@
       "linter": {
         "rules": {
           "correctness": {
-            "useImportExtensions": "error"
+            "useImportExtensions": {
+              "level": "error",
+              "options": {
+                "forceJsExtensions": true
+              }
+            }
           }
         }
       }
