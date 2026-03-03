@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
           "spacer",
           "overflow_menu",
           "cast",
-          "airplay",
           "remote",
           "fullscreen",
         ],
