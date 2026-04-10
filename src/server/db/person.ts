@@ -161,7 +161,7 @@ const checkPbkdf2Password = (password: string, hash: string) =>
 
 export const authenticatePerson = async (id: string, password: string) => {
   const user = await getPerson(id.trim().toLowerCase());
-  if (!user || !user.password) return null;
+  if (!user?.password) return null;
 
   const pbkdf2Check = await checkPbkdf2Password(password, user.password);
 

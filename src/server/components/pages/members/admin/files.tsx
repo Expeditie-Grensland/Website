@@ -126,6 +126,7 @@ export const FilesAdminPage: FunctionComponent<{
             class="file-preview"
             href={getFileMainUrl(file.file, file.type)}
             target="_blank"
+            rel="noopener"
           >
             {getFileImagePreviewUrl(file.file, file.type) ? (
               <img
