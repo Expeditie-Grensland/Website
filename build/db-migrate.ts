@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import type { MigrationResultSet } from "kysely";
+import type { MigrationResultSet } from "kysely/migration";
 import { getDb } from "../src/server/db/schema/database";
 import { getMigrator } from "../src/server/db/schema/migrator";
 import { getArgvOption } from "./common/options";
