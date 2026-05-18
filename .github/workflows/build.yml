@@ -51,15 +51,30 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: npm version --git-tag-version false "$(npm version --git-tag-version false patch)-pre.$(date +"%Y%m%d").$(git rev-parse --short=8 HEAD)"
 
+      - name: Package package
+        run: pnpm pack --out package.tar.gz
+
+      - name: Add lockfile to package
+        run: |
+          gunzip package.tar.gz
+          tar rf package.tar pnpm-lock.yaml --transform "s/^/package\//" --owner=" :0" --group=" :0" --mtime="1985-10-26 09:15"
+          gzip package.tar
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package
+          path: package.tar.gz
+
       - name: Publish pre-release
         if: github.ref == 'refs/heads/master'
-        run: pnpm publish --tag next --no-git-checks
+        run: npm publish --tag next package.tar.gz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
-        run: pnpm publish --no-git-checks
+        run: npm publish package.tar.gz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
