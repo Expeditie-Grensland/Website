@@ -9,19 +9,19 @@ permissions:
 jobs:
   build:
     name: Check, Build & Release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v6
         with:
           version: latest
 
       - name: Setup node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           registry-url: https://npm.pkg.github.com
@@ -41,9 +41,9 @@ jobs:
         run: node --run stats >> $GITHUB_STEP_SUMMARY
 
       - name: Upload build metadata
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: Build-Metadata
+          name: build-metadata
           path: meta/
           overwrite: true
 
@@ -61,10 +61,11 @@ jobs:
           gzip package.tar
 
       - name: Upload package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: Package
           path: package.tar.gz
+          archive: false
+          overwrite: true
 
       - name: Publish pre-release
         if: github.ref == 'refs/heads/master'
