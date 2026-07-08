@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import type { ComponentChildren, FunctionComponent } from "preact";
 import { allValues, type EnumTextMap } from "../../db/enums.js";
 import type { getAllExpedities } from "../../db/expeditie.js";
@@ -88,7 +87,11 @@ export const DateInput: FunctionComponent<BasicInput<Date>> = ({
     pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
     class="input"
     placeholder={placeholder}
-    value={(value && DateTime.fromJSDate(value).toISODate()) || undefined}
+    value={
+      (value &&
+        `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`) ||
+      undefined
+    }
     {...rest}
   />
 );
