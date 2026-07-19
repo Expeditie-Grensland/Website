@@ -26,7 +26,8 @@
             "inputComponents": ["CheckInput"]
           }
         },
-        "useMediaCaption": "off"
+        "useMediaCaption": "off",
+        "noSvgWithoutTitle": "off"
       },
       "style": {
         "noNonNullAssertion": "off"
