@@ -61,7 +61,7 @@ const convert = async (
             [`-bufsize:v:${i}`, `${bitrate * 1.5}k`],
             [
               `-filter:v:${i}`,
-              `scale=${width}:${height}:force_original_aspect_ratio=decrease,format=yuv420p`,
+              `scale=${width}:${height}:force_original_aspect_ratio=decrease:force_divisible_by=2,format=yuv420p`,
             ],
             [`-r:v:${i}`, `${fps}`],
             [`-g:v:${i}`, `${fps * 2}`],
