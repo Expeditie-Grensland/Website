@@ -94,10 +94,6 @@ body {
   padding: 16px;
 }
 
-.story + .story {
-  margin-top: 16px;
-}
-
 .story-header {
   display: flex;
   justify-content: space-between;
@@ -141,6 +137,10 @@ body {
   background: #f5f5f5e6;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   border-radius: 5px;
+}
+
+.story + .story {
+  margin-top: 16px;
 }
 
 .graph-circle {
