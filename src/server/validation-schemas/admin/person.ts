@@ -14,7 +14,7 @@ export const personSchema = z.object({
   type: z.enum(personTypeTexts[allValues]),
   team: z
     .enum([...personTeamTexts[allValues]])
-    .or(z.literal("").transform(() => null)),
+    .or(z.literal("-").transform(() => null)),
 
   email: z.string().optional(),
 
