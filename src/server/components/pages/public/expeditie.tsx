@@ -91,6 +91,7 @@ export const ExpeditiePage: FunctionComponent<{
               <div class="movie-player video-box">
                 <video
                   poster={getFileUrl(expeditie.movie_file, "poster.jpg")}
+                  // @ts-expect-error String event handler
                   onPlay={`this.onplay=null;window.umami?.track("film-start",{film:"${expeditie.id}"})`}
                 >
                   <source

@@ -18,6 +18,7 @@ export const LoginPage: FunctionComponent<{
         class="login-form"
         action="/leden/login"
         method="POST"
+        // @ts-expect-error String event handler
         onSubmit="window.umami?.track('login', { gebruiker: document.getElementById('username').value.toLowerCase() })"
       >
         <h1 class="page-title">Inloggen</h1>
