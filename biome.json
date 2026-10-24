@@ -7,7 +7,8 @@
       ".github/**",
       ".vscode/**",
       "*",
-      "!src/server/db/schema/types.ts"
+      "!src/server/db/schema/types.ts",
+      "!pnpm-lock.yaml"
     ]
   },
   "formatter": {

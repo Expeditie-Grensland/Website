@@ -48,7 +48,7 @@ const constructStory = (
   const margin = 30;
   const distance = 50;
   const maxPosTotal = segments.reduce(
-    (max, segment) => (segment.posTotal > max ? segment.posTotal : max),
+    (max, segment) => Math.max(segment.posTotal, max),
     0
   );
 
